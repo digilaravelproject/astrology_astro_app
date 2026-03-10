@@ -1,0 +1,218 @@
+Launching lib/main.dart on RMX2151 in debug mode...
+Running Gradle task 'assembleDebug'...                          
+lib/features/call/call_history_screen.dart:9:8: Error: Error when reading 'lib/features/call/kundli_screen.dart': No such file or directory
+import 'kundli_screen.dart';
+       ^
+lib/features/call/call_history_screen.dart:11:8: Error: Error when reading 'lib/features/widgets/add_note_bottom_sheet.dart': No such file or directory
+import '../widgets/add_note_bottom_sheet.dart';
+       ^
+lib/features/chat/chat_history_screen.dart:11:8: Error: Error when reading 'lib/features/widgets/add_note_bottom_sheet.dart': No such file or directory
+import '../widgets/add_note_bottom_sheet.dart';
+       ^
+lib/features/waitlist/waitlist_screen.dart:7:8: Error: Error when reading 'lib/features/widgets/add_note_bottom_sheet.dart': No such file or directory
+import '../widgets/add_note_bottom_sheet.dart';
+       ^
+lib/features/chat/assistant_chat_screen.dart:9:8: Error: Error when reading 'lib/features/widgets/add_note_bottom_sheet.dart': No such file or directory
+import '../widgets/add_note_bottom_sheet.dart';
+       ^
+lib/features/call/call_history_screen.dart:12:8: Error: Error when reading 'lib/features/widgets/animated_favorite_button.dart': No such file or directory
+import '../widgets/animated_favorite_button.dart';
+       ^
+lib/features/chat/chat_history_screen.dart:12:8: Error: Error when reading 'lib/features/widgets/animated_favorite_button.dart': No such file or directory
+import '../widgets/animated_favorite_button.dart';
+       ^
+lib/features/waitlist/waitlist_screen.dart:8:8: Error: Error when reading 'lib/features/widgets/animated_favorite_button.dart': No such file or directory
+import '../widgets/animated_favorite_button.dart';
+       ^
+lib/features/chat/assistant_chat_screen.dart:8:8: Error: Error when reading 'lib/features/widgets/animated_favorite_button.dart': No such file or directory
+import '../widgets/animated_favorite_button.dart';
+       ^
+lib/features/followers/my_followers_screen.dart:10:8: Error: Error when reading 'lib/features/widgets/animated_favorite_button.dart': No such file or directory
+import '../widgets/animated_favorite_button.dart';
+       ^
+lib/features/chat/chat_history_screen.dart:9:8: Error: Error when reading 'lib/features/chat/kundli_screen.dart': No such file or directory
+import 'kundli_screen.dart';
+       ^
+lib/features/chat/chat_history_screen.dart:10:8: Error: Error when reading 'lib/features/chat/call_details_screen.dart': No such file or directory
+import 'call_details_screen.dart';
+       ^
+lib/features/astromall/astromall_orders_screen.dart:7:8: Error: Error when reading 'lib/widgets/astromall_filter_bottom_sheet.dart': No such file or directory
+import '../../widgets/astromall_filter_bottom_sheet.dart';
+       ^
+lib/features/astromall/astromall_orders_screen.dart:8:8: Error: Error when reading 'lib/widgets/add_note_bottom_sheet.dart': No such file or directory
+import '../../widgets/add_note_bottom_sheet.dart';
+       ^
+lib/features/astromall/astromall_orders_screen.dart:9:8: Error: Error when reading 'lib/widgets/animated_favorite_button.dart': No such file or directory
+import '../../widgets/animated_favorite_button.dart';
+       ^
+lib/features/chat/assistant_chat_screen.dart:10:8: Error: Error when reading 'lib/features/widgets/assistant_chat_sort_bottom_sheet.dart': No such file or directory
+import '../widgets/assistant_chat_sort_bottom_sheet.dart';
+       ^
+lib/features/followers/my_followers_screen.dart:11:8: Error: Error when reading 'lib/features/widgets/assistant_chat_sort_bottom_sheet.dart': No such file or directory
+import '../widgets/assistant_chat_sort_bottom_sheet.dart';
+       ^
+lib/features/chat/assistant_chat_screen.dart:11:8: Error: Error when reading 'lib/features/chat/discounted_session_screen.dart': No such file or directory
+import 'discounted_session_screen.dart';
+       ^
+lib/features/orders/orders_screen.dart:8:8: Error: Error when reading 'lib/features/orders/kundli_screen.dart': No such file or directory
+import 'kundli_screen.dart';
+       ^
+lib/features/orders/history_screen.dart:8:8: Error: Error when reading 'lib/features/orders/kundli_screen.dart': No such file or directory
+import 'kundli_screen.dart';
+       ^
+lib/features/followers/my_followers_screen.dart:7:8: Error: Error when reading 'lib/features/followers/kundli_screen.dart': No such file or directory
+import 'kundli_screen.dart';
+       ^
+lib/features/followers/my_followers_screen.dart:8:8: Error: Error when reading 'lib/features/followers/chat_history_screen.dart': No such file or directory
+import 'chat_history_screen.dart';
+       ^
+lib/features/followers/my_followers_screen.dart:9:8: Error: Error when reading 'lib/features/followers/kundli_list_screen.dart': No such file or directory
+import 'kundli_list_screen.dart';
+       ^
+lib/features/training/training_videos_section.dart:6:8: Error: Error when reading 'lib/features/screens/training_videos_list_screen.dart': No such file or directory
+import '../screens/training_videos_list_screen.dart';
+       ^
+lib/features/profile/screens/profile_screen.dart:16:8: Error: Error when reading 'lib/features/performance/my_reviews_screen.dart': No such file or directory
+import '../../performance/my_reviews_screen.dart';
+       ^
+lib/features/profile/screens/profile_screen.dart:17:8: Error: Error when reading 'lib/features/performance/performance_screen.dart': No such file or directory
+import '../../performance/performance_screen.dart';
+       ^
+lib/features/profile/screens/profile_screen.dart:18:8: Error: Error when reading 'lib/features/finance/my_earnings_screen.dart': No such file or directory
+import '../../finance/my_earnings_screen.dart';
+       ^
+lib/features/kundli/kundli_screen.dart:7:8: Error: Error when reading 'lib/features/widgets/kundli_chart_widget.dart': No such file or directory
+import '../widgets/kundli_chart_widget.dart';
+       ^
+lib/features/kundli/kundli_screen.dart:9:8: Error: Error when reading 'lib/features/kundli/chat_screen.dart': No such file or directory
+import 'chat_screen.dart';
+       ^
+lib/features/kundli/kundli_tabs/divisional_chart_tab.dart:4:8: Error: Error when reading 'lib/features/widgets/kundli_chart_widget.dart': No such file or directory
+import '../../widgets/kundli_chart_widget.dart';
+       ^
+lib/features/kundli/kundli_tabs/kp_tab.dart:4:8: Error: Error when reading 'lib/features/widgets/kundli_chart_widget.dart': No such file or directory
+import '../../widgets/kundli_chart_widget.dart';
+       ^
+lib/features/call/call_history_screen.dart:212:42: Error: Not a constant expression.
+                                  child: AddNoteBottomSheet(),
+                                         ^^^^^^^^^^^^^^^^^^
+lib/features/call/call_history_screen.dart:260:33: Error: Not a constant expression.
+                          const AnimatedFavoriteButton(),
+                                ^^^^^^^^^^^^^^^^^^^^^^
+lib/features/call/call_history_screen.dart:369:67: Error: Not a constant expression.
+                              onPressed: () => Get.to(() => const KundliScreen()),
+                                                                  ^^^^^^^^^^^^
+lib/features/chat/chat_history_screen.dart:227:40: Error: Not a constant expression.
+                                child: AddNoteBottomSheet(),
+                                       ^^^^^^^^^^^^^^^^^^
+lib/features/chat/chat_history_screen.dart:275:31: Error: Not a constant expression.
+                        const AnimatedFavoriteButton(),
+                              ^^^^^^^^^^^^^^^^^^^^^^
+lib/features/chat/chat_history_screen.dart:392:67: Error: Not a constant expression.
+                              onPressed: () => Get.to(() => const KundliScreen()),
+                                                                  ^^^^^^^^^^^^
+lib/features/chat/chat_history_screen.dart:111:28: Error: The method 'CallDetailsScreen' isn't defined for the type 'ChatHistoryScreen'.
+ - 'ChatHistoryScreen' is from 'package:astro_astrologer/features/chat/chat_history_screen.dart' ('lib/features/chat/chat_history_screen.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'CallDetailsScreen'.
+              Get.to(() => CallDetailsScreen(
+                           ^^^^^^^^^^^^^^^^^
+lib/features/astromall/astromall_orders_screen.dart:77:47: Error: Not a constant expression.
+                  builder: (context) => const AstromallFilterBottomSheet(),
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+lib/features/astromall/astromall_orders_screen.dart:224:32: Error: Not a constant expression.
+                        child: AddNoteBottomSheet(),
+                               ^^^^^^^^^^^^^^^^^^
+lib/features/astromall/astromall_orders_screen.dart:231:23: Error: Not a constant expression.
+                const AnimatedFavoriteButton(),
+                      ^^^^^^^^^^^^^^^^^^^^^^
+lib/features/waitlist/waitlist_screen.dart:96:36: Error: Not a constant expression.
+                            child: AddNoteBottomSheet(),
+                                   ^^^^^^^^^^^^^^^^^^
+lib/features/waitlist/waitlist_screen.dart:103:27: Error: Not a constant expression.
+                    const AnimatedFavoriteButton(),
+                          ^^^^^^^^^^^^^^^^^^^^^^
+lib/features/chat/assistant_chat_screen.dart:51:34: Error: Not a constant expression.
+              Get.to(() => const DiscountedSessionScreen());
+                                 ^^^^^^^^^^^^^^^^^^^^^^^
+lib/features/chat/assistant_chat_screen.dart:148:28: Error: Not a constant expression.
+                    child: AssistantChatSortBottomSheet(),
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+lib/features/chat/assistant_chat_screen.dart:204:29: Error: Not a constant expression.
+                      const AnimatedFavoriteButton(),
+                            ^^^^^^^^^^^^^^^^^^^^^^
+lib/features/chat/assistant_chat_screen.dart:265:27: Error: Not a constant expression.
+                    const AnimatedFavoriteButton(),
+                          ^^^^^^^^^^^^^^^^^^^^^^
+lib/features/chat/assistant_chat_screen.dart:332:34: Error: Not a constant expression.
+                          child: AddNoteBottomSheet(),
+                                 ^^^^^^^^^^^^^^^^^^
+lib/features/orders/history_screen.dart:380:67: Error: Not a constant expression.
+                              onPressed: () => Get.to(() => const KundliScreen()),
+                                                                  ^^^^^^^^^^^^
+lib/features/followers/my_followers_screen.dart:173:21: Error: Not a constant expression.
+              const AnimatedFavoriteButton(),
+                    ^^^^^^^^^^^^^^^^^^^^^^
+lib/features/followers/my_followers_screen.dart:375:20: Error: Not a constant expression.
+            child: AssistantChatSortBottomSheet(),
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+lib/features/training/training_videos_section.dart:39:53: Error: Not a constant expression.
+                onPressed: () => Get.to(() => const TrainingVideosListScreen()),
+                                                    ^^^^^^^^^^^^^^^^^^^^^^^^
+lib/features/profile/screens/profile_screen.dart:181:43: Error: Not a constant expression.
+          onTap: () => Get.to(() => const MyEarningsScreen()),
+                                          ^^^^^^^^^^^^^^^^
+lib/features/profile/screens/profile_screen.dart:186:43: Error: Not a constant expression.
+          onTap: () => Get.to(() => const MyReviewsScreen()),
+                                          ^^^^^^^^^^^^^^^
+lib/features/profile/screens/profile_screen.dart:191:43: Error: Not a constant expression.
+          onTap: () => Get.to(() => const PerformanceScreen()),
+                                          ^^^^^^^^^^^^^^^^^
+lib/features/kundli/kundli_screen.dart:75:45: Error: Not a constant expression.
+            onTap: () => Get.to(() => const ChatScreen(request: {
+                                            ^^^^^^^^^^
+lib/features/kundli/kundli_screen.dart:94:17: Error: The method 'KundliChartWidget' isn't defined for the type '_KundliScreenState'.
+ - '_KundliScreenState' is from 'package:astro_astrologer/features/kundli/kundli_screen.dart' ('lib/features/kundli/kundli_screen.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'KundliChartWidget'.
+                KundliChartWidget(title: "Lagna / Ascendant / D1 Chart", planetData: _samplePlanetData),
+                ^^^^^^^^^^^^^^^^^
+lib/features/kundli/kundli_screen.dart:95:17: Error: The method 'KundliChartWidget' isn't defined for the type '_KundliScreenState'.
+ - '_KundliScreenState' is from 'package:astro_astrologer/features/kundli/kundli_screen.dart' ('lib/features/kundli/kundli_screen.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'KundliChartWidget'.
+                KundliChartWidget(title: "Navamsa Chart", planetData: _samplePlanetData),
+                ^^^^^^^^^^^^^^^^^
+lib/features/kundli/kundli_screen.dart:96:17: Error: The method 'KundliChartWidget' isn't defined for the type '_KundliScreenState'.
+ - '_KundliScreenState' is from 'package:astro_astrologer/features/kundli/kundli_screen.dart' ('lib/features/kundli/kundli_screen.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'KundliChartWidget'.
+                KundliChartWidget(title: "Transit Chart", planetData: _samplePlanetData),
+                ^^^^^^^^^^^^^^^^^
+lib/features/kundli/kundli_screen.dart:516:20: Error: Not a constant expression.
+            child: KundliChartWidget(title: "Varshphal Chart - Year 2026"),
+                   ^^^^^^^^^^^^^^^^^
+lib/features/kundli/kundli_tabs/divisional_chart_tab.dart:133:16: Error: The method 'KundliChartWidget' isn't defined for the type '_DivisionalChartTabState'.
+ - '_DivisionalChartTabState' is from 'package:astro_astrologer/features/kundli/kundli_tabs/divisional_chart_tab.dart' ('lib/features/kundli/kundli_tabs/divisional_chart_tab.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'KundliChartWidget'.
+        child: KundliChartWidget(
+               ^^^^^^^^^^^^^^^^^
+lib/features/kundli/kundli_tabs/kp_tab.dart:52:20: Error: The method 'KundliChartWidget' isn't defined for the type 'KPTab'.
+ - 'KPTab' is from 'package:astro_astrologer/features/kundli/kundli_tabs/kp_tab.dart' ('lib/features/kundli/kundli_tabs/kp_tab.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'KundliChartWidget'.
+            child: KundliChartWidget(
+                   ^^^^^^^^^^^^^^^^^
+Target kernel_snapshot_program failed: Exception
+
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileFlutterBuildDebug'.
+> Process 'command '/opt/homebrew/share/flutter/bin/flutter'' finished with non-zero exit value 1
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 3s
+Running Gradle task 'assembleDebug'...                              3.1s
+Error: Gradle task assembleDebug failed with exit code 1

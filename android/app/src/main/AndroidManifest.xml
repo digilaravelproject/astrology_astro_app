@@ -1,0 +1,40 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- Application -->
+    <application android:label="Astro Astrologer" android:name="${applicationName}" android:icon="@mipmap/ic_launcher">
+
+        <!-- Main Activity -->
+        <activity android:name=".MainActivity" android:exported="true" android:launchMode="singleTop" android:theme="@style/LaunchTheme" android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode" android:hardwareAccelerated="true" android:windowSoftInputMode="adjustResize">
+
+            <meta-data android:name="io.flutter.embedding.android.NormalTheme" android:resource="@style/NormalTheme"/>
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!-- Flutter Embedding Metadata -->
+        <meta-data android:name="flutterEmbedding" android:value="2"/>
+
+        <!-- Dynamic Icon Service -->
+        <service android:name="com.solusibejo.flutter_dynamic_icon_plus.FlutterDynamicIconPlusService" android:stopWithTask="false"/>
+
+        <!-- Activity aliases for alternate icons -->
+        <activity-alias android:label="Demo App" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher" android:name=".icon_1" android:exported="true" android:enabled="false" android:targetActivity=".MainActivity"/>
+        <activity-alias android:label="Demo App" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher" android:name=".icon_2" android:exported="true" android:enabled="false" android:targetActivity=".MainActivity"/>
+
+    </application>
+
+    <!-- Queries for Flutter plugins (Text processing, etc.) -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+    </queries>
+
+</manifest>

@@ -1,0 +1,157 @@
+Launching lib/main.dart on RMX2151 in debug mode...
+Running Gradle task 'assembleDebug'...                          
+lib/features/home/screens/home_screen.dart:12:8: Error: Error when reading 'lib/features/home/screens/call_history_screen.dart': No such file or directory
+import 'call_history_screen.dart';
+       ^
+lib/features/home/screens/home_screen.dart:13:8: Error: Error when reading 'lib/features/home/screens/chat_history_screen.dart': No such file or directory
+import 'chat_history_screen.dart';
+       ^
+lib/features/home/screens/home_screen.dart:14:8: Error: Error when reading 'lib/features/home/screens/kundli_list_screen.dart': No such file or directory
+import 'kundli_list_screen.dart';
+       ^
+lib/features/home/screens/home_screen.dart:15:8: Error: Error when reading 'lib/features/home/screens/astromall/astromall_orders_screen.dart': No such file or directory
+import 'astromall/astromall_orders_screen.dart';
+       ^
+lib/features/home/screens/home_screen.dart:16:8: Error: Error when reading 'lib/features/home/screens/waitlist_screen.dart': No such file or directory
+import 'waitlist_screen.dart';
+       ^
+lib/features/home/screens/home_screen.dart:17:8: Error: Error when reading 'lib/features/home/screens/assistant_chat_screen.dart': No such file or directory
+import 'assistant_chat_screen.dart';
+       ^
+lib/features/home/screens/home_screen.dart:18:8: Error: Error when reading 'lib/features/home/screens/orders_screen.dart': No such file or directory
+import 'orders_screen.dart';
+       ^
+lib/features/home/screens/dashboard_screen.dart:13:8: Error: Error when reading 'lib/features/home/screens/orders_screen.dart': No such file or directory
+import 'orders_screen.dart';
+       ^
+lib/features/home/screens/home_screen.dart:22:8: Error: Error when reading 'lib/features/home/screens/history_screen.dart': No such file or directory
+import 'history_screen.dart';
+       ^
+lib/features/home/screens/home_screen.dart:23:8: Error: Error when reading 'lib/features/home/screens/my_followers_screen.dart': No such file or directory
+import 'my_followers_screen.dart';
+       ^
+lib/features/home/screens/home_screen.dart:24:8: Error: Error when reading 'lib/features/home/screens/suggested_remedies_screen.dart': No such file or directory
+import 'suggested_remedies_screen.dart';
+       ^
+lib/features/home/screens/home_screen.dart:25:8: Error: Error when reading 'lib/features/home/screens/offers_screen.dart': No such file or directory
+import 'offers_screen.dart';
+       ^
+lib/features/home/screens/home_screen.dart:26:8: Error: Error when reading 'lib/features/home/screens/panchang_screen.dart': No such file or directory
+import 'panchang_screen.dart';
+       ^
+lib/features/home/screens/home_screen.dart:27:8: Error: Error when reading 'lib/features/home/screens/notification_screen.dart': No such file or directory
+import 'notification_screen.dart';
+       ^
+lib/features/home/screens/home_screen.dart:28:8: Error: Error when reading 'lib/features/home/screens/blog_screen.dart': No such file or directory
+import 'blog_screen.dart';
+       ^
+lib/features/home/screens/home_screen.dart:29:8: Error: Error when reading 'lib/features/home/widgets/training_videos_section.dart': No such file or directory
+import '../widgets/training_videos_section.dart';
+       ^
+lib/features/home/screens/home_screen.dart:30:8: Error: Error when reading 'lib/features/home/widgets/special_offer_banner.dart': No such file or directory
+import '../widgets/special_offer_banner.dart';
+       ^
+lib/features/home/screens/home_screen.dart:32:8: Error: Error when reading 'lib/features/home/screens/set_sleep_hours_screen.dart': No such file or directory
+import 'set_sleep_hours_screen.dart';
+       ^
+lib/features/profile/screens/profile_screen.dart:28:8: Error: Error when reading 'lib/features/home/screens/my_followers_screen.dart': No such file or directory
+import '../../home/screens/my_followers_screen.dart';
+       ^
+lib/features/home/screens/dashboard_screen.dart:12:8: Error: Error when reading 'lib/features/home/screens/notice_screen.dart': No such file or directory
+import 'notice_screen.dart';
+       ^
+lib/features/profile/screens/my_earnings_screen.dart:8:8: Error: Error when reading 'lib/features/profile/screens/withdrawal_screen.dart': No such file or directory
+import 'withdrawal_screen.dart';
+       ^
+lib/features/profile/screens/settings_screen.dart:9:8: Error: Error when reading 'lib/features/home/screens/training_videos_list_screen.dart': No such file or directory
+import '../../home/screens/training_videos_list_screen.dart';
+       ^
+lib/features/profile/screens/settings_screen.dart:12:8: Error: Error when reading 'lib/features/profile/screens/bank_details_screen.dart': No such file or directory
+import 'bank_details_screen.dart';
+       ^
+lib/features/profile/screens/profile_screen.dart:18:8: Error: Error when reading 'lib/features/profile/screens/bank_details_screen.dart': No such file or directory
+import 'bank_details_screen.dart';
+       ^
+lib/features/home/screens/home_screen.dart:77:23: Error: Not a constant expression.
+                const SpecialOfferBanner(),
+                      ^^^^^^^^^^^^^^^^^^
+lib/features/home/screens/home_screen.dart:91:23: Error: Not a constant expression.
+                const TrainingVideosSection(),
+                      ^^^^^^^^^^^^^^^^^^^^^
+lib/features/home/screens/home_screen.dart:162:49: Error: Not a constant expression.
+                onTap: () => Get.to(() => const NotificationScreen()),
+                                                ^^^^^^^^^^^^^^^^^^
+lib/features/home/screens/home_screen.dart:377:28: Error: Not a constant expression.
+        Get.to(() => const SetSleepHoursScreen());
+                           ^^^^^^^^^^^^^^^^^^^
+lib/features/home/screens/home_screen.dart:699:41: Error: Not a constant expression.
+        onTap: () => Get.to(() => const CallHistoryScreen()),
+                                        ^^^^^^^^^^^^^^^^^
+lib/features/home/screens/home_screen.dart:708:41: Error: Not a constant expression.
+        onTap: () => Get.to(() => const WaitlistScreen()),
+                                        ^^^^^^^^^^^^^^
+lib/features/home/screens/home_screen.dart:716:41: Error: Not a constant expression.
+        onTap: () => Get.to(() => const AssistantChatScreen()),
+                                        ^^^^^^^^^^^^^^^^^^^
+lib/features/home/screens/home_screen.dart:724:41: Error: Not a constant expression.
+        onTap: () => Get.to(() => const SuggestedRemediesScreen()),
+                                        ^^^^^^^^^^^^^^^^^^^^^^^
+lib/features/home/screens/home_screen.dart:741:41: Error: Not a constant expression.
+        onTap: () => Get.to(() => const MyFollowersScreen()),
+                                        ^^^^^^^^^^^^^^^^^
+lib/features/home/screens/home_screen.dart:749:41: Error: Not a constant expression.
+        onTap: () => Get.to(() => const HistoryScreen()),
+                                        ^^^^^^^^^^^^^
+lib/features/home/screens/home_screen.dart:758:41: Error: Not a constant expression.
+        onTap: () => Get.to(() => const PanchangScreen()),
+                                        ^^^^^^^^^^^^^^
+lib/features/home/screens/home_screen.dart:766:41: Error: Not a constant expression.
+        onTap: () => Get.to(() => const BlogScreen()),
+                                        ^^^^^^^^^^
+lib/features/home/screens/home_screen.dart:775:41: Error: Not a constant expression.
+        onTap: () => Get.to(() => const AstromallOrdersScreen()),
+                                        ^^^^^^^^^^^^^^^^^^^^^
+lib/features/home/screens/home_screen.dart:783:41: Error: Not a constant expression.
+        onTap: () => Get.to(() => const OffersScreen()),
+                                        ^^^^^^^^^^^^
+lib/features/home/screens/home_screen.dart:691:35: Error: The method 'ChatHistoryScreen' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:astro_astrologer/features/home/screens/home_screen.dart' ('lib/features/home/screens/home_screen.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'ChatHistoryScreen'.
+        onTap: () => Get.to(() => ChatHistoryScreen()),
+                                  ^^^^^^^^^^^^^^^^^
+lib/features/home/screens/dashboard_screen.dart:27:11: Error: Couldn't find constructor 'OrdersScreen'.
+    const OrdersScreen(),
+          ^^^^^^^^^^^^
+lib/features/home/screens/dashboard_screen.dart:29:11: Error: Couldn't find constructor 'NoticeScreen'.
+    const NoticeScreen(),
+          ^^^^^^^^^^^^
+lib/features/profile/screens/my_earnings_screen.dart:135:55: Error: Not a constant expression.
+                  onPressed: () => Get.to(() => const WithdrawalScreen()),
+                                                      ^^^^^^^^^^^^^^^^
+lib/features/profile/screens/settings_screen.dart:54:47: Error: Not a constant expression.
+              onTap: () => Get.to(() => const BankDetailsScreen()),
+                                              ^^^^^^^^^^^^^^^^^
+lib/features/profile/screens/settings_screen.dart:146:47: Error: Not a constant expression.
+              onTap: () => Get.to(() => const TrainingVideosListScreen()),
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^
+lib/features/profile/screens/profile_screen.dart:172:43: Error: Not a constant expression.
+          onTap: () => Get.to(() => const MyFollowersScreen()),
+                                          ^^^^^^^^^^^^^^^^^
+Target kernel_snapshot_program failed: Exception
+
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileFlutterBuildDebug'.
+> Process 'command '/opt/homebrew/share/flutter/bin/flutter'' finished with non-zero exit value 1
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 2s
+Running Gradle task 'assembleDebug'...                           2,781ms
+Error: Gradle task assembleDebug failed with exit code 1

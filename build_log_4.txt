@@ -1,0 +1,122 @@
+Launching lib/main.dart on RMX2151 in debug mode...
+Running Gradle task 'assembleDebug'...                              7.3s
+✓ Built build/app/outputs/flutter-apk/app-debug.apk
+Installing build/app/outputs/flutter-apk/app-debug.apk...           6.6s
+D/FlutterJNI(29007): Beginning load of flutter...
+D/FlutterJNI(29007): flutter (null) was loaded normally!
+I/flutter (29007): [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(62)] Using the Impeller rendering backend (Vulkan).
+I/flutter (29007): load() => ENV Loaded: start
+Syncing files to device RMX2151...                              
+I/flutter (29007): load() => ENV Loaded: development
+I/flutter (29007): System brightness: Brightness.light
+Syncing files to device RMX2151...                                  71ms
+
+Flutter run key commands.
+r Hot reload. 🔥🔥🔥
+R Hot restart.
+h List all available interactive commands.
+d Detach (terminate "flutter run" but leave application running).
+c Clear the screen
+q Quit (terminate the application on the device).
+
+A Dart VM Service on RMX2151 is available at: http://127.0.0.1:51252/7Me0CpskoU8=/
+The Flutter DevTools debugger and profiler on RMX2151 is available at: http://127.0.0.1:51252/7Me0CpskoU8=/devtools/?uri=ws://127.0.0.1:51252/7Me0CpskoU8=/ws
+I/Choreographer(29007): Skipped 178 frames!  The application may be doing too much work on its main thread.
+I/Quality (29007): Skipped: false 178 cost 3971.684 refreshRate 0 processName com.astro.astrologer
+D/nativeloader(29007): Load libSchedAssistJni.so using system ns (caller=/system/framework/oplus-framework.jar): ok
+D/ExtensionsLoader(29007): createInstance(64bit) : createExtendedFactory
+D/ExtensionsLoader(29007): Opened libSchedAssistExtImpl.so
+I/BufferQueueConsumer(29007): [](id:714f00000000,api:0,p:-1,c:29007) connect: controlledByApp=false
+I/BLASTBufferQueue(29007): [ViewRootImpl[com.astro.astrologer/com.astro.astrologer.MainActivity]#0] constructor()
+D/ExtensionsLoader(29007): createInstance(64bit) : createExtendedFactory
+D/ExtensionsLoader(29007): Opened libSchedAssistExtImpl.so
+V/ZoomWindowDecorView(29007): setLastReportedMergedConfiguration mZoomDisplayHeight: 2400 getDecorView.230241530
+D/libMEOW (29007): meow new tls: 0xb4000075022db780
+D/libMEOW (29007): applied 1 plugins for [com.astro.astrologer]:
+D/libMEOW (29007):   plugin 1: [libMEOW_gift.so]: 0xb4000074f6ca4c40
+D/libMEOW (29007): rebuild call chain: 0xb4000075022ea700
+I/GED     (29007): [GT]_get_procNameprocess pid(29007)
+I/GED     (29007): [GT]_getprocess name(com.astro.astrologer)
+I/stro.astrologe(29007): [GT] ret(1) gt_status(00000000) aniso_debug_level(0) gt_aniso_max_level(16) ani so mask(00000001) tri mask(00000002)
+I/BufferQueueProducer(29007): [ViewRootImpl[com.astro.astrologer/com.astro.astrologer.MainActivity]#0(BLAST Consumer)0](id:714f00000000,api:1,p:29007,c:29007) connect: api=1 producerControlledByApp=true
+I/BufferQueueConsumer(29007): [](id:714f00000001,api:0,p:-1,c:29007) connect: controlledByApp=false
+I/BLASTBufferQueue(29007): [SurfaceView[com.astro.astrologer/com.astro.astrologer.MainActivity]#1] constructor()
+I/BufferQueueProducer(29007): [SurfaceView[com.astro.astrologer/com.astro.astrologer.MainActivity]#1(BLAST Consumer)1](id:714f00000001,api:1,p:29007,c:29007) connect: api=1 producerControlledByApp=true
+I/BufferQueueProducer(29007): [SurfaceView[com.astro.astrologer/com.astro.astrologer.MainActivity]#1(BLAST Consumer)1](id:714f00000001,api:1,p:29007,c:29007) disconnect: api 1
+E/BLASTBufferQueue(29007): BLASTBufferItemConsumer::onDisconnect()
+I/BufferQueueProducer(29007): [SurfaceView[com.astro.astrologer/com.astro.astrologer.MainActivity]#1(BLAST Consumer)1](id:714f00000001,api:1,p:29007,c:29007) connect: api=1 producerControlledByApp=true
+E/ion     (29007): ioctl c0044901 failed with code -1: Invalid argument
+D/hw-ProcessState(29007): Binder ioctl to enable oneway spam detection failed: Invalid argument
+D/SurfaceComposerClient(29007): VRR [FRTC] client handle [bufferId:18446744073709551615 framenumber:0] [ffffffff, ffffffff]
+I/Choreographer(29007): Skipped 75 frames!  The application may be doing too much work on its main thread.
+I/Quality (29007): Skipped: false 75 cost 1668.7614 refreshRate 0 processName com.astro.astrologer
+E/OpenGLRenderer(29007): fbcNotifyFrameComplete error: undefined symbol: fbcNotifyFrameComplete
+E/OpenGLRenderer(29007): fbcNotifyNoRender error: undefined symbol: fbcNotifyNoRender
+D/SurfaceComposerClient(29007): VRR [FRTC] client handle [bufferId:18446744073709551615 framenumber:0] [ffffffff, ffffffff]
+I/OpenGLRenderer(29007): Davey! duration=1783ms; Flags=1, FrameTimelineVsyncId=86079623, IntendedVsync=1548533038366965, Vsync=1548534705033615, InputEventId=0, HandleInputStart=1548534707449530, AnimationStart=1548534707454760, PerformTraversalsStart=1548534707458453, DrawStart=1548534708333299, FrameDeadline=1548533058366965, FrameInterval=1548534707128299, FrameStartTime=22222222, SyncQueued=1548534709820299, SyncStart=1548534709922837, IssueDrawCommandsStart=1548534711365914, SwapBuffers=1548534816536914, FrameCompleted=1548534821773837, DequeueBufferDuration=8029231, QueueBufferDuration=1056923, GpuCompleted=1548534821773837, SwapBuffersCompleted=1548534821773837, DisplayPresentTime=500683476240, 
+E/BLASTBufferQueue(29007): [SurfaceView[com.astro.astrologer/com.astro.astrologer.MainActivity]#1](f:0,a:2) isEGL=1, mPendingRelease.size()=1, mMaxAcquiredBuffers=4, currentMaxAcquiredBufferCount=2
+E/BLASTBufferQueue(29007): [SurfaceView[com.astro.astrologer/com.astro.astrologer.MainActivity]#1](f:0,a:3) isEGL=1, mPendingRelease.size()=2, mMaxAcquiredBuffers=4, currentMaxAcquiredBufferCount=2
+E/Parcel  (29007): Reading a NULL string not supported here.
+I/Quality (29007): SlowBinder: com.astro.astrologer to com.android.internal.view.IInputMethodManager cost= 695 code= 8
+I/Choreographer(29007): Skipped 32 frames!  The application may be doing too much work on its main thread.
+I/Quality (29007): Skipped: false 32 cost 725.8278 refreshRate 0 processName com.astro.astrologer
+E/BLASTBufferQueue(29007): [ViewRootImpl[com.astro.astrologer/com.astro.astrologer.MainActivity]#0](f:0,a:2) isEGL=1, mPendingRelease.size()=1, mMaxAcquiredBuffers=4, currentMaxAcquiredBufferCount=2
+I/OpenGLRenderer(29007): Davey! duration=748ms; Flags=0, FrameTimelineVsyncId=86079738, IntendedVsync=1548534956820260, Vsync=1548535667931364, InputEventId=0, HandleInputStart=1548535682955453, AnimationStart=1548535682961914, PerformTraversalsStart=1548535682965222, DrawStart=1548535696702453, FrameDeadline=1548534976820260, FrameInterval=1548535682648068, FrameStartTime=22222222, SyncQueued=1548535697209837, SyncStart=1548535697264299, IssueDrawCommandsStart=1548535697304068, SwapBuffers=1548535699983376, FrameCompleted=1548535705168684, DequeueBufferDuration=1470462, QueueBufferDuration=1179154, GpuCompleted=1548535704337914, SwapBuffersCompleted=1548535705168684, DisplayPresentTime=494056454065, 
+I/stro.astrologe(29007): Background concurrent copying GC freed 12MB AllocSpace bytes, 8(204KB) LOS objects, 49% free, 2767KB/5534KB, paused 8.193ms,21us total 164.879ms
+D/ProfileInstaller(29007): Installing profile for com.astro.astrologer
+I/Quality (29007): Skipped: false 7 cost 130.28716 refreshRate 0 processName com.astro.astrologer
+D/InputMethodManager(29007): showSoftInput() view=io.flutter.embedding.android.FlutterView{bbea61 VFE...... .F....ID 0,0-1080,2352 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+E/BLASTBufferQueue(29007): [ViewRootImpl[com.astro.astrologer/com.astro.astrologer.MainActivity]#0](f:0,a:3) isEGL=1, mPendingRelease.size()=2, mMaxAcquiredBuffers=4, currentMaxAcquiredBufferCount=2
+D/InputConnectionAdaptor(29007): The input method toggled cursor monitoring on
+D/InsetsController(29007): show(ime(), fromIme=true)
+I/Quality (29007): Skipped: false 3 cost 52.39134 refreshRate 0 processName com.astro.astrologer
+I/Quality (29007): Skipped: false 2 cost 35.656776 refreshRate 0 processName com.astro.astrologer
+D/InputConnectionAdaptor(29007): The input method toggled cursor monitoring off
+I/Quality (29007): Skipped: true 6 cost 102.8244 refreshRate 0 processName com.astro.astrologer
+I/Quality (29007): Skipped: true 4 cost 71.3017 refreshRate 0 processName com.astro.astrologer
+I/Quality (29007): Skipped: true 2 cost 42.389416 refreshRate 0 processName com.astro.astrologer
+D/InputMethodManager(29007): showSoftInput() view=io.flutter.embedding.android.FlutterView{bbea61 VFE...... .F...... 0,0-1080,2352 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/AssistStructure(29007): Flattened final assist data: 384 bytes, containing 1 windows, 3 views
+D/InputConnectionAdaptor(29007): The input method toggled cursor monitoring on
+D/InsetsController(29007): show(ime(), fromIme=true)
+I/Quality (29007): Skipped: true 3 cost 56.734776 refreshRate 0 processName com.astro.astrologer
+I/Quality (29007): Skipped: true 5 cost 90.608986 refreshRate 0 processName com.astro.astrologer
+I/Quality (29007): Skipped: true 5 cost 89.970764 refreshRate 0 processName com.astro.astrologer
+I/Quality (29007): Skipped: false 6 cost 107.85349 refreshRate 0 processName com.astro.astrologer
+D/InputMethodManager(29007): showSoftInput() view=io.flutter.embedding.android.FlutterView{bbea61 VFE...... .F...... 0,0-1080,2352 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+D/InputMethodManager(29007): showSoftInput() view=io.flutter.embedding.android.FlutterView{bbea61 VFE...... .F...... 0,0-1080,2352 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+W/IInputConnectionWrapper(29007): sendKeyEvent on inactive InputConnection
+W/IInputConnectionWrapper(29007): sendKeyEvent on inactive InputConnection
+D/InputConnectionAdaptor(29007): The input method toggled cursor monitoring on
+I/AssistStructure(29007): Flattened final assist data: 384 bytes, containing 1 windows, 3 views
+D/InputConnectionAdaptor(29007): The input method toggled cursor monitoring off
+D/InputConnectionAdaptor(29007): The input method toggled cursor monitoring on
+D/InsetsController(29007): show(ime(), fromIme=true)
+D/InsetsController(29007): show(ime(), fromIme=true)
+D/InsetsController(29007): show(ime(), fromIme=true)
+D/InputMethodManager(29007): showSoftInput() view=io.flutter.embedding.android.FlutterView{bbea61 VFE...... .F...... 0,0-1080,2352 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+D/InputMethodManager(29007): showSoftInput() view=io.flutter.embedding.android.FlutterView{bbea61 VFE...... .F...... 0,0-1080,2352 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+W/IInputConnectionWrapper(29007): getSurroundingText on inactive InputConnection
+D/InputConnectionAdaptor(29007): The input method toggled cursor monitoring on
+D/InputConnectionAdaptor(29007): The input method toggled cursor monitoring off
+D/InputConnectionAdaptor(29007): The input method toggled cursor monitoring on
+D/InsetsController(29007): show(ime(), fromIme=true)
+D/InsetsController(29007): show(ime(), fromIme=true)
+D/InsetsController(29007): show(ime(), fromIme=true)
+D/InputMethodManager(29007): showSoftInput() view=io.flutter.embedding.android.FlutterView{bbea61 VFE...... .F...... 0,0-1080,2352 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+D/InputMethodManager(29007): showSoftInput() view=io.flutter.embedding.android.FlutterView{bbea61 VFE...... .F...... 0,0-1080,2352 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+D/InputConnectionAdaptor(29007): The input method toggled cursor monitoring on
+I/AssistStructure(29007): Flattened final assist data: 384 bytes, containing 1 windows, 3 views
+D/InputConnectionAdaptor(29007): The input method toggled cursor monitoring off
+D/InputConnectionAdaptor(29007): The input method toggled cursor monitoring on
+D/InsetsController(29007): show(ime(), fromIme=true)
+D/InsetsController(29007): show(ime(), fromIme=true)
+D/InsetsController(29007): show(ime(), fromIme=true)
+I/Choreographer(29007): Skipped 32 frames!  The application may be doing too much work on its main thread.
+I/Quality (29007): Skipped: false 32 cost 536.0236 refreshRate 0 processName com.astro.astrologer
+D/InputConnectionAdaptor(29007): The input method toggled cursor monitoring off
+I/Quality (29007): Skipped: true 3 cost 58.394665 refreshRate 0 processName com.astro.astrologer
+I/Quality (29007): Skipped: true 1 cost 31.404835 refreshRate 0 processName com.astro.astrologer
+I/Quality (29007): Skipped: false 1 cost 25.74458 refreshRate 0 processName com.astro.astrologer
+I/Quality (29007): Skipped: false 1 cost 29.607666 refreshRate 0 processName com.astro.astrologer
+Lost connection to device.

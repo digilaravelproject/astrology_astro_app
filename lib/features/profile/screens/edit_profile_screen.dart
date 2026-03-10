@@ -1,0 +1,262 @@
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:image_picker/image_picker.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/widgets/app_text.dart';
+import '../../../core/widgets/custom_button.dart';
+import '../../../core/widgets/custom_app_bar.dart';
+import '../../auth/controllers/auth_controller.dart';
+
+class EditProfileScreen extends StatefulWidget {
+  const EditProfileScreen({super.key});
+
+  @override
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
+}
+
+class _EditProfileScreenState extends State<EditProfileScreen> {
+  final authController = Get.find<AuthController>();
+  
+  // Controllers
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _mobileController = TextEditingController();
+  final _cityController = TextEditingController();
+  final _countryController = TextEditingController();
+  final _docNumberController = TextEditingController();
+  final _dobController = TextEditingController();
+
+  // Selected Lists
+  File? _profileImage;
+  final _picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  void _loadUserData() {
+    final user = authController.currentUser.value;
+    if (user != null) {
+      _nameController.text = user.name;
+      _mobileController.text = user.mobile;
+      _emailController.text = ''; // Email not in UserModel yet
+      // Mocking other data as it might not be in the current UserModel yet
+      _cityController.text = 'Mumbai';
+      _countryController.text = 'India';
+      _docNumberController.text = 'ABCDE1234F';
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _mobileController.dispose();
+    _cityController.dispose();
+    _countryController.dispose();
+    _docNumberController.dispose();
+    _dobController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickImage() async {
+    final picked = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+    if (picked != null) setState(() => _profileImage = File(picked.path));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: CustomAppBar(
+        title: 'Edit Profile',
+        actions: [
+          TextButton(
+            onPressed: () {
+               // Update logic
+               Get.back();
+            },
+            child: const AppText(
+              'Save',
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: AppColors.primaryColor,
+            ),
+          ),
+          const SizedBox(width: 10),
+        ],
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Profile Photo
+            Center(
+              child: Stack(
+                children: [
+                  Container(
+                    width: 110,
+                    height: 110,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.primaryColor.withOpacity(0.1), width: 4),
+                      boxShadow: [
+                        BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, 10)),
+                      ],
+                    ),
+                    child: ClipOval(
+                      child: _profileImage != null
+                          ? Image.file(_profileImage!, fit: BoxFit.cover)
+                          : Image.network('https://i.pravatar.cc/300?u=a042581f4e29026704d', fit: BoxFit.cover),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: _pickImage,
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryColor,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2),
+                        ),
+                        child: const Icon(Icons.camera_alt_rounded, size: 16, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 32),
+
+            _buildSectionHeader('BASIC DETAILS'),
+            _buildInputField(controller: _nameController, label: 'Full Name', hint: 'Enter your name', icon: Iconsax.user_copy),
+            const SizedBox(height: 16),
+            _buildInputField(controller: _mobileController, label: 'Mobile Number', hint: 'Enter mobile number', icon: Iconsax.call_copy, readOnly: true),
+            const SizedBox(height: 16),
+            _buildInputField(controller: _emailController, label: 'Email ID', hint: 'Enter email address', icon: Iconsax.sms_copy),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(child: _buildInputField(controller: _cityController, label: 'City', hint: 'Enter city', icon: Iconsax.location_copy)),
+                const SizedBox(width: 16),
+                Expanded(child: _buildInputField(controller: _countryController, label: 'Country', hint: 'Enter country', icon: Iconsax.global_copy)),
+              ],
+            ),
+
+            const SizedBox(height: 32),
+            _buildSectionHeader('VERIFICATION DOCUMENTS'),
+            _buildInputField(controller: _docNumberController, label: 'ID Proof Number', hint: 'ID number', icon: Iconsax.card_pos_copy, readOnly: true),
+            const SizedBox(height: 16),
+            _buildInputField(controller: _dobController, label: 'Date of Birth', hint: 'DOB', icon: Iconsax.calendar_copy, readOnly: true),
+            const SizedBox(height: 20),
+            
+            // Read-only document previews
+            const AppText('Uploaded Documents', fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF2E1A47)),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                _buildDocPreview('ID Proof', Iconsax.document_text_copy),
+                const SizedBox(width: 16),
+                _buildDocPreview('Certificate', Iconsax.teacher_copy),
+              ],
+            ),
+            
+            const SizedBox(height: 40),
+            CustomButton(
+              text: 'Save Changes',
+              onPressed: () => Get.back(),
+              backgroundColor: AppColors.primaryColor,
+              borderRadius: 100,
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: AppText(
+        title,
+        fontSize: 12,
+        fontWeight: FontWeight.w800,
+        color: AppColors.primaryColor.withOpacity(0.8),
+        letterSpacing: 1,
+      ),
+    );
+  }
+
+  Widget _buildInputField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required IconData icon,
+    bool readOnly = false,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AppText(label, fontSize: 13, fontWeight: FontWeight.w600, color: const Color(0xFF2E1A47)),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: readOnly ? Colors.grey.shade100 : Colors.grey.shade50,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: Colors.grey.shade200),
+          ),
+          child: TextField(
+            controller: controller,
+            readOnly: readOnly,
+            keyboardType: keyboardType,
+            style: TextStyle(
+              fontSize: 14, 
+              color: readOnly ? Colors.grey.shade600 : const Color(0xFF2E1A47),
+              fontWeight: readOnly ? FontWeight.w500 : FontWeight.w400,
+            ),
+            decoration: InputDecoration(
+              hintText: hint,
+              prefixIcon: Icon(icon, size: 20, color: readOnly ? Colors.grey.shade400 : AppColors.primaryColor.withOpacity(0.7)),
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+              hintStyle: TextStyle(fontSize: 13, color: Colors.grey.shade400),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDocPreview(String label, IconData icon) {
+    return Expanded(
+      child: Container(
+        height: 100,
+        decoration: BoxDecoration(
+          color: Colors.grey.shade50,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.grey.shade200, style: BorderStyle.solid),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: Colors.grey.shade400, size: 24),
+            const SizedBox(height: 8),
+            AppText(label, fontSize: 11, color: Colors.grey.shade500, fontWeight: FontWeight.w600),
+            const SizedBox(height: 4),
+            AppText('Uploaded', fontSize: 10, color: Colors.green, fontWeight: FontWeight.w700),
+          ],
+        ),
+      ),
+    );
+  }
+}
