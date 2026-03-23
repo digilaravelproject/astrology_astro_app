@@ -18,4 +18,5 @@ abstract class AuthServiceInterface {
   Future<UserModel?> getUserInfo();
   Future<void> saveMobile(String mobile);
   String? getMobile();
+  Future<ResponseModel> getProfile(int id);
 }

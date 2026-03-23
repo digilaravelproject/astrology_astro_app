@@ -5,6 +5,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import 'notification_detail_screen.dart';
+import '../../../core/utils/custom_snackbar.dart';
 
 class NotificationScreen extends StatelessWidget {
   const NotificationScreen({super.key});
@@ -51,7 +52,9 @@ class NotificationScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Iconsax.tick_circle, color: AppColors.deepPink),
             tooltip: "Mark all as read",
-            onPressed: () {},
+            onPressed: () {
+             // CustomSnackBar.showSuccess('This is a test success message');
+            },
           ),
         ],
       ),

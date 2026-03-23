@@ -549,3 +549,133 @@ class _SkillDetailsScreenState extends State<SkillDetailsScreen> {
     );
   }
 }
+
+
+
+
+
+/*
+class SkillDetailsScreen extends StatelessWidget {
+  const SkillDetailsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = Get.find<AstrologerSkillsController>();
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFF9F9F9),
+      appBar: AppBar(
+        title: const Text('Skill Details'),
+        actions: [
+          Obx(() => controller.isLoading.value
+              ? const Padding(
+            padding: EdgeInsets.all(16),
+            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+          )
+              : IconButton(
+            icon: const Icon(Icons.save),
+            onPressed: () => controller.updateSkills(),
+          )),
+        ],
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Obx(() {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSectionTitle('Professional Skills'),
+              const SizedBox(height: 16),
+              _buildSkillCard(
+                label: 'Astrologer category',
+                value: controller.selectedCategories.join(', '),
+                onTap: () => controller.showMultiSelectBottomSheet(
+                  title: 'Category',
+                  currentValues: controller.selectedCategories,
+                  options: controller.categories,
+                ),
+              ),
+              _buildSkillCard(
+                label: 'Primary Skills',
+                value: controller.selectedPrimarySkills.join(', '),
+                onTap: () => controller.showMultiSelectBottomSheet(
+                  title: 'Primary Skills',
+                  currentValues: controller.selectedPrimarySkills,
+                  options: controller.primarySkillsOptions,
+                ),
+              ),
+              _buildSkillCard(
+                label: 'All Skills',
+                value: controller.selectedAllSkills.join(', '),
+                onTap: () => controller.showMultiSelectBottomSheet(
+                  title: 'All Skills',
+                  currentValues: controller.selectedAllSkills,
+                  options: controller.allSkillsOptions,
+                ),
+              ),
+              _buildSkillCard(
+                label: 'Language',
+                value: controller.selectedLanguages.join(', '),
+                onTap: () => controller.showMultiSelectBottomSheet(
+                  title: 'Language',
+                  currentValues: controller.selectedLanguages,
+                  options: controller.languagesOptions,
+                ),
+              ),
+              _buildSkillCard(
+                label: 'Experience In Years',
+                value: controller.experienceYears.value,
+                onTap: () => controller.showTextInputBottomSheet(
+                  title: 'Experience',
+                  currentValue: controller.experienceYears,
+                  keyboardType: TextInputType.number,
+                ),
+              ),
+              const SizedBox(height: 32),
+              _buildSectionTitle('Additional Information'),
+              _buildSkillCard(
+                label: 'Daily Contribution Hours',
+                value: controller.dailyContributionHours.value,
+                onTap: () => controller.showTextInputBottomSheet(
+                  title: 'Contribution Hours',
+                  currentValue: controller.dailyContributionHours,
+                  keyboardType: TextInputType.number,
+                ),
+              ),
+              _buildSkillCard(
+                label: 'How did you hear about us?',
+                value: controller.heardAbout.value,
+                onTap: () => controller.showEditBottomSheet(
+                  title: 'Source',
+                  currentValue: controller.heardAbout,
+                  options: controller.heardAboutOptions,
+                ),
+              ),
+            ],
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) => Text(
+    title,
+    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+  );
+
+  Widget _buildSkillCard({
+    required String label,
+    required String value,
+    required VoidCallback onTap,
+  }) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      child: ListTile(
+        title: Text(label),
+        subtitle: Text(value),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: onTap,
+      ),
+    );
+  }
+}*/

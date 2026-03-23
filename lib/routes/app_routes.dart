@@ -6,4 +6,5 @@ class AppRoutes {
   static const String registrationName = '/registration-name';
   static const String home = '/home';
   static const String dashboard = '/dashboard';
+  static const String skillDetailScreen = '/skill_details_screen';
 }

@@ -8,6 +8,7 @@ import 'features/language/controllers/localization_controller.dart';
 import 'init_app.dart';
 import 'routes/route_helper.dart';
 import 'core/bindings/initial_bindings.dart';
+import 'core/utils/custom_snackbar.dart';
 
 void main() async {
   await initApp();
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
       title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
       navigatorKey: Get.key,
+      scaffoldMessengerKey: CustomSnackBar.messengerKey,
       initialBinding: InitialBindings(),
       theme: lightTheme,
       darkTheme: darkTheme,

@@ -126,4 +126,17 @@ class AuthService implements AuthServiceInterface {
   String? getMobile() {
     return SharedPrefs.getString('last_mobile');
   }
+
+  @override
+  Future<ResponseModel> getProfile(int id) async {
+    final response = await _authRepository.getProfile(id);
+    if (response.isSuccess && response.body != null) {
+      final userData = response.body['user'];
+      if (userData != null) {
+        final user = UserModel.fromJson(userData);
+        await saveUserInfo(user);
+      }
+    }
+    return response;
+  }
 }

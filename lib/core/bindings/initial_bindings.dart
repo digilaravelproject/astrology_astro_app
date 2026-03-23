@@ -17,7 +17,6 @@ import '../../features/auth/domain/services/auth_service.dart';
 import '../../features/splash/controllers/splash_controller.dart';
 import '../../features/splash/domain/repositories/splash_repository.dart';
 import '../../features/splash/domain/services/splash_service.dart';
-import '../theme/theme_controller.dart';
 
 class InitialBindings extends Bindings {
   @override
@@ -47,6 +46,8 @@ class InitialBindings extends Bindings {
     Get.lazyPut(() => ResendOtpUseCase(Get.find<AuthService>()), fenix: true);
     Get.lazyPut(() => UpdateProfilePhotoUseCase(Get.find<AuthService>()), fenix: true);
     Get.lazyPut(() => UpdateProfileUseCase(Get.find<AuthService>()), fenix: true);
+    Get.lazyPut(() => GetProfileUseCase(Get.find<AuthService>()), fenix: true);
+    
     Get.lazyPut(
           () => AuthController(
         loginUseCase: Get.find<LoginUseCase>(),
@@ -60,6 +61,7 @@ class InitialBindings extends Bindings {
         resendOtpUseCase: Get.find<ResendOtpUseCase>(),
         updateProfilePhotoUseCase: Get.find<UpdateProfilePhotoUseCase>(),
         updateProfileUseCase: Get.find<UpdateProfileUseCase>(),
+        getProfileUseCase: Get.find<GetProfileUseCase>(),
       ),
       fenix: true,
     );

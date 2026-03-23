@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../core/constants/app_urls.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
+import '../../../routes/app_routes.dart';
 import '../../auth/controllers/auth_controller.dart';
 import 'edit_profile_screen.dart';
 import 'profile_video_screen.dart';
@@ -94,17 +96,34 @@ class ProfileScreen extends StatelessWidget {
                   color: Colors.white,
                   shape: BoxShape.circle,
                 ),
-                child: Container(
-                  height: 100,
-                  width: 100,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: const DecorationImage(
-                      image: NetworkImage('https://i.pravatar.cc/300?u=a042581f4e29026704d'),
-                      fit: BoxFit.cover,
+                child: Obx(() {
+                  final user = authController.currentUser.value;
+                  final profilePhoto = user?.astrologer?.profilePhoto;
+
+                  ImageProvider imageProvider;
+
+                  if (profilePhoto != null && profilePhoto.isNotEmpty) {
+                    imageProvider = NetworkImage('${AppUrls.baseImageUrl}$profilePhoto');
+                  } else {
+                    imageProvider = const NetworkImage('https://i.pravatar.cc/300?u=a042581f4e29026704d');
+                  }
+
+                  return Container(
+                    height: 100,
+                    width: 100,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                        image: imageProvider,
+                        fit: BoxFit.cover,
+                      ),
+                      border: Border.all(
+                        color: AppColors.primaryColor.withOpacity(0.2),
+                        width: 1,
+                      ),
                     ),
-                    border: Border.all(color: AppColors.primaryColor.withOpacity(0.2), width: 1),
-                  ),
+                  );
+                }
                 ),
               ),
               GestureDetector(
@@ -159,7 +178,8 @@ class ProfileScreen extends StatelessWidget {
         _buildMenuItem(
           icon: Iconsax.teacher_copy,
           title: 'Skill Details',
-          onTap: () => Get.to(() => const SkillDetailsScreen()),
+         // onTap: () => Get.to(() => const SkillDetailsScreen()),
+          onTap: () => Get.toNamed(AppRoutes.skillDetailScreen),
         ),
         _buildMenuItem(
           icon: Iconsax.note_2_copy,
@@ -171,8 +191,6 @@ class ProfileScreen extends StatelessWidget {
           title: 'My Community',
           onTap: () => Get.to(() => const MyFollowersScreen()),
         ),
-
-
         const SizedBox(height: 10),
         _buildSectionHeader('PERFORMANCE & EARNINGS'),
         _buildMenuItem(

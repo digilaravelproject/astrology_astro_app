@@ -37,6 +37,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
+    _fetchProfile();
+    _loadUserData();
+  }
+
+  Future<void> _fetchProfile() async {
+    // Specifically fetching for ID 7 as requested by user
+    await authController.getProfile(7);
     _loadUserData();
   }
 
@@ -45,11 +52,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (user != null) {
       _nameController.text = user.name;
       _mobileController.text = user.phone;
-      _emailController.text = ''; // Email not in UserModel yet
-      // Mocking other data as it might not be in the current UserModel yet
-      _cityController.text = 'Mumbai';
-      _countryController.text = 'India';
-      _docNumberController.text = 'ABCDE1234F';
+      _emailController.text = user.email;
+      _cityController.text = user.city ?? '';
+      _countryController.text = user.country ?? '';
+      
+      final astro = user.astrologer;
+      if (astro != null) {
+        _docNumberController.text = astro.idProofNumber ?? '';
+        _dobController.text = astro.dateOfBirth?.substring(0, 10) ?? '';
+        // Other fields could be mapped if they exist in the response
+      }
     }
   }
 
@@ -127,9 +139,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     height: 110,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.primaryColor.withOpacity(0.1), width: 4),
+                      border: Border.all(color: AppColors.primaryColor.withValues(alpha: 0.1), width: 4),
                       boxShadow: [
-                        BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, 10)),
+                        BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 20, offset: const Offset(0, 10)),
                       ],
                     ),
                     child: Obx(() {
@@ -140,7 +152,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         child: _profileImage != null
                             ? Image.file(_profileImage!, fit: BoxFit.cover)
                             : profilePhoto != null
-                                ? Image.network('${AppUrls.baseUrl}/storage/$profilePhoto', fit: BoxFit.cover)
+                                ? Image.network('${AppUrls.baseImageUrl}$profilePhoto', fit: BoxFit.cover)
                                 : Image.network('https://i.pravatar.cc/300?u=a042581f4e29026704d', fit: BoxFit.cover),
                       );
                     }),
@@ -224,7 +236,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         title,
         fontSize: 12,
         fontWeight: FontWeight.w800,
-        color: AppColors.primaryColor.withOpacity(0.8),
+        color: AppColors.primaryColor.withValues(alpha: 0.8),
         letterSpacing: 1,
       ),
     );
@@ -260,7 +272,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             decoration: InputDecoration(
               hintText: hint,
-              prefixIcon: Icon(icon, size: 20, color: readOnly ? Colors.grey.shade400 : AppColors.primaryColor.withOpacity(0.7)),
+              prefixIcon: Icon(icon, size: 20, color: readOnly ? Colors.grey.shade400 : AppColors.primaryColor.withValues(alpha: 0.7)),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
               hintStyle: TextStyle(fontSize: 13, color: Colors.grey.shade400),

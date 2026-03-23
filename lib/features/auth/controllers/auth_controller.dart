@@ -21,6 +21,7 @@ class AuthController extends GetxController {
   final ResendOtpUseCase _resendOtpUseCase;
   final UpdateProfilePhotoUseCase _updateProfilePhotoUseCase;
   final UpdateProfileUseCase _updateProfileUseCase;
+  final GetProfileUseCase _getProfileUseCase;
 
   AuthController({
     required LoginUseCase loginUseCase,
@@ -34,6 +35,7 @@ class AuthController extends GetxController {
     required ResendOtpUseCase resendOtpUseCase,
     required UpdateProfilePhotoUseCase updateProfilePhotoUseCase,
     required UpdateProfileUseCase updateProfileUseCase,
+    required GetProfileUseCase getProfileUseCase,
   })  : _loginUseCase = loginUseCase,
         _registerUseCase = registerUseCase,
         _verifyOtpUseCase = verifyOtpUseCase,
@@ -44,6 +46,7 @@ class AuthController extends GetxController {
         _astrologerSignupUseCase = astrologerSignupUseCase,
         _resendOtpUseCase = resendOtpUseCase,
         _updateProfilePhotoUseCase = updateProfilePhotoUseCase,
+        _getProfileUseCase = getProfileUseCase,
         _updateProfileUseCase = updateProfileUseCase;
 
   final isLoading = false.obs;
@@ -71,14 +74,6 @@ class AuthController extends GetxController {
 
   @override
   void onClose() {
-    // We avoid explicit dispose here because GetX might recreate the controller 
-    // and there can be race conditions during screen transitions (e.g. Logout).
-    // nameController.dispose();
-    // mobileController.dispose();
-    // otpController.dispose();
-    // emailController.dispose();
-    // cityController.dispose();
-    // countryController.dispose();
     super.onClose();
   }
 
@@ -122,11 +117,10 @@ class AuthController extends GetxController {
 
       if (response.isSuccess) {
         CustomSnackBar.showSuccess(response.message);
-        Get.offAllNamed(RouteHelper.getLoginRoute());// Or wherever appropriate
+        Get.offAllNamed(RouteHelper.getLoginRoute());
         Get.back();
       } else {
         CustomSnackBar.showError(response.message);
-       // Get.back();
       }
     } catch (e) {
       Logger.e('AuthController: astrologerSignup error: $e');
@@ -162,12 +156,8 @@ class AuthController extends GetxController {
       isLoading.value = true;
       final response = await _sendOtpUseCase.execute(
         mobileController.text.trim(),
-        '1234', // As requested in the curl example
+        '1234',
       );
-
-      Logger.d('AuthController: sendOtp response: $response');
-      Logger.d('AuthController: response.isSuccess: ${response.isSuccess}');
-      Logger.d('AuthController: response.message: ${response.message}');
       
       if (response.isSuccess) {
         final mobile = mobileController.text.trim();
@@ -176,23 +166,9 @@ class AuthController extends GetxController {
         CustomSnackBar.showSuccess(response.message);
         Get.toNamed(RouteHelper.getOtpRoute());
       } else {
-        if (Get.context != null) {
-          ScaffoldMessenger.of(Get.context!).showSnackBar(
-            SnackBar(
-              content: Text(response.message),
-              backgroundColor: Colors.red,
-              behavior: SnackBarBehavior.floating,
-              duration: const Duration(seconds: 2),
-            ),
-          );
-        }
         CustomSnackBar.showError(response.message);
-        // Error is already handled by ApiChecker.handleError via ApiClient
-        Logger.d('AuthController: Error already handled by ApiChecker');
       }
     } catch (e) {
-      // Exception is also already logged and potentially handled by ApiChecker,
-      // but we'll log it here too.
       Logger.e('AuthController: sendOtp caught exception: $e');
     } finally {
       isLoading.value = false;
@@ -204,7 +180,7 @@ class AuthController extends GetxController {
       isLoading.value = true;
       final response = await _resendOtpUseCase.execute(
         currentMobile.value,
-        '1234', // As requested in the curl example
+        '1234',
       );
 
       if (response.isSuccess) {
@@ -254,14 +230,31 @@ class AuthController extends GetxController {
           Get.back();
         }
         CustomSnackBar.showSuccess(response.message);
-        print("l;sdm,dsclkds  showSuccess "+response.message);
-        //Get.back();
       } else {
         CustomSnackBar.showError(response.message);
-        print("l;sdm,dsclkds  showError "+response.message);
       }
     } catch (e) {
       Logger.e('AuthController: updateProfile error: $e');
+      CustomSnackBar.showError(e.toString());
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> getProfile(int id) async {
+    try {
+      isLoading.value = true;
+      final response = await _getProfileUseCase.execute(id);
+      if (response.isSuccess && response.body != null) {
+        final userData = response.body['user'];
+        if (userData != null) {
+          currentUser.value = UserModel.fromJson(userData);
+        }
+      } else {
+        CustomSnackBar.showError(response.message);
+      }
+    } catch (e) {
+      Logger.e('AuthController: getProfile error: $e');
       CustomSnackBar.showError(e.toString());
     } finally {
       isLoading.value = false;
@@ -333,9 +326,7 @@ class AuthController extends GetxController {
 
 class LoginUseCase {
   final AuthService _authService;
-
   LoginUseCase(this._authService);
-
   Future<UserModel?> execute(String mobile) async {
     final response = await _authService.login(mobile);
     if (response.isSuccess && response.body != null) {
@@ -347,9 +338,7 @@ class LoginUseCase {
 
 class VerifyOtpUseCase {
   final AuthService _authService;
-
   VerifyOtpUseCase(this._authService);
-
   Future<ResponseModel> execute(String mobile, String otp) async {
     return await _authService.verifyOtp(mobile, otp);
   }
@@ -357,9 +346,7 @@ class VerifyOtpUseCase {
 
 class LogoutUseCase {
   final AuthService _authService;
-
   LogoutUseCase(this._authService);
-
   Future<void> execute() async {
     await _authService.clearUserInfo();
   }
@@ -367,9 +354,7 @@ class LogoutUseCase {
 
 class CheckLoginStatusUseCase {
   final AuthService _authService;
-
   CheckLoginStatusUseCase(this._authService);
-
   Future<bool> execute() async {
     return await _authService.isLoggedIn();
   }
@@ -377,9 +362,7 @@ class CheckLoginStatusUseCase {
 
 class GetUserInfoUseCase {
   final AuthService _authService;
-
   GetUserInfoUseCase(this._authService);
-
   Future<UserModel?> execute() async {
     return await _authService.getUserInfo();
   }
@@ -387,29 +370,23 @@ class GetUserInfoUseCase {
 
 class RegisterUseCase {
   final AuthService _authService;
-
   RegisterUseCase(this._authService);
-
   Future<UserModel?> execute(String name, String mobile) async {
     final response = await _authService.signup(name, mobile);
-
     if (response.isSuccess && response.body != null) {
       try {
         return UserModel.fromJson(response.body);
       } catch (e) {
-        print('Error parsing user data: $e');
+        Logger.e('Error parsing user data: $e');
       }
     }
-
     return null;
   }
 }
 
 class SendOtpUseCase {
   final AuthService _authService;
-
   SendOtpUseCase(this._authService);
-
   Future<ResponseModel> execute(String mobile, String otp) async {
     return await _authService.sendOtp(mobile, otp);
   }
@@ -417,9 +394,7 @@ class SendOtpUseCase {
 
 class AstrologerSignupUseCase {
   final AuthService _authService;
-
   AstrologerSignupUseCase(this._authService);
-
   Future<ResponseModel> execute(Map<String, dynamic> data) async {
     return await _authService.astrologerSignup(data);
   }
@@ -427,9 +402,7 @@ class AstrologerSignupUseCase {
 
 class ResendOtpUseCase {
   final AuthService _authService;
-
   ResendOtpUseCase(this._authService);
-
   Future<ResponseModel> execute(String mobile, String otp) async {
     return await _authService.resendOtp(mobile, otp);
   }
@@ -437,9 +410,7 @@ class ResendOtpUseCase {
 
 class UpdateProfilePhotoUseCase {
   final AuthService _authService;
-
   UpdateProfilePhotoUseCase(this._authService);
-
   Future<ResponseModel> execute(File image) async {
     return await _authService.updateProfilePhoto(image);
   }
@@ -447,10 +418,16 @@ class UpdateProfilePhotoUseCase {
 
 class UpdateProfileUseCase {
   final AuthService _authService;
-
   UpdateProfileUseCase(this._authService);
-
   Future<ResponseModel> execute(Map<String, dynamic> data) async {
     return await _authService.updateProfile(data);
+  }
+}
+
+class GetProfileUseCase {
+  final AuthService _authService;
+  GetProfileUseCase(this._authService);
+  Future<ResponseModel> execute(int id) async {
+    return await _authService.getProfile(id);
   }
 }

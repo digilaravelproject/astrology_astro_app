@@ -128,4 +128,9 @@ class AuthRepository implements AuthRepositoryInterface {
 
     return await _apiClient.post(AppUrls.updateProfile, data: formData);
   }
+
+  @override
+  Future<ResponseModel> getProfile(int id) async {
+    return await _apiClient.get(AppUrls.getProfile(id));
+  }
 }

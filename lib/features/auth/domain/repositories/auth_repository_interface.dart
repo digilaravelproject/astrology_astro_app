@@ -11,4 +11,5 @@ abstract class AuthRepositoryInterface {
   Future<ResponseModel> resendOtp(String mobile, String otp);
   Future<ResponseModel> updateProfilePhoto(File image);
   Future<ResponseModel> updateProfile(Map<String, dynamic> data);
+  Future<ResponseModel> getProfile(int id);
 }

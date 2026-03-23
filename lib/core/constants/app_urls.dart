@@ -1,5 +1,6 @@
 class AppUrls {
   static const String baseUrl = "https://darkgoldenrod-peafowl-305286.hostingersite.com";
+  static const String baseImageUrl = "https://darkgoldenrod-peafowl-305286.hostingersite.com/storage/app/public/";
   static const String sendOtp = "/api/v1/astrologer/send-otp";
   static const String verifyOtp = "/api/v1/astrologer/verify-otp";
   static const String astrologerSignup = "/api/v1/astrologer/signup";
@@ -11,4 +12,5 @@ class AppUrls {
   static const String getFavorites = "/api/v1/astrologer/community/favorites";
   
   static String toggleLike(int id) => "/api/v1/astrologer/community/followers/$id/toggle-like";
+  static String getProfile(int id) => "/api/v1/astrologer/profile/$id";
 }

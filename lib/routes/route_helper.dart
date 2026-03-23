@@ -1,7 +1,9 @@
+import 'package:astro_astrologer/features/profile/screens/skill_details_screen.dart';
 import 'package:get/get.dart';
 import '../features/auth/screens/login_screen.dart';
 import '../features/auth/screens/otp_verification_screen.dart';
 import '../features/auth/screens/registration_screen.dart';
+import '../features/profile/binding/skill_binding.dart';
 import '../features/splash/screens/splash_screen.dart';
 import '../features/home/screens/home_screen.dart';
 import '../features/home/screens/dashboard_screen.dart';
@@ -43,6 +45,12 @@ class RouteHelper {
     GetPage(
       name: AppRoutes.dashboard,
       page: () => const DashboardScreen(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: AppRoutes.skillDetailScreen,
+      page: () => const SkillDetailsScreen(),
+      binding: AstrologerSkillsBinding(),
       transition: Transition.fadeIn,
     ),
   ];
