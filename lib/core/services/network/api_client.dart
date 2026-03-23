@@ -33,9 +33,20 @@ class ApiClient {
 
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
-        String token = await TokenManager.getToken() ?? "";
-        options.headers["Authorization"] = "Bearer $token";
-        options.headers["Content-Type"] = "application/json";
+        String token = '';
+        if (options.headers['no_auth'] == true) {
+          options.headers.remove('no_auth');
+        } else {
+          token = await TokenManager.getToken() ?? "";
+          if (token.isNotEmpty) {
+            options.headers["Authorization"] = "Bearer 13|DrrUkVSNC0jfDboL1njol3VHDD2X3mjoG2NhhHid12dc2dc9";
+            //"Bearer $token";
+          }
+        }
+        if (options.data is! dio.FormData) {
+          options.headers["Content-Type"] = "application/json";
+        }
+        options.headers["Accept"] = "application/json";
 
         // Detailed request logging
         Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');

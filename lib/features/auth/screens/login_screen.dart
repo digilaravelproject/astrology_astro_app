@@ -128,9 +128,8 @@ class LoginScreen extends StatelessWidget {
                           
                           // Clear error and proceed
                           errorMessage.value = '';
-                          // Save mobile number and navigate to OTP screen
-                          authController.currentMobile.value = authController.mobileController.text;
-                          Get.toNamed('/otp');
+                          // Call sendOtp API
+                          authController.sendOtp();
                         },
                       )),
                       
@@ -165,9 +164,9 @@ class LoginScreen extends StatelessWidget {
           ),
 
           // Loading overlay on top of everything
-          Obx(() => authController.isLoading.value
-              ? const LoadingWidget(type: LoadingType.overlay)
-              : const SizedBox.shrink()),
+          // Obx(() => authController.isLoading.value
+          //     ? const LoadingWidget(type: LoadingType.overlay)
+          //     : const SizedBox.shrink()),
         ],
       ),
     );

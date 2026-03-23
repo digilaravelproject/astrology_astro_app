@@ -37,7 +37,7 @@ class RouteHelper {
     ),
     GetPage(
       name: AppRoutes.home,
-      page: () => const HomeScreen(),
+      page: () => const DashboardScreen(),
       transition: Transition.fadeIn,
     ),
     GetPage(

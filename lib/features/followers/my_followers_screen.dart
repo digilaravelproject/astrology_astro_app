@@ -7,8 +7,11 @@ import '../../../core/widgets/custom_app_bar.dart';
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
 import 'package:astro_astrologer/features/chat/chat_history_screen.dart';
 import 'package:astro_astrologer/features/kundli/kundli_list_screen.dart';
-import 'package:astro_astrologer/features/home/widgets/animated_favorite_button.dart';
 import 'package:astro_astrologer/features/chat/assistant_chat_sort_bottom_sheet.dart';
+import '../../../core/utils/date_formatter.dart';
+import '../home/widgets/animated_favorite_button.dart';
+import 'controllers/follower_controller.dart';
+import 'domain/models/follower_model.dart';
 
 class MyFollowersScreen extends StatefulWidget {
   const MyFollowersScreen({super.key});
@@ -20,6 +23,7 @@ class MyFollowersScreen extends StatefulWidget {
 class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
+  final FollowerController followerController = Get.find<FollowerController>();
   
   // State for Always Online toggles
   final List<Map<String, dynamic>> _alwaysOnlineUsers = [
@@ -34,6 +38,13 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(() {
+      // Clear search when switching tabs if needed
+      if (!_tabController.indexIsChanging) {
+        followerController.updateSearch('');
+        _searchController.clear();
+      }
+    });
   }
 
   @override
@@ -91,11 +102,21 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
               children: [
                 const Text('Followers'),
                 const SizedBox(width: 2),
-                _buildCircularBadge('1761'),
+                Obx(() => _buildCircularBadge(followerController.followerCount.value.toString())),
               ],
             ),
           ),
-          const Tab(child: Text('Favourites')),
+          Tab(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('Favourites'),
+                const SizedBox(width: 2),
+                Obx(() => _buildCircularBadge(followerController.favoriteCount.value.toString())),
+              ],
+            ),
+          ),
           Tab(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -129,103 +150,201 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
   }
 
   Widget _buildFollowersTab() {
-    final followers = [
-      {'name': 'Sushmita (AT-6WDZMM4)', 'date': '17 May 2024', 'initial': 'S', 'color': Colors.deepPurple.shade100},
-      {'name': 'Sakshi Pandey (AT-VX7X9ZE)', 'date': '17 May 2024', 'initial': 'S', 'color': Colors.orange.shade100},
-      {'name': 'Anil singh tanwar (AT-XV7G4GM)', 'date': '17 May 2024', 'initial': 'A', 'color': Colors.amber.shade100},
-      {'name': 'Manmohan (AT-L7QMWM4)', 'date': '17 May 2024', 'image': 'zodiac_cancer'},
-      {'name': 'Manjula Rao (AT-YDQ39QL)', 'date': '17 May 2024', 'icon': Icons.person_outline},
-      {'name': 'RAGHURAJ (AT-KDDV8LQ)', 'date': '17 May 2024', 'icon': Icons.person_outline},
-      {'name': 'Shikha (AT-RX22QX7)', 'date': '17 May 2024', 'icon': Icons.person_outline},
-      {'name': 'Neha (AT-V3EW9X3)', 'date': '17 May 2024', 'icon': Icons.person_outline},
-    ];
-
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: followers.length,
-      itemBuilder: (context, index) {
-        final f = followers[index];
-        return Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
-            boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 5, offset: const Offset(0, 2)),
-            ],
-          ),
-          child: Row(
-            children: [
-              _buildAvatar(f),
-              const SizedBox(width: 12),
-              Expanded(
+    return Column(
+      children: [
+        _buildSearchInput(
+          controller: _searchController,
+          onChanged: followerController.updateSearch,
+        ),
+        Expanded(
+          child: Obx(() {
+            if (followerController.isLoading.value) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            
+            final list = followerController.filteredFollowers;
+            
+            if (list.isEmpty) {
+              return Center(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    AppText(f['name'] as String, fontWeight: FontWeight.w600, fontSize: 14),
-                    const SizedBox(height: 2),
-                    AppText(f['date'] as String, color: Colors.grey, fontSize: 12),
+                    Icon(Iconsax.user_copy, size: 60, color: Colors.grey.shade300),
+                    const SizedBox(height: 16),
+                    AppText(
+                      followerController.searchQuery.isNotEmpty 
+                        ? 'No followers match "${followerController.searchQuery.value}"' 
+                        : 'No followers found', 
+                      color: Colors.grey.shade600, fontSize: 16
+                    ),
                   ],
                 ),
-              ),
-              const AnimatedFavoriteButton(),
-            ],
-          ),
-        );
-      },
-    );
-  }
+              );
+            }
 
-  Widget _buildAvatar(Map<String, dynamic> f) {
-    if (f.containsKey('image')) {
-      return Container(
-        width: 45,
-        height: 45,
-        decoration: const BoxDecoration(shape: BoxShape.circle, color: Color(0xFFFFF9C4)),
-        child: const Icon(Icons.wb_sunny_outlined, color: Colors.orange, size: 24), // Placeholder for zodiac icon
-      );
-    }
-    if (f.containsKey('initial')) {
-      return Container(
-        width: 45,
-        height: 45,
-        decoration: BoxDecoration(shape: BoxShape.circle, color: f['color'] as Color),
-        alignment: Alignment.center,
-        child: Text(f['initial'] as String, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white)),
-      );
-    }
-    return Container(
-      width: 45,
-      height: 45,
-      decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.grey.shade300)),
-      child: Icon(f['icon'] as IconData, color: Colors.black54),
+            return ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: list.length,
+              itemBuilder: (context, index) {
+                final follower = list[index];
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.shade200),
+                    boxShadow: [
+                      BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 5, offset: const Offset(0, 2)),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      _buildAvatarFromModel(follower),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            AppText(follower.name, fontWeight: FontWeight.w600, fontSize: 14),
+                            const SizedBox(height: 2),
+                            if (follower.followedAt != null)
+                              AppText(
+                                DateFormatter.formatDateTime(DateTime.parse(follower.followedAt!)),
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
+                          ],
+                        ),
+                      ),
+                      AnimatedFavoriteButton(
+                        isFavorite: follower.isLiked,
+                        onTap: () => followerController.toggleLike(follower.userId),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          }),
+        ),
+      ],
     );
   }
 
   Widget _buildFavouritesTab() {
     return Column(
       children: [
-        _buildSearchInput(),
-        const Spacer(),
-        Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AppText('No Data Available', color: Colors.grey.shade700, fontSize: 16),
-            ],
-          ),
+        _buildSearchInput(
+          controller: _searchController,
+          onChanged: followerController.updateSearch,
         ),
-        const Spacer(),
+        Expanded(
+          child: Obx(() {
+            if (followerController.isLoading.value) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            
+            final list = followerController.filteredFavorites;
+            
+            if (list.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Iconsax.heart_copy, size: 60, color: Colors.grey.shade300),
+                    const SizedBox(height: 16),
+                    AppText(
+                      followerController.searchQuery.isNotEmpty 
+                        ? 'No favorites match "${followerController.searchQuery.value}"' 
+                        : 'No Data Available', 
+                      color: Colors.grey.shade700, fontSize: 16
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            return ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: list.length,
+              itemBuilder: (context, index) {
+                final favorite = list[index];
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.shade200),
+                    boxShadow: [
+                      BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 5, offset: const Offset(0, 2)),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      _buildAvatarFromModel(favorite),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            AppText(favorite.name, fontWeight: FontWeight.w600, fontSize: 14),
+                            const SizedBox(height: 2),
+                            if (favorite.likedAt != null)
+                              AppText(
+                                'Liked: ${DateFormatter.formatDateTime(DateTime.parse(favorite.likedAt!))}', 
+                                color: Colors.grey, 
+                                fontSize: 11
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          }),
+        ),
       ],
     );
   }
 
-  Widget _buildSearchInput() {
+  Widget _buildAvatarFromModel(FollowerModel follower) {
+    // Generate a consistent color based on the name
+    final List<Color> avatarColors = [
+      Colors.deepPurple.shade100,
+      Colors.orange.shade100,
+      Colors.amber.shade100,
+      Colors.blue.shade100,
+      Colors.green.shade100,
+      Colors.pink.shade100,
+    ];
+    final int colorIndex = follower.name.length % avatarColors.length;
+    final String initial = follower.name.isNotEmpty ? follower.name[0].toUpperCase() : '?';
+
+    return Container(
+      width: 45,
+      height: 45,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: avatarColors[colorIndex],
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        initial,
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white),
+      ),
+    );
+  }
+
+  Widget _buildSearchInput({TextEditingController? controller, Function(String)? onChanged}) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: TextField(
+        controller: controller,
+        onChanged: onChanged,
         decoration: InputDecoration(
           hintText: 'Search by Name',
           hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
@@ -240,14 +359,6 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
   }
 
   Widget _buildAlwaysOnlineTab() {
-    final alwaysOnlineUsers = [
-      {'name': 'Rohini (AT-ZDXL297)', 'spent': '₹ 1,000+', 'lastSession': '20 Feb, 26'},
-      {'name': 'Pallavi (AT-MKK63GE)', 'spent': '₹ 1,000+', 'lastSession': '19 Feb, 26'},
-      {'name': 'Saurabh (AT-XYRQXZ7)', 'spent': '₹ 500+', 'lastSession': '19 Feb, 26'},
-      {'name': 'Pooja Desai (AT-VLQM7E)', 'spent': '₹ 1,000+', 'lastSession': '19 Feb, 26'},
-      {'name': 'HARSHADA PURUSHOTTAM PRATIKSHA (AT-V468LEM)', 'spent': null, 'lastSession': null},
-    ];
-
     return Column(
       children: [
         _buildAlwaysOnlineHeader(),

@@ -67,14 +67,14 @@ class OtpVerificationScreen extends StatelessWidget {
 
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: AppText(
-                        'Enter OTP sent to\n+91 ${authController.mobileController.text}',
+                      child: Obx(() => AppText(
+                        'Enter OTP sent to\n+91 ${authController.currentMobile.value}',
                         textAlign: TextAlign.center,
                         fontSize: 14,
                         color: AppColors.black.withOpacity(0.3),
                         fontWeight: FontWeight.w400,
                         letterSpacing: 0.5,
-                      ),
+                      )),
                     ),
 
                     SizedBox(height: size.height * 0.08),
@@ -114,8 +114,8 @@ class OtpVerificationScreen extends StatelessWidget {
 
                             // Clear error and proceed
                             errorMessage.value = '';
-                            // Navigate to registration name screen
-                            Get.offAllNamed('/dashboard');
+                            // Call actual verification logic
+                            authController.verifyOtp();
                           },
                           isLoading: authController.isLoading.value,
                         )),
@@ -224,7 +224,7 @@ class OtpVerificationScreen extends StatelessWidget {
         ),
         GestureDetector(
           onTap: () {
-            // Resend OTP logic
+            authController.resendOtp();
           },
           child: AppText(
             'Resend',

@@ -13,14 +13,14 @@ import '../../notification/notice_screen.dart';
 import '../../orders/orders_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({Key? key}) : super(key: key);
+  const DashboardScreen({super.key});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  final DashboardController controller = Get.put(DashboardController());
+  final DashboardController controller = Get.find<DashboardController>();
 
   final List<Widget> _screens = [
     const HomeScreen(),

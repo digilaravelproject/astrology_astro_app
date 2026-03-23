@@ -33,7 +33,7 @@ class SplashController extends GetxController {
         final isLoggedIn = SharedPrefs.getBool(AppConstants.isLoggedIn) ?? false;
 
         if (isLoggedIn) {
-          Get.offAllNamed(RouteHelper.getHomeRoute());
+          Get.offAllNamed(RouteHelper.getDashboardRoute());
         } else {
           Get.offAllNamed(RouteHelper.getLoginRoute());
         }

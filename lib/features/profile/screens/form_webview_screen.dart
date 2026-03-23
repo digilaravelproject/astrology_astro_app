@@ -22,7 +22,7 @@ class FormWebViewScreen extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              CustomSnackbar.showSuccess('Downloading $formName...', title: 'Started');
+              CustomSnackBar.showSuccess('Downloading $formName...', title: 'Started');
             },
             icon: const Icon(Iconsax.document_download_copy, color: Color(0xFF2E1A47), size: 22),
           ),

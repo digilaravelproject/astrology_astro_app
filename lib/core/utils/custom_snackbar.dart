@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../theme/app_colors.dart';
+import '../../core/utils/logger.dart';
 
-class CustomSnackbar {
+class CustomSnackBar {
   /// Generic method so all snackbar styles are consistent
   static void _show({
     required String title,
@@ -11,9 +12,14 @@ class CustomSnackbar {
     required IconData icon,
     Color? textColor,
   }) {
+    debugPrint('CustomSnackBar triggered: $title - $message');
+    // Logger.d('SnackBar: showing $title - $message');
     // Auto-adjust text color for readability
     final Color effectiveTextColor =
-        textColor ?? (backgroundColor.computeLuminance() > 0.5 ? Colors.black : Colors.white);
+        textColor ??
+        (backgroundColor.computeLuminance() > 0.5
+            ? Colors.black
+            : Colors.white);
 
     Get.snackbar(
       title,
@@ -22,22 +28,16 @@ class CustomSnackbar {
       colorText: effectiveTextColor,
       margin: const EdgeInsets.all(12),
       borderRadius: 10,
-      snackPosition: SnackPosition.BOTTOM,
-      duration: const Duration(seconds: 3),
+      snackPosition: SnackPosition.TOP,
+      duration: const Duration(seconds: 4),
       icon: Icon(icon, color: effectiveTextColor),
       shouldIconPulse: false,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      mainButton: TextButton(
-        onPressed: () => Get.back(),
-        child: Text(
-          "DISMISS",
-          style: TextStyle(color: effectiveTextColor, fontWeight: FontWeight.bold),
-        ),
-      ),
+      isDismissible: true,
     );
   }
 
-  static void showSuccess(String message, {String title = 'Success'}) {
+  static void showSuccess(String message, {String title = 'success'}) {
     _show(
       title: title,
       message: message,
@@ -46,7 +46,7 @@ class CustomSnackbar {
     );
   }
 
-  static void showError(String message, {String title = 'Error'}) {
+  static void showError(String message, {String title = 'error'}) {
     _show(
       title: title,
       message: message,

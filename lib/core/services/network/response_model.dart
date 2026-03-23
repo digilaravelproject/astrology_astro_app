@@ -1,9 +1,12 @@
+import '../../utils/logger.dart';
+
 class ResponseModel {
   final bool isSuccess;
   final String message;
   final dynamic body;
   final int? statusCode;
   final List<ErrorDetail>? errors;
+  final String? token;
 
   const ResponseModel({
     required this.isSuccess,
@@ -11,11 +14,13 @@ class ResponseModel {
     this.body,
     this.statusCode,
     this.errors,
+    this.token,
   });
 
   /// Factory method to create ResponseModel from JSON
   factory ResponseModel.fromJson(Map<String, dynamic> json, {int? statusCode}) {
-    final res = json['res']?.toString().toLowerCase();
+    Logger.d('ResponseModel.fromJson input: $json');
+    final res = (json['res'] ?? json['status'])?.toString().toLowerCase();
     final success = res == 'success' || (json['success'] == true);
 
     List<ErrorDetail>? errors;
@@ -23,16 +28,30 @@ class ResponseModel {
       errors = (json['errors'] as List)
           .map((e) => ErrorDetail.fromJson(e))
           .toList();
+    } else if (json['errors'] is Map) {
+      errors = [];
+      (json['errors'] as Map<String, dynamic>).forEach((key, value) {
+        if (value is List && value.isNotEmpty) {
+          errors!.add(ErrorDetail(code: key, message: value[0].toString()));
+        } else {
+          errors!.add(ErrorDetail(code: key, message: value.toString()));
+        }
+      });
     }
+
+    final message = json['msg']?.toString() ??
+        json['message']?.toString() ??
+        (success ? 'Success' : 'Something went wrong');
+    
+    Logger.d('ResponseModel.fromJson parsed message: $message, isSuccess: ${success && (statusCode == 200 || statusCode == null)}');
 
     return ResponseModel(
       isSuccess: success && (statusCode == 200 || statusCode == null),
-      message: json['msg']?.toString() ??
-          json['message']?.toString() ??
-          (success ? 'Success' : 'Something went wrong'),
+      message: message,
       body: json['data'],
       statusCode: statusCode,
       errors: errors,
+      token: json['token']?.toString(),
     );
   }
 

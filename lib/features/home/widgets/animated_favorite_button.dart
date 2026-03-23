@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
 
 class AnimatedFavoriteButton extends StatefulWidget {
-  const AnimatedFavoriteButton({super.key});
+  final bool isFavorite;
+  final VoidCallback? onTap;
+  const AnimatedFavoriteButton({super.key, this.isFavorite = false, this.onTap});
 
   @override
   State<AnimatedFavoriteButton> createState() => _AnimatedFavoriteButtonState();
 }
 
 class _AnimatedFavoriteButtonState extends State<AnimatedFavoriteButton> with SingleTickerProviderStateMixin {
-  bool isFavorite = false;
+  late bool isFavorite;
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
     super.initState();
+    isFavorite = widget.isFavorite;
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
@@ -29,15 +32,29 @@ class _AnimatedFavoriteButtonState extends State<AnimatedFavoriteButton> with Si
   }
 
   @override
+  void didUpdateWidget(covariant AnimatedFavoriteButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isFavorite != oldWidget.isFavorite) {
+      setState(() {
+        isFavorite = widget.isFavorite;
+      });
+    }
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
 
   void _toggleFavorite() {
-    setState(() {
-      isFavorite = !isFavorite;
-    });
+    if (widget.onTap != null) {
+      widget.onTap!();
+    } else {
+      setState(() {
+        isFavorite = !isFavorite;
+      });
+    }
     // Trigger the scale animation
     _controller.forward(from: 0.0);
   }

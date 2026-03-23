@@ -46,10 +46,10 @@ class _PaySlipScreenState extends State<PaySlipScreen> {
               text: 'Send on Email',
               onPressed: () {
                 if (_startMonthController.text.isEmpty || _endMonthController.text.isEmpty) {
-                  CustomSnackbar.showError('Please select both start and end dates');
+                  CustomSnackBar.showError('Please select both start and end dates');
                   return;
                 }
-                CustomSnackbar.showSuccess('Pay slip sent to your registered email', title: 'Success');
+                CustomSnackBar.showSuccess('Pay slip sent to your registered email', title: 'Success');
               },
               backgroundColor: AppColors.primaryColor,
               borderRadius: 100,

@@ -6,7 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../auth/controllers/auth_controller.dart';
-import '../../auth/controllers/auth_controller.dart';
+import '../../profile/screens/profile_screen.dart';
 import '../widgets/home_greeting.dart';
 import '../controllers/dashboard_controller.dart';
 import '../../call/call_history_screen.dart';
@@ -36,7 +36,7 @@ import '../../profile/screens/settings_screen.dart';
 
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -115,7 +115,11 @@ class _HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           GestureDetector(
-            onTap: () => Get.find<DashboardController>().changeIndex(4),
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              debugPrint('Profile icon tapped - shifting to index 4');
+              Get.find<DashboardController>().changeIndex(4);
+            },
             child: Container(
               width: 40,
               height: 40,

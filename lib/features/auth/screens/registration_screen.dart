@@ -111,7 +111,24 @@ class _RegistrationScreenState extends State<RegistrationScreen>
   }
 
   void _submit() {
-    Get.back();
+    final data = {
+      'full_name': _nameController.text.trim(),
+      'phone': _mobileController.text.trim(),
+      'email': _emailController.text.trim(),
+      'city': _cityController.text.trim(),
+      'country': _countryController.text.trim(),
+      'years_of_experience': _experienceController.text.trim(),
+      'areas_of_expertise': _selectedExpertise,
+      'languages': _selectedLanguages,
+      'bio': _bioController.text.trim(),
+      'id_proof_number': _docNumberController.text.trim(),
+      'date_of_birth': _dobController.text.trim(),
+      'profile_photo': _profileImage?.path,
+      'id_proof': _idProofImage?.path,
+      //'certificate': _certificateImage?.path,
+    };
+
+    authController.astrologerSignup(data);
   }
 
   Future<void> _pickImage() async {
@@ -639,7 +656,8 @@ class _RegistrationScreenState extends State<RegistrationScreen>
     );
     if (picked != null) {
       setState(() => _dobController.text =
-          '${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}');
+         // '${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}');
+          '${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}');
     }
   }
 }

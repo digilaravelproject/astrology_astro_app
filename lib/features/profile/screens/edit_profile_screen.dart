@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,6 +8,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_app_bar.dart';
+import '../../../core/constants/app_urls.dart';
 import '../../auth/controllers/auth_controller.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -42,7 +44,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final user = authController.currentUser.value;
     if (user != null) {
       _nameController.text = user.name;
-      _mobileController.text = user.mobile;
+      _mobileController.text = user.phone;
       _emailController.text = ''; // Email not in UserModel yet
       // Mocking other data as it might not be in the current UserModel yet
       _cityController.text = 'Mumbai';
@@ -65,7 +67,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> _pickImage() async {
     final picked = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
-    if (picked != null) setState(() => _profileImage = File(picked.path));
+    if (picked != null) {
+      final file = File(picked.path);
+      setState(() => _profileImage = file);
+      // Automatically update profile photo on selection
+      authController.updateProfilePhoto(file);
+    }
+  }
+
+  void _saveProfile() {
+    final Map<String, dynamic> data = {
+      '_method': 'PUT',
+      'full_name': _nameController.text.trim(),
+      'phone': _mobileController.text.trim(),
+      'email': _emailController.text.trim(),
+      'city': _cityController.text.trim(),
+      'country': _countryController.text.trim(),
+      'id_proof_number': _docNumberController.text.trim(),
+      'date_of_birth': _dobController.text.trim(),
+    };
+
+    if (_profileImage != null) {
+      data['profile_photo'] = _profileImage;
+    }
+
+    authController.updateProfile(data);
   }
 
   @override
@@ -76,10 +102,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         title: 'Edit Profile',
         actions: [
           TextButton(
-            onPressed: () {
-               // Update logic
-               Get.back();
-            },
+            onPressed: () => _saveProfile(),
             child: const AppText(
               'Save',
               fontSize: 15,
@@ -109,11 +132,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, 10)),
                       ],
                     ),
-                    child: ClipOval(
-                      child: _profileImage != null
-                          ? Image.file(_profileImage!, fit: BoxFit.cover)
-                          : Image.network('https://i.pravatar.cc/300?u=a042581f4e29026704d', fit: BoxFit.cover),
-                    ),
+                    child: Obx(() {
+                      final user = authController.currentUser.value;
+                      final profilePhoto = user?.astrologer?.profilePhoto;
+                      
+                      return ClipOval(
+                        child: _profileImage != null
+                            ? Image.file(_profileImage!, fit: BoxFit.cover)
+                            : profilePhoto != null
+                                ? Image.network('${AppUrls.baseUrl}/storage/$profilePhoto', fit: BoxFit.cover)
+                                : Image.network('https://i.pravatar.cc/300?u=a042581f4e29026704d', fit: BoxFit.cover),
+                      );
+                    }),
                   ),
                   Positioned(
                     bottom: 0,
@@ -155,7 +185,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             _buildSectionHeader('VERIFICATION DOCUMENTS'),
             _buildInputField(controller: _docNumberController, label: 'ID Proof Number', hint: 'ID number', icon: Iconsax.card_pos_copy, readOnly: true),
             const SizedBox(height: 16),
-            _buildInputField(controller: _dobController, label: 'Date of Birth', hint: 'DOB', icon: Iconsax.calendar_copy, readOnly: true),
+            GestureDetector(
+              onTap: _selectDate,
+              child: AbsorbPointer(child: _field(_dobController, 'DD / MM / YYYY', Icons.calendar_today_outlined,
+                  trailing: const Icon(Icons.expand_more, color: AppColors.primaryColor, size: 20))),
+            ),
             const SizedBox(height: 20),
             
             // Read-only document previews
@@ -172,7 +206,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             const SizedBox(height: 40),
             CustomButton(
               text: 'Save Changes',
-              onPressed: () => Get.back(),
+              onPressed: () => _saveProfile(),
               backgroundColor: AppColors.primaryColor,
               borderRadius: 100,
             ),
@@ -259,4 +293,53 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ),
     );
   }
+
+
+  Future<void> _selectDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now().subtract(const Duration(days: 365 * 18)),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      builder: (context, child) => Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: const ColorScheme.light(primary: AppColors.primaryColor, onPrimary: Colors.white),
+        ),
+        child: child!,
+      ),
+    );
+    if (picked != null) {
+      setState(() => _dobController.text =
+      // '${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}');
+      '${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}');
+    }
+  }
+
+  Widget _field(
+      TextEditingController controller,
+      String hint,
+      IconData icon, {
+        TextInputType? keyboard,
+        List<TextInputFormatter>? formatters,
+        Widget? trailing,
+      }) =>
+      TextField(
+        controller: controller,
+        keyboardType: keyboard,
+        inputFormatters: formatters,
+        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: TextStyle(fontSize: 13, color: AppColors.textColorHint),
+          prefixIcon: Icon(icon, color: AppColors.primaryColor, size: 20),
+          suffixIcon: trailing,
+          filled: true,
+          fillColor: Colors.grey.shade50,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade200)),
+          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade200)),
+          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.primaryColor, width: 1.5)),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        ),
+      );
+
 }

@@ -1,8 +1,10 @@
+import 'package:astro_astrologer/core/constants/app_urls.dart';
+
 import '../services/config/env_config.dart';
 
 class AppConstants {
     static String appName = EnvConfig.appName;
-    static String baseUrl = EnvConfig.baseUrl;
+    static String baseUrl = AppUrls.baseUrl;
     static const String fontFamily = 'Poppins';
     static const String defaultTag = 'PCB_APP'; // default tag for log checking
 
