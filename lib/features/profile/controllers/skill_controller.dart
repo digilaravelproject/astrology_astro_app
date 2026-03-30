@@ -1,43 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/widgets/app_text.dart';
+import '../../../core/widgets/custom_button.dart';
 import '../model/skill_model.dart';
 import '../../../core/utils/custom_snackbar.dart';
 import '../usecase/skill_usecase.dart';
-
-/*
-class AstrologerSkillsController extends GetxController {
-  final UpdateAstrologerSkillsUseCase _updateUseCase;
-  AstrologerSkillsController(this._updateUseCase);
-
-  final isLoading = false.obs;
-
-  Future<void> updateSkills(AstrologerSkillsModel skills) async {
-    try {
-      isLoading.value = true;
-      final response = await _updateUseCase.execute(skills);
-
-      if (response.isSuccess) {
-        CustomSnackBar.showSuccess('Skills updated successfully');
-      } else {
-        CustomSnackBar.showError(response.message);
-      }
-    } catch (e) {
-      CustomSnackBar.showError(e.toString());
-    } finally {
-      isLoading.value = false;
-    }
-  }
-}*/
-
-
-
-
+import '../../auth/controllers/auth_controller.dart';
+import '../../../core/utils/logger.dart';
 
 class AstrologerSkillsController extends GetxController {
   final UpdateAstrologerSkillsUseCase _updateUseCase;
   AstrologerSkillsController(this._updateUseCase);
 
-  // Static lists for selection
+  // Static lists for selection (can be moved to constants or fetched from API)
   final categories = ['Finance & Business', 'Relationships', 'Career', 'Health', 'Education'];
   final primarySkillsOptions = ['Palmistry', 'Vedic Astrology', 'Numerology', 'Tarot Reading', 'Vastu', 'Nadi', 'Psychology'];
   final allSkillsOptions = ['Prashana', 'Face Reading', 'KP Astrology', 'Horary'];
@@ -49,8 +26,8 @@ class AstrologerSkillsController extends GetxController {
   var selectedPrimarySkills = <String>[].obs;
   var selectedAllSkills = <String>[].obs;
   var selectedLanguages = <String>[].obs;
-  var experienceYears = ''.obs;
-  var dailyContributionHours = ''.obs;
+  var experienceYears = '0'.obs;
+  var dailyContributionHours = '0'.obs;
   var heardAbout = ''.obs;
 
   var isLoading = false.obs;
@@ -58,28 +35,30 @@ class AstrologerSkillsController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // TODO: Fetch API data if needed and fill observables
-    fetchProfileSkills();
+    refreshData();
   }
 
-  void fetchProfileSkills() async {
-    isLoading.value = true;
-    try {
-      // For now, mock API response mapping
-      // Replace with API fetch later
-      selectedCategories.value = ['Finance & Business'];
-      selectedPrimarySkills.value = ['Palmistry'];
-      selectedAllSkills.value = ['Prashana'];
-      selectedLanguages.value = ['Hindi'];
-      experienceYears.value = '5';
+  void refreshData() {
+    final authController = Get.find<AuthController>();
+    final user = authController.currentUser.value;
+    if (user != null && user.astrologer != null) {
+      final ast = user.astrologer!;
+      // Map existing data from AuthController
+      selectedCategories.value = ast.areasOfExpertise.take(1).toList(); // Assuming category is the first area of expertise for now
+      selectedPrimarySkills.value = ast.areasOfExpertise; 
+      selectedLanguages.value = ast.languages;
+      experienceYears.value = ast.yearsOfExperience.toString();
+      
+      // These fields might not be in AstrologerModel yet, so we use defaults or previous values if any
+      // In a real app, these would come from the API
+      selectedAllSkills.value = ['Prashana']; 
       dailyContributionHours.value = '10';
       heardAbout.value = 'Youtube';
-    } finally {
-      isLoading.value = false;
     }
   }
 
   Future<void> updateSkills() async {
+    Logger.d('AstrologerSkillsController: updateSkills called');
     isLoading.value = true;
     try {
       final model = AstrologerSkillsModel(
@@ -96,11 +75,17 @@ class AstrologerSkillsController extends GetxController {
 
       if (response.isSuccess) {
         CustomSnackBar.showSuccess('Skills updated successfully');
+        // Refresh profile to get updated data
+        final authController = Get.find<AuthController>();
+        if (authController.currentUser.value != null) {
+          await authController.getProfile(authController.currentUser.value!.id);
+        }
       } else {
         CustomSnackBar.showError(response.message);
       }
     } catch (e) {
-      CustomSnackBar.showError(e.toString());
+      Logger.e('AstrologerSkillsController: updateSkills error: $e');
+      CustomSnackBar.showError('Update failed: $e');
     } finally {
       isLoading.value = false;
     }
@@ -139,18 +124,19 @@ class AstrologerSkillsController extends GetxController {
                   child: Container(width: 50, height: 5, decoration: BoxDecoration(color: Colors.grey.shade200, borderRadius: BorderRadius.circular(10))),
                 ),
                 const SizedBox(height: 24),
-                Text('Select $title', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+                AppText('Select $title', fontSize: 20, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
                 const SizedBox(height: 16),
                 Container(
                   height: 50,
                   decoration: BoxDecoration(color: Colors.grey.shade50, borderRadius: BorderRadius.circular(15), border: Border.all(color: Colors.grey.shade200)),
                   child: TextField(
                     onChanged: (val) => setModalState(() => searchQuery = val),
+                    style: const TextStyle(fontSize: 14, color: Color(0xFF2E1A47)),
                     decoration: InputDecoration(
                       hintText: 'Search $title...',
-                      prefixIcon: const Icon(Icons.search),
+                      prefixIcon: const Icon(Iconsax.search_normal_copy, size: 20),
                       suffixIcon: searchQuery.isNotEmpty
-                          ? IconButton(icon: const Icon(Icons.close), onPressed: () => setModalState(() => searchQuery = ''))
+                          ? IconButton(icon: const Icon(Icons.close, size: 18), onPressed: () => setModalState(() => searchQuery = ''))
                           : null,
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
@@ -160,7 +146,7 @@ class AstrologerSkillsController extends GetxController {
                 const SizedBox(height: 20),
                 Expanded(
                   child: filteredOptions.isEmpty
-                      ? const Center(child: Text('No results found'))
+                      ? const Center(child: AppText('No results found', color: Colors.grey))
                       : SingleChildScrollView(
                     child: Wrap(
                       spacing: 12,
@@ -173,16 +159,18 @@ class AstrologerSkillsController extends GetxController {
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                             decoration: BoxDecoration(
-                              color: isSelected ? Colors.blue.withOpacity(0.1) : Colors.white,
+                              color: isSelected ? AppColors.primaryColor.withOpacity(0.1) : Colors.white,
                               borderRadius: BorderRadius.circular(100),
-                              border: Border.all(color: isSelected ? Colors.blue : Colors.grey.shade300, width: 1.5),
+                              border: Border.all(color: isSelected ? AppColors.primaryColor : Colors.grey.shade300, width: 1.5),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(option, style: TextStyle(fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500)),
-                                if (isSelected) const SizedBox(width: 8),
-                                if (isSelected) const Icon(Icons.check_circle, size: 16, color: Colors.blue),
+                                AppText(option, fontSize: 14, fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500, color: isSelected ? AppColors.primaryColor : const Color(0xFF2E1A47)),
+                                if (isSelected) ...[
+                                  const SizedBox(width: 8),
+                                  const Icon(Icons.check_circle, size: 16, color: AppColors.primaryColor),
+                                ],
                               ],
                             ),
                           ),
@@ -192,13 +180,16 @@ class AstrologerSkillsController extends GetxController {
                   ),
                 ),
                 const SizedBox(height: 24),
-                ElevatedButton(
+                CustomButton(
+                  text: 'Save Selection',
                   onPressed: () {
                     currentValues.value = tempSelected;
                     Get.back();
                   },
-                  child: const Text('Save Selection'),
+                  backgroundColor: AppColors.primaryColor,
+                  borderRadius: 100,
                 ),
+                const SizedBox(height: 10),
               ],
             ),
           );
@@ -232,26 +223,37 @@ class AstrologerSkillsController extends GetxController {
                 child: Container(width: 50, height: 5, decoration: BoxDecoration(color: Colors.grey.shade200, borderRadius: BorderRadius.circular(10))),
               ),
               const SizedBox(height: 24),
-              Text('Edit $title', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+              AppText('Edit $title', fontSize: 20, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
               const SizedBox(height: 20),
-              TextField(
-                controller: controller,
-                keyboardType: keyboardType,
-                autofocus: true,
-                decoration: InputDecoration(
-                  hintText: 'Enter $title',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: Colors.grey.shade200),
+                ),
+                child: TextField(
+                  controller: controller,
+                  keyboardType: keyboardType,
+                  autofocus: true,
+                  style: const TextStyle(fontSize: 14, color: Color(0xFF2E1A47)),
+                  decoration: InputDecoration(
+                    hintText: 'Enter $title',
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
-              ElevatedButton(
+              CustomButton(
+                text: 'Save Changes',
                 onPressed: () {
                   currentValue.value = controller.text;
                   Get.back();
                 },
-                child: const Text('Save Changes'),
+                backgroundColor: AppColors.primaryColor,
+                borderRadius: 100,
               ),
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -278,7 +280,7 @@ class AstrologerSkillsController extends GetxController {
           children: [
             Center(child: Container(width: 50, height: 5, decoration: BoxDecoration(color: Colors.grey.shade200, borderRadius: BorderRadius.circular(10)))),
             const SizedBox(height: 24),
-            Text('Select $title', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+            AppText('Select $title', fontSize: 20, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
             const SizedBox(height: 20),
             Flexible(
               child: ListView.separated(
@@ -297,14 +299,14 @@ class AstrologerSkillsController extends GetxController {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                       decoration: BoxDecoration(
-                        color: isSelected ? Colors.blue.withOpacity(0.05) : Colors.grey.shade50,
+                        color: isSelected ? AppColors.primaryColor.withOpacity(0.05) : Colors.grey.shade50,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: isSelected ? Colors.blue : Colors.grey.shade200),
+                        border: Border.all(color: isSelected ? AppColors.primaryColor : Colors.grey.shade200),
                       ),
                       child: Row(
                         children: [
-                          Expanded(child: Text(option, style: TextStyle(fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400))),
-                          if (isSelected) const Icon(Icons.check_circle, color: Colors.blue, size: 20),
+                          Expanded(child: AppText(option, fontSize: 14, fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400, color: isSelected ? AppColors.primaryColor : const Color(0xFF2E1A47))),
+                          if (isSelected) const Icon(Icons.check_circle, color: AppColors.primaryColor, size: 20),
                         ],
                       ),
                     ),
@@ -312,6 +314,7 @@ class AstrologerSkillsController extends GetxController {
                 },
               ),
             ),
+            const SizedBox(height: 20),
           ],
         ),
       ),

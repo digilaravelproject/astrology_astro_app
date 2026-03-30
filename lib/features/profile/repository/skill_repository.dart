@@ -9,4 +9,8 @@ class AstrologerSkillsRepository {
   Future<ResponseModel> updateSkills(AstrologerSkillsModel skills) async {
     return await _remoteDataSource.updateSkills(skills);
   }
+
+  Future<ResponseModel> updateOtherDetails(Map<String, dynamic> data) async {
+    return await _remoteDataSource.updateOtherDetails(data);
+  }
 }

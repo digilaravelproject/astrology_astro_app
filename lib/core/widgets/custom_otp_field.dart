@@ -64,7 +64,7 @@ class _CustomOtpFieldState extends State<CustomOtpField> {
     required bool isFilled,
   }) {
     if (!widget.isOutlined) {
-      // Filled mode rounded background
+      // Filled model rounded background
       return OutlineInputBorder(
         borderRadius: BorderRadius.circular(widget.borderRadius),
         borderSide: BorderSide.none,
@@ -110,8 +110,8 @@ class _CustomOtpFieldState extends State<CustomOtpField> {
 
     return InputDecoration(
       contentPadding: EdgeInsets.zero,
-      filled: !widget.isOutlined, // ✅ Outlined mode me false
-      fillColor: !widget.isOutlined ? fillColor : null, // ✅ Sirf filled mode me color
+      filled: !widget.isOutlined, // ✅ Outlined model me false
+      fillColor: !widget.isOutlined ? fillColor : null, // ✅ Sirf filled model me color
       enabledBorder: _buildBorder(isFocused: false, isFilled: isFilled),
       focusedBorder: _buildBorder(isFocused: true, isFilled: isFilled),
       border: _buildBorder(isFocused: false, isFilled: isFilled),

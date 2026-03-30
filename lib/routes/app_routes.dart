@@ -7,4 +7,5 @@ class AppRoutes {
   static const String home = '/home';
   static const String dashboard = '/dashboard';
   static const String skillDetailScreen = '/skill_details_screen';
+  static const String trainingVideosScreen = '/training_videos_screen';
 }

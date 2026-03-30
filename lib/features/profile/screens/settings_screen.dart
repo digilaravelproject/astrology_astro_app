@@ -4,6 +4,7 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_app_bar.dart';
+import '../../../routes/app_routes.dart';
 import 'update_phone_screen.dart';
 import 'important_numbers_screen.dart';
 import '../../training/training_videos_list_screen.dart';
@@ -143,7 +144,8 @@ class SettingsScreen extends StatelessWidget {
               color: AppColors.primaryColor,
               title: 'Training Videos',
               subtitle: 'Learn how to use the app effectively',
-              onTap: () => Get.to(() => const TrainingVideosListScreen()),
+             // onTap: () => Get.to(() => const TrainingVideosListScreen()),
+              onTap: () => Get.toNamed(AppRoutes.trainingVideosScreen),
             ),
             _item(
               icon: Iconsax.gift_copy,

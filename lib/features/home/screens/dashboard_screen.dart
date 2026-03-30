@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
@@ -40,21 +41,79 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => Scaffold(
-      extendBody: true,
-      body: _screens[controller.selectedIndex.value],
-      bottomNavigationBar: CustomBottomNavBar(
-        selectedIndex: controller.selectedIndex.value,
-        onItemSelected: (index) {
-          if (index == 2) {
-            _showGoLiveBottomSheet(context);
-          } else {
-            controller.changeIndex(index);
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        
+        if (controller.selectedIndex.value != 0) {
+          // If not on Home tab, go to Home tab
+          controller.changeIndex(0);
+        } else {
+          // If on Home tab, show exit confirmation
+          final shouldExit = await _showExitDialog(context);
+          if (shouldExit) {
+            SystemNavigator.pop();
           }
-        },
-        items: _navItems,
+        }
+      },
+      child: Obx(() => Scaffold(
+        extendBody: true,
+        body: _screens[controller.selectedIndex.value],
+        bottomNavigationBar: CustomBottomNavBar(
+          selectedIndex: controller.selectedIndex.value,
+          onItemSelected: (index) {
+            if (index == 2) {
+              _showGoLiveBottomSheet(context);
+            } else {
+              controller.changeIndex(index);
+            }
+          },
+          items: _navItems,
+        ),
+      )),
+    );
+  }
+
+  Future<bool> _showExitDialog(BuildContext context) async {
+    return await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const AppText(
+          'Exit App',
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
+        ),
+        content: const AppText(
+          'Are you sure you want to exit?',
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: Colors.grey,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: AppText(
+              'Cancel',
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[600],
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const AppText(
+              'Exit',
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.primaryColor,
+            ),
+          ),
+        ],
       ),
-    ));
+    ) ?? false;
   }
 
   void _showGoLiveBottomSheet(BuildContext context) {

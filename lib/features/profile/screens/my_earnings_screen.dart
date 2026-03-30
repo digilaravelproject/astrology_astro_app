@@ -24,11 +24,11 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
 
   // Mock data for transactions
   final List<Map<String, dynamic>> _transactions = [
-    {'name': 'Rahul Sharma', 'mode': 'Chat', 'date': 'Today, 04:30 PM', 'amount': '150', 'status': 'Paid'},
-    {'name': 'Priya Patel', 'mode': 'Call', 'date': 'Today, 02:15 PM', 'amount': '420', 'status': 'Paid'},
-    {'name': 'Amit Kumar', 'mode': 'Video', 'date': 'Yesterday', 'amount': '900', 'status': 'Paid'},
-    {'name': 'Sneha Reddy', 'mode': 'Chat', 'date': 'Yesterday', 'amount': '225', 'status': 'Paid'},
-    {'name': 'Vikram Singh', 'mode': 'Call', 'date': '17 Feb 2026', 'amount': '350', 'status': 'Paid'},
+    {'name': 'Rahul Sharma', 'model': 'Chat', 'date': 'Today, 04:30 PM', 'amount': '150', 'status': 'Paid'},
+    {'name': 'Priya Patel', 'model': 'Call', 'date': 'Today, 02:15 PM', 'amount': '420', 'status': 'Paid'},
+    {'name': 'Amit Kumar', 'model': 'Video', 'date': 'Yesterday', 'amount': '900', 'status': 'Paid'},
+    {'name': 'Sneha Reddy', 'model': 'Chat', 'date': 'Yesterday', 'amount': '225', 'status': 'Paid'},
+    {'name': 'Vikram Singh', 'model': 'Call', 'date': '17 Feb 2026', 'amount': '350', 'status': 'Paid'},
   ];
 
   final List<Map<String, dynamic>> _withdrawals = [
@@ -381,7 +381,7 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
                   children: [
                     AppText(tx['name'], fontSize: 14, fontWeight: FontWeight.w700, color: const Color(0xFF2E1A47)),
                     const SizedBox(height: 2),
-                    AppText('${tx['mode']} • ${tx['date']}', fontSize: 11, color: Colors.grey.shade500, fontWeight: FontWeight.w500),
+                    AppText('${tx['model']} • ${tx['date']}', fontSize: 11, color: Colors.grey.shade500, fontWeight: FontWeight.w500),
                   ],
                 ),
               ),

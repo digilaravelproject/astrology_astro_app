@@ -1,4 +1,6 @@
 import 'package:astro_astrologer/features/profile/screens/skill_details_screen.dart';
+import 'package:astro_astrologer/features/training/training_videos_list_screen.dart';
+import 'package:astro_astrologer/features/training/traning_video_binding.dart';
 import 'package:get/get.dart';
 import '../features/auth/screens/login_screen.dart';
 import '../features/auth/screens/otp_verification_screen.dart';
@@ -51,6 +53,12 @@ class RouteHelper {
       name: AppRoutes.skillDetailScreen,
       page: () => const SkillDetailsScreen(),
       binding: AstrologerSkillsBinding(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: AppRoutes.trainingVideosScreen,
+      page: () => const TrainingVideosListScreen(),
+      binding: TrainingVideoBinding(),
       transition: Transition.fadeIn,
     ),
   ];

@@ -1,3 +1,4 @@
+import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:dio/dio.dart';
 import '../../../core/services/network/api_client.dart';
 import '../../../core/services/network/response_model.dart';
@@ -9,8 +10,16 @@ class AstrologerSkillsRemoteDataSource {
 
   Future<ResponseModel> updateSkills(AstrologerSkillsModel data) async {
     return await _apiClient.put(
-      '/api/v1/astrologer/profile/skills',
+      "${AppUrls.getAstroSkills}",
       data: data.toJson(),
     );
   }
+
+ // OtherDetailsRemoteDataSource(this._apiClient);
+
+  Future<ResponseModel> updateOtherDetails(Map<String, dynamic> data) async {
+    const path = '/api/v1/astrologer/profile/other-details';
+    return await _apiClient.put(path, data: data);
+  }
+
 }

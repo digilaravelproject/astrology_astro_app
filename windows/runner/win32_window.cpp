@@ -7,7 +7,7 @@
 
 namespace {
 
-/// Window attribute that enables dark mode window decorations.
+/// Window attribute that enables dark model window decorations.
 ///
 /// Redefined in case the developer's machine has a Windows SDK older than
 /// version 10.0.22000.0.
@@ -20,8 +20,8 @@ constexpr const wchar_t kWindowClassName[] = L"FLUTTER_RUNNER_WIN32_WINDOW";
 
 /// Registry key for app theme preference.
 ///
-/// A value of 0 indicates apps should use dark mode. A non-zero or missing
-/// value indicates apps should use light mode.
+/// A value of 0 indicates apps should use dark model. A non-zero or missing
+/// value indicates apps should use light model.
 constexpr const wchar_t kGetPreferredBrightnessRegKey[] =
   L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize";
 constexpr const wchar_t kGetPreferredBrightnessRegValue[] = L"AppsUseLightTheme";
@@ -38,7 +38,7 @@ int Scale(int source, double scale_factor) {
 }
 
 // Dynamically loads the |EnableNonClientDpiScaling| from the User32 module.
-// This API is only needed for PerMonitor V1 awareness mode.
+// This API is only needed for PerMonitor V1 awareness model.
 void EnableFullDpiSupportIfAvailable(HWND hwnd) {
   HMODULE user32_module = LoadLibraryA("User32.dll");
   if (!user32_module) {

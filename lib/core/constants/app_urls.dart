@@ -10,7 +10,9 @@ class AppUrls {
   static const String getNotices = "/api/v1/user/notices";
   static const String getFollowers = "/api/v1/astrologer/community/followers";
   static const String getFavorites = "/api/v1/astrologer/community/favorites";
+  static const String getAstroSkills = "/api/v1/astrologer/profile/skills";
   
   static String toggleLike(int id) => "/api/v1/astrologer/community/followers/$id/toggle-like";
   static String getProfile(int id) => "/api/v1/astrologer/profile/$id";
+
 }

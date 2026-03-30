@@ -26,7 +26,7 @@ class AppColors {
   static const Color dividerColor = Color(0xFFE0E0E0);
 
   // Dark theme colors
-  static const Color darkPrimaryColor = Color(0xFFFF8F00);   // Amber-Saffron for dark mode
+  static const Color darkPrimaryColor = Color(0xFFFF8F00);   // Amber-Saffron for dark model
   static const Color darkSecondaryColor = Color(0xFFFFB300); // Golden for dark
   static const Color darkAccentColor = Color(0xFFFFD54F);    // Amber-light for contrast
 

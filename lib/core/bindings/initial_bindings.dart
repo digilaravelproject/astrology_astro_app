@@ -11,12 +11,21 @@ import '../../features/home/controllers/dashboard_controller.dart';
 import '../../features/followers/data/repositories/follower_repository.dart';
 import '../../features/followers/domain/services/follower_service.dart';
 import '../../features/followers/controllers/follower_controller.dart';
+import '../../features/profile/controllers/skill_controller.dart';
+import '../../features/profile/dataSource/skill_data_source.dart';
+import '../../features/profile/repository/skill_repository.dart';
+import '../../features/profile/usecase/skill_usecase.dart';
 
 import '../../features/auth/domain/repositories/auth_repository.dart';
 import '../../features/auth/domain/services/auth_service.dart';
 import '../../features/splash/controllers/splash_controller.dart';
 import '../../features/splash/domain/repositories/splash_repository.dart';
 import '../../features/splash/domain/services/splash_service.dart';
+import '../../features/training/dataSource/training_video_data_source.dart';
+import '../../features/training/repository/training_video_repository.dart';
+import '../../features/training/usecase/training_video_use_case.dart';
+import '../../features/training/controller/training_video_controller.dart';
+import '../../features/training/controller/training_video_detail_controller.dart';
 
 class InitialBindings extends Bindings {
   @override
@@ -85,5 +94,19 @@ class InitialBindings extends Bindings {
       getFavoritesUseCase: Get.find<GetFavoritesUseCase>(),
       toggleLikeUseCase: Get.find<ToggleLikeUseCase>(),
     ), fenix: true);
+
+    // Profile / Skills
+    Get.lazyPut(() => AstrologerSkillsRemoteDataSource(Get.find<ApiClient>()), fenix: true);
+    Get.lazyPut(() => AstrologerSkillsRepository(Get.find<AstrologerSkillsRemoteDataSource>()), fenix: true);
+    Get.lazyPut(() => UpdateAstrologerSkillsUseCase(Get.find<AstrologerSkillsRepository>()), fenix: true);
+    Get.lazyPut(() => AstrologerSkillsController(Get.find<UpdateAstrologerSkillsUseCase>()), fenix: true);
+
+    // Training Videos
+    Get.lazyPut(() => TrainingVideoRemoteDataSource(Get.find<ApiClient>()), fenix: true);
+    Get.lazyPut(() => TrainingVideoRepository(Get.find<TrainingVideoRemoteDataSource>()), fenix: true);
+    Get.lazyPut(() => GetTrainingVideosUseCase(Get.find<TrainingVideoRepository>()), fenix: true);
+    Get.lazyPut(() => GetTrainingVideoDetailUseCase(Get.find<TrainingVideoRepository>()), fenix: true);
+    Get.lazyPut(() => TrainingVideoController(Get.find<GetTrainingVideosUseCase>()), fenix: true);
+    Get.lazyPut(() => TrainingVideoDetailController(Get.find<GetTrainingVideoDetailUseCase>()), fenix: true);
   }
 }
