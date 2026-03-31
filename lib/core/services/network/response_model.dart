@@ -43,10 +43,10 @@ class ResponseModel {
         json['message']?.toString() ??
         (success ? 'Success' : 'Something went wrong');
     
-    Logger.d('ResponseModel.fromJson parsed message: $message, isSuccess: ${success && (statusCode == 200 || statusCode == null)}');
+    Logger.d('ResponseModel.fromJson parsed message: $message, isSuccess: ${success && (statusCode == null || statusCode! < 300)}');
 
     return ResponseModel(
-      isSuccess: success && (statusCode == 200 || statusCode == null),
+      isSuccess: success && (statusCode == null || statusCode! < 300),
       message: message,
       body: json['data'],
       statusCode: statusCode,

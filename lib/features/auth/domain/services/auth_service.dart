@@ -139,4 +139,22 @@ class AuthService implements AuthServiceInterface {
     }
     return response;
   }
+
+  @override
+  Future<ResponseModel> logout() async {
+    final response = await _authRepository.logout();
+    if (response.isSuccess) {
+      await clearUserInfo();
+    }
+    return response;
+  }
+
+  @override
+  Future<ResponseModel> deleteAccount() async {
+    final response = await _authRepository.deleteAccount();
+    if (response.isSuccess) {
+      await clearUserInfo();
+    }
+    return response;
+  }
 }

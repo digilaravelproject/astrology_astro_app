@@ -12,4 +12,6 @@ abstract class AuthRepositoryInterface {
   Future<ResponseModel> updateProfilePhoto(File image);
   Future<ResponseModel> updateProfile(Map<String, dynamic> data);
   Future<ResponseModel> getProfile(int id);
+  Future<ResponseModel> logout();
+  Future<ResponseModel> deleteAccount();
 }

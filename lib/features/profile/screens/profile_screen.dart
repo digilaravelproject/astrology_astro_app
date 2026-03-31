@@ -14,7 +14,6 @@ import 'other_details_screen.dart';
 import 'price_setting_screen.dart';
 import 'availability_screen.dart';
 import 'live_schedule_screen.dart';
-import '../../finance/bank_details_screen.dart';
 import 'my_reviews_screen.dart';
 import 'performance_screen.dart';
 import 'my_earnings_screen.dart';
@@ -408,7 +407,7 @@ class ProfileScreen extends StatelessWidget {
           const SizedBox(height: 15),
 
           // Delete Account Button
-          TextButton(
+          /*TextButton(
             onPressed: () {
               Get.defaultDialog(
                 title: 'Delete Account',
@@ -424,6 +423,16 @@ class ProfileScreen extends StatelessWidget {
                 }
               );
             },
+            child: const AppText(
+              'Delete Account',
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.red,
+            ),
+          ),*/
+
+          TextButton(
+            onPressed: () => authController.deleteAccount(),
             child: const AppText(
               'Delete Account',
               fontSize: 14,

@@ -133,4 +133,14 @@ class AuthRepository implements AuthRepositoryInterface {
   Future<ResponseModel> getProfile(int id) async {
     return await _apiClient.get(AppUrls.getProfile(id));
   }
+
+  @override
+  Future<ResponseModel> logout() async {
+    return await _apiClient.post(AppUrls.logout);
+  }
+
+  @override
+  Future<ResponseModel> deleteAccount() async {
+    return await _apiClient.delete(AppUrls.deleteAccount);
+  }
 }

@@ -30,6 +30,8 @@ import '../../training/training_videos_section.dart';
 import '../../offers/special_offer_banner.dart';
 import '../widgets/start_paid_session_section.dart'; // Added Paid Session Section
 import '../../schedule/set_sleep_hours_screen.dart';
+import '../../schedule/presentation/controllers/schedule_controller.dart';
+import '../../notification/controllers/notification_controller.dart';
 import '../../profile/screens/invoice_screen.dart';
 import '../../profile/screens/performance_screen.dart';
 import '../../profile/screens/settings_screen.dart';
@@ -171,7 +173,42 @@ class _HomeScreenState extends State<HomeScreen> {
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.grey.shade200),
                   ),
-                  child: const Icon(Icons.notifications_outlined, size: 22, color: Color(0xFF2E1A47)),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      const Icon(Icons.notifications_outlined, size: 22, color: Color(0xFF2E1A47)),
+                      Obx(() {
+                        final unreadCount = Get.find<NotificationController>().unreadCount.value;
+                        if (unreadCount > 0) {
+                          return Positioned(
+                            right: -2,
+                            top: -2,
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: const BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                              constraints: const BoxConstraints(
+                                minWidth: 16,
+                                minHeight: 16,
+                              ),
+                              child: Text(
+                                unreadCount > 9 ? '9+' : '$unreadCount',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 8,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      }),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
@@ -376,6 +413,8 @@ class _HomeScreenState extends State<HomeScreen> {
   // }
 
   Widget _buildSleepTimeCard() {
+    final scheduleController = Get.find<ScheduleController>();
+    
     return GestureDetector(
       onTap: () {
         Get.to(() => const SetSleepHoursScreen());
@@ -413,12 +452,24 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: const Color(0xFF2C2C2C),
                   ),
                   const SizedBox(height: 4),
-                  AppText(
-                    'Sleep Time: 10:00 PM - 06:00 AM',
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey.shade500,
-                  ),
+                  Obx(() {
+                    final sleepHours = scheduleController.sleepHours.value;
+                    if (sleepHours != null) {
+                      return AppText(
+                        'Sleep Time: ${_formatDisplayTime(sleepHours.sleepStartTime)} - ${_formatDisplayTime(sleepHours.sleepEndTime)}',
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey.shade500,
+                      );
+                    } else {
+                      return AppText(
+                        'Sleep Time: Not set',
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey.shade500,
+                      );
+                    }
+                  }),
                 ],
               ),
             ),
@@ -432,6 +483,24 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  String _formatDisplayTime(String time24) {
+    try {
+      final parts = time24.split(':');
+      final hour = int.parse(parts[0]);
+      final minute = int.parse(parts[1]);
+      
+      final displayHour = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
+      final period = hour >= 12 ? 'PM' : 'AM';
+      final displayMinute = minute.toString().padLeft(2, '0');
+      
+      return '${displayHour.toString().padLeft(2, '0')}:$displayMinute $period';
+    } catch (e) {
+      return time24; // Return original if parsing fails
+    }
+  }
+
   }
 
   Widget _buildToggleTile({required IconData icon, required String title, required String subtitle, required bool value, required ValueChanged<bool> onChanged, bool showInfo = false}) {
@@ -684,7 +753,7 @@ class _HomeScreenState extends State<HomeScreen> {
         bgColor: AppColors.primaryColor.withOpacity(0.08),
         iconBgColor: AppColors.primaryColor.withOpacity(0.18),
         textColor: AppColors.primaryColor,
-        onTap: () => _showGoLiveBottomSheet(context),
+        onTap: () => _showGoLiveBottomSheet(Get.context!),
       ),
       _MenuData(
         title: 'Chat',
@@ -960,7 +1029,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-}
+
+
 
 class _MenuData {
   final String title;

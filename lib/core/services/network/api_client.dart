@@ -39,8 +39,7 @@ class ApiClient {
         } else {
           token = await TokenManager.getToken() ?? "";
           if (token.isNotEmpty) {
-            options.headers["Authorization"] = "Bearer 13|DrrUkVSNC0jfDboL1njol3VHDD2X3mjoG2NhhHid12dc2dc9";
-            //"Bearer $token";
+            options.headers["Authorization"] = "Bearer $token";
           }
         }
         if (options.data is! dio.FormData) {

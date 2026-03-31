@@ -1,5 +1,6 @@
 import '../../../core/services/network/api_client.dart';
 import '../../../core/services/network/response_model.dart';
+import '../../../core/constants/app_urls.dart';
 
 class TrainingVideoRemoteDataSource {
   final ApiClient _apiClient;
@@ -7,12 +8,10 @@ class TrainingVideoRemoteDataSource {
   TrainingVideoRemoteDataSource(this._apiClient);
 
   Future<ResponseModel> getTrainingVideos(String type) async {
-    return await _apiClient.get(
-      '/api/v1/astrologer/training-videos',
-    );
+    return await _apiClient.get(AppUrls.trainingVideos);
   }
 
   Future<ResponseModel> getTrainingVideoDetail(int id) async {
-    return await _apiClient.get('/api/v1/astrologer/training-videos/$id');
+    return await _apiClient.get(AppUrls.trainingVideoDetail(id));
   }
 }

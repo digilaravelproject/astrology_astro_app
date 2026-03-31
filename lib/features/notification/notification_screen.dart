@@ -4,46 +4,33 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_app_bar.dart';
+import 'controllers/notification_controller.dart';
+import 'domain/models/notification_item_model.dart';
 import 'notification_detail_screen.dart';
-import '../../../core/utils/custom_snackbar.dart';
 
-class NotificationScreen extends StatelessWidget {
+class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Mock notifications matching astrologer context but user app style
-    final List<Map<String, dynamic>> notifications = [
-      {
-        'title': 'New Follower alert! 👤',
-        'message': 'Amit Kumar just started following you. Check out their profile now.',
-        'time': '5 min ago',
-        'isRead': false,
-        'type': 'follower',
-      },
-      {
-        'title': 'Earning Credit! 💰',
-        'message': 'Success! ₹500 has been credited to your wallet for the last session.',
-        'time': '2 hours ago',
-        'isRead': false,
-        'type': 'wallet',
-      },
-      {
-        'title': 'Positive Review Received ⭐',
-        'message': 'Congratulations! You received a 5-star rating from Suman Roy.',
-        'time': '1 day ago',
-        'isRead': true,
-        'type': 'review',
-      },
-      {
-        'title': 'System Update ⚙️',
-        'message': 'We have updated our terms and conditions. Please review them at your convenience.',
-        'time': '3 days ago',
-        'isRead': true,
-        'type': 'system',
-      },
-    ];
+  State<NotificationScreen> createState() => _NotificationScreenState();
+}
 
+class _NotificationScreenState extends State<NotificationScreen> {
+  late final NotificationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = Get.find<NotificationController>();
+    _controller.getNotifications();
+    // Reset badge count after build completes to avoid setState during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _controller.resetUnreadCount();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppBar(
@@ -52,27 +39,77 @@ class NotificationScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Iconsax.tick_circle, color: AppColors.deepPink),
             tooltip: "Mark all as read",
-            onPressed: () {
-             // CustomSnackBar.showSuccess('This is a test success message');
-            },
+            onPressed: () {},
           ),
         ],
       ),
-      body: notifications.isEmpty
-          ? _buildEmptyState()
-          : ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-              itemCount: notifications.length,
-              separatorBuilder: (context, index) => const Divider(height: 1, color: Color(0xFFEEEEEE)),
-              itemBuilder: (context, index) {
-                final notification = notifications[index];
-                return GestureDetector(
-                  onTap: () => Get.to(() => NotificationDetailScreen(notification: notification)),
-                  child: _buildNotificationItem(notification),
-                );
-              },
-            ),
+      body: Obx(() {
+        if (_controller.isNotificationsLoading.value) {
+          return const Center(
+            child: CircularProgressIndicator(color: AppColors.primaryColor),
+          );
+        }
+
+        final notifications = _controller.notifications;
+
+        if (notifications.isEmpty) {
+          return _buildEmptyState();
+        }
+
+        return RefreshIndicator(
+          color: AppColors.primaryColor,
+          onRefresh: () async => _controller.getNotifications(),
+          child: ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            itemCount: notifications.length,
+            separatorBuilder: (_, __) =>
+                const Divider(height: 1, color: Color(0xFFEEEEEE)),
+            itemBuilder: (context, index) {
+              final notification = notifications[index];
+              return GestureDetector(
+                onTap: () => Get.to(() => NotificationDetailScreen(
+                      notificationId: notification.id,
+                    )),
+                child: _buildNotificationItem(notification),
+              );
+            },
+          ),
+        );
+      }),
     );
+  }
+
+  /// Derive an icon type from the notification title keywords
+  String _getTypeFromTitle(String title) {
+    final lower = title.toLowerCase();
+    if (lower.contains('follow')) return 'follower';
+    if (lower.contains('wallet') || lower.contains('earning') || lower.contains('credit')) return 'wallet';
+    if (lower.contains('review') || lower.contains('rating') || lower.contains('star')) return 'review';
+    if (lower.contains('like') || lower.contains('liked')) return 'like';
+    if (lower.contains('block')) return 'block';
+    if (lower.contains('report')) return 'report';
+    if (lower.contains('photo') || lower.contains('profile')) return 'profile';
+    return 'system';
+  }
+
+  IconData _getIconForType(String type) {
+    switch (type) {
+      case 'follower':
+        return Iconsax.user_add_copy;
+      case 'wallet':
+        return Iconsax.wallet_3_copy;
+      case 'review':
+        return Iconsax.star_1_copy;
+      case 'like':
+        return Iconsax.heart_copy;
+      case 'block':
+      case 'report':
+        return Iconsax.shield_cross_copy;
+      case 'profile':
+        return Iconsax.user_edit_copy;
+      default:
+        return Iconsax.notification_bing_copy;
+    }
   }
 
   Widget _buildEmptyState() {
@@ -103,7 +140,7 @@ class NotificationScreen extends StatelessWidget {
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 40),
             child: AppText(
-              'You dont have any notification yet. When you get one, it will appear here.',
+              'You don\'t have any notifications yet. When you get one, it will appear here.',
               fontSize: 14,
               color: Colors.black54,
               textAlign: TextAlign.center,
@@ -115,23 +152,9 @@ class NotificationScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildNotificationItem(Map<String, dynamic> notification) {
-    bool isRead = notification['isRead'];
-    
-    IconData getIconForType(String type) {
-      switch (type) {
-        case 'follower':
-          return Iconsax.user_add_copy;
-        case 'wallet':
-          return Iconsax.wallet_3_copy;
-        case 'review':
-          return Iconsax.star_1_copy;
-        case 'system':
-          return Iconsax.info_circle_copy;
-        default:
-          return Iconsax.notification_bing_copy;
-      }
-    }
+  Widget _buildNotificationItem(NotificationItemModel notification) {
+    final bool isRead = notification.isRead;
+    final String type = _getTypeFromTitle(notification.title);
 
     return Container(
       color: isRead ? Colors.white : AppColors.lightPink.withOpacity(0.3),
@@ -146,11 +169,13 @@ class NotificationScreen extends StatelessWidget {
               color: isRead ? const Color(0xFFF5F5F5) : AppColors.white,
               shape: BoxShape.circle,
               border: Border.all(
-                color: isRead ? Colors.transparent : AppColors.deepPink.withOpacity(0.2),
+                color: isRead
+                    ? Colors.transparent
+                    : AppColors.deepPink.withOpacity(0.2),
               ),
             ),
             child: Icon(
-              getIconForType(notification['type']),
+              _getIconForType(type),
               size: 20,
               color: isRead ? Colors.grey : AppColors.deepPink,
             ),
@@ -165,14 +190,15 @@ class NotificationScreen extends StatelessWidget {
                   children: [
                     Expanded(
                       child: AppText(
-                        notification['title'],
+                        notification.title,
                         fontSize: 15,
-                        fontWeight: isRead ? FontWeight.w500 : FontWeight.w700,
+                        fontWeight:
+                            isRead ? FontWeight.w500 : FontWeight.w700,
                         color: Colors.black87,
                       ),
                     ),
                     AppText(
-                      notification['time'],
+                      notification.timeAgo,
                       fontSize: 11,
                       color: Colors.black45,
                       fontWeight: FontWeight.w500,
@@ -181,7 +207,7 @@ class NotificationScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 AppText(
-                  notification['message'],
+                  notification.body,
                   fontSize: 13,
                   color: Colors.black54,
                   height: 1.4,
@@ -191,7 +217,7 @@ class NotificationScreen extends StatelessWidget {
               ],
             ),
           ),
-           if (!isRead)
+          if (!isRead)
             Padding(
               padding: const EdgeInsets.only(left: 8, top: 20),
               child: Container(

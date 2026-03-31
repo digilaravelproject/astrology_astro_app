@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import 'package:get/get.dart';
 import '../../routes/app_routes.dart';
@@ -8,7 +6,6 @@ import '../../../core/constants/app_urls.dart';
 import 'controller/training_video_controller.dart';
 import 'model/training_videos_model.dart';
 import 'training_video_detail_screen.dart';
-import 'training_videos_list_screen.dart';
 
 class TrainingVideosSection extends StatelessWidget {
   const TrainingVideosSection({super.key});

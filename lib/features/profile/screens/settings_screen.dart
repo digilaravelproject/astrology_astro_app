@@ -10,7 +10,6 @@ import 'important_numbers_screen.dart';
 import '../../training/training_videos_list_screen.dart';
 import 'help_support_screen.dart';
 import 'faq_screen.dart';
-import '../../finance/bank_details_screen.dart';
 import 'availability_screen.dart';
 import 'live_schedule_screen.dart';
 import 'price_setting_screen.dart';
@@ -52,7 +51,8 @@ class SettingsScreen extends StatelessWidget {
               color: const Color(0xFF0D9D57),
               title: 'Bank Details',
               subtitle: 'Manage your payout bank accounts',
-              onTap: () => Get.to(() => const BankDetailsScreen()),
+              onTap: () => Get.toNamed(AppRoutes.bankAccounts)
+              //onTap: () => Get.to(() => const BankDetailsScreen()),
             ),
             _item(
               icon: Iconsax.user_tick_copy,
@@ -181,37 +181,42 @@ class SettingsScreen extends StatelessWidget {
               color: const Color(0xFF3B5BDB),
               title: 'FAQ',
               subtitle: 'Frequently asked questions',
-              onTap: () => Get.to(() => const FaqScreen()),
+              onTap: () => Get.toNamed(AppRoutes.faq)
+                  //Get.to(() => const FaqScreen()),
             ),
             _item(
               icon: Iconsax.shield_tick_copy,
               color: const Color(0xFF546E7A),
               title: 'Privacy Policy',
               subtitle: 'Your data and privacy rights',
-              onTap: () => Get.to(() => const SimpleContentScreen(
-                    title: 'Privacy Policy',
-                    content: 'Your privacy is important to us. This policy explains how we collect, use, and store your data...',
-                  )),
+              onTap: () => Get.toNamed(AppRoutes.privacyPolicy)
+                  // Get.to(() => const SimpleContentScreen(
+                  //   title: 'Privacy Policy',
+                  //   content: 'Your privacy is important to us. This policy explains how we collect, use, and store your data...',
+                  // )),
             ),
             _item(
               icon: Iconsax.document_text_copy,
               color: const Color(0xFF616161),
               title: 'Terms and Conditions',
               subtitle: 'View our terms of service',
-              onTap: () => Get.to(() => const SimpleContentScreen(
-                    title: 'Terms and Conditions',
-                    content: 'By using our platform, you agree to abide by these terms...',
-                  )),
+              onTap: () => Get.toNamed(AppRoutes.termsAndConditions)
+                  // Get.to(() => const SimpleContentScreen(
+                  //   title: 'Terms and Conditions',
+                  //   content: 'By using our platform, you agree to abide by these terms...',
+                  // )),
             ),
             _item(
               icon: Iconsax.card_copy,
               color: const Color(0xFFE65100),
               title: 'Payment Policy',
               subtitle: 'Secure transaction and refund info',
-              onTap: () => Get.to(() => const SimpleContentScreen(
-                    title: 'Payment Policy',
-                    content: 'Our payment policy ensures secure and transparent transactions...',
-                  )),
+              onTap: () => Get.toNamed(AppRoutes.paymentPolicy),
+
+    // Get.to(() => const SimpleContentScreen(
+                  //   title: 'Payment Policy',
+                  //   content: 'Our payment policy ensures secure and transparent transactions...',
+                  // )),
               isLast: true,
             ),
           ]),

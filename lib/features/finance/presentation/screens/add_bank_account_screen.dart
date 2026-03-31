@@ -3,21 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/widgets/app_text.dart';
-import '../../../core/widgets/custom_app_bar.dart';
-import '../../../core/widgets/custom_button.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/app_text.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
+import '../../../../core/widgets/custom_button.dart';
+import '../controllers/finance_controller.dart';
 
-class AddBankScreen extends StatefulWidget {
-  const AddBankScreen({super.key});
+class AddBankAccountScreen extends StatefulWidget {
+  const AddBankAccountScreen({super.key});
 
   @override
-  State<AddBankScreen> createState() => _AddBankScreenState();
+  State<AddBankAccountScreen> createState() => _AddBankAccountScreenState();
 }
 
-class _AddBankScreenState extends State<AddBankScreen> {
+class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
   final _formKey = GlobalKey<FormState>();
-  
   final _holderNameController = TextEditingController();
   final _bankNameController = TextEditingController();
   final _accountNumberController = TextEditingController();
@@ -25,6 +25,13 @@ class _AddBankScreenState extends State<AddBankScreen> {
   
   File? _selectedImage;
   final ImagePicker _picker = ImagePicker();
+  late FinanceController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = Get.find<FinanceController>();
+  }
 
   Future<void> _pickImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
@@ -42,6 +49,18 @@ class _AddBankScreenState extends State<AddBankScreen> {
     _accountNumberController.dispose();
     _ifscController.dispose();
     super.dispose();
+  }
+
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      _controller.addBankAccount(
+        accountHolderName: _holderNameController.text.trim(),
+        bankName: _bankNameController.text.trim(),
+        accountNumber: _accountNumberController.text.trim(),
+        ifscCode: _ifscController.text.trim(),
+        passbookDocument: _selectedImage,
+      );
+    }
   }
 
   @override
@@ -88,7 +107,7 @@ class _AddBankScreenState extends State<AddBankScreen> {
                 textCapitalization: TextCapitalization.characters,
               ),
               const SizedBox(height: 32),
-              
+
               // Image Upload Section
               AppText(
                 'Upload Passbook / Cancelled Cheque (Optional)',
@@ -112,49 +131,37 @@ class _AddBankScreenState extends State<AddBankScreen> {
                   ),
                   child: _selectedImage != null
                       ? ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: Image.file(_selectedImage!, fit: BoxFit.cover),
-                        )
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.file(_selectedImage!, fit: BoxFit.cover),
+                  )
                       : Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: AppColors.primaryColor.withOpacity(0.05),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(Iconsax.camera_copy, color: AppColors.primaryColor, size: 24),
-                            ),
-                            const SizedBox(height: 12),
-                            AppText(
-                              'Tap to upload image',
-                              fontSize: 13,
-                              color: Colors.grey.shade400,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ],
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryColor.withOpacity(0.05),
+                          shape: BoxShape.circle,
                         ),
+                        child: Icon(Iconsax.camera_copy, color: AppColors.primaryColor, size: 24),
+                      ),
+                      const SizedBox(height: 12),
+                      AppText(
+                        'Tap to upload image',
+                        fontSize: 13,
+                        color: Colors.grey.shade400,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              
+
               const SizedBox(height: 48),
-              CustomButton(
-                text: 'Save Account',
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    Get.back(result: true);
-                    Get.snackbar(
-                      'Success',
-                      'Bank account added successfully!',
-                      backgroundColor: Colors.green.withOpacity(0.1),
-                      colorText: Colors.green,
-                      snackPosition: SnackPosition.BOTTOM,
-                      margin: const EdgeInsets.all(20),
-                    );
-                  }
-                },
-              ),
+              Obx(() => CustomButton(
+                text: _controller.isAddingAccount.value ? 'Adding...' : 'Save Account',
+                onPressed: _controller.isAddingAccount.value ? () {} : _submitForm,
+              )),
               const SizedBox(height: 20),
             ],
           ),
@@ -206,6 +213,12 @@ class _AddBankScreenState extends State<AddBankScreen> {
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'This field is required';
+              }
+              if (label == 'Account Number' && value.trim().length < 9) {
+                return 'Account number must be at least 9 digits';
+              }
+              if (label == 'IFSC Code' && value.trim().length != 11) {
+                return 'IFSC code must be 11 characters';
               }
               return null;
             },

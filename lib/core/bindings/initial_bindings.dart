@@ -26,6 +26,16 @@ import '../../features/training/repository/training_video_repository.dart';
 import '../../features/training/usecase/training_video_use_case.dart';
 import '../../features/training/controller/training_video_controller.dart';
 import '../../features/training/controller/training_video_detail_controller.dart';
+import '../../features/notification/data/repositories/notification_repository.dart';
+import '../../features/notification/domain/usecases/get_notification_count_usecase.dart';
+import '../../features/notification/domain/usecases/get_notifications_usecase.dart';
+import '../../features/notification/domain/usecases/get_notification_detail_usecase.dart';
+import '../../features/notification/controllers/notification_controller.dart';
+import '../../features/schedule/data/datasources/schedule_remote_data_source.dart';
+import '../../features/schedule/data/repositories/schedule_repository.dart';
+import '../../features/schedule/domain/usecases/set_sleep_hours_usecase.dart';
+import '../../features/schedule/domain/usecases/get_sleep_hours_usecase.dart';
+import '../../features/schedule/presentation/controllers/schedule_controller.dart';
 
 class InitialBindings extends Bindings {
   @override
@@ -56,7 +66,8 @@ class InitialBindings extends Bindings {
     Get.lazyPut(() => UpdateProfilePhotoUseCase(Get.find<AuthService>()), fenix: true);
     Get.lazyPut(() => UpdateProfileUseCase(Get.find<AuthService>()), fenix: true);
     Get.lazyPut(() => GetProfileUseCase(Get.find<AuthService>()), fenix: true);
-    
+    Get.lazyPut(() => DeleteAccountUseCase(Get.find<AuthService>()), fenix: true);
+
     Get.lazyPut(
           () => AuthController(
         loginUseCase: Get.find<LoginUseCase>(),
@@ -71,6 +82,7 @@ class InitialBindings extends Bindings {
         updateProfilePhotoUseCase: Get.find<UpdateProfilePhotoUseCase>(),
         updateProfileUseCase: Get.find<UpdateProfileUseCase>(),
         getProfileUseCase: Get.find<GetProfileUseCase>(),
+            deleteAccountUseCase: Get.find<DeleteAccountUseCase>(),
       ),
       fenix: true,
     );
@@ -108,5 +120,26 @@ class InitialBindings extends Bindings {
     Get.lazyPut(() => GetTrainingVideoDetailUseCase(Get.find<TrainingVideoRepository>()), fenix: true);
     Get.lazyPut(() => TrainingVideoController(Get.find<GetTrainingVideosUseCase>()), fenix: true);
     Get.lazyPut(() => TrainingVideoDetailController(Get.find<GetTrainingVideoDetailUseCase>()), fenix: true);
+
+    // Schedule
+    Get.lazyPut(() => ScheduleRemoteDataSource(Get.find<ApiClient>()), fenix: true);
+    Get.lazyPut(() => ScheduleRepository(Get.find<ScheduleRemoteDataSource>()), fenix: true);
+    Get.lazyPut(() => SetSleepHoursUseCase(Get.find<ScheduleRepository>()), fenix: true);
+    Get.lazyPut(() => GetSleepHoursUseCase(Get.find<ScheduleRepository>()), fenix: true);
+    Get.lazyPut(() => ScheduleController(Get.find<SetSleepHoursUseCase>(), Get.find<GetSleepHoursUseCase>()), fenix: true);
+
+    // Notification Count & List
+    Get.lazyPut(() => NotificationRepository(Get.find<ApiClient>()), fenix: true);
+    Get.lazyPut(() => GetNotificationCountUseCase(Get.find<NotificationRepository>()), fenix: true);
+    Get.lazyPut(() => GetNotificationsUseCase(Get.find<NotificationRepository>()), fenix: true);
+    Get.lazyPut(() => GetNotificationDetailUseCase(Get.find<NotificationRepository>()), fenix: true);
+    Get.put(
+      NotificationController(
+        Get.find<GetNotificationCountUseCase>(),
+        Get.find<GetNotificationsUseCase>(),
+        Get.find<GetNotificationDetailUseCase>(),
+      ),
+      permanent: true,
+    );
   }
 }

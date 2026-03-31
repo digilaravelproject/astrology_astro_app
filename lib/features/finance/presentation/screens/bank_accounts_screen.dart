@@ -1,48 +1,121 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/widgets/app_text.dart';
-import '../../../core/widgets/custom_app_bar.dart';
-import 'add_bank_screen.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/app_text.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
+import '../controllers/finance_controller.dart';
 
-class BankDetailsScreen extends StatefulWidget {
-  const BankDetailsScreen({super.key});
+class BankAccountsScreen extends StatefulWidget {
+  const BankAccountsScreen({super.key});
 
   @override
-  State<BankDetailsScreen> createState() => _BankDetailsScreenState();
+  State<BankAccountsScreen> createState() => _BankAccountsScreenState();
 }
 
-class _BankDetailsScreenState extends State<BankDetailsScreen> {
-  // Mock data for saved bank accounts
-  final List<Map<String, dynamic>> _savedBanks = [
-    {
-      'bankName': 'HDFC Bank',
-      'accountNumber': 'XXXX XXXX 1234',
-      'holderName': 'John Doe',
-      'isDefault': true,
-    },
-    {
-      'bankName': 'State Bank of India',
-      'accountNumber': 'XXXX XXXX 5678',
-      'holderName': 'John Doe',
-      'isDefault': false,
-    },
-  ];
+class _BankAccountsScreenState extends State<BankAccountsScreen> {
+  late FinanceController _controller;
 
-  void _setAsDefault(int index) {
-    setState(() {
-      for (var i = 0; i < _savedBanks.length; i++) {
-        _savedBanks[i]['isDefault'] = (i == index);
-      }
-    });
-    Get.snackbar(
-      'Success',
-      'Default bank account updated!',
-      backgroundColor: Colors.green.withOpacity(0.1),
-      colorText: Colors.green,
-      snackPosition: SnackPosition.BOTTOM,
-      margin: const EdgeInsets.all(20),
+  @override
+  void initState() {
+    super.initState();
+    _controller = Get.find<FinanceController>();
+  }
+
+  void _setAsDefault(int index, int accountId) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryColor.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Iconsax.verify_copy,
+                    color: AppColors.primaryColor,
+                    size: 32,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const AppText(
+                  'Set as Default?',
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF2E1A47),
+                ),
+                const SizedBox(height: 12),
+                AppText(
+                  'Are you sure you want to set this account as your default bank account?',
+                  fontSize: 14,
+                  color: Colors.grey.shade600,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 28),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.of(dialogContext).pop();
+                        },
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: BorderSide(color: Colors.grey.shade300),
+                          ),
+                        ),
+                        child: const AppText(
+                          'Cancel',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF2E1A47),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () {
+                          _controller.setDefaultBankAccount(accountId);
+                          Navigator.of(dialogContext).pop();
+                        },
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          backgroundColor: AppColors.primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const AppText(
+                          'Yes, Set Default',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -53,20 +126,30 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
       appBar: const CustomAppBar(
         title: 'Bank Details',
       ),
-      body: _savedBanks.isEmpty
-          ? _buildEmptyState()
-          : ListView.builder(
-              padding: const EdgeInsets.all(20),
-              itemCount: _savedBanks.length,
-              itemBuilder: (context, index) {
-                return _buildBankCard(_savedBanks[index], index);
-              },
-            ),
+      body: Obx(() {
+        if (_controller.isLoading.value) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        if (_controller.bankAccounts.isEmpty) {
+          return _buildEmptyState();
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(20),
+          itemCount: _controller.bankAccounts.length,
+          itemBuilder: (context, index) {
+            return _buildBankCard(_controller.bankAccounts[index], index);
+          },
+        );
+      }),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          final result = await Get.to(() => const AddBankScreen());
+          final result = await Get.toNamed('/add-bank-account');
           if (result == true) {
-            // In a real app, we would refresh from API
+            _controller.getBankAccounts();
           }
         },
         backgroundColor: AppColors.primaryColor,
@@ -107,8 +190,9 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
     );
   }
 
-  Widget _buildBankCard(Map<String, dynamic> bank, int index) {
-    final bool isDefault = bank['isDefault'];
+  Widget _buildBankCard(dynamic bank, int index) {
+    final bool isDefault = bank.isDefault;
+    final accountNumberMasked = 'XXXX XXXX ${bank.accountNumber.substring(bank.accountNumber.length - 4)}';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -150,14 +234,14 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         AppText(
-                          bank['bankName'],
+                          bank.bankName,
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                           color: const Color(0xFF2E1A47),
                         ),
                         const SizedBox(height: 2),
                         AppText(
-                          bank['accountNumber'],
+                          accountNumberMasked,
                           fontSize: 13,
                           color: Colors.grey.shade500,
                           fontWeight: FontWeight.w500,
@@ -198,7 +282,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
                       fontWeight: FontWeight.w500,
                     ),
                     AppText(
-                      bank['holderName'],
+                      bank.accountHolderName,
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: const Color(0xFF2E1A47),
@@ -207,7 +291,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
                 ),
                 if (!isDefault)
                   TextButton(
-                    onPressed: () => _setAsDefault(index),
+                    onPressed: () => _setAsDefault(index, bank.id),
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),

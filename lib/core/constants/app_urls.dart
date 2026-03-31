@@ -1,18 +1,34 @@
 class AppUrls {
-  static const String baseUrl = "https://darkgoldenrod-peafowl-305286.hostingersite.com";
+  static const String baseUrl = "https://darkgoldenrod-peafowl-305286.hostingersite.com/api/v1";
   static const String baseImageUrl = "https://darkgoldenrod-peafowl-305286.hostingersite.com/storage/app/public/";
-  static const String sendOtp = "/api/v1/astrologer/send-otp";
-  static const String verifyOtp = "/api/v1/astrologer/verify-otp";
-  static const String astrologerSignup = "/api/v1/astrologer/signup";
-  static const String resendOtp = "/api/v1/astrologer/resend-otp";
-  static const String updateProfilePhoto = "/api/v1/astrologer/profile/photo";
-  static const String updateProfile = "/api/v1/astrologer/profile";
-  static const String getNotices = "/api/v1/user/notices";
-  static const String getFollowers = "/api/v1/astrologer/community/followers";
-  static const String getFavorites = "/api/v1/astrologer/community/favorites";
-  static const String getAstroSkills = "/api/v1/astrologer/profile/skills";
+  static const String sendOtp = "/astrologer/send-otp";
+  static const String verifyOtp = "/astrologer/verify-otp";
+  static const String astrologerSignup = "/astrologer/signup";
+  static const String resendOtp = "/astrologer/resend-otp";
+  static const String updateProfilePhoto = "/astrologer/profile/photo";
+  static const String updateProfile = "/astrologer/profile";
+  static const String logout = "/astrologer/logout";
+  static const String deleteAccount = "/astrologer/delete-account";
+  static const String sleepHours = "/astrologer/sleep-hours";
+  static const String trainingVideos = "/astrologer/training-videos";
+  static const String getNotices = "/user/notices";
+  static const String getFollowers = "/astrologer/community/followers";
+  static const String getFavorites = "/astrologer/community/favorites";
+  static const String getAstroSkills = "/astrologer/profile/skills";
+  static const String getNotificationCount = "/user/notifications/count";
+  static const String getNotifications = "/user/notifications";
+  static const String bankAccounts = "/astrologer/bank-accounts";
+  static String setDefaultBankAccount(int id) => "/astrologer/bank-accounts/$id/set-default";
+
+  static String getNotificationDetail(int id) => "/user/notifications/$id";
+
+  static const String faqs = '/faqs';
+  static const String privacyPolicy = '/privacy-policy';
+  static const String paymentPolicy = '/payment-policy';
+  static const String termsAndConditions = '/terms-and-conditions';
   
-  static String toggleLike(int id) => "/api/v1/astrologer/community/followers/$id/toggle-like";
-  static String getProfile(int id) => "/api/v1/astrologer/profile/$id";
+  static String toggleLike(int id) => "/astrologer/community/followers/$id/toggle-like";
+  static String getProfile(int id) => "/astrologer/profile/$id";
+  static String trainingVideoDetail(int id) => "/astrologer/training-videos/$id";
 
 }
