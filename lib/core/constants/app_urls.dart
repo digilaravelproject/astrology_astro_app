@@ -19,6 +19,8 @@ class AppUrls {
   static const String getNotifications = "/user/notifications";
   static const String bankAccounts = "/astrologer/bank-accounts";
   static String setDefaultBankAccount(int id) => "/astrologer/bank-accounts/$id/set-default";
+  static const String availability = "/astrologer/availability";
+  static const String phoneNumbers = "/astrologer/phone-numbers";
 
   static String getNotificationDetail(int id) => "/user/notifications/$id";
 

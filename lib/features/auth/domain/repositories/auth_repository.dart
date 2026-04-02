@@ -46,6 +46,12 @@ class AuthRepository implements AuthRepositoryInterface {
         await dio.MultipartFile.fromFile(data['id_proof']),
       ));
     }
+    if (data.containsKey('certificate') && data['certificate'] != null) {
+      formData.files.add(MapEntry(
+        'certificate',
+        await dio.MultipartFile.fromFile(data['certificate']),
+      ));
+    }
     
     return await _apiClient.post(
       AppUrls.astrologerSignup, 

@@ -48,9 +48,11 @@ class AuthService implements AuthServiceInterface {
         final user = UserModel.fromJson(userData);
         await saveUserInfo(user);
         await SharedPrefs.setBool(AppConstants.isLoggedIn, true);
+        print('[AUTH] User logged in successfully: ${user.name}');
       }
       if (response.token != null) {
         await saveUserToken(response.token!);
+        print('[AUTH] Token saved: ${response.token}');
       }
     }
     return response;

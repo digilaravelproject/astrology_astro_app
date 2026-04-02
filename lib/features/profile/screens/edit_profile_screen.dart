@@ -43,7 +43,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> _fetchProfile() async {
     // Specifically fetching for ID 7 as requested by user
-    await authController.getProfile(7);
+    await authController.getProfile(authController.currentUser.value?.id ?? 0);
     _loadUserData();
   }
 
@@ -181,7 +181,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             _buildSectionHeader('BASIC DETAILS'),
             _buildInputField(controller: _nameController, label: 'Full Name', hint: 'Enter your name', icon: Iconsax.user_copy),
             const SizedBox(height: 16),
-            _buildInputField(controller: _mobileController, label: 'Mobile Number', hint: 'Enter mobile number', icon: Iconsax.call_copy, readOnly: true),
+            _buildInputField(controller: _mobileController, label: 'Mobile Number', hint: 'Enter mobile number', icon: Iconsax.call_copy),
             const SizedBox(height: 16),
             _buildInputField(controller: _emailController, label: 'Email ID', hint: 'Enter email address', icon: Iconsax.sms_copy),
             const SizedBox(height: 16),
@@ -195,7 +195,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
             const SizedBox(height: 32),
             _buildSectionHeader('VERIFICATION DOCUMENTS'),
-            _buildInputField(controller: _docNumberController, label: 'ID Proof Number', hint: 'ID number', icon: Iconsax.card_pos_copy, readOnly: true),
+            _buildInputField(controller: _docNumberController, label: 'ID Proof Number', hint: 'ID number', icon: Iconsax.card_pos_copy),
             const SizedBox(height: 16),
             GestureDetector(
               onTap: _selectDate,

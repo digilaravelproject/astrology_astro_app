@@ -125,7 +125,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
       'date_of_birth': _dobController.text.trim(),
       'profile_photo': _profileImage?.path,
       'id_proof': _idProofImage?.path,
-      //'certificate': _certificateImage?.path,
+      'certificate': _certificateImage?.path,
     };
 
     authController.astrologerSignup(data);

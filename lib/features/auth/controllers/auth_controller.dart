@@ -232,6 +232,10 @@ class AuthController extends GetxController {
         final userData = response.body['user'];
         if (userData != null) {
           currentUser.value = UserModel.fromJson(userData);
+          // Save updated user data to SharedPreferences
+          await Get.find<AuthService>().saveUserInfo(currentUser.value!);
+          print('[AUTH_CONTROLLER] User profile updated and saved to SharedPreferences');
+          print('[AUTH_CONTROLLER] Updated user: ${currentUser.value?.name}, Phone: ${currentUser.value?.phone}');
           Get.back();
         }
         CustomSnackBar.showSuccess(response.message);
@@ -283,12 +287,16 @@ class AuthController extends GetxController {
         final userData = response.body['user'];
         if (userData != null) {
           currentUser.value = UserModel.fromJson(userData);
+          print('[AUTH_CONTROLLER] User data stored: ${currentUser.value?.name}');
         }
         otpController.clear();
         CustomSnackBar.showSuccess('OTP verified successfully');
+        
+        // Delay to ensure data is saved before navigation
+        await Future.delayed(const Duration(milliseconds: 500));
         Get.offAllNamed(RouteHelper.getDashboardRoute());
       } else {
-        CustomSnackBar.showError(response.message);
+        CustomSnackBar.showError(response.message ?? 'OTP verification failed');
       }
     } catch (e) {
       Logger.e('AuthController: verifyOtp error: $e');

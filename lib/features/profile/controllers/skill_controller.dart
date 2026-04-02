@@ -8,6 +8,7 @@ import '../model/skill_model.dart';
 import '../../../core/utils/custom_snackbar.dart';
 import '../usecase/skill_usecase.dart';
 import '../../auth/controllers/auth_controller.dart';
+import '../../auth/domain/services/auth_service.dart';
 import '../../../core/utils/logger.dart';
 
 class AstrologerSkillsController extends GetxController {
@@ -41,6 +42,7 @@ class AstrologerSkillsController extends GetxController {
   void refreshData() {
     final authController = Get.find<AuthController>();
     final user = authController.currentUser.value;
+    
     if (user != null && user.astrologer != null) {
       final ast = user.astrologer!;
       // Map existing data from AuthController
@@ -54,6 +56,11 @@ class AstrologerSkillsController extends GetxController {
       selectedAllSkills.value = ['Prashana']; 
       dailyContributionHours.value = '10';
       heardAbout.value = 'Youtube';
+      
+      Logger.d('AstrologerSkillsController: Data loaded from AuthController');
+      Logger.d('Skills: ${selectedPrimarySkills.value}');
+      Logger.d('Languages: ${selectedLanguages.value}');
+      Logger.d('Experience: ${experienceYears.value}');
     }
   }
 
@@ -75,10 +82,17 @@ class AstrologerSkillsController extends GetxController {
 
       if (response.isSuccess) {
         CustomSnackBar.showSuccess('Skills updated successfully');
+        
         // Refresh profile to get updated data
         final authController = Get.find<AuthController>();
         if (authController.currentUser.value != null) {
           await authController.getProfile(authController.currentUser.value!.id);
+          
+          // Save updated user data to SharedPreferences
+          await Get.find<AuthService>().saveUserInfo(authController.currentUser.value!);
+          Logger.d('AstrologerSkillsController: Updated data saved to SharedPreferences');
+          Logger.d('Updated Skills: ${selectedPrimarySkills.value}');
+          Logger.d('Updated Languages: ${selectedLanguages.value}');
         }
       } else {
         CustomSnackBar.showError(response.message);
