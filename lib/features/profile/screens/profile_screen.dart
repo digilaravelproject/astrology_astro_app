@@ -8,7 +8,7 @@ import '../../../core/widgets/app_text.dart';
 import '../../../routes/app_routes.dart';
 import '../../auth/controllers/auth_controller.dart';
 import 'edit_profile_screen.dart';
-import 'profile_video_screen.dart';
+// import 'profile_video_screen.dart';
 import 'skill_details_screen.dart';
 import 'other_details_screen.dart';
 import 'price_setting_screen.dart';
@@ -18,14 +18,13 @@ import 'my_reviews_screen.dart';
 import 'performance_screen.dart';
 import 'my_earnings_screen.dart';
 import 'change_language_screen.dart';
-import 'referral_screen.dart';
 import 'help_support_screen.dart';
 import 'faq_screen.dart';
 import 'feedback_screen.dart';
 import 'settings_screen.dart';
 import 'update_phone_screen.dart';
 import '../../../core/widgets/simple_content_screen.dart';
-import '../../home/screens/audio_intro_screen.dart';
+// import '../../home/screens/audio_intro_screen.dart';
 import '../../followers/my_followers_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
@@ -164,7 +163,7 @@ class ProfileScreen extends StatelessWidget {
     return Column(
       children: [
         _buildSectionHeader('PROFESSIONAL PROFILE'),
-        _buildMenuItem(
+        /*_buildMenuItem(
           icon: Iconsax.video_play_copy,
           title: 'Profile Video',
           onTap: () => Get.to(() => const ProfileVideoScreen()),
@@ -173,7 +172,7 @@ class ProfileScreen extends StatelessWidget {
           icon: Iconsax.microphone_2_copy,
           title: 'Audio Introduction',
           onTap: () => Get.to(() => const AudioIntroScreen()),
-        ),
+        ),*/
         _buildMenuItem(
           icon: Iconsax.teacher_copy,
           title: 'Skill Details',
@@ -183,7 +182,7 @@ class ProfileScreen extends StatelessWidget {
         _buildMenuItem(
           icon: Iconsax.note_2_copy,
           title: 'Other Details',
-          onTap: () => Get.to(() => const OtherDetailsScreen()),
+          onTap: () => Get.toNamed(AppRoutes.otherDetailsScreen),
         ),
         _buildMenuItem(
           icon: Iconsax.people_copy,

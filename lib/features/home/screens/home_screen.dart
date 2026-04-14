@@ -45,15 +45,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // Mock states for toggles
-  bool isChatOnline = true;
-  bool isCallOnline = true;
-  bool isVideoOnline = false;
-  // bool isDNDEnabled = false;
+  final AuthController authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
-    final authController = Get.find<AuthController>();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -293,15 +288,38 @@ class _HomeScreenState extends State<HomeScreen> {
           BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 4)),
         ],
       ),
-      child: Column(
-        children: [
-          _buildServiceRow('Chat', '₹15.0/min', '09 Feb, 06:35 PM', isChatOnline, (v) => setState(() => isChatOnline = v)),
-          _divider(),
-          _buildServiceRow('Call', '₹15.0/min', '09 Feb, 06:35 PM', isCallOnline, (v) => setState(() => isCallOnline = v)),
-          _divider(),
-          _buildServiceRow('Video Call', '₹15.0/min', 'Offline', isVideoOnline, (v) => setState(() => isVideoOnline = v)),
-        ],
-      ),
+      child: Obx(() {
+        final astro = authController.currentUser.value?.astrologer;
+        if (astro == null) return const SizedBox.shrink();
+
+        return Column(
+          children: [
+            _buildServiceRow(
+              'Chat', 
+              '₹${astro.chatRate}/min', 
+              'Last active: 09 Feb, 06:35 PM', 
+              astro.isChatEnabled, 
+              (v) => authController.toggleOnline(v, 'chat'),
+            ),
+            _divider(),
+            _buildServiceRow(
+              'Call', 
+              '₹${astro.callRate}/min', 
+              'Last active: 09 Feb, 06:35 PM', 
+              astro.isCallEnabled, 
+              (v) => authController.toggleOnline(v, 'call'),
+            ),
+            _divider(),
+            _buildServiceRow(
+              'Video Call', 
+              '₹${astro.videoCallRate}/min', 
+              astro.isVideoCallEnabled ? 'Online' : 'Offline', 
+              astro.isVideoCallEnabled, 
+              (v) => authController.toggleOnline(v, 'video_call'),
+            ),
+          ],
+        );
+      }),
     );
   }
 

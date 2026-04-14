@@ -5,6 +5,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_app_bar.dart';
+import '../controllers/other_detail_cotroller.dart';
 
 class OtherDetailsScreen extends StatefulWidget {
   const OtherDetailsScreen({super.key});
@@ -14,19 +15,18 @@ class OtherDetailsScreen extends StatefulWidget {
 }
 
 class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
-  // Mock state for editing
-  String _dob = '15 May 1990';
-  String _gender = 'Male';
-  String _address = '123 Astrology Lane, Cosmic City';
-  String _bio = 'Passionate astrologer with over 10 years of experience in Vedic and Palmistry. Helping people find their path through celestial guidance.';
-  String _website = 'www.starguide.com';
-  String _instagram = '@starguide_official';
+  final controller = Get.find<OtherDetailsController>();
+
+  @override
+  void initState() {
+    super.initState();
+    controller.refreshData();
+  }
 
   void _showEditBottomSheet({
     required String title,
-    required String currentValue,
+    required RxString currentValue,
     required List<String> options,
-    required Function(String) onSelect,
   }) {
     showModalBottomSheet(
       context: context,
@@ -70,11 +70,21 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
                 separatorBuilder: (context, index) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {
                   final option = options[index];
-                  final isSelected = option == currentValue;
+                  final isSelected = option == currentValue.value;
                   return InkWell(
-                    onTap: () {
-                      onSelect(option);
-                      Get.back();
+                    onTap: () async {
+                      controller.isLoadingSheet.value = true;
+                      final oldValue = currentValue.value;
+                      currentValue.value = option;
+                      
+                      final success = await controller.updateOtherDetails(isSilent: true);
+                      
+                      controller.isLoadingSheet.value = false;
+                      if (success) {
+                        Get.back();
+                      } else {
+                        currentValue.value = oldValue;
+                      }
                     },
                     borderRadius: BorderRadius.circular(12),
                     child: Container(
@@ -114,13 +124,12 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
 
   void _showTextInputBottomSheet({
     required String title,
-    required String currentValue,
+    required RxString currentValue,
     required String hint,
     required TextInputType keyboardType,
     int maxLines = 1,
-    required Function(String) onSave,
   }) {
-    final controller = TextEditingController(text: currentValue);
+    final textController = TextEditingController(text: currentValue.value);
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -165,11 +174,11 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
                   border: Border.all(color: Colors.grey.shade200),
                 ),
                 child: TextField(
-                  controller: controller,
+                  controller: textController,
                   keyboardType: keyboardType,
                   maxLines: maxLines,
                   autofocus: true,
-                  style: TextStyle(fontSize: 14, color: const Color(0xFF2E1A47)),
+                  style: const TextStyle(fontSize: 14, color: Color(0xFF2E1A47)),
                   decoration: InputDecoration(
                     hintText: hint,
                     border: InputBorder.none,
@@ -179,15 +188,26 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              CustomButton(
+              Obx(() => CustomButton(
                 text: 'Save Changes',
-                onPressed: () {
-                  onSave(controller.text);
-                  Get.back();
+                onPressed: () async {
+                  controller.isLoadingSheet.value = true;
+                  final oldValue = currentValue.value;
+                  currentValue.value = textController.text;
+                  
+                  final success = await controller.updateOtherDetails(isSilent: true);
+                  
+                  controller.isLoadingSheet.value = false;
+                  if (success) {
+                    Get.back();
+                  } else {
+                    currentValue.value = oldValue;
+                  }
                 },
+                isLoading: controller.isLoadingSheet.value,
                 backgroundColor: AppColors.primaryColor,
                 borderRadius: 100,
-              ),
+              )),
               const SizedBox(height: 20),
             ],
           ),
@@ -210,10 +230,10 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
           children: [
             _buildSectionTitle('Personal Information'),
             const SizedBox(height: 16),
-            _buildDetailCard(
+            Obx(() => _buildDetailCard(
               icon: Iconsax.calendar_1_copy,
               label: 'Date of Birth',
-              value: _dob,
+              value: controller.dateOfBirth.value,
               iconColor: const Color(0xFF2196F3),
               backgroundColor: const Color(0xFFE3F2FD),
               onTap: () async {
@@ -224,88 +244,90 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
                   lastDate: DateTime.now(),
                 );
                 if (date != null) {
-                  setState(() => _dob = "${date.day} ${_getMonthName(date.month)} ${date.year}");
+                  final formattedDate = "${date.day} ${_getMonthName(date.month)} ${date.year}";
+                  final oldValue = controller.dateOfBirth.value;
+                  controller.dateOfBirth.value = formattedDate;
+                  
+                  final success = await controller.updateOtherDetails(isSilent: true);
+                  if (!success) {
+                    controller.dateOfBirth.value = oldValue;
+                  }
                 }
               },
-            ),
-            _buildDetailCard(
+            )),
+            Obx(() => _buildDetailCard(
               icon: Iconsax.user_copy,
               label: 'Gender',
-              value: _gender,
+              value: controller.gender.value,
               iconColor: AppColors.primaryColor,
               backgroundColor: AppColors.primaryColor.withOpacity(0.1),
               onTap: () => _showEditBottomSheet(
                 title: 'Gender',
-                currentValue: _gender,
+                currentValue: controller.gender,
                 options: ['Male', 'Female', 'Other'],
-                onSelect: (val) => setState(() => _gender = val),
               ),
-            ),
-            _buildDetailCard(
+            )),
+            Obx(() => _buildDetailCard(
               icon: Iconsax.location_copy,
               label: 'Current Address',
-              value: _address,
+              value: controller.currentAddress.value,
               iconColor: const Color(0xFF4CAF50),
               backgroundColor: const Color(0xFFE8F5E9),
               onTap: () => _showTextInputBottomSheet(
                 title: 'Address',
-                currentValue: _address,
+                currentValue: controller.currentAddress,
                 hint: 'Enter your current address',
                 keyboardType: TextInputType.streetAddress,
-                onSave: (val) => setState(() => _address = val),
               ),
-            ),
+            )),
 
             const SizedBox(height: 32),
             _buildSectionTitle('Professional Bio'),
             const SizedBox(height: 16),
-            _buildDetailCard(
+            Obx(() => _buildDetailCard(
               icon: Iconsax.document_text_copy,
               label: 'Biography',
-              value: _bio,
+              value: controller.bio.value,
               iconColor: const Color(0xFF9C27B0),
               backgroundColor: const Color(0xFFF3E5F5),
               onTap: () => _showTextInputBottomSheet(
                 title: 'Bio',
-                currentValue: _bio,
+                currentValue: controller.bio,
                 hint: 'Write a brief biography...',
                 keyboardType: TextInputType.multiline,
                 maxLines: 5,
-                onSave: (val) => setState(() => _bio = val),
               ),
-            ),
+            )),
 
             const SizedBox(height: 32),
             _buildSectionTitle('Social Presence'),
             const SizedBox(height: 16),
-            _buildDetailCard(
+            Obx(() => _buildDetailCard(
               icon: Iconsax.global_copy,
               label: 'Website Link',
-              value: _website,
+              value: controller.websiteLink.value,
               iconColor: const Color(0xFFFF9800),
               backgroundColor: const Color(0xFFFFF3E0),
               onTap: () => _showTextInputBottomSheet(
                 title: 'Website',
-                currentValue: _website,
+                currentValue: controller.websiteLink,
                 hint: 'Enter website URL',
                 keyboardType: TextInputType.url,
-                onSave: (val) => setState(() => _website = val),
               ),
-            ),
-            _buildDetailCard(
+            )),
+            Obx(() => _buildDetailCard(
               icon: Iconsax.instagram_copy,
               label: 'Instagram Username',
-              value: _instagram,
+              value: controller.instagramUsername.value,
               iconColor: const Color(0xFF673AB7),
               backgroundColor: const Color(0xFFEDE7F6),
               onTap: () => _showTextInputBottomSheet(
                 title: 'Instagram',
-                currentValue: _instagram,
+                currentValue: controller.instagramUsername,
                 hint: 'Enter Instagram handle',
                 keyboardType: TextInputType.text,
-                onSave: (val) => setState(() => _instagram = val),
               ),
-            ),
+            )),
           ],
         ),
       ),

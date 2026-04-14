@@ -29,14 +29,14 @@ class _SkillDetailsScreenState extends State<SkillDetailsScreen> {
       backgroundColor: const Color(0xFFF9F9F9),
       appBar: CustomAppBar(
         title: 'Skill Details',
-        actions: [
-          Obx(() => controller.isLoading.value 
-            ? const Center(child: Padding(padding: EdgeInsets.all(16), child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))))
-            : IconButton(
-                onPressed: () => controller.updateSkills(),
-                icon: const Icon(Icons.check_circle_outline_rounded, color: AppColors.primaryColor),
-              )
-          ),
+        actions: const [
+          // Obx(() => controller.isLoading.value 
+          //   ? const Center(child: Padding(padding: EdgeInsets.all(16), child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))))
+          //   : IconButton(
+          //       onPressed: () => controller.updateSkills(),
+          //       icon: const Icon(Icons.check_circle_outline_rounded, color: AppColors.primaryColor),
+          //     )
+          // ),
         ],
       ),
       body: Obx(() => SingleChildScrollView(
@@ -135,13 +135,13 @@ class _SkillDetailsScreenState extends State<SkillDetailsScreen> {
               ),
             ),
             const SizedBox(height: 40),
-            Obx(() => CustomButton(
-              text: 'Save Details',
-              onPressed: () => controller.updateSkills(),
-              isLoading: controller.isLoading.value,
-              backgroundColor: AppColors.primaryColor,
-              borderRadius: 100,
-            )),
+            // Obx(() => CustomButton(
+            //   text: 'Save Details',
+            //   onPressed: () => controller.updateSkills(),
+            //   isLoading: controller.isLoading.value,
+            //   backgroundColor: AppColors.primaryColor,
+            //   borderRadius: 100,
+            // )),
             const SizedBox(height: 40),
           ],
         ),

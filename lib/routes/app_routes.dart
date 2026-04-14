@@ -9,6 +9,7 @@ class AppRoutes {
   static const String skillDetailScreen = '/skill_details_screen';
   static const String trainingVideosScreen = '/training_videos_screen';
   static const String setSleepHoursScreen = '/set_sleep_hours_screen';
+  static const String otherDetailsScreen = '/other_details_screen';
 
   static const String faq = '/faq';
   static const String privacyPolicy = '/privacy-policy';

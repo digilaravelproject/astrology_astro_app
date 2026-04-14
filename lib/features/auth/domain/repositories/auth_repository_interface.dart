@@ -14,4 +14,5 @@ abstract class AuthRepositoryInterface {
   Future<ResponseModel> getProfile(int id);
   Future<ResponseModel> logout();
   Future<ResponseModel> deleteAccount();
+  Future<ResponseModel> toggleOnline(int isOnline, String type);
 }

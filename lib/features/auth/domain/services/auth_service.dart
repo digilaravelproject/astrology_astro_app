@@ -159,4 +159,9 @@ class AuthService implements AuthServiceInterface {
     }
     return response;
   }
+
+  @override
+  Future<ResponseModel> toggleOnline(int isOnline, String type) async {
+    return await _authRepository.toggleOnline(isOnline, type);
+  }
 }

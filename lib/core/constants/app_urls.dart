@@ -32,5 +32,6 @@ class AppUrls {
   static String toggleLike(int id) => "/astrologer/community/followers/$id/toggle-like";
   static String getProfile(int id) => "/astrologer/profile/$id";
   static String trainingVideoDetail(int id) => "/astrologer/training-videos/$id";
+  static const String toggleOnline = "/astrologer/toggle-online";
 
 }

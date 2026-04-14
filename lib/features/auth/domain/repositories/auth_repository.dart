@@ -149,4 +149,13 @@ class AuthRepository implements AuthRepositoryInterface {
   Future<ResponseModel> deleteAccount() async {
     return await _apiClient.delete(AppUrls.deleteAccount);
   }
+
+  @override
+  Future<ResponseModel> toggleOnline(int isOnline, String type) async {
+    final Map<String, dynamic> data = {
+      'is_online': isOnline,
+      'type': type,
+    };
+    return await _apiClient.post(AppUrls.toggleOnline, data: data);
+  }
 }

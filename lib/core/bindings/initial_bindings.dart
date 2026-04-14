@@ -67,6 +67,7 @@ class InitialBindings extends Bindings {
     Get.lazyPut(() => UpdateProfileUseCase(Get.find<AuthService>()), fenix: true);
     Get.lazyPut(() => GetProfileUseCase(Get.find<AuthService>()), fenix: true);
     Get.lazyPut(() => DeleteAccountUseCase(Get.find<AuthService>()), fenix: true);
+    Get.lazyPut(() => ToggleOnlineUseCase(Get.find<AuthService>()), fenix: true);
 
     Get.lazyPut(
           () => AuthController(
@@ -83,6 +84,7 @@ class InitialBindings extends Bindings {
         updateProfileUseCase: Get.find<UpdateProfileUseCase>(),
         getProfileUseCase: Get.find<GetProfileUseCase>(),
             deleteAccountUseCase: Get.find<DeleteAccountUseCase>(),
+        toggleOnlineUseCase: Get.find<ToggleOnlineUseCase>(),
       ),
       fenix: true,
     );

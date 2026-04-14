@@ -1,4 +1,5 @@
 import 'package:astro_astrologer/features/profile/screens/skill_details_screen.dart';
+import 'package:astro_astrologer/features/profile/screens/other_details_screen.dart';
 import 'package:astro_astrologer/features/training/training_videos_list_screen.dart';
 import 'package:astro_astrologer/features/training/traning_video_binding.dart';
 import 'package:astro_astrologer/features/schedule/set_sleep_hours_screen.dart';
@@ -62,6 +63,12 @@ class RouteHelper {
     GetPage(
       name: AppRoutes.skillDetailScreen,
       page: () => const SkillDetailsScreen(),
+      binding: AstrologerSkillsBinding(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: AppRoutes.otherDetailsScreen,
+      page: () => const OtherDetailsScreen(),
       binding: AstrologerSkillsBinding(),
       transition: Transition.fadeIn,
     ),

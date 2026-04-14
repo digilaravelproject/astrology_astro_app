@@ -7,16 +7,16 @@ class FollowerService {
 
   FollowerService(this._followerRepository);
 
-  Future<FollowerResponse?> getFollowers() async {
-    final response = await _followerRepository.getFollowers();
+  Future<FollowerResponse?> getFollowers({String? query, int? page, int? perPage}) async {
+    final response = await _followerRepository.getFollowers(query: query, page: page, perPage: perPage);
     if (response.isSuccess && response.body != null) {
       return FollowerResponse.fromJson(response.body);
     }
     return null;
   }
 
-  Future<FollowerResponse?> getFavorites() async {
-    final response = await _followerRepository.getFavorites();
+  Future<FollowerResponse?> getFavorites({String? query, int? page, int? perPage}) async {
+    final response = await _followerRepository.getFavorites(query: query, page: page, perPage: perPage);
     if (response.isSuccess && response.body != null) {
       return FollowerResponse.fromJson(response.body);
     }
@@ -34,8 +34,8 @@ class GetFollowersUseCase {
 
   GetFollowersUseCase(this._followerService);
 
-  Future<FollowerResponse?> execute() async {
-    return await _followerService.getFollowers();
+  Future<FollowerResponse?> execute({String? query, int? page, int? perPage}) async {
+    return await _followerService.getFollowers(query: query, page: page, perPage: perPage);
   }
 }
 
@@ -44,8 +44,8 @@ class GetFavoritesUseCase {
 
   GetFavoritesUseCase(this._followerService);
 
-  Future<FollowerResponse?> execute() async {
-    return await _followerService.getFavorites();
+  Future<FollowerResponse?> execute({String? query, int? page, int? perPage}) async {
+    return await _followerService.getFavorites(query: query, page: page, perPage: perPage);
   }
 }
 

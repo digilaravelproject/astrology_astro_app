@@ -2,30 +2,35 @@ import 'dart:convert';
 
 class FollowerResponse {
   final String status;
-  final int count;
+  final String message;
+  final int total;
+  final int perPage;
+  final int currentPage;
+  final int lastPage;
   final List<FollowerModel> followers;
 
   FollowerResponse({
     required this.status,
-    required this.count,
+    required this.message,
+    required this.total,
+    required this.perPage,
+    required this.currentPage,
+    required this.lastPage,
     required this.followers,
   });
 
-  factory FollowerResponse.fromJson(dynamic json) {
-    if (json is List) {
-      return FollowerResponse(
-        status: 'success',
-        count: json.length,
-        followers: json.map((e) => FollowerModel.fromJson(e)).toList(),
-      );
-    }
-    final Map<String, dynamic> data = json as Map<String, dynamic>;
+  factory FollowerResponse.fromJson(Map<String, dynamic> json) {
+    // The 'json' here is likely 'response.body', which is the 'data' object from the API
+    final List<dynamic> followerList = json['followers'] ?? json['favorites'] ?? [];
+
     return FollowerResponse(
-      status: data['status'] ?? '',
-      count: data['count'] ?? 0,
-      followers: (data['data'] as List? ?? [])
-          .map((e) => FollowerModel.fromJson(e))
-          .toList(),
+      status: 'success', // Assuming success if we got here
+      message: '', 
+      total: json['total'] ?? 0,
+      perPage: json['per_page'] ?? 10,
+      currentPage: json['current_page'] ?? 1,
+      lastPage: json['last_page'] ?? 1,
+      followers: followerList.map((e) => FollowerModel.fromJson(e)).toList(),
     );
   }
 }

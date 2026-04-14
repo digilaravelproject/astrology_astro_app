@@ -24,6 +24,8 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
   final FollowerController followerController = Get.find<FollowerController>();
+  final ScrollController _followerScrollController = ScrollController();
+  final ScrollController _favoriteScrollController = ScrollController();
   
   // State for Always Online toggles
   final List<Map<String, dynamic>> _alwaysOnlineUsers = [
@@ -37,12 +39,21 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
-      // Clear search when switching tabs if needed
-      if (!_tabController.indexIsChanging) {
-        followerController.updateSearch('');
-        _searchController.clear();
+      // Do nothing on tab switch to preserve search and scroll state
+      // unless you specifically want to refresh data on every switch.
+    });
+
+    _followerScrollController.addListener(() {
+      if (_followerScrollController.position.pixels >= _followerScrollController.position.maxScrollExtent - 200) {
+        followerController.loadMoreFollowers();
+      }
+    });
+
+    _favoriteScrollController.addListener(() {
+      if (_favoriteScrollController.position.pixels >= _favoriteScrollController.position.maxScrollExtent - 200) {
+        followerController.loadMoreFavorites();
       }
     });
   }
@@ -51,6 +62,8 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
   void dispose() {
     _tabController.dispose();
     _searchController.dispose();
+    _followerScrollController.dispose();
+    _favoriteScrollController.dispose();
     super.dispose();
   }
 
@@ -70,7 +83,6 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
               children: [
                 _buildFollowersTab(),
                 _buildFavouritesTab(),
-                _buildAlwaysOnlineTab(),
               ],
             ),
           ),
@@ -117,17 +129,6 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
               ],
             ),
           ),
-          Tab(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('Online'),
-                const SizedBox(width: 2),
-                _buildCircularBadge('2164'),
-              ],
-            ),
-          ),
         ],
       ),
     );
@@ -162,7 +163,7 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
               return const Center(child: CircularProgressIndicator());
             }
             
-            final list = followerController.filteredFollowers;
+            final list = followerController.followers;
             
             if (list.isEmpty) {
               return Center(
@@ -183,9 +184,18 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
             }
 
             return ListView.builder(
+              controller: _followerScrollController,
               padding: const EdgeInsets.all(16),
-              itemCount: list.length,
+              itemCount: list.length + (followerController.isFollowerMoreLoading.value ? 1 : 0),
               itemBuilder: (context, index) {
+                if (index == list.length) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  );
+                }
                 final follower = list[index];
                 return Container(
                   margin: const EdgeInsets.only(bottom: 12),
@@ -245,7 +255,7 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
               return const Center(child: CircularProgressIndicator());
             }
             
-            final list = followerController.filteredFavorites;
+            final list = followerController.favorites;
             
             if (list.isEmpty) {
               return Center(
@@ -266,9 +276,18 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
             }
 
             return ListView.builder(
+              controller: _favoriteScrollController,
               padding: const EdgeInsets.all(16),
-              itemCount: list.length,
+              itemCount: list.length + (followerController.isFavoriteMoreLoading.value ? 1 : 0),
               itemBuilder: (context, index) {
+                if (index == list.length) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  );
+                }
                 final favorite = list[index];
                 return Container(
                   margin: const EdgeInsets.only(bottom: 12),
@@ -353,6 +372,7 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(30), borderSide: BorderSide(color: Colors.grey.shade300)),
           enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(30), borderSide: BorderSide(color: Colors.grey.shade300)),
+          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(30), borderSide: const BorderSide(color: AppColors.primaryColor, width: 1.5)),
         ),
       ),
     );
@@ -470,6 +490,7 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.grey.shade300)),
         enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.grey.shade300)),
+        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.primaryColor, width: 1.5)),
       ),
     );
   }

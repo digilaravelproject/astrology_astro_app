@@ -63,6 +63,46 @@ class UserModel {
     );
   }
 
+  UserModel copyWith({
+    int? id,
+    String? name,
+    String? email,
+    String? phone,
+    String? city,
+    String? country,
+    String? profilePhoto,
+    String? gender,
+    String? dateOfBirth,
+    String? timeOfBirth,
+    String? placeOfBirth,
+    String? languages,
+    bool? profileCompleted,
+    String? userType,
+    String? createdAt,
+    String? updatedAt,
+    AstrologerModel? astrologer,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      city: city ?? this.city,
+      country: country ?? this.country,
+      profilePhoto: profilePhoto ?? this.profilePhoto,
+      gender: gender ?? this.gender,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+      timeOfBirth: timeOfBirth ?? this.timeOfBirth,
+      placeOfBirth: placeOfBirth ?? this.placeOfBirth,
+      languages: languages ?? this.languages,
+      profileCompleted: profileCompleted ?? this.profileCompleted,
+      userType: userType ?? this.userType,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      astrologer: astrologer ?? this.astrologer,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -181,6 +221,62 @@ class AstrologerModel {
       otpExpiresAt: json['otp_expires_at'],
       createdAt: json['created_at'] ?? '',
       updatedAt: json['updated_at'] ?? '',
+    );
+  }
+
+  AstrologerModel copyWith({
+    int? id,
+    int? userId,
+    int? yearsOfExperience,
+    List<String>? areasOfExpertise,
+    List<String>? languages,
+    String? profilePhoto,
+    String? bio,
+    String? idProof,
+    String? certificate,
+    String? idProofNumber,
+    String? dateOfBirth,
+    String? status,
+    bool? isChatEnabled,
+    bool? isCallEnabled,
+    bool? isVideoCallEnabled,
+    String? chatRate,
+    String? callRate,
+    String? videoCallRate,
+    bool? po5Enabled,
+    String? po5UserRate,
+    String? po5AstrologerRate,
+    String? otpVerifiedAt,
+    String? otpExpiresAt,
+    String? createdAt,
+    String? updatedAt,
+  }) {
+    return AstrologerModel(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      yearsOfExperience: yearsOfExperience ?? this.yearsOfExperience,
+      areasOfExpertise: areasOfExpertise ?? this.areasOfExpertise,
+      languages: languages ?? this.languages,
+      profilePhoto: profilePhoto ?? this.profilePhoto,
+      bio: bio ?? this.bio,
+      idProof: idProof ?? this.idProof,
+      certificate: certificate ?? this.certificate,
+      idProofNumber: idProofNumber ?? this.idProofNumber,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+      status: status ?? this.status,
+      isChatEnabled: isChatEnabled ?? this.isChatEnabled,
+      isCallEnabled: isCallEnabled ?? this.isCallEnabled,
+      isVideoCallEnabled: isVideoCallEnabled ?? this.isVideoCallEnabled,
+      chatRate: chatRate ?? this.chatRate,
+      callRate: callRate ?? this.callRate,
+      videoCallRate: videoCallRate ?? this.videoCallRate,
+      po5Enabled: po5Enabled ?? this.po5Enabled,
+      po5UserRate: po5UserRate ?? this.po5UserRate,
+      po5AstrologerRate: po5AstrologerRate ?? this.po5AstrologerRate,
+      otpVerifiedAt: otpVerifiedAt ?? this.otpVerifiedAt,
+      otpExpiresAt: otpExpiresAt ?? this.otpExpiresAt,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 

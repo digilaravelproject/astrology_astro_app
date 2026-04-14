@@ -24,6 +24,7 @@ class AuthController extends GetxController {
   final UpdateProfileUseCase _updateProfileUseCase;
   final GetProfileUseCase _getProfileUseCase;
   final DeleteAccountUseCase _deleteAccountUseCase;
+  final ToggleOnlineUseCase _toggleOnlineUseCase;
 
   AuthController({
     required LoginUseCase loginUseCase,
@@ -39,6 +40,7 @@ class AuthController extends GetxController {
     required UpdateProfileUseCase updateProfileUseCase,
     required GetProfileUseCase getProfileUseCase,
     required DeleteAccountUseCase deleteAccountUseCase,
+    required ToggleOnlineUseCase toggleOnlineUseCase,
   })  : _loginUseCase = loginUseCase,
         _registerUseCase = registerUseCase,
         _verifyOtpUseCase = verifyOtpUseCase,
@@ -51,7 +53,8 @@ class AuthController extends GetxController {
         _updateProfilePhotoUseCase = updateProfilePhotoUseCase,
         _getProfileUseCase = getProfileUseCase,
         _updateProfileUseCase = updateProfileUseCase,
-        _deleteAccountUseCase = deleteAccountUseCase;
+        _deleteAccountUseCase = deleteAccountUseCase,
+        _toggleOnlineUseCase = toggleOnlineUseCase;
 
 
   final isLoading = false.obs;
@@ -171,7 +174,11 @@ class AuthController extends GetxController {
         CustomSnackBar.showSuccess(response.message);
         Get.toNamed(RouteHelper.getOtpRoute());
       } else {
-        CustomSnackBar.showError(response.message);
+        if (response.message == "Astrologer with this phone not found." || response.statusCode == 404) {
+          Get.toNamed(RouteHelper.getRegistrationNameRoute());
+        } else {
+          CustomSnackBar.showError(response.message);
+        }
       }
     } catch (e) {
       Logger.e('AuthController: sendOtp caught exception: $e');
@@ -424,6 +431,43 @@ class AuthController extends GetxController {
   }
 
 
+  Future<void> toggleOnline(bool isOnline, String type) async {
+    final originalUser = currentUser.value;
+    if (originalUser == null || originalUser.astrologer == null) return;
+
+    // Optimistic Update
+    final int onlineInt = isOnline ? 1 : 0;
+    AstrologerModel updatedAstro = originalUser.astrologer!;
+    
+    if (type == 'chat') {
+      updatedAstro = updatedAstro.copyWith(isChatEnabled: isOnline);
+    } else if (type == 'call') {
+      updatedAstro = updatedAstro.copyWith(isCallEnabled: isOnline);
+    } else if (type == 'video_call') {
+      updatedAstro = updatedAstro.copyWith(isVideoCallEnabled: isOnline);
+    }
+
+    currentUser.value = originalUser.copyWith(astrologer: updatedAstro);
+
+    try {
+      final response = await _toggleOnlineUseCase.execute(onlineInt, type);
+      if (response.isSuccess) {
+        // After successful toggle, fetch fresh profile data to keep app in sync
+        await getProfile(originalUser.id);
+        Logger.d('toggleOnline success for $type: $isOnline, Profile re-fetched.');
+      } else {
+        // Revert on failure
+        currentUser.value = originalUser;
+        CustomSnackBar.showError(response.message);
+      }
+    } catch (e) {
+      // Revert on error
+      currentUser.value = originalUser;
+      Logger.e('AuthController: toggleOnline error: $e');
+      CustomSnackBar.showError('Something went wrong');
+    }
+  }
+
   String? validateName(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your name';
@@ -558,5 +602,13 @@ class DeleteAccountUseCase {
 
   Future<ResponseModel> execute() async {
     return await _authService.deleteAccount();
+  }
+}
+
+class ToggleOnlineUseCase {
+  final AuthService _authService;
+  ToggleOnlineUseCase(this._authService);
+  Future<ResponseModel> execute(int isOnline, String type) async {
+    return await _authService.toggleOnline(isOnline, type);
   }
 }

@@ -16,7 +16,6 @@ import 'price_setting_screen.dart';
 import 'download_form_screen.dart';
 import 'pay_slip_screen.dart';
 import 'my_membership_screen.dart';
-import 'referral_screen.dart';
 import 'gallery_screen.dart';
 import 'invoice_screen.dart';
 import '../widgets/update_address_bottom_sheet.dart';
@@ -146,13 +145,6 @@ class SettingsScreen extends StatelessWidget {
               subtitle: 'Learn how to use the app effectively',
              // onTap: () => Get.to(() => const TrainingVideosListScreen()),
               onTap: () => Get.toNamed(AppRoutes.trainingVideosScreen),
-            ),
-            _item(
-              icon: Iconsax.gift_copy,
-              color: const Color(0xFFF9A825),
-              title: 'Refer and Earn',
-              subtitle: 'Invite colleagues and earn rewards',
-              onTap: () => Get.to(() => const ReferralScreen()),
               isLast: true,
             ),
           ]),

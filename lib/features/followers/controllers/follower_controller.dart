@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:get/get.dart';
 import '../domain/models/follower_model.dart';
 import '../domain/services/follower_service.dart';
@@ -21,22 +22,20 @@ class FollowerController extends GetxController {
   final followerCount = 0.obs;
   final favoriteCount = 0.obs;
 
+  // Pagination state
+  final followerCurrentPage = 1.obs;
+  final followerLastPage = 1.obs;
+  final isFollowerMoreLoading = false.obs;
+
+  final favoriteCurrentPage = 1.obs;
+  final favoriteLastPage = 1.obs;
+  final isFavoriteMoreLoading = false.obs;
+
+  final perPage = 10;
+
   // Search
   final searchQuery = ''.obs;
-
-  List<FollowerModel> get filteredFollowers {
-    if (searchQuery.isEmpty) return followers;
-    return followers
-        .where((f) => f.name.toLowerCase().contains(searchQuery.value.toLowerCase()))
-        .toList();
-  }
-
-  List<FollowerModel> get filteredFavorites {
-    if (searchQuery.isEmpty) return favorites;
-    return favorites
-        .where((f) => f.name.toLowerCase().contains(searchQuery.value.toLowerCase()))
-        .toList();
-  }
+  Timer? _searchTimer;
 
   @override
   void onInit() {
@@ -46,43 +45,96 @@ class FollowerController extends GetxController {
 
   Future<void> getAllData() async {
     await Future.wait([
-      getFollowers(),
-      getFavorites(),
+      getFollowers(reset: true),
+      getFavorites(reset: true),
     ]);
   }
 
-  Future<void> getFollowers() async {
+  Future<void> getFollowers({bool showLoading = true, bool reset = false}) async {
+    if (reset) {
+      followerCurrentPage.value = 1;
+    }
+
     try {
-      isLoading.value = true;
-      final response = await _getFollowersUseCase.execute();
+      if (showLoading && followers.isEmpty) isLoading.value = true;
+      final response = await _getFollowersUseCase.execute(
+        query: searchQuery.value,
+        page: followerCurrentPage.value,
+        perPage: perPage,
+      );
       if (response != null) {
-        followers.value = response.followers;
-        followerCount.value = response.count;
+        if (reset) {
+          followers.value = response.followers;
+        } else {
+          followers.addAll(response.followers);
+        }
+        followerCount.value = response.total;
+        followerLastPage.value = response.lastPage;
       }
     } catch (e) {
       print('FollowerController: getFollowers error: $e');
     } finally {
-      isLoading.value = false;
+      if (showLoading) isLoading.value = false;
     }
   }
 
-  Future<void> getFavorites() async {
+  Future<void> loadMoreFollowers() async {
+    if (isFollowerMoreLoading.value || followerCurrentPage.value >= followerLastPage.value) return;
+
     try {
-      isLoading.value = true;
-      final response = await _getFavoritesUseCase.execute();
+      isFollowerMoreLoading.value = true;
+      followerCurrentPage.value++;
+      await getFollowers(showLoading: false, reset: false);
+    } catch (e) {
+      print('FollowerController: loadMoreFollowers error: $e');
+    } finally {
+      isFollowerMoreLoading.value = false;
+    }
+  }
+
+  Future<void> getFavorites({bool showLoading = true, bool reset = false}) async {
+    if (reset) {
+      favoriteCurrentPage.value = 1;
+    }
+
+    try {
+      if (showLoading && favorites.isEmpty) isLoading.value = true;
+      final response = await _getFavoritesUseCase.execute(
+        query: searchQuery.value,
+        page: favoriteCurrentPage.value,
+        perPage: perPage,
+      );
       if (response != null) {
-        favorites.value = response.followers;
-        favoriteCount.value = response.count;
+        if (reset) {
+          favorites.value = response.followers;
+        } else {
+          favorites.addAll(response.followers);
+        }
+        favoriteCount.value = response.total;
+        favoriteLastPage.value = response.lastPage;
       }
     } catch (e) {
       print('FollowerController: getFavorites error: $e');
     } finally {
-      isLoading.value = false;
+      if (showLoading) isLoading.value = false;
+    }
+  }
+
+  Future<void> loadMoreFavorites() async {
+    if (isFavoriteMoreLoading.value || favoriteCurrentPage.value >= favoriteLastPage.value) return;
+
+    try {
+      isFavoriteMoreLoading.value = true;
+      favoriteCurrentPage.value++;
+      await getFavorites(showLoading: false, reset: false);
+    } catch (e) {
+      print('FollowerController: loadMoreFavorites error: $e');
+    } finally {
+      isFavoriteMoreLoading.value = false;
     }
   }
 
   Future<void> toggleLike(int userId) async {
-    // Optimistic update for the followers list
     final index = followers.indexWhere((f) => f.userId == userId);
     if (index != -1) {
       final follower = followers[index];
@@ -93,10 +145,8 @@ class FollowerController extends GetxController {
     try {
       final success = await _toggleLikeUseCase.execute(userId);
       if (success) {
-        // Refresh favorites list to show/remove the user
-        await getFavorites();
+        await getFavorites(showLoading: false, reset: true);
       } else {
-        // Revert optimistic update if failed
         if (index != -1) {
           final follower = followers[index];
           followers[index] = follower.copyWith(isLiked: !follower.isLiked);
@@ -105,7 +155,6 @@ class FollowerController extends GetxController {
       }
     } catch (e) {
       print('FollowerController: toggleLike error: $e');
-      // Revert optimistic update if error
       if (index != -1) {
         final follower = followers[index];
         followers[index] = follower.copyWith(isLiked: !follower.isLiked);
@@ -115,6 +164,17 @@ class FollowerController extends GetxController {
   }
 
   void updateSearch(String query) {
+    if (searchQuery.value == query) return;
     searchQuery.value = query;
+    _searchTimer?.cancel();
+    _searchTimer = Timer(const Duration(milliseconds: 500), () {
+      getAllData();
+    });
+  }
+
+  @override
+  void onClose() {
+    _searchTimer?.cancel();
+    super.onClose();
   }
 }

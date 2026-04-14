@@ -7,6 +7,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../controllers/auth_controller.dart';
+import '../../../core/utils/custom_snackbar.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({Key? key}) : super(key: key);
@@ -31,6 +32,34 @@ class _RegistrationScreenState extends State<RegistrationScreen>
   final _emailController = TextEditingController();
   final _cityController = TextEditingController();
   final _countryController = TextEditingController();
+
+  String? _nameError;
+  String? _mobileError;
+  String? _cityError;
+  String? _countryError;
+  String? _experienceError;
+  String? _expertiseError;
+  String? _languageError;
+  String? _idProofError;
+  String? _certificateError;
+  String? _docNumberError;
+  String? _dobError;
+
+  void _clearErrors() {
+    setState(() {
+      _nameError = null;
+      _mobileError = null;
+      _cityError = null;
+      _countryError = null;
+      _experienceError = null;
+      _expertiseError = null;
+      _languageError = null;
+      _idProofError = null;
+      _certificateError = null;
+      _docNumberError = null;
+      _dobError = null;
+    });
+  }
 
   // Step 2
   final _experienceController = TextEditingController();
@@ -69,6 +98,9 @@ class _RegistrationScreenState extends State<RegistrationScreen>
   @override
   void initState() {
     super.initState();
+    if (authController.mobileController.text.isNotEmpty) {
+      _mobileController.text = authController.mobileController.text;
+    }
     _progressController = AnimationController(
       vsync: this, duration: const Duration(milliseconds: 400),
     )..animateTo(1 / _totalSteps);
@@ -103,11 +135,82 @@ class _RegistrationScreenState extends State<RegistrationScreen>
 
   void _onNext() {
     FocusScope.of(context).unfocus();
+    if (!_isStepValid()) return;
+    
     if (_currentStep < _totalSteps - 1) {
       _goToStep(_currentStep + 1);
     } else {
       _submit();
     }
+  }
+
+  bool _isStepValid() {
+    _clearErrors();
+    bool isValid = true;
+    
+    switch (_currentStep) {
+      case 0: // Step 1: Basic Details
+        if (_nameController.text.trim().isEmpty) {
+          setState(() => _nameError = 'Please enter your full name');
+          isValid = false;
+        }
+        if (_mobileController.text.trim().length != 10) {
+          setState(() => _mobileError = 'Please enter a valid 10-digit mobile number');
+          isValid = false;
+        }
+        if (_cityController.text.trim().isEmpty) {
+          setState(() => _cityError = 'Please select your city');
+          isValid = false;
+        }
+        if (_countryController.text.trim().isEmpty) {
+          setState(() => _countryError = 'Please select your country');
+          isValid = false;
+        }
+        break;
+
+      case 1: // Step 2: Expertise
+        if (_experienceController.text.trim().isEmpty) {
+          setState(() => _experienceError = 'Please enter your years of experience');
+          isValid = false;
+        }
+        if (_selectedExpertise.isEmpty) {
+          setState(() => _expertiseError = 'Please select at least one area of expertise');
+          isValid = false;
+        }
+        break;
+
+      case 2: // Step 3: Languages
+        if (_selectedLanguages.isEmpty) {
+          setState(() => _languageError = 'Please select at least one language');
+          isValid = false;
+        }
+        break;
+
+      case 3: // Step 4: Profile
+        // Optional
+        break;
+
+      case 4: // Step 5: Documents
+        if (_idProofImage == null) {
+          setState(() => _idProofError = 'Please upload your ID Proof');
+          isValid = false;
+        }
+        if (_certificateImage == null) {
+          setState(() => _certificateError = 'Please upload your Certificate');
+          isValid = false;
+        }
+        if (_docNumberController.text.trim().isEmpty) {
+          setState(() => _docNumberError = 'Please enter your ID Proof number');
+          isValid = false;
+        }
+        if (_dobController.text.trim().isEmpty) {
+          setState(() => _dobError = 'Please select your Date of Birth');
+          isValid = false;
+        }
+        break;
+    }
+    
+    return isValid;
   }
 
   void _submit() {
@@ -138,7 +241,17 @@ class _RegistrationScreenState extends State<RegistrationScreen>
 
   Future<void> _pickDocImage(bool isId) async {
     final p = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
-    if (p != null) setState(() => isId ? _idProofImage = File(p.path) : _certificateImage = File(p.path));
+    if (p != null) {
+      setState(() {
+        if (isId) {
+          _idProofImage = File(p.path);
+          _idProofError = null;
+        } else {
+          _certificateImage = File(p.path);
+          _certificateError = null;
+        }
+      });
+    }
   }
 
   @override
@@ -251,11 +364,14 @@ class _RegistrationScreenState extends State<RegistrationScreen>
         children: [
           _card([
             _label('Full Name'),
-            _field(_nameController, 'e.g. Rajesh Kumar', Icons.person_outline_rounded),
+            _field(_nameController, 'e.g. Rajesh Kumar', Icons.person_outline_rounded,
+                errorText: _nameError, onChanged: (v) => setState(() => _nameError = null)),
             const SizedBox(height: 16),
             _label('Mobile Number'),
             _field(_mobileController, 'e.g. 9876543210', Icons.phone_outlined,
                 keyboard: TextInputType.phone,
+                errorText: _mobileError,
+                onChanged: (v) => setState(() => _mobileError = null),
                 formatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(10)]),
             const SizedBox(height: 16),
             _label('Email (Optional)'),
@@ -265,14 +381,18 @@ class _RegistrationScreenState extends State<RegistrationScreen>
           _card([
             _label('City'),
             GestureDetector(
-              onTap: () => _showSheet('Select City', _cities, (v) => setState(() => _cityController.text = v)),
-              child: AbsorbPointer(child: _field(_cityController, 'Select city', Icons.location_city_outlined, trailing: const Icon(Icons.expand_more, color: AppColors.primaryColor, size: 20))),
+              onTap: () => _showSheet('Select City', _cities, (v) => setState(() { _cityController.text = v; _cityError = null; })),
+              child: AbsorbPointer(child: _field(_cityController, 'Select city', Icons.location_city_outlined, 
+                  errorText: _cityError,
+                  trailing: const Icon(Icons.expand_more, color: AppColors.primaryColor, size: 20))),
             ),
             const SizedBox(height: 16),
             _label('Country'),
             GestureDetector(
-              onTap: () => _showSheet('Select Country', _countries, (v) => setState(() => _countryController.text = v)),
-              child: AbsorbPointer(child: _field(_countryController, 'Select country', Icons.flag_outlined, trailing: const Icon(Icons.expand_more, color: AppColors.primaryColor, size: 20))),
+              onTap: () => _showSheet('Select Country', _countries, (v) => setState(() { _countryController.text = v; _countryError = null; })),
+              child: AbsorbPointer(child: _field(_countryController, 'Select country', Icons.flag_outlined, 
+                  errorText: _countryError,
+                  trailing: const Icon(Icons.expand_more, color: AppColors.primaryColor, size: 20))),
             ),
           ]),
           const SizedBox(height: 80),
@@ -291,6 +411,8 @@ class _RegistrationScreenState extends State<RegistrationScreen>
             _label('Years of Experience'),
             _field(_experienceController, 'e.g. 5', Icons.timeline_outlined,
                 keyboard: TextInputType.number,
+                errorText: _experienceError,
+                onChanged: (v) => setState(() => _experienceError = null),
                 formatters: [FilteringTextInputFormatter.digitsOnly]),
           ]),
           const SizedBox(height: 14),
@@ -302,7 +424,10 @@ class _RegistrationScreenState extends State<RegistrationScreen>
               children: _allExpertise.map((e) {
                 final sel = _selectedExpertise.contains(e);
                 return GestureDetector(
-                  onTap: () => setState(() => sel ? _selectedExpertise.remove(e) : _selectedExpertise.add(e)),
+                  onTap: () => setState(() {
+                    sel ? _selectedExpertise.remove(e) : _selectedExpertise.add(e);
+                    _expertiseError = null;
+                  }),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 180),
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -319,6 +444,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                 );
               }).toList(),
             ),
+            _errorLabel(_expertiseError),
           ]),
           const SizedBox(height: 80),
         ],
@@ -344,7 +470,10 @@ class _RegistrationScreenState extends State<RegistrationScreen>
             final lang = _allLanguages[i];
             final sel = _selectedLanguages.contains(lang);
             return GestureDetector(
-              onTap: () => setState(() => sel ? _selectedLanguages.remove(lang) : _selectedLanguages.add(lang)),
+              onTap: () => setState(() {
+                sel ? _selectedLanguages.remove(lang) : _selectedLanguages.add(lang);
+                _languageError = null;
+              }),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 180),
                 decoration: BoxDecoration(
@@ -360,6 +489,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
             );
           },
         ),
+        _errorLabel(_languageError),
       ]),
     );
   }
@@ -448,16 +578,26 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                 Expanded(child: _docPicker('Certificate', _certificateImage, () => _pickDocImage(false))),
               ],
             ),
+            Row(
+              children: [
+                Expanded(child: _errorLabel(_idProofError)),
+                const SizedBox(width: 12),
+                Expanded(child: _errorLabel(_certificateError)),
+              ],
+            ),
           ]),
           const SizedBox(height: 14),
           _card([
             _label('ID Proof Number'),
-            _field(_docNumberController, 'Aadhaar / PAN', Icons.badge_outlined),
+            _field(_docNumberController, 'Aadhaar / PAN', Icons.badge_outlined,
+                errorText: _docNumberError,
+                onChanged: (v) => setState(() => _docNumberError = null)),
             const SizedBox(height: 16),
             _label('Date of Birth'),
             GestureDetector(
               onTap: _selectDate,
               child: AbsorbPointer(child: _field(_dobController, 'DD / MM / YYYY', Icons.calendar_today_outlined,
+                  errorText: _dobError,
                   trailing: const Icon(Icons.expand_more, color: AppColors.primaryColor, size: 20))),
             ),
           ]),
@@ -532,9 +672,12 @@ class _RegistrationScreenState extends State<RegistrationScreen>
     TextInputType? keyboard,
     List<TextInputFormatter>? formatters,
     Widget? trailing,
+    String? errorText,
+    ValueChanged<String>? onChanged,
   }) =>
       TextField(
         controller: controller,
+        onChanged: onChanged,
         keyboardType: keyboard,
         inputFormatters: formatters,
         style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
@@ -543,14 +686,26 @@ class _RegistrationScreenState extends State<RegistrationScreen>
           hintStyle: TextStyle(fontSize: 13, color: AppColors.textColorHint),
           prefixIcon: Icon(icon, color: AppColors.primaryColor, size: 20),
           suffixIcon: trailing,
+          errorText: errorText,
+          errorStyle: const TextStyle(fontSize: 11, height: 0.8),
           filled: true,
           fillColor: Colors.grey.shade50,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade200)),
           enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade200)),
+          errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.errorColor)),
+          focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.errorColor, width: 1.5)),
           focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.primaryColor, width: 1.5)),
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         ),
       );
+
+  Widget _errorLabel(String? error) {
+    if (error == null) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: 4, left: 4),
+      child: AppText(error, fontSize: 11, color: AppColors.errorColor),
+    );
+  }
 
   Widget _docPicker(String label, File? file, VoidCallback onTap) => GestureDetector(
     onTap: onTap,
@@ -655,9 +810,11 @@ class _RegistrationScreenState extends State<RegistrationScreen>
       ),
     );
     if (picked != null) {
-      setState(() => _dobController.text =
-         // '${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}');
-          '${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}');
+      setState(() {
+        _dobController.text =
+            '${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}';
+        _dobError = null;
+      });
     }
   }
 }

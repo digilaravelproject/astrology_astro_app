@@ -32,6 +32,7 @@ class AstrologerSkillsController extends GetxController {
   var heardAbout = ''.obs;
 
   var isLoading = false.obs;
+  var isLoadingSheet = false.obs;
 
   @override
   void onInit() {
@@ -64,9 +65,9 @@ class AstrologerSkillsController extends GetxController {
     }
   }
 
-  Future<void> updateSkills() async {
+  Future<bool> updateSkills({bool isSilent = false}) async {
     Logger.d('AstrologerSkillsController: updateSkills called');
-    isLoading.value = true;
+    if (!isSilent) isLoading.value = true;
     try {
       final model = AstrologerSkillsModel(
         category: selectedCategories.isNotEmpty ? selectedCategories[0] : '',
@@ -81,7 +82,7 @@ class AstrologerSkillsController extends GetxController {
       final response = await _updateUseCase.execute(model);
 
       if (response.isSuccess) {
-        CustomSnackBar.showSuccess('Skills updated successfully');
+        CustomSnackBar.showSuccess('Updated successfully');
         
         // Refresh profile to get updated data
         final authController = Get.find<AuthController>();
@@ -91,17 +92,18 @@ class AstrologerSkillsController extends GetxController {
           // Save updated user data to SharedPreferences
           await Get.find<AuthService>().saveUserInfo(authController.currentUser.value!);
           Logger.d('AstrologerSkillsController: Updated data saved to SharedPreferences');
-          Logger.d('Updated Skills: ${selectedPrimarySkills.value}');
-          Logger.d('Updated Languages: ${selectedLanguages.value}');
         }
+        return true;
       } else {
         CustomSnackBar.showError(response.message);
+        return false;
       }
     } catch (e) {
       Logger.e('AstrologerSkillsController: updateSkills error: $e');
       CustomSnackBar.showError('Update failed: $e');
+      return false;
     } finally {
-      isLoading.value = false;
+      if (!isSilent) isLoading.value = false;
     }
   }
 
@@ -194,15 +196,28 @@ class AstrologerSkillsController extends GetxController {
                   ),
                 ),
                 const SizedBox(height: 24),
-                CustomButton(
+                Obx(() => CustomButton(
                   text: 'Save Selection',
-                  onPressed: () {
+                  onPressed: () async {
+                    isLoadingSheet.value = true;
+                    // Update the value temporarily to send to API
+                    final oldValues = List<String>.from(currentValues);
                     currentValues.value = tempSelected;
-                    Get.back();
+                    
+                    final success = await updateSkills(isSilent: true);
+                    
+                    isLoadingSheet.value = false;
+                    if (success) {
+                      Get.back();
+                    } else {
+                      // Revert if failed
+                      currentValues.value = oldValues;
+                    }
                   },
+                  isLoading: isLoadingSheet.value,
                   backgroundColor: AppColors.primaryColor,
                   borderRadius: 100,
-                ),
+                )),
                 const SizedBox(height: 10),
               ],
             ),
@@ -258,15 +273,26 @@ class AstrologerSkillsController extends GetxController {
                 ),
               ),
               const SizedBox(height: 24),
-              CustomButton(
+              Obx(() => CustomButton(
                 text: 'Save Changes',
-                onPressed: () {
+                onPressed: () async {
+                  isLoadingSheet.value = true;
+                  final oldValue = currentValue.value;
                   currentValue.value = controller.text;
-                  Get.back();
+                  
+                  final success = await updateSkills(isSilent: true);
+                  
+                  isLoadingSheet.value = false;
+                  if (success) {
+                    Get.back();
+                  } else {
+                    currentValue.value = oldValue;
+                  }
                 },
+                isLoading: isLoadingSheet.value,
                 backgroundColor: AppColors.primaryColor,
                 borderRadius: 100,
-              ),
+              )),
               const SizedBox(height: 20),
             ],
           ),
@@ -305,9 +331,19 @@ class AstrologerSkillsController extends GetxController {
                   final option = options[index];
                   final isSelected = option == currentValue.value;
                   return InkWell(
-                    onTap: () {
+                    onTap: () async {
+                      isLoadingSheet.value = true;
+                      final oldValue = currentValue.value;
                       currentValue.value = option;
-                      Get.back();
+                      
+                      final success = await updateSkills(isSilent: true);
+                      
+                      isLoadingSheet.value = false;
+                      if (success) {
+                        Get.back();
+                      } else {
+                        currentValue.value = oldValue;
+                      }
                     },
                     borderRadius: BorderRadius.circular(12),
                     child: Container(
