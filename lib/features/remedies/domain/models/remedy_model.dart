@@ -27,7 +27,13 @@ class RemedyModel {
       if (imagePath.startsWith('http')) {
         fullImageUrl = imagePath;
       } else {
-        fullImageUrl = "${AppUrls.baseImageUrl}$imagePath";
+        // Clean leading slashes and storage/ prefix
+        String cleanedPath = imagePath;
+        if (cleanedPath.startsWith('/')) cleanedPath = cleanedPath.substring(1);
+        if (cleanedPath.startsWith('storage/')) cleanedPath = cleanedPath.replaceFirst('storage/', '');
+        if (cleanedPath.startsWith('/')) cleanedPath = cleanedPath.substring(1);
+        
+        fullImageUrl = "${AppUrls.baseImageUrl}$cleanedPath";
       }
     }
 

@@ -20,7 +20,10 @@ class TrainingVideoController extends GetxController {
       final response = await _useCase.execute(type);
 
       if (response.isSuccess && response.body != null) {
-        final dynamic videosData = response.body['videos'];
+        // Handle nested 'data' key if present
+        final dynamic bodyData = response.body['data'] ?? response.body;
+        final dynamic videosData = bodyData['videos'];
+        
         final List list = videosData is List
             ? videosData
             : (videosData != null ? [videosData] : []);

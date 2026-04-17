@@ -17,7 +17,13 @@ class GalleryImage {
 
   factory GalleryImage.fromJson(Map<String, dynamic> json) {
     String imagePath = json['image_path']?.toString() ?? '';
+    
     if (imagePath.isNotEmpty && !imagePath.startsWith('http')) {
+      // Clean leading slashes and storage/ prefix
+      if (imagePath.startsWith('/')) imagePath = imagePath.substring(1);
+      if (imagePath.startsWith('storage/')) imagePath = imagePath.replaceFirst('storage/', '');
+      if (imagePath.startsWith('/')) imagePath = imagePath.substring(1);
+      
       imagePath = AppUrls.baseImageUrl + imagePath;
     }
     

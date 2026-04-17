@@ -70,16 +70,7 @@ class ImportantNumbersScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: AppText(title, fontSize: 16, fontWeight: FontWeight.bold, color: const Color(0xFF2E1A47), overflow: TextOverflow.ellipsis),
-                  ),
-                  const SizedBox(width: 8),
-                  _buildAddContactButton(),
-                ],
-              ),
+              AppText(title, fontSize: 16, fontWeight: FontWeight.bold, color: const Color(0xFF2E1A47), overflow: TextOverflow.ellipsis),
               const SizedBox(height: 8),
               AppText(
                 numbers.join('\n'),
@@ -93,23 +84,6 @@ class ImportantNumbersScreen extends StatelessWidget {
         ),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF0F0F0)),
       ],
-    );
-  }
-
-  Widget _buildAddContactButton() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: AppColors.primaryColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.primaryColor.withOpacity(0.2)),
-      ),
-      child: const AppText(
-        'Add Contact',
-        fontSize: 11,
-        fontWeight: FontWeight.bold,
-        color: AppColors.primaryColor,
-      ),
     );
   }
 }

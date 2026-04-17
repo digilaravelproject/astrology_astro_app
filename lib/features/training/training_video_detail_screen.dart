@@ -206,8 +206,9 @@ class _TrainingVideoDetailScreenState extends State<TrainingVideoDetailScreen>
               onTap: () {
                 final url = _controller.video.value?.videoUrl ??
                     widget.preloadedVideo?.videoUrl ?? '';
-                // Use test URL for demo
-                _initializePlayer('https://www.w3schools.com/html/mov_bbb.mp4');
+                if (url.isNotEmpty) {
+                  _initializePlayer(AppUrls.baseImageUrl + url);
+                }
               },
               child: ScaleTransition(
                 scale: _pulseAnimation,
