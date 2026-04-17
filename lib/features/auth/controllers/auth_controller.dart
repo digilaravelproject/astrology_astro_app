@@ -9,6 +9,8 @@ import '../domain/models/user_model.dart';
 import '../../../routes/route_helper.dart';
 import '../../../core/utils/logger.dart';
 import '../domain/services/auth_service.dart';
+import '../../profile/model/other_details_model.dart';
+import '../../profile/model/skill_model.dart';
 
 class AuthController extends GetxController {
   final LoginUseCase _loginUseCase;
@@ -58,6 +60,7 @@ class AuthController extends GetxController {
 
 
   final isLoading = false.obs;
+  final togglingServices = <String>{}.obs;
   final currentMobile = ''.obs;
   Rx<UserModel?> currentUser = Rx<UserModel?>(null);
 
@@ -262,9 +265,34 @@ class AuthController extends GetxController {
       isLoading.value = true;
       final response = await _getProfileUseCase.execute(id);
       if (response.isSuccess && response.body != null) {
-        final userData = response.body['user'];
+        // Log the root to be sure
+        final Map<String, dynamic> body = response.body is Map ? Map<String, dynamic>.from(response.body) : {};
+        Logger.d('AuthController: getProfile FULL BODY KEYS: ${body.keys.toList()}');
+        
+        // Structure is usually {status: success, data: {user: ..., astrologer: ..., other_details: ...}}
+        final Map<String, dynamic> data = body['data'] is Map ? Map<String, dynamic>.from(body['data']) : body;
+        final userData = data['user'];
+
         if (userData != null) {
-          currentUser.value = UserModel.fromJson(userData);
+          UserModel user = UserModel.fromJson(userData);
+          
+          // Patch otherDetails from any available level
+          if (user.astrologer != null) {
+             final otherData = user.astrologer?.otherDetails ?? data['other_details'] ?? data['other-details'];
+             if (otherData != null) {
+               Logger.d('AuthController: Successfully found other_details. Applying to model...');
+               final otherModel = otherData is OtherDetailsModel ? otherData : OtherDetailsModel.fromJson(otherData is Map ? Map<String, dynamic>.from(otherData) : {});
+               
+               user = user.copyWith(
+                 astrologer: user.astrologer!.copyWith(
+                   otherDetails: otherModel,
+                 ),
+               );
+             }
+          }
+          
+          currentUser.value = user;
+          Logger.d('AuthController: Profile synced. Has otherDetails: ${currentUser.value?.astrologer?.otherDetails != null}');
         }
       } else {
         CustomSnackBar.showError(response.message);
@@ -450,6 +478,7 @@ class AuthController extends GetxController {
     currentUser.value = originalUser.copyWith(astrologer: updatedAstro);
 
     try {
+      togglingServices.add(type);
       final response = await _toggleOnlineUseCase.execute(onlineInt, type);
       if (response.isSuccess) {
         // After successful toggle, fetch fresh profile data to keep app in sync
@@ -465,6 +494,8 @@ class AuthController extends GetxController {
       currentUser.value = originalUser;
       Logger.e('AuthController: toggleOnline error: $e');
       CustomSnackBar.showError('Something went wrong');
+    } finally {
+      togglingServices.remove(type);
     }
   }
 

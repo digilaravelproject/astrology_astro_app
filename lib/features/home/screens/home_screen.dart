@@ -297,7 +297,8 @@ class _HomeScreenState extends State<HomeScreen> {
             _buildServiceRow(
               'Chat', 
               '₹${astro.chatRate}/min', 
-              'Last active: 09 Feb, 06:35 PM', 
+              astro.isChatEnabled ? 'Online' : 'Offline', 
+              'chat',
               astro.isChatEnabled, 
               (v) => authController.toggleOnline(v, 'chat'),
             ),
@@ -305,7 +306,8 @@ class _HomeScreenState extends State<HomeScreen> {
             _buildServiceRow(
               'Call', 
               '₹${astro.callRate}/min', 
-              'Last active: 09 Feb, 06:35 PM', 
+              astro.isCallEnabled ? 'Online' : 'Offline', 
+              'call',
               astro.isCallEnabled, 
               (v) => authController.toggleOnline(v, 'call'),
             ),
@@ -314,6 +316,7 @@ class _HomeScreenState extends State<HomeScreen> {
               'Video Call', 
               '₹${astro.videoCallRate}/min', 
               astro.isVideoCallEnabled ? 'Online' : 'Offline', 
+              'video_call',
               astro.isVideoCallEnabled, 
               (v) => authController.toggleOnline(v, 'video_call'),
             ),
@@ -325,7 +328,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _divider() => Divider(height: 32, color: Colors.grey.withOpacity(0.1));
 
-  Widget _buildServiceRow(String title, String price, String status, bool value, ValueChanged<bool> onChanged) {
+  Widget _buildServiceRow(String title, String price, String status, String type, bool value, ValueChanged<bool> onChanged) {
     return Row(
       children: [
         Expanded(
@@ -338,15 +341,36 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-        Transform.scale(
-          scale: 0.8,
-          child: Switch(
-            value: value,
-            onChanged: onChanged,
-            activeColor: Colors.white,
-            activeTrackColor: AppColors.primaryColor,
-          ),
-        ),
+        Obx(() {
+          final isToggling = authController.togglingServices.contains(type);
+          
+          if (isToggling) {
+            return const SizedBox(
+              width: 51,
+              height: 31,
+              child: Center(
+                child: SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryColor),
+                  ),
+                ),
+              ),
+            );
+          }
+          
+          return Transform.scale(
+            scale: 0.8,
+            child: Switch(
+              value: value,
+              onChanged: onChanged,
+              activeColor: Colors.white,
+              activeTrackColor: AppColors.primaryColor,
+            ),
+          );
+        }),
         const SizedBox(width: 8),
         AppText(status, fontSize: 11, color: Colors.grey.shade500, fontWeight: FontWeight.w500),
       ],
@@ -798,14 +822,14 @@ class _HomeScreenState extends State<HomeScreen> {
         textColor: const Color(0xFF3B5BDB),
         onTap: () => Get.to(() => const WaitlistScreen()),
       ),
-      _MenuData(
+      /*_MenuData(
         title: 'Assistant Chat',
         icon: Iconsax.cpu_setting_copy,
         bgColor: const Color(0xFFF3EEFF),
         iconBgColor: const Color(0xFFE5D7FF),
         textColor: const Color(0xFF7C3AED),
         onTap: () => Get.to(() => const AssistantChatScreen()),
-      ),
+      ),*/
       _MenuData(
         title: 'Suggested Remedies',
         icon: Iconsax.clipboard_text_copy,
@@ -857,14 +881,14 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: () => Get.to(() => const BlogScreen()),
       ),
       // Commerce
-      _MenuData(
+      /*_MenuData(
         title: 'Astromall',
         icon: Iconsax.shop_copy,
         bgColor: const Color(0xFFF9F0FF),
         iconBgColor: const Color(0xFFEDD9FF),
         textColor: const Color(0xFF8B2FC9),
         onTap: () => Get.to(() => const AstromallOrdersScreen()),
-      ),
+      ),*/
       _MenuData(
         title: 'Offers',
         icon: Iconsax.tag_copy,

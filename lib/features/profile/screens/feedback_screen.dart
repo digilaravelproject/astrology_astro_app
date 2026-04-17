@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_app_bar.dart';
+import '../../../core/utils/custom_snackbar.dart';
+import '../../support/presentation/controllers/support_controller.dart';
 
 class FeedbackScreen extends StatefulWidget {
   const FeedbackScreen({super.key});
@@ -14,6 +15,7 @@ class FeedbackScreen extends StatefulWidget {
 }
 
 class _FeedbackScreenState extends State<FeedbackScreen> {
+  final SupportController controller = Get.find<SupportController>();
   int _rating = 0;
   final TextEditingController _feedbackController = TextEditingController();
 
@@ -90,32 +92,25 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               ),
             ),
             const SizedBox(height: 48),
-            CustomButton(
+            Obx(() => CustomButton(
               text: "Submit Feedback",
-              onPressed: () {
+              isLoading: controller.isFeedbackSubmitting.value,
+              onPressed: () async {
                 if (_rating == 0) {
-                  Get.snackbar(
-                    "Rating Required", 
-                    "Please select a star rating",
-                    snackPosition: SnackPosition.BOTTOM,
-                    margin: const EdgeInsets.all(20),
-                    backgroundColor: Colors.red.withOpacity(0.1),
-                    colorText: Colors.red,
-                  );
+                  CustomSnackBar.showError("Please select a star rating", title: "Rating Required");
                   return;
                 }
-                Get.back();
-                Get.snackbar(
-                  "Thank You", 
-                  "Your feedback has been submitted successfully!", 
-                  backgroundColor: Colors.green.withOpacity(0.1),
-                  colorText: Colors.green,
-                  snackPosition: SnackPosition.BOTTOM,
-                  margin: const EdgeInsets.all(20),
-                  duration: const Duration(seconds: 3),
-                );
+                
+                final success = await controller.submitFeedback(_rating, _feedbackController.text);
+                
+                if (success) {
+                  Get.back();
+                  CustomSnackBar.showSuccess("Your feedback has been submitted successfully!");
+                } else {
+                  CustomSnackBar.showError("Failed to submit feedback. Please try again.");
+                }
               },
-            ),
+            )),
           ],
         ),
       ),

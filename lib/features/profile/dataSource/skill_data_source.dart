@@ -18,8 +18,7 @@ class AstrologerSkillsRemoteDataSource {
  // OtherDetailsRemoteDataSource(this._apiClient);
 
   Future<ResponseModel> updateOtherDetails(Map<String, dynamic> data) async {
-    const path = '/api/v1/astrologer/profile/other-details';
-    return await _apiClient.put(path, data: data);
+    return await _apiClient.put(AppUrls.updateOtherDetails, data: data);
   }
 
 }

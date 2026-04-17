@@ -81,7 +81,7 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
                       
                       controller.isLoadingSheet.value = false;
                       if (success) {
-                        Get.back();
+                        if (mounted) Navigator.pop(context);
                       } else {
                         currentValue.value = oldValue;
                       }
@@ -199,7 +199,7 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
                   
                   controller.isLoadingSheet.value = false;
                   if (success) {
-                    Get.back();
+                    if (mounted) Navigator.pop(context);
                   } else {
                     currentValue.value = oldValue;
                   }
@@ -237,14 +237,15 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
               iconColor: const Color(0xFF2196F3),
               backgroundColor: const Color(0xFFE3F2FD),
               onTap: () async {
+                final eighteenYearsAgo = DateTime(DateTime.now().year - 18, DateTime.now().month, DateTime.now().day);
                 final date = await showDatePicker(
                   context: context,
-                  initialDate: DateTime.now(),
+                  initialDate: eighteenYearsAgo,
                   firstDate: DateTime(1950),
-                  lastDate: DateTime.now(),
+                  lastDate: eighteenYearsAgo,
                 );
                 if (date != null) {
-                  final formattedDate = "${date.day} ${_getMonthName(date.month)} ${date.year}";
+                  final formattedDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
                   final oldValue = controller.dateOfBirth.value;
                   controller.dateOfBirth.value = formattedDate;
                   

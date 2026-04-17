@@ -21,8 +21,10 @@ class FAQModel {
   });
 
   factory FAQModel.fromJson(Map<String, dynamic> json) {
-    // The response has "page" object within "data"
-    final page = json['page'] ?? json;
+    // Handle different response structures: data.page or page or root
+    final Map<String, dynamic> data = json['data'] is Map ? json['data'] : json;
+    final Map<String, dynamic> page = data['page'] is Map ? data['page'] : data;
+    
     final content = page['content']?.toString() ?? '';
     return FAQModel(
       id: page['id'] is int ? page['id'] : int.tryParse(page['id'].toString()) ?? 0,

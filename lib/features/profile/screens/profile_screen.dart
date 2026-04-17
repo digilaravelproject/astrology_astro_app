@@ -185,6 +185,11 @@ class ProfileScreen extends StatelessWidget {
           onTap: () => Get.toNamed(AppRoutes.otherDetailsScreen),
         ),
         _buildMenuItem(
+          icon: Iconsax.gallery_copy,
+          title: 'Gallery',
+          onTap: () => Get.toNamed(AppRoutes.gallery),
+        ),
+        _buildMenuItem(
           icon: Iconsax.people_copy,
           title: 'My Community',
           onTap: () => Get.to(() => const MyFollowersScreen()),
@@ -199,7 +204,7 @@ class ProfileScreen extends StatelessWidget {
         _buildMenuItem(
           icon: Iconsax.star_copy,
           title: 'My Reviews',
-          onTap: () => Get.to(() => const MyReviewsScreen()),
+          onTap: () => Get.toNamed(AppRoutes.myReviews),
         ),
         _buildMenuItem(
           icon: Iconsax.chart_copy,
@@ -230,16 +235,12 @@ class ProfileScreen extends StatelessWidget {
         _buildMenuItem(
           icon: Iconsax.message_copy,
           title: 'Feedback',
-          onTap: () => Get.to(() => const FeedbackScreen()),
+          onTap: () => Get.toNamed(AppRoutes.feedback),
         ),
         _buildMenuItem(
           icon: Iconsax.info_circle_copy,
           title: 'About us',
-          onTap: () => Get.to(() => const SimpleContentScreen(
-                title: 'About us',
-                content:
-                    'We are a leading astrology platform connecting world-class experts with users globally...',
-              )),
+          onTap: () => Get.toNamed(AppRoutes.aboutUs),
         ),
         _buildMenuItem(
           icon: Iconsax.like_1_copy,

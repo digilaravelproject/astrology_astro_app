@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 import '../../domain/models/phone_number_model.dart';
 import '../../domain/usecases/get_phone_numbers_usecase.dart';
 import '../../domain/usecases/add_phone_number_usecase.dart';
@@ -39,23 +39,11 @@ class PhoneNumberController extends GetxController {
         print('[PHONE] Loaded ${phoneNumbers.length} phone numbers');
       } else {
         print('[PHONE] Failed to get phone numbers: ${result.message}');
-        Get.snackbar(
-          'Error',
-          result.message ?? 'Failed to fetch phone numbers',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.withOpacity(0.1),
-          colorText: Colors.red,
-        );
+        CustomSnackBar.showError(result.message ?? 'Failed to fetch phone numbers');
       }
     } catch (e) {
       print('[PHONE] Exception in getPhoneNumbers: $e');
-      Get.snackbar(
-        'Error',
-        'Something went wrong: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.1),
-        colorText: Colors.red,
-      );
+      CustomSnackBar.showError('Something went wrong: ${e.toString()}');
     } finally {
       isLoading.value = false;
     }
@@ -70,33 +58,15 @@ class PhoneNumberController extends GetxController {
 
       if (result.isSuccess) {
         print('[PHONE] Phone number added successfully');
-        Get.snackbar(
-          'Success',
-          result.message ?? 'Phone number added successfully',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.withOpacity(0.1),
-          colorText: Colors.green,
-        );
+        CustomSnackBar.showSuccess(result.message ?? 'Phone number added successfully');
         await getPhoneNumbers();
       } else {
         print('[PHONE] Failed to add: ${result.message}');
-        Get.snackbar(
-          'Error',
-          result.message ?? 'Failed to add phone number',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.withOpacity(0.1),
-          colorText: Colors.red,
-        );
+        CustomSnackBar.showError(result.message ?? 'Failed to add phone number');
       }
     } catch (e) {
       print('[PHONE] Exception in addPhoneNumber: $e');
-      Get.snackbar(
-        'Error',
-        'Something went wrong: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.1),
-        colorText: Colors.red,
-      );
+      CustomSnackBar.showError('Something went wrong: ${e.toString()}');
     } finally {
       isAdding.value = false;
     }
@@ -110,33 +80,15 @@ class PhoneNumberController extends GetxController {
 
       if (result.isSuccess) {
         print('[PHONE] Default phone number set successfully');
-        Get.snackbar(
-          'Success',
-          result.message ?? 'Default phone number set successfully',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.withOpacity(0.1),
-          colorText: Colors.green,
-        );
+        CustomSnackBar.showSuccess(result.message ?? 'Default phone number set successfully');
         await getPhoneNumbers();
       } else {
         print('[PHONE] Failed to set default: ${result.message}');
-        Get.snackbar(
-          'Error',
-          result.message ?? 'Failed to set default',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.withOpacity(0.1),
-          colorText: Colors.red,
-        );
+        CustomSnackBar.showError(result.message ?? 'Failed to set default');
       }
     } catch (e) {
       print('[PHONE] Exception in setDefaultPhoneNumber: $e');
-      Get.snackbar(
-        'Error',
-        'Something went wrong: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.1),
-        colorText: Colors.red,
-      );
+      CustomSnackBar.showError('Something went wrong: ${e.toString()}');
     }
   }
 }

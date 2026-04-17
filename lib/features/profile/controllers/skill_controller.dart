@@ -47,18 +47,17 @@ class AstrologerSkillsController extends GetxController {
     if (user != null && user.astrologer != null) {
       final ast = user.astrologer!;
       // Map existing data from AuthController
-      selectedCategories.value = ast.areasOfExpertise.take(1).toList(); // Assuming category is the first area of expertise for now
-      selectedPrimarySkills.value = ast.areasOfExpertise; 
-      selectedLanguages.value = ast.languages;
-      experienceYears.value = ast.yearsOfExperience.toString();
+      selectedCategories.value = ast.skill?.category != null ? [ast.skill!.category] : (ast.areasOfExpertise.take(1).toList());
+      selectedPrimarySkills.value = ast.skill?.primarySkills ?? ast.areasOfExpertise; 
+      selectedLanguages.value = ast.skill?.languages ?? ast.languages;
+      experienceYears.value = (ast.skill?.experienceYears ?? ast.yearsOfExperience).toString();
       
-      // These fields might not be in AstrologerModel yet, so we use defaults or previous values if any
-      // In a real app, these would come from the API
-      selectedAllSkills.value = ['Prashana']; 
-      dailyContributionHours.value = '10';
-      heardAbout.value = 'Youtube';
+      // These fields now come from the nested skill object
+      selectedAllSkills.value = ast.skill?.allSkills ?? ['Prashana']; 
+      dailyContributionHours.value = (ast.skill?.dailyContributionHours ?? 10).toString();
+      heardAbout.value = ast.skill?.heardAbout ?? 'Youtube';
       
-      Logger.d('AstrologerSkillsController: Data loaded from AuthController');
+      Logger.d('AstrologerSkillsController: Data loaded from AuthController (nested skill object)');
       Logger.d('Skills: ${selectedPrimarySkills.value}');
       Logger.d('Languages: ${selectedLanguages.value}');
       Logger.d('Experience: ${experienceYears.value}');
@@ -208,7 +207,7 @@ class AstrologerSkillsController extends GetxController {
                     
                     isLoadingSheet.value = false;
                     if (success) {
-                      Get.back();
+                      Navigator.pop(Get.context!);
                     } else {
                       // Revert if failed
                       currentValues.value = oldValues;
@@ -284,7 +283,7 @@ class AstrologerSkillsController extends GetxController {
                   
                   isLoadingSheet.value = false;
                   if (success) {
-                    Get.back();
+                    Navigator.pop(Get.context!);
                   } else {
                     currentValue.value = oldValue;
                   }
@@ -340,7 +339,7 @@ class AstrologerSkillsController extends GetxController {
                       
                       isLoadingSheet.value = false;
                       if (success) {
-                        Get.back();
+                        Navigator.pop(Get.context!);
                       } else {
                         currentValue.value = oldValue;
                       }

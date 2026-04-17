@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'package:astro_astrologer/features/profile/model/skill_model.dart';
+import 'package:astro_astrologer/features/profile/model/other_details_model.dart';
+import '../../../../core/utils/logger.dart';
 
 class UserModel {
   final int id;
@@ -40,7 +43,7 @@ class UserModel {
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
+    final user = UserModel(
       id: json['id'] ?? 0,
       name: json['name'] ?? '',
       email: json['email'] ?? '',
@@ -61,6 +64,9 @@ class UserModel {
           ? AstrologerModel.fromJson(json['astrologer']) 
           : null,
     );
+    Logger.d('UserModel.fromJson keys: ${json.keys.toList()}');
+    Logger.d('UserModel.fromJson: Mapping complete. id: ${user.id}, Has astrologer: ${user.astrologer != null}');
+    return user;
   }
 
   UserModel copyWith({
@@ -161,6 +167,8 @@ class AstrologerModel {
   final String? otpExpiresAt;
   final String createdAt;
   final String updatedAt;
+  final AstrologerSkillsModel? skill;
+  final OtherDetailsModel? otherDetails;
 
   AstrologerModel({
     required this.id,
@@ -188,10 +196,12 @@ class AstrologerModel {
     this.otpExpiresAt,
     required this.createdAt,
     required this.updatedAt,
+    this.skill,
+    this.otherDetails,
   });
 
   factory AstrologerModel.fromJson(Map<String, dynamic> json) {
-    return AstrologerModel(
+    final ast = AstrologerModel(
       id: json['id'] ?? 0,
       userId: json['user_id'] ?? 0,
       yearsOfExperience: json['years_of_experience'] ?? 0,
@@ -221,7 +231,12 @@ class AstrologerModel {
       otpExpiresAt: json['otp_expires_at'],
       createdAt: json['created_at'] ?? '',
       updatedAt: json['updated_at'] ?? '',
+      skill: json['skill'] != null ? AstrologerSkillsModel.fromJson(json['skill']) : null,
+      otherDetails: json['other_details'] != null ? OtherDetailsModel.fromJson(json['other_details']) : null,
     );
+    Logger.d('AstrologerModel.fromJson keys: ${json.keys.toList()}');
+    Logger.d('AstrologerModel.fromJson: Mapping complete. id: ${ast.id}, Has otherDetails: ${ast.otherDetails != null}');
+    return ast;
   }
 
   AstrologerModel copyWith({
@@ -250,6 +265,8 @@ class AstrologerModel {
     String? otpExpiresAt,
     String? createdAt,
     String? updatedAt,
+    AstrologerSkillsModel? skill,
+    OtherDetailsModel? otherDetails,
   }) {
     return AstrologerModel(
       id: id ?? this.id,
@@ -277,6 +294,8 @@ class AstrologerModel {
       otpExpiresAt: otpExpiresAt ?? this.otpExpiresAt,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      skill: skill ?? this.skill,
+      otherDetails: otherDetails ?? this.otherDetails,
     );
   }
 
@@ -307,6 +326,8 @@ class AstrologerModel {
       'otp_expires_at': otpExpiresAt,
       'created_at': createdAt,
       'updated_at': updatedAt,
+      'skill': skill?.toJson(),
+      'other_details': otherDetails?.toJson(),
     };
   }
 }

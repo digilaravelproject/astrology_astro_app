@@ -96,13 +96,13 @@ class SettingsScreen extends StatelessWidget {
               subtitle: 'Download your monthly pay slips',
               onTap: () => Get.to(() => const PaySlipScreen()),
             ),
-            _item(
+            /*_item(
               icon: Iconsax.document_download_copy,
               color: const Color(0xFF0288D1),
               title: 'Download Form 16A',
               subtitle: 'Download your tax related forms',
               onTap: () => Get.to(() => const DownloadFormScreen()),
-            ),
+            ),*/
             _item(
               icon: Iconsax.document_text_copy,
               color: const Color(0xFF546E7A),
@@ -166,7 +166,7 @@ class SettingsScreen extends StatelessWidget {
               color: const Color(0xFF0D9D57),
               title: 'Customer Support',
               subtitle: 'Talk to our support team',
-              onTap: () => Get.to(() => const HelpSupportScreen()),
+              onTap: () => Get.toNamed(AppRoutes.customerSupport),
             ),
             _item(
               icon: Iconsax.message_question_copy,

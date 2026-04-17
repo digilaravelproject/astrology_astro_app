@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import 'dart:io';
+import 'package:intl/intl.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_app_bar.dart';
+import '../controllers/review_controller.dart';
+import '../model/review_model.dart';
+import '../../../core/constants/app_urls.dart';
+import '../../../core/utils/custom_snackbar.dart';
 
 class MyReviewsScreen extends StatefulWidget {
   const MyReviewsScreen({super.key});
@@ -14,134 +19,52 @@ class MyReviewsScreen extends StatefulWidget {
 }
 
 class _MyReviewsScreenState extends State<MyReviewsScreen> {
+  final ReviewController controller = Get.find<ReviewController>();
   String _selectedCategory = 'All';
   final List<String> _categories = ['All', 'Call', 'Chat', 'Astromall'];
-
-  final List<Map<String, dynamic>> _reviews = [
-    {
-      'orderId': '315206343',
-      'user': 'Rahul',
-      'type': 'Chat',
-      'date': '19 Feb 2026',
-      'rating': 5,
-      'content': '',
-      'isPinned': false,
-      'isFlagged': false,
-    },
-    {
-      'orderId': '315166883',
-      'user': 'Renu',
-      'type': 'Chat',
-      'date': '19 Feb 2026',
-      'rating': 5,
-      'content': '',
-      'isPinned': false,
-      'isFlagged': false,
-    },
-    {
-      'orderId': '315163211',
-      'user': 'Sakhi',
-      'type': 'Chat',
-      'date': '19 Feb 2026',
-      'rating': 5,
-      'content': '',
-      'isPinned': false,
-      'isFlagged': false,
-    },
-    {
-      'orderId': '85991738',
-      'user': 'Pooja',
-      'type': 'Call',
-      'date': '19 Feb 2026',
-      'rating': 5,
-      'content': '',
-      'isPinned': false,
-      'isFlagged': false,
-    },
-  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         title: 'My Reviews',
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 16),
-            child: ElevatedButton.icon(
-              onPressed: () {},
-              icon: const Icon(Icons.push_pin, size: 14, color: Colors.grey),
-              label: const AppText('Pinned', fontSize: 12, color: Colors.grey, fontWeight: FontWeight.bold),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.grey,
-                elevation: 0,
-                side: BorderSide(color: Colors.grey.shade300),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-              ),
-            ),
-          ),
-        ],
       ),
-      body: Column(
-        children: [
-          _buildFlaggedSection(),
-          _buildCategoryFilters(),
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: _reviews.length,
-              itemBuilder: (context, index) {
-                return _buildReviewCard(_reviews[index]);
-              },
+      body: RefreshIndicator(
+        onRefresh: () => controller.fetchReviews(),
+        child: Column(
+          children: [
+            _buildCategoryFilters(),
+            Expanded(
+              child: Obx(() {
+                if (controller.isLoading.value && controller.reviews.isEmpty) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (controller.reviews.isEmpty) {
+                  return ListView(
+                    children: [
+                      SizedBox(height: Get.height * 0.2),
+                      const Center(child: AppText('No reviews found', color: Colors.grey)),
+                    ],
+                  );
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: controller.reviews.length,
+                  itemBuilder: (context, index) {
+                    return _buildReviewCard(controller.reviews[index]);
+                  },
+                );
+              }),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildFlaggedSection() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  const AppText('Flagged reviews ', fontSize: 16, fontWeight: FontWeight.bold),
-                  AppText('(excluding PO)', fontSize: 13, color: Colors.grey.shade500),
-                ],
-              ),
-              const AppText('8/10', fontSize: 14, fontWeight: FontWeight.bold),
-            ],
-          ),
-          const SizedBox(height: 12),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: LinearProgressIndicator(
-              value: 0.8,
-              minHeight: 8,
-              backgroundColor: Colors.grey.shade100,
-              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryColor.withOpacity(0.6)),
-            ),
-          ),
-          const SizedBox(height: 12),
-          AppText(
-            'System gives you maximum 10 flags for your reviews every month. Used balance will get reset every 1st day of the month.',
-            fontSize: 11,
-            color: Colors.grey.shade500,
-            height: 1.4,
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildCategoryFilters() {
     return Container(
@@ -199,97 +122,314 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
     );
   }
 
-  Widget _buildReviewCard(Map<String, dynamic> review) {
+  Widget _buildReviewCard(ReviewModel review) {
+    String formattedDate = DateFormat('dd MMM yyyy').format(review.createdAt);
+    
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.grey.shade100),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppText(
-            'Order ID: ${review['orderId']}',
-            fontSize: 12,
-            color: Colors.grey.shade600,
-            fontWeight: FontWeight.w500,
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 20,
-                backgroundColor: AppColors.primaryColor.withOpacity(0.1),
-                child: AppText(review['user'][0], color: AppColors.primaryColor, fontWeight: FontWeight.bold),
+          // Header: ID and Date
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                AppText(
+                  'ID: #${review.id}',
+                  fontSize: 11,
+                  color: Colors.grey.shade600,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.5,
+                ),
+                AppText(
+                  formattedDate,
+                  fontSize: 11,
+                  color: Colors.grey.shade500,
+                  fontWeight: FontWeight.w500,
+                ),
+              ],
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // User Info
+                Row(
                   children: [
-                    AppText(review['user'], fontSize: 15, fontWeight: FontWeight.bold),
-                    Row(
-                      children: [
-                        AppText(review['type'], fontSize: 12, color: AppColors.infoColor),
-                        AppText(' · ${review['date']}', fontSize: 12, color: Colors.grey.shade500),
-                      ],
+                    Container(
+                      height: 44,
+                      width: 44,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            AppColors.primaryColor.withOpacity(0.1),
+                            AppColors.primaryColor.withOpacity(0.2),
+                          ],
+                        ),
+                        image: review.user?.profilePhoto != null 
+                            ? DecorationImage(
+                                image: CachedNetworkImageProvider('${AppUrls.baseImageUrl}${review.user!.profilePhoto}'),
+                                fit: BoxFit.cover,
+                              )
+                            : null,
+                      ),
+                      child: review.user?.profilePhoto == null 
+                          ? Center(
+                              child: AppText(
+                                review.user?.name[0].toUpperCase() ?? 'U', 
+                                color: AppColors.primaryColor, 
+                                fontWeight: FontWeight.w800,
+                                fontSize: 16,
+                              ),
+                            )
+                          : null,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AppText(
+                            review.user?.name ?? 'Anonymous', 
+                            fontSize: 15, 
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF2E1A47),
+                          ),
+                          const SizedBox(height: 2),
+                          Row(
+                            children: List.generate(5, (index) {
+                              return Icon(
+                                Icons.star_rounded, 
+                                color: index < review.rating ? AppColors.goldAccent : Colors.grey.shade200, 
+                                size: 16
+                              );
+                            }),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
-              ),
-              Row(
-                children: List.generate(5, (index) {
-                  return const Icon(Icons.star_rounded, color: AppColors.goldAccent, size: 18);
-                }),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              TextButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.reply, size: 18, color: AppColors.successColor),
-                label: const AppText('Reply to this review', fontSize: 13, color: AppColors.successColor, fontWeight: FontWeight.w600),
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-              ),
-              Row(
-                children: [
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.flag_outlined, color: Colors.grey, size: 20),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
-                  const SizedBox(width: 16),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.push_pin_outlined, color: Colors.grey, size: 20),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
+
+                // Review Content
+                if (review.review.isNotEmpty) ...[
+                  const SizedBox(height: 14),
+                  AppText(
+                    review.review,
+                    fontSize: 14,
+                    color: Colors.black.withOpacity(0.7),
+                    height: 1.5,
                   ),
                 ],
-              ),
-            ],
+
+                // Astrologer's Reply
+                if (review.reply != null && review.reply!.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryColor.withOpacity(0.04),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border(
+                        left: BorderSide(color: AppColors.primaryColor.withOpacity(0.4), width: 3),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Iconsax.message_text_copy, size: 14, color: AppColors.primaryColor.withOpacity(0.7)),
+                            const SizedBox(width: 8),
+                            const AppText(
+                              'Your Response', 
+                              fontSize: 12, 
+                              fontWeight: FontWeight.w800, 
+                              color: AppColors.primaryColor,
+                              letterSpacing: 0.3,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        AppText(
+                          review.reply!, 
+                          fontSize: 13, 
+                          color: const Color(0xFF4A4A4A),
+                          height: 1.4,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+
+                const SizedBox(height: 16),
+                
+                // Footer: Action
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    InkWell(
+                      onTap: () => _showReplyDialog(review),
+                      borderRadius: BorderRadius.circular(8),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              review.reply == null ? Icons.reply : Icons.edit_note_rounded, 
+                              size: 18, 
+                              color: AppColors.successColor
+                            ),
+                            const SizedBox(width: 6),
+                            AppText(
+                              review.reply == null ? 'Reply to review' : 'Edit Response', 
+                              fontSize: 13, 
+                              color: AppColors.successColor, 
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
-}
 
+  void _showReplyDialog(ReviewModel review) {
+    final TextEditingController replyController = TextEditingController(text: review.reply ?? '');
+    
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  AppText(
+                    review.reply == null ? 'Reply to Review' : 'Edit Reply',
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.primaryColor,
+                  ),
+                  IconButton(
+                    onPressed: () => Get.back(),
+                    icon: const Icon(Icons.close_rounded, color: Colors.grey),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade100),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppText('Review by ${review.user?.name ?? "User"}', fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87),
+                    const SizedBox(height: 4),
+                    AppText(review.review, fontSize: 13, color: Colors.grey.shade600, maxLines: 3, overflow: TextOverflow.ellipsis),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              const AppText('Your Response', fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black87),
+              const SizedBox(height: 8),
+              TextField(
+                controller: replyController,
+                maxLines: 5,
+                style: const TextStyle(fontSize: 14, color: Colors.black87),
+                decoration: InputDecoration(
+                  hintText: 'Type your message here...',
+                  hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+                  filled: true,
+                  fillColor: Colors.grey.shade50,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(color: Colors.grey.shade200),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(color: Colors.grey.shade200),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: const BorderSide(color: AppColors.primaryColor),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Obx(() => SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: controller.isReplying.value 
+                    ? null 
+                    : () => controller.submitReply(review.id, replyController.text),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryColor,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 0,
+                  ),
+                  child: controller.isReplying.value
+                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                    : AppText(review.reply == null ? 'Send Reply' : 'Update Reply', fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                ),
+              )),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: false,
+    );
+  }
+}

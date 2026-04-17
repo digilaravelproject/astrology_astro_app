@@ -4,6 +4,7 @@ import '../../auth/domain/services/auth_service.dart';
 import '../../../core/utils/logger.dart';
 import '../../../core/utils/custom_snackbar.dart';
 import '../repository/skill_repository.dart';
+import '../model/other_details_model.dart';
 
 class OtherDetailsController extends GetxController {
   final AstrologerSkillsRepository repository;
@@ -24,27 +25,53 @@ class OtherDetailsController extends GetxController {
   void onInit() {
     super.onInit();
     refreshData();
+    // Listen to current user changes and refresh local observables
+    ever(Get.find<AuthController>().currentUser, (_) => refreshData());
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+    // Force a fresh profile load when screen opens to catch 'other_details'
+    final authController = Get.find<AuthController>();
+    if (authController.currentUser.value != null) {
+      Logger.d('OtherDetailsController: Forcing fresh profile load onReady...');
+      authController.getProfile(authController.currentUser.value!.id);
+    }
   }
 
   void refreshData() {
     final authController = Get.find<AuthController>();
     final user = authController.currentUser.value;
     
+    Logger.d('OtherDetailsController: refreshData called. User: ${user?.name}, Has Astrologer: ${user?.astrologer != null}');
+    
     if (user != null) {
       gender.value = user.gender ?? '';
-      currentAddress.value = user.city ?? ''; // Assuming city is used as address part for now
       dateOfBirth.value = user.dateOfBirth ?? '';
       
       if (user.astrologer != null) {
         final ast = user.astrologer!;
         bio.value = ast.bio ?? '';
-        // Other fields like website and instagram might not be in AstrologerModel yet
-        // In a real app, these would come from the API
-        websiteLink.value = 'www.starguide.com';
-        instagramUsername.value = '@starguide_official';
+        
+        Logger.d('OtherDetailsController: Astrologer found. Has otherDetails: ${ast.otherDetails != null}');
+        
+        if (ast.otherDetails != null) {
+          final other = ast.otherDetails!;
+          Logger.d('OtherDetailsController: Mapping otherDetails. Address: ${other.currentAddress}');
+          
+          gender.value = other.gender ?? gender.value;
+          currentAddress.value = other.currentAddress ?? '';
+          dateOfBirth.value = other.dateOfBirth ?? dateOfBirth.value;
+          bio.value = other.bio ?? bio.value;
+          websiteLink.value = other.websiteLink ?? '';
+          instagramUsername.value = other.instagramUsername ?? '';
+        } else {
+          Logger.d('OtherDetailsController: otherDetails is NULL in AstrologerModel');
+        }
       }
       
-      Logger.d('OtherDetailsController: Data loaded from AuthController');
+      Logger.d('OtherDetailsController: Final values - Address: ${currentAddress.value}, Bio: ${bio.value}');
     }
   }
 
@@ -52,16 +79,16 @@ class OtherDetailsController extends GetxController {
   Future<bool> updateOtherDetails({bool isSilent = false}) async {
     if (!isSilent) isLoading.value = true;
     try {
-      final data = {
-        "gender": gender.value,
-        "current_address": currentAddress.value,
-        "bio": bio.value,
-        "date_of_birth": dateOfBirth.value,
-        "website_link": websiteLink.value,
-        "instagram_username": instagramUsername.value,
-      };
+      final model = OtherDetailsModel(
+        gender: gender.value.toLowerCase(),
+        currentAddress: currentAddress.value,
+        bio: bio.value,
+        dateOfBirth: dateOfBirth.value,
+        websiteLink: websiteLink.value,
+        instagramUsername: instagramUsername.value,
+      );
 
-      final response = await repository.updateOtherDetails(data);
+      final response = await repository.updateOtherDetails(model.toJson());
 
       if (response.isSuccess) {
         CustomSnackBar.showSuccess(response.message ?? "Updated successfully");

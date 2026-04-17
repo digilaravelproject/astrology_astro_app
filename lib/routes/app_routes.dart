@@ -15,9 +15,14 @@ class AppRoutes {
   static const String privacyPolicy = '/privacy-policy';
   static const String paymentPolicy = '/payment-policy';
   static const String termsAndConditions = '/terms-and-conditions';
+  static const String aboutUs = '/about-us';
+  static const String feedback = '/feedback';
+  static const String customerSupport = '/customer-support';
   
   // Finance routes
   static const String bankAccounts = '/bank-accounts';
   static const String addBankAccount = '/add-bank-account';
   static const String testFinance = '/test-finance';
+  static const String gallery = '/gallery';
+  static const String myReviews = '/my-reviews';
 }

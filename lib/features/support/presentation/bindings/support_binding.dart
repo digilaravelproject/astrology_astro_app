@@ -5,6 +5,9 @@ import '../../domain/usecases/get_faq_usecase.dart';
 import '../../domain/usecases/get_payment_policy_usecase.dart';
 import '../../domain/usecases/get_privacy_policy_usecase.dart';
 import '../../domain/usecases/get_terms_and_conditions_usecase.dart';
+import '../../domain/usecases/get_about_us_usecase.dart';
+import '../../domain/usecases/get_customer_support_usecase.dart';
+import '../../domain/usecases/submit_feedback_usecase.dart';
 import '../controllers/support_controller.dart';
 
 class SupportBinding extends Bindings {
@@ -15,11 +18,17 @@ class SupportBinding extends Bindings {
     Get.lazyPut(() => GetPrivacyPolicyUseCase(repository: Get.find<SupportRepository>()));
     Get.lazyPut(() => GetPaymentPolicyUseCase(repository: Get.find<SupportRepository>()));
     Get.lazyPut(() => GetTermsAndConditionsUseCase(repository: Get.find<SupportRepository>()));
+    Get.lazyPut(() => GetAboutUsUseCase(repository: Get.find<SupportRepository>()));
+    Get.lazyPut(() => GetCustomerSupportUseCase(repository: Get.find<SupportRepository>()));
+    Get.lazyPut(() => SubmitFeedbackUseCase(repository: Get.find<SupportRepository>()));
     Get.lazyPut(() => SupportController(
           getFAQUseCase: Get.find<GetFAQUseCase>(),
           getPrivacyPolicyUseCase: Get.find<GetPrivacyPolicyUseCase>(),
           getPaymentPolicyUseCase: Get.find<GetPaymentPolicyUseCase>(),
           getTermsAndConditionsUseCase: Get.find<GetTermsAndConditionsUseCase>(),
+          getAboutUsUseCase: Get.find<GetAboutUsUseCase>(),
+          getCustomerSupportUseCase: Get.find<GetCustomerSupportUseCase>(),
+          submitFeedbackUseCase: Get.find<SubmitFeedbackUseCase>(),
         ));
   }
 }

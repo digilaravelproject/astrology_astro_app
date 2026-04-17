@@ -28,10 +28,24 @@ class AppUrls {
   static const String privacyPolicy = '/privacy-policy';
   static const String paymentPolicy = '/payment-policy';
   static const String termsAndConditions = '/terms-and-conditions';
+  static const String aboutUs = '/static-pages/about_us';
+  static const String feedback = '/feedback';
+  static const String customerSupport = '/static-pages/customer_support';
   
   static String toggleLike(int id) => "/astrologer/community/followers/$id/toggle-like";
   static String getProfile(int id) => "/astrologer/profile/$id";
   static String trainingVideoDetail(int id) => "/astrologer/training-videos/$id";
   static const String toggleOnline = "/astrologer/toggle-online";
+  static const String updateOtherDetails = "/astrologer/profile/other-details";
+  
+  // Gallery
+  static const String uploadGallery = "/astrologer/gallery/upload";
+  static const String galleryList = "/astrologer/gallery";
+  static String toggleGalleryVisibility(int id) => "/astrologer/gallery/$id/toggle-visibility";
+  static String deleteGalleryImage(int id) => "/astrologer/gallery/$id";
+
+  // Reviews
+  static const String reviewList = "/user/reviews";
+  static String replyReview(int id) => "/user/reviews/$id/reply";
 
 }

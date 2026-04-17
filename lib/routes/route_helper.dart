@@ -16,6 +16,13 @@ import '../features/profile/screens/faq_screen.dart';
 import '../features/profile/screens/payment_policy_screen.dart';
 import '../features/profile/screens/privacy_policy_screen.dart';
 import '../features/profile/screens/terms_and_conditions_screen.dart';
+import '../features/profile/screens/about_us_screen.dart';
+import '../features/profile/screens/feedback_screen.dart';
+import '../features/profile/screens/help_support_screen.dart';
+import 'package:astro_astrologer/features/profile/screens/gallery_screen.dart';
+import 'package:astro_astrologer/features/profile/binding/gallery_binding.dart';
+import 'package:astro_astrologer/features/profile/screens/my_reviews_screen.dart';
+import 'package:astro_astrologer/features/profile/binding/review_binding.dart';
 import '../features/splash/screens/splash_screen.dart';
 import '../features/home/screens/home_screen.dart';
 import '../features/home/screens/dashboard_screen.dart';
@@ -110,6 +117,35 @@ class RouteHelper {
       transition: Transition.rightToLeft,
       binding: SupportBinding(),
     ),
+    GetPage(
+      name: AppRoutes.aboutUs,
+      page: () => const AboutUsScreen(),
+      transition: Transition.rightToLeft,
+      binding: SupportBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.feedback,
+      page: () => const FeedbackScreen(),
+      transition: Transition.rightToLeft,
+      binding: SupportBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.customerSupport,
+      page: () => const HelpSupportScreen(),
+      transition: Transition.rightToLeft,
+      binding: SupportBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.gallery,
+      page: () => const GalleryScreen(),
+      binding: GalleryBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.myReviews,
+      page: () => const MyReviewsScreen(),
+      binding: ReviewBinding(),
+      transition: Transition.rightToLeft,
+    ),
 
     // Finance routes
     GetPage(
@@ -124,13 +160,5 @@ class RouteHelper {
       binding: FinanceBinding(),
       transition: Transition.rightToLeft,
     ),
-
-
-
   ];
-
-
-
-
-
 }

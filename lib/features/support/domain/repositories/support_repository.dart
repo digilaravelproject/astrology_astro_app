@@ -22,4 +22,19 @@ class SupportRepository {
   Future<ResponseModel> getTermsAndConditions() async {
     return await apiClient.get(AppUrls.termsAndConditions);
   }
+
+  Future<ResponseModel> getAboutUs() async {
+    return await apiClient.get(AppUrls.aboutUs);
+  }
+
+  Future<ResponseModel> getCustomerSupport() async {
+    return await apiClient.get(AppUrls.customerSupport);
+  }
+
+  Future<ResponseModel> submitFeedback(int rating, String comment) async {
+    return await apiClient.post(AppUrls.feedback, data: {
+      'rating': rating,
+      'comment': comment,
+    });
+  }
 }

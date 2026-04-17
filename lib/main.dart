@@ -28,7 +28,6 @@ class MyApp extends StatelessWidget {
       title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
       navigatorKey: Get.key,
-      scaffoldMessengerKey: CustomSnackBar.messengerKey,
       initialBinding: InitialBindings(),
       theme: lightTheme,
       darkTheme: darkTheme,

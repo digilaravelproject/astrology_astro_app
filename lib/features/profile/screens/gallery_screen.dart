@@ -1,16 +1,38 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import '../../../core/widgets/image_picker_bottom_sheet.dart';
+import 'package:astro_astrologer/features/profile/controllers/gallery_controller.dart';
+import 'package:astro_astrologer/features/profile/model/gallery_model.dart';
+import 'package:astro_astrologer/core/utils/logger.dart';
+import 'package:astro_astrologer/features/profile/repository/gallery_repository.dart';
+import 'package:astro_astrologer/features/profile/usecase/gallery_usecases.dart';
 
 class GalleryScreen extends StatelessWidget {
   const GalleryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    if (!Get.isRegistered<GalleryController>()) {
+       Get.lazyPut(() => GalleryRepository(apiClient: Get.find()));
+       Get.lazyPut(() => GetGalleryImagesUseCase(repository: Get.find()));
+       Get.lazyPut(() => UploadGalleryImagesUseCase(repository: Get.find()));
+       Get.lazyPut(() => ToggleGalleryVisibilityUseCase(repository: Get.find()));
+       Get.lazyPut(() => DeleteGalleryImageUseCase(repository: Get.find()));
+       Get.put(GalleryController(
+         getGalleryImagesUseCase: Get.find(),
+         uploadGalleryImagesUseCase: Get.find(),
+         toggleGalleryVisibilityUseCase: Get.find(),
+         deleteGalleryImageUseCase: Get.find(),
+       ));
+    }
+    final controller = Get.find<GalleryController>();
+    
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -39,7 +61,7 @@ class GalleryScreen extends StatelessWidget {
               ),
             ),
             _buildNoticeBanner(),
-            const Expanded(
+            Expanded(
               child: TabBarView(
                 children: [
                   GalleryGridView(tabType: 'profile'),
@@ -47,7 +69,7 @@ class GalleryScreen extends StatelessWidget {
                 ],
               ),
             ),
-            _buildUploadButton(context),
+            _buildUploadButton(context, controller),
           ],
         ),
       ),
@@ -69,11 +91,11 @@ class GalleryScreen extends StatelessWidget {
         children: [
           const Icon(Iconsax.info_circle_copy, color: Color(0xFFB88E00), size: 20),
           const SizedBox(width: 12),
-          Expanded(
+          const Expanded(
             child: AppText(
               'Admin takes upto 7 days to approve the image. Your image shall be visible to customers when you enable at least 3 images.',
               fontSize: 13,
-              color: const Color(0xFF856404),
+              color: Color(0xFF856404),
               height: 1.4,
             ),
           ),
@@ -82,12 +104,12 @@ class GalleryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildUploadButton(BuildContext context) {
+  Widget _buildUploadButton(BuildContext context, GalleryController controller) {
     return Container(
       padding: const EdgeInsets.all(20),
       color: Colors.white,
-      child: ElevatedButton(
-        onPressed: () => _showUploadOptions(context),
+      child: Obx(() => ElevatedButton(
+        onPressed: controller.isUploading.value ? null : () => _showUploadOptions(context, controller),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primaryColor,
           foregroundColor: Colors.white,
@@ -95,118 +117,86 @@ class GalleryScreen extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
           elevation: 0,
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Iconsax.add_square_copy, size: 20),
-            const SizedBox(width: 8),
-            AppText('Upload Image', fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
-          ],
-        ),
-      ),
+        child: controller.isUploading.value 
+          ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Iconsax.add_square_copy, size: 20),
+                const SizedBox(width: 8),
+                AppText('Upload Image', fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
+              ],
+            ),
+      )),
     );
   }
 
-  void _showUploadOptions(BuildContext context) {
-    showImagePickerBottomSheet(context, (file) {
-      // Handle the picked image file
-      debugPrint('Picked image path: ${file.path}');
-      // You can add logic here to upload the image or update UI
-    });
+  void _showUploadOptions(BuildContext context, GalleryController controller) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => ImagePickerBottomSheet(
+        onImagePicked: (file) {
+          controller.uploadImages([file]);
+        },
+      ),
+    );
+    
+    // For multiple images, we can add a specific button or handle it here
+    // But since the current BottomSheet handles one, we'll stick to it or expand it.
   }
 }
 
-class GalleryGridView extends StatefulWidget {
+class GalleryGridView extends StatelessWidget {
   final String tabType;
   const GalleryGridView({super.key, required this.tabType});
 
   @override
-  State<GalleryGridView> createState() => _GalleryGridViewState();
-}
-
-class _GalleryGridViewState extends State<GalleryGridView> {
-  late List<Map<String, dynamic>> images;
-
-  @override
-  void initState() {
-    super.initState();
-    // Mock data for images
-    images = widget.tabType == 'profile'
-        ? [
-            {'url': 'https://i.pravatar.cc/300?u=1', 'status': 'verified', 'isEnabled': false},
-            {'url': 'https://i.pravatar.cc/300?u=2', 'status': 'verified', 'isEnabled': false},
-            {'url': 'https://i.pravatar.cc/300?u=3', 'status': 'verified', 'isEnabled': true},
-          ]
-        : [
-            {'url': 'https://i.pravatar.cc/300?u=4', 'status': 'pending', 'isEnabled': false},
-          ];
-  }
-
-  void _showDeleteDialog(int index) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: AppText('Confirm Delete', fontSize: 18, fontWeight: FontWeight.w700),
-        content: AppText('Are you sure you want to delete this image?', fontSize: 15),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: AppText('No', color: Colors.grey, fontWeight: FontWeight.w600),
-          ),
-          TextButton(
-            onPressed: () {
-              setState(() => images.removeAt(index));
-              Navigator.pop(context);
-              Get.snackbar(
-                'Success',
-                'Image deleted successfully',
-                snackPosition: SnackPosition.BOTTOM,
-                backgroundColor: Colors.green,
-                colorText: Colors.white,
-                margin: const EdgeInsets.all(16),
-              );
-            },
-            child: AppText('Yes', color: Colors.red, fontWeight: FontWeight.w600),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (images.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Iconsax.gallery_copy, size: 60, color: Colors.grey.shade300),
-            const SizedBox(height: 16),
-            AppText('No images found', fontSize: 16, color: Colors.grey.shade500),
-          ],
-        ),
-      );
-    }
+    final controller = Get.find<GalleryController>();
 
-    return GridView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: 0.75,
-      ),
-      itemCount: images.length,
-      itemBuilder: (context, index) {
-        return _buildGalleryItem(images[index], index);
-      },
-    );
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      // Filter images based on tabType
+      final images = tabType == 'live' 
+          ? controller.images.where((img) => img.status.toLowerCase() == 'verified').toList()
+          : controller.images.toList();
+
+      if (images.isEmpty) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Iconsax.gallery_copy, size: 60, color: Colors.grey.shade300),
+              const SizedBox(height: 16),
+              AppText('No images found', fontSize: 16, color: Colors.grey.shade500),
+            ],
+          ),
+        );
+      }
+
+      return GridView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          childAspectRatio: 0.75,
+        ),
+        itemCount: images.length,
+        itemBuilder: (context, index) {
+          return _buildGalleryItem(context, controller, images[index]);
+        },
+      );
+    });
   }
 
-  Widget _buildGalleryItem(Map<String, dynamic> item, int index) {
-    final bool isVerified = item['status'] == 'verified';
-    final bool isEnabled = item['isEnabled'];
+  Widget _buildGalleryItem(BuildContext context, GalleryController controller, GalleryImage item) {
+    final bool isVerified = item.status == 'verified';
+    final bool isEnabled = item.isVisible;
 
     return Container(
       decoration: BoxDecoration(
@@ -229,16 +219,20 @@ class _GalleryGridViewState extends State<GalleryGridView> {
                 topRight: Radius.circular(12),
               ),
               child: Image.network(
-                item['url'],
+                item.url,
                 fit: BoxFit.cover,
                 width: double.infinity,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  color: Colors.grey[200],
+                  child: const Icon(Icons.image_not_supported_outlined, color: Colors.grey),
+                ),
               ),
             ),
           ),
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: isVerified ? const Color(0xFFFFF3F3) : const Color(0xFFFBEAEA),
+              color: isVerified ? const Color(0xFFF3FFF3) : const Color(0xFFFFF9F3),
               borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(12),
                 bottomRight: Radius.circular(12),
@@ -251,7 +245,7 @@ class _GalleryGridViewState extends State<GalleryGridView> {
                   children: [
                     Icon(
                       isVerified ? Icons.check_circle : Iconsax.info_circle_copy,
-                      color: isVerified ? Colors.green : Colors.red,
+                      color: isVerified ? Colors.green : Colors.orange,
                       size: 16,
                     ),
                     const SizedBox(width: 4),
@@ -259,35 +253,61 @@ class _GalleryGridViewState extends State<GalleryGridView> {
                       isVerified ? 'verified' : 'Pending',
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: isVerified ? Colors.green : Colors.red,
+                      color: isVerified ? Colors.green : Colors.orange,
                     ),
                   ],
                 ),
                 Row(
                   children: [
-                    if (isVerified) ...[
-                      SizedBox(
-                        height: 24,
-                        width: 40,
+                    SizedBox(
+                      height: 20,
+                      width: 34,
+                      child: Transform.scale(
+                        scale: 0.7,
                         child: Switch(
                           value: isEnabled,
                           onChanged: (val) {
-                            setState(() => item['isEnabled'] = val);
+                            controller.toggleVisibility(item.id);
                           },
                           activeColor: AppColors.primaryColor,
                           activeTrackColor: AppColors.primaryColor.withOpacity(0.2),
+                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                       ),
-                      const SizedBox(width: 8),
-                    ],
+                    ),
+                    const SizedBox(width: 8),
                     GestureDetector(
-                      onTap: () => _showDeleteDialog(index),
+                      onTap: () => _showDeleteDialog(context, controller, item.id),
                       child: const Icon(Iconsax.trash_copy, color: Colors.grey, size: 16),
                     ),
                   ],
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteDialog(BuildContext context, GalleryController controller, int id) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const AppText('Confirm Delete', fontSize: 18, fontWeight: FontWeight.w700),
+        content: const AppText('Are you sure you want to delete this image?', fontSize: 15),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const AppText('No', color: Colors.grey, fontWeight: FontWeight.w600),
+          ),
+          TextButton(
+            onPressed: () {
+              controller.deleteImage(id);
+              Navigator.pop(context);
+            },
+            child: const AppText('Yes', color: Colors.red, fontWeight: FontWeight.w600),
           ),
         ],
       ),

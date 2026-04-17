@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 import '../../domain/models/availability_model.dart';
 import '../../domain/usecases/get_availability_usecase.dart';
 import '../../domain/usecases/update_availability_usecase.dart';
@@ -36,23 +36,11 @@ class AvailabilityController extends GetxController {
         print('[AVAILABILITY] Loaded ${availability.length} availability records');
       } else {
         print('[AVAILABILITY] Failed to get availability: ${result.message}');
-        Get.snackbar(
-          'Error',
-          result.message ?? 'Failed to fetch availability',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.withOpacity(0.1),
-          colorText: Colors.red,
-        );
+        CustomSnackBar.showError(result.message ?? 'Failed to fetch availability');
       }
     } catch (e) {
       print('[AVAILABILITY] Exception in getAvailability: $e');
-      Get.snackbar(
-        'Error',
-        'Something went wrong: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.1),
-        colorText: Colors.red,
-      );
+      CustomSnackBar.showError('Something went wrong: ${e.toString()}');
     } finally {
       isLoading.value = false;
     }
@@ -67,33 +55,15 @@ class AvailabilityController extends GetxController {
 
       if (result.isSuccess) {
         print('[AVAILABILITY] Availability updated successfully');
-        Get.snackbar(
-          'Success',
-          result.message ?? 'Availability updated successfully',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.withOpacity(0.1),
-          colorText: Colors.green,
-        );
+        CustomSnackBar.showSuccess(result.message ?? 'Availability updated successfully');
         await getAvailability();
       } else {
         print('[AVAILABILITY] Failed to update: ${result.message}');
-        Get.snackbar(
-          'Error',
-          result.message ?? 'Failed to update availability',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.withOpacity(0.1),
-          colorText: Colors.red,
-        );
+        CustomSnackBar.showError(result.message ?? 'Failed to update availability');
       }
     } catch (e) {
       print('[AVAILABILITY] Exception in updateAvailability: $e');
-      Get.snackbar(
-        'Error',
-        'Something went wrong: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.1),
-        colorText: Colors.red,
-      );
+      CustomSnackBar.showError('Something went wrong: ${e.toString()}');
     } finally {
       isSaving.value = false;
     }
