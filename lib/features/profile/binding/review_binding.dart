@@ -13,6 +13,6 @@ class ReviewBinding extends Bindings {
     Get.lazyPut(() => ReviewController(
       getReviewsUseCase: Get.find<GetReviewsUseCase>(),
       postReplyUseCase: Get.find<PostReplyUseCase>(),
-    ));
+    ), fenix: true);
   }
 }

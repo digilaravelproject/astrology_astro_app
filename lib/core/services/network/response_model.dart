@@ -19,10 +19,11 @@ class ResponseModel {
 
   /// Factory method to create ResponseModel from JSON
   factory ResponseModel.fromJson(Map<String, dynamic> json, {int? statusCode}) {
-    Logger.d('ResponseModel.fromJson input: $json');
+    // 1. Identify if it's a success
     final res = (json['res'] ?? json['status'])?.toString().toLowerCase();
     final success = res == 'success' || (json['success'] == true);
 
+    // 2. Parse Errors
     List<ErrorDetail>? errors;
     if (json['errors'] is List) {
       errors = (json['errors'] as List)
@@ -39,16 +40,32 @@ class ResponseModel {
       });
     }
 
-    final message = json['msg']?.toString() ??
-        json['message']?.toString() ??
-        (success ? 'Success' : 'Something went wrong');
+    // 3. Extract Message (Prefer String contents)
+    String message = (success ? 'Success' : 'Something went wrong');
+    if (json['msg'] is String) {
+      message = json['msg'];
+    } else if (json['message'] is String) {
+      message = json['message'];
+    } else if (json['data'] is String) {
+      message = json['data'];
+    }
+
+    // 4. Extract Body (Prefer Map/List contents)
+    dynamic body;
+    if (json['data'] is Map || json['data'] is List) {
+      body = json['data'];
+    } else if (json['message'] is Map || json['message'] is List) {
+      body = json['message'];
+    } else {
+      body = json['data']; // Fallback (likely String or null)
+    }
     
     Logger.d('ResponseModel.fromJson parsed message: $message, isSuccess: ${success && (statusCode == null || statusCode! < 300)}');
 
     return ResponseModel(
       isSuccess: success && (statusCode == null || statusCode! < 300),
       message: message,
-      body: json['data'],
+      body: body,
       statusCode: statusCode,
       errors: errors,
       token: json['token']?.toString(),

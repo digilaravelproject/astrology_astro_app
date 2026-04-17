@@ -5,9 +5,11 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import '../../../core/widgets/custom_button.dart';
+import '../widgets/add_phone_bottom_sheet.dart';
 import '../widgets/phone_verification_bottom_sheet.dart';
 import '../presentation/controllers/phone_number_controller.dart';
 import '../presentation/bindings/phone_number_binding.dart';
+import '../../../core/utils/custom_snackbar.dart';
 
 class UpdatePhoneScreen extends StatefulWidget {
   const UpdatePhoneScreen({super.key});
@@ -18,8 +20,6 @@ class UpdatePhoneScreen extends StatefulWidget {
 
 class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
   late PhoneNumberController _controller;
-  final TextEditingController _newCountryCodeController = TextEditingController(text: '+91');
-  final TextEditingController _newPhoneController = TextEditingController();
 
   @override
   void initState() {
@@ -30,30 +30,34 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
     _controller = Get.find<PhoneNumberController>();
   }
 
-  @override
-  void dispose() {
-    _newCountryCodeController.dispose();
-    _newPhoneController.dispose();
-    super.dispose();
+  Future<void> _verifyExistingNumber(dynamic phoneNumber) async {
+    final result = await _controller.addPhoneNumber(
+      phoneNumber.countryCode,
+      phoneNumber.phone,
+    );
+
+    if (result.isSuccess) {
+      final newPhoneId = result.body['numbers']?.last['id'] ?? result.body['phone_number']?['id'] ?? result.body['id'] ?? phoneNumber.id;
+      _showVerificationBottomSheet(
+        newPhoneId,
+        '${phoneNumber.countryCode} ${phoneNumber.phone}',
+      );
+    }
   }
 
-  void _addNewPhoneNumber() {
-    if (_newPhoneController.text.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please enter a phone number',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.1),
-        colorText: Colors.red,
-      );
-      return;
-    }
-
-    _controller.addPhoneNumber(
-      _newCountryCodeController.text,
-      _newPhoneController.text.trim(),
+  void _showVerificationBottomSheet(int phoneId, String phoneNumber) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        child: PhoneVerificationBottomSheet(
+          phoneId: phoneId,
+          phoneNumber: phoneNumber,
+        ),
+      ),
     );
-    _newPhoneController.clear();
   }
 
   @override
@@ -63,8 +67,14 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
       appBar: const CustomAppBar(
         title: 'Update Phone Number',
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => showAddPhoneBottomSheet(context),
+        backgroundColor: AppColors.primaryColor,
+        icon: const Icon(Icons.add, color: Colors.white),
+        label: const AppText('Add New', color: Colors.white, fontWeight: FontWeight.w600),
+      ),
       body: Obx(() {
-        if (_controller.isLoading.value) {
+        if (_controller.isLoading.value && _controller.phoneNumbers.isEmpty) {
           return const Center(
             child: CircularProgressIndicator(),
           );
@@ -91,69 +101,27 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
                       ..._controller.phoneNumbers.map((phoneNumber) {
                         return _buildPhoneCard(phoneNumber);
                       }).toList(),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 80), // Space for FAB
                     ],
-
-                    // Add New Phone Number Section
-                    AppText(
-                      'Add New Phone Number',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF2E1A47),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        // Country Code Dropdown
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          decoration: BoxDecoration(
-                            border: Border(bottom: BorderSide(color: Colors.grey.shade300, width: 1.5)),
-                          ),
-                          child: DropdownButton<String>(
-                            value: _newCountryCodeController.text,
-                            underline: const SizedBox(),
-                            icon: const Icon(Icons.arrow_drop_down, color: Colors.black54),
-                            onChanged: (val) {
-                              if (val != null) {
-                                setState(() {
-                                  _newCountryCodeController.text = val;
-                                });
-                              }
-                            },
-                            items: ['+91', '+1', '+44', '+971'].map((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: AppText(value, fontSize: 16, fontWeight: FontWeight.w500),
-                              );
-                            }).toList(),
+                    
+                    if (_controller.phoneNumbers.isEmpty)
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.6,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Iconsax.mobile_copy, size: 60, color: Colors.grey.shade300),
+                              const SizedBox(height: 16),
+                              AppText(
+                                'No phone numbers added yet',
+                                fontSize: 16,
+                                color: Colors.grey.shade500,
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        // Phone Number Input
-                        Expanded(
-                          child: TextField(
-                            controller: _newPhoneController,
-                            keyboardType: TextInputType.phone,
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, letterSpacing: 1.5),
-                            decoration: InputDecoration(
-                              hintText: 'Phone number',
-                              hintStyle: TextStyle(color: Colors.grey.shade300, letterSpacing: 1),
-                              enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5)),
-                              focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.primaryColor, width: 2)),
-                              contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    Obx(() => CustomButton(
-                      text: _controller.isAdding.value ? 'Adding...' : 'Add New',
-                      onPressed: _controller.isAdding.value ? () {} : _addNewPhoneNumber,
-                      backgroundColor: AppColors.primaryColor,
-                      borderRadius: 100,
-                    )),
+                      ),
                   ],
                 ),
               ),
@@ -180,128 +148,107 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
   }
 
   Widget _buildPhoneCard(dynamic phoneNumber) {
-    final isVerified = phoneNumber.isVerified;
-    final isDefault = phoneNumber.isDefault;
-
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.grey.shade100),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.02),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Row(
-            children: [
-              Icon(
-                Iconsax.call_copy,
-                color: AppColors.primaryColor,
-                size: 20,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AppText(
-                      '${phoneNumber.countryCode} ${phoneNumber.phone}',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF2E1A47),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppColors.primaryColor.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              Iconsax.call_copy,
+              color: AppColors.primaryColor,
+              size: 18,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                AppText(
+                  '${phoneNumber.countryCode} ${phoneNumber.phone}',
+                  fontSize: 15.5,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF2E1A47),
+                ),
+                if (!phoneNumber.isVerified)
+                  GestureDetector(
+                    onTap: () => _verifyExistingNumber(phoneNumber),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.shade50,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.orange.shade100),
+                      ),
+                      child: const AppText(
+                        'Verify',
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.orange,
+                      ),
                     ),
-                    const SizedBox(height: 4),
-                    if (isVerified)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: Colors.green.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: const AppText(
-                          'Verified',
+                  )
+                else if (phoneNumber.isDefault)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade50,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.green.shade200),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.check_circle_rounded, color: Colors.green, size: 14),
+                        SizedBox(width: 4),
+                        AppText(
+                          'Active',
                           fontSize: 11,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w700,
                           color: Colors.green,
                         ),
-                      )
-                    else
-                      GestureDetector(
-                        onTap: () {
-                          showModalBottomSheet(
-                            context: context,
-                            isScrollControlled: true,
-                            backgroundColor: Colors.transparent,
-                            builder: (context) => Padding(
-                              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                              child: PhoneVerificationBottomSheet(
-                                phoneNumber: '${phoneNumber.countryCode} ${phoneNumber.phone}',
-                              ),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: AppColors.primaryColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: const AppText(
-                            'Verify',
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.primaryColor,
-                          ),
-                        ),
+                      ],
+                    ),
+                  )
+                else
+                  InkWell(
+                    onTap: () => _setAsDefault(phoneNumber.id),
+                    borderRadius: BorderRadius.circular(10),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryColor.withOpacity(0.05),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: AppColors.primaryColor.withOpacity(0.2)),
                       ),
-                  ],
-                ),
-              ),
-              if (isDefault)
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.check_circle_rounded, color: Colors.green, size: 14),
-                      SizedBox(width: 4),
-                      AppText(
-                        'Active',
+                      child: const AppText(
+                        'Set Default',
                         fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.green,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primaryColor,
                       ),
-                    ],
+                    ),
                   ),
-                )
-              else if (isVerified)
-                TextButton(
-                  onPressed: () => _setAsDefault(phoneNumber.id),
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                  child: const AppText(
-                    'Set Default',
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primaryColor,
-                  ),
-                ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
@@ -375,13 +322,13 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
                             ),
                             child: const AppText(
                               'Cancel',
-                              fontSize: 14,
+                              fontSize: 13,
                               fontWeight: FontWeight.w600,
                               color: Color(0xFF2E1A47),
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 8),
                         Expanded(
                           child: TextButton(
                             onPressed: () async {
@@ -391,17 +338,18 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
                               }
                             },
                             style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                               backgroundColor: AppColors.primaryColor,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
                             child: const AppText(
-                              'Yes, Set Default',
-                              fontSize: 14,
+                              'Set Default',
+                              fontSize: 13,
                               fontWeight: FontWeight.w600,
                               color: Colors.white,
+                              textAlign: TextAlign.center,
                             ),
                           ),
                         ),

@@ -12,6 +12,7 @@ import '../../profile/screens/live_schedule_screen.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../notification/notice_screen.dart';
 import '../../orders/orders_screen.dart';
+import '../../../routes/app_routes.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -189,7 +190,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: OutlinedButton(
                 onPressed: () {
                   Get.back();
-                  Get.to(() => const LiveScheduleScreen());
+                  Get.toNamed(AppRoutes.liveSchedule);
                 },
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: Color(0xFF2196F3), width: 1.5), // Blue for Schedule

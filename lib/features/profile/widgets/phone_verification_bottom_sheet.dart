@@ -4,10 +4,13 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text.dart';
 import '../../../../core/widgets/custom_otp_field.dart';
 import '../../../../core/widgets/custom_button.dart';
+import '../../../../core/utils/custom_snackbar.dart';
+import '../presentation/controllers/phone_number_controller.dart';
 
 class PhoneVerificationBottomSheet extends StatefulWidget {
+  final int phoneId;
   final String phoneNumber;
-  const PhoneVerificationBottomSheet({super.key, required this.phoneNumber});
+  const PhoneVerificationBottomSheet({super.key, required this.phoneId, required this.phoneNumber});
 
   @override
   State<PhoneVerificationBottomSheet> createState() => _PhoneVerificationBottomSheetState();
@@ -15,6 +18,13 @@ class PhoneVerificationBottomSheet extends StatefulWidget {
 
 class _PhoneVerificationBottomSheetState extends State<PhoneVerificationBottomSheet> {
   final TextEditingController _otpController = TextEditingController();
+  final PhoneNumberController _controller = Get.find<PhoneNumberController>();
+
+  @override
+  void dispose() {
+    _otpController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,12 +66,12 @@ class _PhoneVerificationBottomSheetState extends State<PhoneVerificationBottomSh
           const SizedBox(height: 32),
           CustomOtpField(
             length: 4,
-             borderColor: Colors.grey.shade300,
+            borderColor: Colors.grey.shade300,
             focusedBorderColor: AppColors.primaryColor,
             textColor: Colors.black87,
             controller: _otpController,
             onCompleted: (val) {
-              // Handle completion
+              _controller.verifyPhoneNumber(widget.phoneId, val);
             },
           ),
           const SizedBox(height: 32),
@@ -75,7 +85,11 @@ class _PhoneVerificationBottomSheetState extends State<PhoneVerificationBottomSh
               ),
               GestureDetector(
                 onTap: () {
-                  // Handle resend
+                  // Handle resend logic if needed, usually just calling addPhoneNumber again
+                  _controller.addPhoneNumber(
+                    widget.phoneNumber.split(' ')[0], 
+                    widget.phoneNumber.split(' ')[1]
+                  );
                 },
                 child: const AppText(
                   'Resend OTP',
@@ -87,20 +101,17 @@ class _PhoneVerificationBottomSheetState extends State<PhoneVerificationBottomSh
             ],
           ),
           const SizedBox(height: 32),
-          CustomButton(
-            text: 'Verify',
+          Obx(() => CustomButton(
+            text: _controller.isVerifying.value ? 'Verifying...' : 'Verify',
             onPressed: () {
-              // Handle verify
-              Get.back();
-              Get.snackbar(
-                'Success', 
-                'Phone number verified successfully',
-                snackPosition: SnackPosition.BOTTOM,
-                backgroundColor: AppColors.successColor,
-                colorText: Colors.white,
-              );
+              if (_otpController.text.length == 4) {
+                _controller.verifyPhoneNumber(widget.phoneId, _otpController.text);
+              } else {
+                CustomSnackBar.showError('Please enter a 4-digit OTP');
+              }
             },
-          ),
+            isLoading: _controller.isVerifying.value,
+          )),
           const SizedBox(height: 16),
         ],
       ),

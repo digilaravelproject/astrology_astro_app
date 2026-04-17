@@ -259,23 +259,24 @@ class GalleryGridView extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    SizedBox(
-                      height: 20,
-                      width: 34,
-                      child: Transform.scale(
-                        scale: 0.7,
-                        child: Switch(
-                          value: isEnabled,
-                          onChanged: (val) {
-                            controller.toggleVisibility(item.id);
-                          },
-                          activeColor: AppColors.primaryColor,
-                          activeTrackColor: AppColors.primaryColor.withOpacity(0.2),
-                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    if (isVerified)
+                      SizedBox(
+                        height: 20,
+                        width: 34,
+                        child: Transform.scale(
+                          scale: 0.7,
+                          child: Switch(
+                            value: isEnabled,
+                            onChanged: (val) {
+                              controller.toggleVisibility(item.id);
+                            },
+                            activeColor: AppColors.primaryColor,
+                            activeTrackColor: AppColors.primaryColor.withOpacity(0.2),
+                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
+                    if (isVerified) const SizedBox(width: 8),
                     GestureDetector(
                       onTap: () => _showDeleteDialog(context, controller, item.id),
                       child: const Icon(Iconsax.trash_copy, color: Colors.grey, size: 16),

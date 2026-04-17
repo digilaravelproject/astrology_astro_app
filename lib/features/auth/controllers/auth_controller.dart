@@ -92,7 +92,11 @@ class AuthController extends GetxController {
     final isLoggedIn = await _checkLoginStatusUseCase.execute();
     if (isLoggedIn) {
       final user = await _getUserInfoUseCase.execute();
-      if (user != null) currentUser.value = user;
+      if (user != null) {
+        currentUser.value = user;
+        // Refresh profile data from network to get latest rates/status
+        getProfile(user.id);
+      }
     }
   }
 
@@ -292,7 +296,11 @@ class AuthController extends GetxController {
           }
           
           currentUser.value = user;
-          Logger.d('AuthController: Profile synced. Has otherDetails: ${currentUser.value?.astrologer?.otherDetails != null}');
+          
+          // Save fresh data to local storage for future app starts
+          await Get.find<AuthService>().saveUserInfo(user);
+          
+          Logger.d('AuthController: Profile synced and saved to LocalStorage. Has otherDetails: ${currentUser.value?.astrologer?.otherDetails != null}');
         }
       } else {
         CustomSnackBar.showError(response.message);

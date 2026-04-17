@@ -21,6 +21,8 @@ class AppUrls {
   static String setDefaultBankAccount(int id) => "/astrologer/bank-accounts/$id/set-default";
   static const String availability = "/astrologer/availability";
   static const String phoneNumbers = "/astrologer/phone-numbers";
+  static String verifyPhoneNumber(int id) => "/astrologer/phone-numbers/$id/verify";
+  static String setDefaultPhoneNumber(int id) => "/astrologer/phone-numbers/$id/set-default";
 
   static String getNotificationDetail(int id) => "/user/notifications/$id";
 
@@ -48,4 +50,18 @@ class AppUrls {
   static const String reviewList = "/user/reviews";
   static String replyReview(int id) => "/user/reviews/$id/reply";
 
+  // Live Sessions
+  static const String liveSessions = "/astrologer/live";
+  static String deleteLiveSession(int id) => "/astrologer/live/$id";
+
+  // Billing Address
+  static const String billingAddress = "/astrologer/billing-address";
+
+  // Astrology Blogs
+  static const String blogs = "/user/blogs";
+  static String blogDetails(int id) => "/user/blogs/$id";
+
+  // Remedies
+  static const String remedies = "/user/remedies";
+  static String remedyDetails(int id) => "/user/remedies/$id";
 }

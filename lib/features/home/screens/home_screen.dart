@@ -35,7 +35,7 @@ import '../../notification/controllers/notification_controller.dart';
 import '../../profile/screens/invoice_screen.dart';
 import '../../profile/screens/performance_screen.dart';
 import '../../profile/screens/settings_screen.dart';
-
+import '../../../routes/app_routes.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -998,7 +998,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: OutlinedButton(
                 onPressed: () {
                   Get.back();
-                  Get.to(() => const LiveScheduleScreen());
+                  Get.toNamed(AppRoutes.liveSchedule);
                 },
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: Color(0xFF2196F3), width: 1.5), // Blue for Schedule

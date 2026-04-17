@@ -17,6 +17,8 @@ import '../features/profile/screens/payment_policy_screen.dart';
 import '../features/profile/screens/privacy_policy_screen.dart';
 import '../features/profile/screens/terms_and_conditions_screen.dart';
 import '../features/profile/screens/about_us_screen.dart';
+import '../features/profile/screens/live_schedule_screen.dart';
+import '../features/profile/presentation/bindings/live_schedule_binding.dart';
 import '../features/profile/screens/feedback_screen.dart';
 import '../features/profile/screens/help_support_screen.dart';
 import 'package:astro_astrologer/features/profile/screens/gallery_screen.dart';
@@ -158,6 +160,12 @@ class RouteHelper {
       name: AppRoutes.addBankAccount,
       page: () => const AddBankAccountScreen(),
       binding: FinanceBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.liveSchedule,
+      page: () => const LiveScheduleScreen(),
+      binding: LiveScheduleBinding(),
       transition: Transition.rightToLeft,
     ),
   ];

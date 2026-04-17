@@ -3,6 +3,9 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:get/get.dart';
 import 'package:astro_astrologer/core/theme/app_colors.dart';
 import 'package:astro_astrologer/core/widgets/app_text.dart';
+import 'package:astro_astrologer/core/widgets/custom_button.dart';
+import '../presentation/controllers/billing_controller.dart';
+import '../presentation/bindings/billing_binding.dart';
 
 class UpdateAddressBottomSheet extends StatefulWidget {
   const UpdateAddressBottomSheet({super.key});
@@ -13,23 +16,19 @@ class UpdateAddressBottomSheet extends StatefulWidget {
 
 class _UpdateAddressBottomSheetState extends State<UpdateAddressBottomSheet> {
   final _formKey = GlobalKey<FormState>();
-  
-  final _addressController = TextEditingController(text: '602 D 3 omkar chs rna mahada colony');
-  final _nameController = TextEditingController();
-  final _pincodeController = TextEditingController(text: '400074');
-  final _cityController = TextEditingController(text: 'Mumbai North East');
-  final _stateController = TextEditingController(text: 'Maharashtra');
-  final _countryController = TextEditingController(text: 'India');
+  late BillingController _controller;
 
   @override
-  void dispose() {
-    _addressController.dispose();
-    _nameController.dispose();
-    _pincodeController.dispose();
-    _cityController.dispose();
-    _stateController.dispose();
-    _countryController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    // Ensure controller is registered
+    if (!Get.isRegistered<BillingController>()) {
+      BillingBinding().dependencies();
+    }
+    _controller = Get.find<BillingController>();
+    
+    // Fetch data every time the bottom sheet opens
+    _controller.fetchBillingAddress();
   }
 
   @override
@@ -43,133 +42,128 @@ class _UpdateAddressBottomSheetState extends State<UpdateAddressBottomSheet> {
           topRight: Radius.circular(30),
         ),
       ),
-      child: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.1),
-                        shape: BoxShape.circle,
+      child: Obx(() {
+        if (_controller.isInitialLoading.value) {
+          return const SizedBox(
+            height: 400,
+            child: Center(
+              child: CircularProgressIndicator(color: AppColors.primaryColor),
+            ),
+          );
+        }
+
+        return SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.close, size: 20, color: Colors.grey),
                       ),
-                      child: const Icon(Icons.close, size: 20, color: Colors.grey),
                     ),
-                  ),
-                ],
-              ),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.primaryColor.withOpacity(0.08),
-                  shape: BoxShape.circle,
+                  ],
                 ),
-                child: Icon(Iconsax.location_copy, color: AppColors.primaryColor, size: 30),
-              ),
-              const SizedBox(height: 16),
-              AppText(
-                'Add Your Address',
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-                color: const Color(0xFF2E1A47),
-              ),
-              const SizedBox(height: 8),
-              AppText(
-                'Please share your address for invoice and compliance purposes.',
-                fontSize: 14,
-                textAlign: TextAlign.center,
-                color: Colors.grey.shade500,
-                height: 1.4,
-              ),
-              const SizedBox(height: 24),
-              _buildTextField(
-                controller: _addressController,
-                placeholder: 'Enter Address',
-                maxLines: 2,
-              ),
-              const SizedBox(height: 16),
-              _buildTextField(
-                controller: _nameController,
-                placeholder: 'Enter Name for invoice*',
-                isRequired: true,
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildTextField(
-                      controller: _pincodeController,
-                      placeholder: 'Pincode',
-                    ),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryColor.withOpacity(0.08),
+                    shape: BoxShape.circle,
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _buildTextField(
-                      controller: _cityController,
-                      placeholder: 'City',
+                  child: Icon(Iconsax.location_copy, color: AppColors.primaryColor, size: 30),
+                ),
+                const SizedBox(height: 16),
+                AppText(
+                  'Add Your Address',
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF2E1A47),
+                ),
+                const SizedBox(height: 8),
+                AppText(
+                  'Please share your address for invoice and compliance purposes.',
+                  fontSize: 14,
+                  textAlign: TextAlign.center,
+                  color: Colors.grey.shade500,
+                  height: 1.4,
+                ),
+                const SizedBox(height: 24),
+                _buildTextField(
+                  controller: _controller.addressController,
+                  placeholder: 'Enter Address',
+                  maxLines: 2,
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  controller: _controller.nameController,
+                  placeholder: 'Enter Name for invoice',
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildTextField(
+                        controller: _controller.pincodeController,
+                        placeholder: 'Pincode',
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildTextField(
-                      controller: _stateController,
-                      placeholder: 'State',
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: _buildTextField(
+                        controller: _controller.cityController,
+                        placeholder: 'City',
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _buildTextField(
-                      controller: _countryController,
-                      placeholder: 'Country',
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildTextField(
+                        controller: _controller.stateController,
+                        placeholder: 'State',
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    Navigator.pop(context);
-                    Get.snackbar(
-                      'Success',
-                      'Billing address updated successfully',
-                      snackPosition: SnackPosition.BOTTOM,
-                      backgroundColor: Colors.green,
-                      colorText: Colors.white,
-                      margin: const EdgeInsets.all(16),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: _buildTextField(
+                        controller: _controller.countryController,
+                        placeholder: 'Country',
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 32),
+                
+                Obx(() => CustomButton(
+                  text: 'Submit',
+                  isLoading: _controller.isLoading.value,
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _controller.updateAddress();
+                    }
+                  },
                   backgroundColor: AppColors.primaryColor,
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size(double.infinity, 54),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  elevation: 0,
-                ),
-                child: AppText(
-                  'Submit',
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 10),
-            ],
+                  borderRadius: 12,
+                )),
+                
+                const SizedBox(height: 10),
+              ],
+            ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 
