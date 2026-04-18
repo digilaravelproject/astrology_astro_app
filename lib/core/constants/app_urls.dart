@@ -15,8 +15,8 @@ class AppUrls {
   static const String getFollowers = "/astrologer/community/followers";
   static const String getFavorites = "/astrologer/community/favorites";
   static const String getAstroSkills = "/astrologer/profile/skills";
-  static const String getNotificationCount = "/user/notifications/count";
-  static const String getNotifications = "/user/notifications";
+  static String getNotificationCount(int userId) => "/user/notifications/count?user_id=$userId";
+  static String getNotifications(int userId) => "/user/notifications?user_id=$userId";
   static const String bankAccounts = "/astrologer/bank-accounts";
   static String setDefaultBankAccount(int id) => "/astrologer/bank-accounts/$id/set-default";
   static const String availability = "/astrologer/availability";
@@ -24,7 +24,8 @@ class AppUrls {
   static String verifyPhoneNumber(int id) => "/astrologer/phone-numbers/$id/verify";
   static String setDefaultPhoneNumber(int id) => "/astrologer/phone-numbers/$id/set-default";
 
-  static String getNotificationDetail(int id) => "/user/notifications/$id";
+  static String getNotificationDetail(int id, int userId) => "/user/notifications/$id?user_id=$userId";
+  static String markNotificationRead(int id, int userId) => "/user/notifications/$id/mark-read?user_id=$userId";
 
   static const String faqs = '/faqs';
   static const String privacyPolicy = '/privacy-policy';

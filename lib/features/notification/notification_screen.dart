@@ -23,25 +23,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
     super.initState();
     _controller = Get.find<NotificationController>();
     _controller.getNotifications();
-    // Reset badge count after build completes to avoid setState during build
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _controller.resetUnreadCount();
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         title: 'Notifications',
-        actions: [
-          IconButton(
-            icon: const Icon(Iconsax.tick_circle, color: AppColors.deepPink),
-            tooltip: "Mark all as read",
-            onPressed: () {},
-          ),
-        ],
       ),
       body: Obx(() {
         if (_controller.isNotificationsLoading.value) {

@@ -20,8 +20,7 @@ class MyReviewsScreen extends StatefulWidget {
 
 class _MyReviewsScreenState extends State<MyReviewsScreen> {
   final ReviewController controller = Get.find<ReviewController>();
-  String _selectedCategory = 'All';
-  final List<String> _categories = ['All', 'Call', 'Chat', 'Astromall'];
+  int _selectedRating = 0; // 0 for All
 
   @override
   Widget build(BuildContext context) {
@@ -34,27 +33,27 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
         onRefresh: () => controller.fetchReviews(),
         child: Column(
           children: [
-            _buildCategoryFilters(),
+            _buildRatingFilters(),
             Expanded(
               child: Obx(() {
-                if (controller.isLoading.value && controller.reviews.isEmpty) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+                final filteredReviews = _selectedRating == 0 
+                    ? controller.reviews 
+                    : controller.reviews.where((r) => r.rating.toInt() == _selectedRating).toList();
 
-                if (controller.reviews.isEmpty) {
+                if (filteredReviews.isEmpty) {
                   return ListView(
                     children: [
                       SizedBox(height: Get.height * 0.2),
-                      const Center(child: AppText('No reviews found', color: Colors.grey)),
+                      Center(child: AppText(_selectedRating == 0 ? 'No reviews found' : 'No $_selectedRating star reviews found', color: Colors.grey)),
                     ],
                   );
                 }
 
                 return ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: controller.reviews.length,
+                  itemCount: filteredReviews.length,
                   itemBuilder: (context, index) {
-                    return _buildReviewCard(controller.reviews[index]);
+                    return _buildReviewCard(filteredReviews[index]);
                   },
                 );
               }),
@@ -66,19 +65,20 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
   }
 
 
-  Widget _buildCategoryFilters() {
+  Widget _buildRatingFilters() {
     return Container(
       height: 60,
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: _categories.length,
+        itemCount: 6, // All, 1, 2, 3, 4, 5 stars
         itemBuilder: (context, index) {
-          final category = _categories[index];
-          final isSelected = _selectedCategory == category;
+          final isAll = index == 0;
+          final isSelected = _selectedRating == index;
+          
           return GestureDetector(
-            onTap: () => setState(() => _selectedCategory = category),
+            onTap: () => setState(() => _selectedRating = index),
             child: Container(
               margin: const EdgeInsets.only(right: 12),
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
@@ -89,30 +89,18 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
               ),
               child: Row(
                 children: [
-                  if (category == 'All') ...[
-                    const Icon(Icons.star, size: 14, color: AppColors.goldAccent),
-                    const SizedBox(width: 4),
-                  ],
-                  if (category == 'Call') ...[
-                    const Icon(Icons.call, size: 14, color: Colors.grey),
-                    const SizedBox(width: 4),
-                  ],
-                  if (category == 'Chat') ...[
-                    const Icon(Icons.chat_bubble_rounded, size: 14, color: Colors.grey),
-                    const SizedBox(width: 4),
-                  ],
-                  if (category == 'Astromall') ...[
-                    const Icon(Icons.shop, size: 14, color: Colors.grey),
-                    const SizedBox(width: 4),
-                  ],
+                  Icon(
+                    Icons.star_rounded, 
+                    size: 18, 
+                    color: isSelected ? AppColors.goldAccent : Colors.grey.shade400
+                  ),
+                  const SizedBox(width: 6),
                   AppText(
-                    category,
+                    isAll ? 'All' : '$index Star',
                     fontSize: 13,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                     color: isSelected ? AppColors.primaryColor : Colors.black87,
                   ),
-                  const SizedBox(width: 4),
-                  const Icon(Icons.keyboard_arrow_down, size: 14, color: Colors.grey),
                 ],
               ),
             ),

@@ -169,14 +169,23 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
                                   initialTime: TimeOfDay.now(),
                                 );
                                 if (time != null) {
+                                  final now = DateTime.now();
+                                  DateTime tempDateTime;
+                                  if (selectedDateTime != null) {
+                                    tempDateTime = DateTime(selectedDateTime!.year, selectedDateTime!.month, selectedDateTime!.day, time.hour, time.minute);
+                                  } else {
+                                    tempDateTime = DateTime(now.year, now.month, now.day, time.hour, time.minute);
+                                  }
+
+                                  // Check if at least 10 minutes in future
+                                  if (tempDateTime.isBefore(now.add(const Duration(minutes: 10)))) {
+                                    CustomSnackBar.showError('Please select a time at least 10 minutes from now');
+                                    return;
+                                  }
+
                                   setSheetState(() {
                                     selectedTimeText = time.format(context);
-                                    if (selectedDateTime != null) {
-                                      selectedDateTime = DateTime(selectedDateTime!.year, selectedDateTime!.month, selectedDateTime!.day, time.hour, time.minute);
-                                    } else {
-                                      final now = DateTime.now();
-                                      selectedDateTime = DateTime(now.year, now.month, now.day, time.hour, time.minute);
-                                    }
+                                    selectedDateTime = tempDateTime;
                                   });
                                 }
                               },
@@ -192,12 +201,47 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
                     text: 'Schedule Now',
                     isLoading: _controller.isCreating.value,
                     onPressed: () {
-                      if (titleController.text.isEmpty) {
-                        CustomSnackBar.showError('Topic is required');
+                      if (titleController.text.trim().isEmpty) {
+                        CustomSnackBar.showError('Please enter a session topic');
                         return;
                       }
-                      if (selectedDateTime == null || selectedDateText == 'Select Date' || selectedTimeText == 'Select Time') {
-                        CustomSnackBar.showError('Date and time are required');
+                      
+                      if (descriptionController.text.trim().isEmpty) {
+                        CustomSnackBar.showError('Please enter a session description');
+                        return;
+                      }
+
+                      if (selectedDateText == 'Select Date') {
+                        CustomSnackBar.showError('Please select a date for the session');
+                        return;
+                      }
+
+                      if (selectedTimeText == 'Select Time') {
+                        CustomSnackBar.showError('Please select a time for the session');
+                        return;
+                      }
+
+                      if (selectedDateTime == null) {
+                        CustomSnackBar.showError('Invalid date and time selected');
+                        return;
+                      }
+
+                      // Check if at least 5 minutes in future at submission time
+                      final now = DateTime.now();
+                      if (selectedDateTime!.isBefore(now.add(const Duration(minutes: 5)))) {
+                        CustomSnackBar.showError('Session must be scheduled at least 5 minutes in advance');
+                        return;
+                      }
+
+                      final duration = int.tryParse(durationController.text) ?? 60;
+                      if (duration < 15) {
+                        CustomSnackBar.showError('Duration must be at least 15 minutes');
+                        return;
+                      }
+
+                      final participants = int.tryParse(participantsController.text) ?? 100;
+                      if (participants < 1) {
+                        CustomSnackBar.showError('Max participants must be at least 1');
                         return;
                       }
 
@@ -206,8 +250,8 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
                         description: descriptionController.text,
                         scheduledAt: selectedDateTime!,
                         sessionType: 'public',
-                        duration: int.tryParse(durationController.text) ?? 60,
-                        maxParticipants: int.tryParse(participantsController.text) ?? 100,
+                        duration: duration,
+                        maxParticipants: participants,
                       );
                     },
                     backgroundColor: AppColors.primaryColor,

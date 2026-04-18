@@ -36,6 +36,8 @@ import '../../profile/screens/invoice_screen.dart';
 import '../../profile/screens/performance_screen.dart';
 import '../../profile/screens/settings_screen.dart';
 import '../../../routes/app_routes.dart';
+import '../../../core/widgets/custom_image_widget.dart';
+import '../../../core/constants/app_urls.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -117,43 +119,47 @@ class _HomeScreenState extends State<HomeScreen> {
               debugPrint('Profile icon tapped - shifting to index 4');
               Get.find<DashboardController>().changeIndex(4);
             },
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppColors.primaryColor,
-                  width: 2,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primaryColor.withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: ClipOval(
-                child: Container(
-                  decoration: const BoxDecoration(
-                    gradient: AppColors.primaryGradient,
-                  ),
-                  child: Center(
-                    child: Text(
-                      authController.currentUser.value?.name.isNotEmpty == true
-                          ? authController.currentUser.value!.name[0].toUpperCase()
-                          : 'A',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
+            child: Obx(() {
+              final user = authController.currentUser.value;
+              final photo = user?.astrologer?.profilePhoto ?? user?.profilePhoto;
+              final String? imageUrl = (photo != null && photo.isNotEmpty)
+                  ? (photo.startsWith('http') ? photo : '${AppUrls.baseImageUrl}$photo')
+                  : null;
+
+              return Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: AppColors.primaryColor,
+                    width: 2.5,
                   ),
                 ),
-              ),
-            ),
+                child: ClipOval(
+                  child: imageUrl != null
+                      ? CustomImageWidget(
+                          imagePath: imageUrl,
+                          fit: BoxFit.cover,
+                        )
+                      : Container(
+                          decoration: const BoxDecoration(
+                            gradient: AppColors.primaryGradient,
+                          ),
+                          child: Center(
+                            child: Text(
+                              user?.name.isNotEmpty == true ? user!.name[0].toUpperCase() : 'A',
+                              style: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                ),
+              );
+            }),
           ),
           Row(
             children: [
@@ -528,19 +534,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String _formatDisplayTime(String time24) {
-    try {
-      final parts = time24.split(':');
-      final hour = int.parse(parts[0]);
-      final minute = int.parse(parts[1]);
-      
-      final displayHour = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
-      final period = hour >= 12 ? 'PM' : 'AM';
-      final displayMinute = minute.toString().padLeft(2, '0');
-      
-      return '${displayHour.toString().padLeft(2, '0')}:$displayMinute $period';
-    } catch (e) {
-      return time24; // Return original if parsing fails
-    }
+    return time24;
   }
 
   }

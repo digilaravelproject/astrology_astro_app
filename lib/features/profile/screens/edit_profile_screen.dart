@@ -181,9 +181,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             _buildSectionHeader('BASIC DETAILS'),
             _buildInputField(controller: _nameController, label: 'Full Name', hint: 'Enter your name', icon: Iconsax.user_copy),
             const SizedBox(height: 16),
-            _buildInputField(controller: _mobileController, label: 'Mobile Number', hint: 'Enter mobile number', icon: Iconsax.call_copy),
+            _buildInputField(controller: _mobileController, label: 'Mobile Number', hint: 'Enter mobile number', icon: Iconsax.call_copy, readOnly: true),
             const SizedBox(height: 16),
             _buildInputField(controller: _emailController, label: 'Email ID', hint: 'Enter email address', icon: Iconsax.sms_copy),
+            const SizedBox(height: 16),
+            const AppText('Date of Birth', fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF2E1A47)),
+            const SizedBox(height: 8),
+            GestureDetector(
+              onTap: _selectDate,
+              child: AbsorbPointer(child: _field(_dobController, 'DD / MM / YYYY', Icons.calendar_today_outlined)),
+            ),
             const SizedBox(height: 16),
             Row(
               children: [
@@ -196,24 +203,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             const SizedBox(height: 32),
             _buildSectionHeader('VERIFICATION DOCUMENTS'),
             _buildInputField(controller: _docNumberController, label: 'ID Proof Number', hint: 'ID number', icon: Iconsax.card_pos_copy),
-            const SizedBox(height: 16),
-            GestureDetector(
-              onTap: _selectDate,
-              child: AbsorbPointer(child: _field(_dobController, 'DD / MM / YYYY', Icons.calendar_today_outlined,
-                  trailing: const Icon(Icons.expand_more, color: AppColors.primaryColor, size: 20))),
-            ),
             const SizedBox(height: 20),
             
             // Read-only document previews
             const AppText('Uploaded Documents', fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF2E1A47)),
             const SizedBox(height: 12),
-            Row(
-              children: [
-                _buildDocPreview('ID Proof', Iconsax.document_text_copy),
-                const SizedBox(width: 16),
-                _buildDocPreview('Certificate', Iconsax.teacher_copy),
-              ],
-            ),
+            Obx(() {
+              final astro = authController.currentUser.value?.astrologer;
+              final idProof = astro?.idProof;
+              final certificate = astro?.certificate;
+
+              return Row(
+                children: [
+                  _buildDocPreview('ID Proof', Iconsax.document_text_copy, idProof),
+                  const SizedBox(width: 16),
+                  _buildDocPreview('Certificate', Iconsax.teacher_copy, certificate),
+                ],
+              );
+            }),
             
             const SizedBox(height: 40),
             CustomButton(
@@ -283,23 +290,97 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _buildDocPreview(String label, IconData icon) {
+  Widget _buildDocPreview(String label, IconData icon, String? imagePath) {
+    final hasImage = imagePath != null && imagePath.isNotEmpty;
+    final imageUrl = hasImage ? '${AppUrls.baseImageUrl}$imagePath' : '';
+
     return Expanded(
-      child: Container(
-        height: 100,
-        decoration: BoxDecoration(
-          color: Colors.grey.shade50,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.grey.shade200, style: BorderStyle.solid),
+      child: GestureDetector(
+        onTap: hasImage ? () => _showFullView(imageUrl) : null,
+        child: Container(
+          height: 100,
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            color: Colors.grey.shade50,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: Colors.grey.shade200),
+          ),
+          child: hasImage
+              ? Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image.network(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Center(
+                        child: Icon(icon, color: Colors.grey.shade400, size: 24),
+                      ),
+                    ),
+                    Container(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      alignment: Alignment.center,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.fullscreen_rounded, color: Colors.white, size: 24),
+                          const SizedBox(height: 4),
+                          AppText(label, fontSize: 10, color: Colors.white, fontWeight: FontWeight.w700),
+                        ],
+                      ),
+                    ),
+                  ],
+                )
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(icon, color: Colors.grey.shade400, size: 24),
+                    const SizedBox(height: 8),
+                    AppText(label, fontSize: 11, color: Colors.grey.shade500, fontWeight: FontWeight.w600),
+                    const SizedBox(height: 4),
+                    AppText('Not Uploaded', fontSize: 10, color: Colors.grey.shade400, fontWeight: FontWeight.w700),
+                  ],
+                ),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      ),
+    );
+  }
+
+  void _showFullView(String imageUrl) {
+    Get.dialog(
+      Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: EdgeInsets.zero,
+        child: Stack(
+          alignment: Alignment.center,
           children: [
-            Icon(icon, color: Colors.grey.shade400, size: 24),
-            const SizedBox(height: 8),
-            AppText(label, fontSize: 11, color: Colors.grey.shade500, fontWeight: FontWeight.w600),
-            const SizedBox(height: 4),
-            AppText('Uploaded', fontSize: 10, color: Colors.green, fontWeight: FontWeight.w700),
+            GestureDetector(
+              onTap: () => Get.back(),
+              child: Container(color: Colors.black.withValues(alpha: 0.8)),
+            ),
+            InteractiveViewer(
+              minScale: 0.5,
+              maxScale: 4.0,
+              child: Image.network(
+                imageUrl,
+                fit: BoxFit.contain,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
+                },
+              ),
+            ),
+            Positioned(
+              top: 40,
+              right: 20,
+              child: GestureDetector(
+                onTap: () => Get.back(),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: const BoxDecoration(color: Colors.black45, shape: BoxShape.circle),
+                  child: const Icon(Icons.close_rounded, color: Colors.white, size: 24),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -308,11 +389,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
 
   Future<void> _selectDate() async {
+    final now = DateTime.now();
+    final eighteenYearsAgo = DateTime(now.year - 18, now.month, now.day);
+    
     final picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now().subtract(const Duration(days: 365 * 18)),
+      initialDate: eighteenYearsAgo,
       firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
+      lastDate: eighteenYearsAgo,
       builder: (context, child) => Theme(
         data: Theme.of(context).copyWith(
           colorScheme: const ColorScheme.light(primary: AppColors.primaryColor, onPrimary: Colors.white),

@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import '../domain/usecases/get_notification_count_usecase.dart';
 import '../domain/usecases/get_notifications_usecase.dart';
 import '../domain/usecases/get_notification_detail_usecase.dart';
+import '../domain/usecases/mark_notification_read_usecase.dart';
 import '../domain/models/notification_count_model.dart';
 import '../domain/models/notification_item_model.dart';
 import '../../auth/controllers/auth_controller.dart';
@@ -11,11 +12,13 @@ class NotificationController extends GetxController {
   final GetNotificationCountUseCase _getNotificationCountUseCase;
   final GetNotificationsUseCase _getNotificationsUseCase;
   final GetNotificationDetailUseCase _getNotificationDetailUseCase;
+  final MarkNotificationReadUseCase _markNotificationReadUseCase;
 
   NotificationController(
     this._getNotificationCountUseCase,
     this._getNotificationsUseCase,
     this._getNotificationDetailUseCase,
+    this._markNotificationReadUseCase,
   );
 
   final unreadCount = 0.obs;
@@ -140,7 +143,13 @@ class NotificationController extends GetxController {
       if (response.isSuccess && response.body != null) {
         final raw = response.body['notification'] as Map<String, dynamic>?;
         if (raw != null) {
-          selectedNotification.value = NotificationItemModel.fromJson(raw);
+          final item = NotificationItemModel.fromJson(raw);
+          selectedNotification.value = item;
+          
+          // Mark as read if it's currently unread
+          if (!item.isRead) {
+            markAsRead(id);
+          }
         }
       } else {
         Logger.e('NotificationController: detail fetch failed: ${response.message}');
@@ -149,6 +158,41 @@ class NotificationController extends GetxController {
       Logger.e('NotificationController: getNotificationDetail error: $e');
     } finally {
       isDetailLoading.value = false;
+    }
+  }
+
+  Future<void> markAsRead(int id) async {
+    try {
+      if (!Get.isRegistered<AuthController>()) return;
+      final authController = Get.find<AuthController>();
+      final userId = authController.currentUser.value?.id;
+      if (userId == null) return;
+
+      final response = await _markNotificationReadUseCase.execute(id, userId);
+
+      if (response.isSuccess) {
+        Logger.d('NotificationController: Notification $id marked as read');
+        
+        // Update local list state
+        final index = notifications.indexWhere((n) => n.id == id);
+        if (index != -1) {
+          final n = notifications[index];
+          if (!n.isRead) {
+            notifications[index] = n.copyWith(isRead: true);
+            // Decrease unread count locally
+            if (unreadCount.value > 0) {
+              unreadCount.value--;
+            }
+          }
+        }
+        
+        // Also update selected notification if it's the one
+        if (selectedNotification.value?.id == id) {
+          selectedNotification.value = selectedNotification.value?.copyWith(isRead: true);
+        }
+      }
+    } catch (e) {
+      Logger.e('NotificationController: markAsRead error: $e');
     }
   }
 }
