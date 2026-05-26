@@ -1,12 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/widgets/app_text.dart';
-import '../../../../core/widgets/custom_app_bar.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/widgets/app_text.dart';
+import '../../core/widgets/custom_app_bar.dart';
+import 'presentation/controllers/remedy_controller.dart';
+import 'presentation/bindings/remedy_binding.dart';
 
-class SuggestedRemediesScreen extends StatelessWidget {
+class SuggestedRemediesScreen extends StatefulWidget {
   const SuggestedRemediesScreen({super.key});
+
+  @override
+  State<SuggestedRemediesScreen> createState() => _SuggestedRemediesScreenState();
+}
+
+class _SuggestedRemediesScreenState extends State<SuggestedRemediesScreen> {
+  late RemedyController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!Get.isRegistered<RemedyController>()) {
+      RemedyBinding().dependencies();
+    }
+    _controller = Get.find<RemedyController>();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,54 +32,61 @@ class SuggestedRemediesScreen extends StatelessWidget {
       appBar: const CustomAppBar(
         title: 'Suggested Remedies',
       ),
-      body: ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: 3,
-        separatorBuilder: (context, index) => const SizedBox(height: 16),
-        itemBuilder: (context, index) {
-          return RemedyCard(
-            category: index == 1 ? 'Exclusive Gemstone' : 'Bracelets & Pendants',
-            product: index == 0 
-                ? 'Citrine Bracelet' 
-                : index == 1 
-                    ? '5 Ratti Ceylon Yellow Sapphire (Pukhraj) Exclusive' 
-                    : 'Moonstone Bracelet',
-            name: index == 2 ? 'Tania (ID - AT-QVQK4Q8)' : 'Vivek (ID - AT-27Q9776)',
-            performBy: 'Astrotalk',
-            date: '20 Aug 25, 01:46 PM',
-            price: index == 0 ? 'Rs 699' : index == 1 ? 'Rs 43750' : 'Rs 1200',
-            type: 'Paid Remedy',
-            status: 'Not booked',
-            description: index == 1 ? 'Description: this one' : null,
+      body: Obx(() {
+        if (_controller.isLoading.value) {
+          return const Center(
+            child: CircularProgressIndicator(),
           );
-        },
-      ),
+        }
+
+        if (_controller.remedies.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.healing_outlined, size: 64, color: Colors.grey.shade400),
+                const SizedBox(height: 16),
+                AppText(
+                  'No remedies available',
+                  fontSize: 16,
+                  color: Colors.grey.shade600,
+                ),
+              ],
+            ),
+          );
+        }
+
+        return ListView.separated(
+          padding: const EdgeInsets.all(16),
+          itemCount: _controller.remedies.length,
+          separatorBuilder: (context, index) => const SizedBox(height: 16),
+          itemBuilder: (context, index) {
+            final remedy = _controller.remedies[index];
+            return RemedyCard(
+              title: remedy.title,
+              description: remedy.description,
+              image: remedy.image,
+              isActive: remedy.isActive,
+            );
+          },
+        );
+      }),
     );
   }
 }
 
 class RemedyCard extends StatelessWidget {
-  final String category;
-  final String product;
-  final String name;
-  final String performBy;
-  final String date;
-  final String price;
-  final String type;
-  final String status;
-  final String? description;
+  final String title;
+  final String description;
+  final String? image;
+  final bool isActive;
 
   const RemedyCard({
     super.key,
-    required this.category,
-    required this.product,
-    required this.name,
-    required this.performBy,
-    required this.date,
-    required this.price,
-    required this.type,
-    required this.status,
-    this.description,
+    required this.title,
+    required this.description,
+    required this.image,
+    required this.isActive,
   });
 
   @override
@@ -70,7 +94,7 @@ class RemedyCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -79,91 +103,115 @@ class RemedyCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildDetailRow('Category name: ', category, isValueGreen: true),
-                      const SizedBox(height: 4),
-                      _buildDetailRow('Product Name: ', product, isValueGreen: true),
-                      const SizedBox(height: 4),
-                      _buildDetailRow('Name: ', name),
-                      const SizedBox(height: 4),
-                      _buildDetailRow('Perform by : ', performBy),
-                      const SizedBox(height: 4),
-                      AppText(date, fontSize: 13, color: Colors.black87),
-                      const SizedBox(height: 4),
-                      AppText(price, fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87),
-                      const SizedBox(height: 4),
-                      _buildDetailRow('Type: ', type, isValueRed: true),
-                      const SizedBox(height: 4),
-                      _buildDetailRow('Status: ', status, isValueRed: true),
-                      if (description != null) ...[
-                        const SizedBox(height: 4),
-                        AppText(description!, fontSize: 13, color: Colors.black87),
-                      ],
-                    ],
-                  ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Image Section
+          if (image != null)
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+              ),
+              child: Image.network(
+                image!,
+                width: double.infinity,
+                height: 180,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    width: double.infinity,
+                    height: 180,
+                    color: Colors.grey.shade200,
+                    child: Icon(
+                      Icons.image_not_supported_outlined,
+                      size: 48,
+                      color: Colors.grey.shade400,
+                    ),
+                  );
+                },
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Container(
+                    width: double.infinity,
+                    height: 180,
+                    color: Colors.grey.shade200,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            )
+          else
+            Container(
+              width: double.infinity,
+              height: 180,
+              decoration: BoxDecoration(
+                color: AppColors.primaryColor.withOpacity(0.1),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
                 ),
-                const SizedBox(width: 8),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Container(
-                    width: 90,
-                    height: 90,
-                    color: Colors.grey.shade100,
-                    child: const Icon(Icons.image, color: Colors.grey, size: 40),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Icon(Iconsax.note_copy, color: AppColors.primaryColor.withOpacity(0.7), size: 18),
-                const Spacer(),
-                const Icon(Icons.delete_outline, color: Colors.red, size: 20),
-              ],
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryColor.withOpacity(0.1),
-                  foregroundColor: AppColors.primaryColor,
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                ),
-                child: const AppText('Suggest Next Remedy', fontWeight: FontWeight.bold, fontSize: 13),
+              ),
+              child: Icon(
+                Icons.healing_outlined,
+                size: 64,
+                color: AppColors.primaryColor.withOpacity(0.5),
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
 
-  Widget _buildDetailRow(String label, String value, {bool isValueGreen = false, bool isValueRed = false}) {
-    return RichText(
-      text: TextSpan(
-        style: const TextStyle(fontFamily: 'Poppins', color: Colors.black87, fontSize: 13),
-        children: [
-          TextSpan(text: label),
-          TextSpan(
-            text: value,
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: isValueGreen ? const Color(0xFF7CB342) : (isValueRed ? Colors.red : Colors.black87),
+          // Content Section
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: AppText(
+                        title,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF2E1A47),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: isActive
+                            ? Colors.green.withOpacity(0.1)
+                            : Colors.red.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: AppText(
+                        isActive ? 'Active' : 'Inactive',
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: isActive ? Colors.green : Colors.red,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                AppText(
+                  description,
+                  fontSize: 13,
+                  color: Colors.grey.shade600,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  height: 1.5,
+                ),
+              ],
             ),
           ),
         ],
