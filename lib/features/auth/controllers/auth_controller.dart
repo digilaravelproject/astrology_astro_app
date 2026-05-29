@@ -8,6 +8,7 @@ import '../../../core/widgets/app_text.dart';
 import '../domain/models/user_model.dart';
 import '../../../routes/route_helper.dart';
 import '../../../core/utils/logger.dart';
+import '../../../core/services/network/websocket_service.dart';
 import '../domain/services/auth_service.dart';
 import '../../profile/model/other_details_model.dart';
 import '../../profile/model/skill_model.dart';
@@ -94,6 +95,7 @@ class AuthController extends GetxController {
       final user = await _getUserInfoUseCase.execute();
       if (user != null) {
         currentUser.value = user;
+        Get.find<WebSocketService>().connect();
         // Refresh profile data from network to get latest rates/status
         getProfile(user.id);
       }
@@ -335,6 +337,7 @@ class AuthController extends GetxController {
         otpController.clear();
         CustomSnackBar.showSuccess('OTP verified successfully');
         
+        Get.find<WebSocketService>().connect();
         // Delay to ensure data is saved before navigation
         await Future.delayed(const Duration(milliseconds: 500));
         Get.offAllNamed(RouteHelper.getDashboardRoute());
@@ -356,6 +359,7 @@ class AuthController extends GetxController {
       
       if (response.isSuccess) {
         currentUser.value = null;
+        Get.find<WebSocketService>().disconnect();
         CustomSnackBar.showSuccess(response.message);
         Get.offAllNamed(RouteHelper.getLoginRoute());
       } else {
@@ -429,6 +433,7 @@ class AuthController extends GetxController {
 
                           if (response.isSuccess) {
                             currentUser.value = null;
+                            Get.find<WebSocketService>().disconnect();
                             currentMobile.value = '';
                             mobileController.clear();
                             otpController.clear();

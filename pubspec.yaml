@@ -80,6 +80,7 @@ dependencies:
   iconsax_flutter: ^1.0.1
   video_player: ^2.11.0
   chewie: ^1.13.0
+  web_socket_channel: ^3.0.3
 
 dev_dependencies:
   flutter_test:
@@ -93,10 +94,11 @@ dev_dependencies:
   hive_generator: ^2.0.1
 
 
-flutter_icons:
+flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/logo.png"
+  image_path: "assets/images/app_icon.png"
+  remove_alpha_ios: true
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

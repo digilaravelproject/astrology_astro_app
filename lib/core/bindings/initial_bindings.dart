@@ -3,6 +3,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import '../services/network/api_client.dart';
 import '../services/network/network_info.dart';
 import 'package:dio/dio.dart';
+import '../services/network/websocket_service.dart';
 import '../../features/notification/data/repositories/notice_repository.dart';
 import '../../features/notification/domain/services/notice_service.dart';
 import '../../features/notification/controllers/notice_controller.dart';
@@ -46,6 +47,7 @@ class InitialBindings extends Bindings {
     Get.lazyPut(() => ApiClient(), fenix: true);
     Get.lazyPut(() => Connectivity(), fenix: true);
     Get.lazyPut(() => NetworkInfo(Get.find<Connectivity>()), fenix: true);
+    Get.putAsync<WebSocketService>(() => WebSocketService().init(), permanent: true);
 
     // Splash
     Get.lazyPut(() => SplashRepository(Get.find<ApiClient>()), fenix: true);

@@ -1,24 +1,27 @@
-import '../datasources/remedy_remote_data_source.dart';
+import '../../../../core/services/network/response_model.dart';
 import '../../domain/models/remedy_model.dart';
-
-abstract class RemedyRepositoryInterface {
-  Future<List<RemedyModel>> getRemedies();
-  Future<RemedyModel?> getRemedyDetails(int id);
-}
+import '../../domain/repositories/remedy_repository_interface.dart';
+import '../datasources/remedy_remote_data_source.dart';
 
 class RemedyRepository implements RemedyRepositoryInterface {
-  final RemedyRemoteDataSourceInterface _remoteDataSource;
+  final RemedyRemoteDataSource _remoteDataSource;
 
-  RemedyRepository({required RemedyRemoteDataSourceInterface remoteDataSource})
-      : _remoteDataSource = remoteDataSource;
+  RemedyRepository(this._remoteDataSource);
 
   @override
-  Future<List<RemedyModel>> getRemedies() async {
+  Future<ResponseModel> getRemedies() async {
     return await _remoteDataSource.getRemedies();
   }
 
   @override
   Future<RemedyModel?> getRemedyDetails(int id) async {
-    return await _remoteDataSource.getRemedyDetails(id);
+    final response = await _remoteDataSource.getRemedyDetails(id);
+    if (response.isSuccess) {
+      final data = response.body['remedy'] ?? response.body['data'];
+      if (data != null) {
+        return RemedyModel.fromJson(data);
+      }
+    }
+    return null;
   }
 }

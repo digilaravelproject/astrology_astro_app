@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/utils/logger.dart';
 import '../../domain/models/remedy_model.dart';
 import '../../domain/usecases/get_remedies_usecase.dart';
 import '../../domain/usecases/get_remedy_details_usecase.dart';
@@ -8,74 +9,69 @@ class RemedyController extends GetxController {
   final GetRemediesUseCase _getRemediesUseCase;
   final GetRemedyDetailsUseCase _getRemedyDetailsUseCase;
 
-  RemedyController({
-    required GetRemediesUseCase getRemediesUseCase,
-    required GetRemedyDetailsUseCase getRemedyDetailsUseCase,
-  })  : _getRemediesUseCase = getRemediesUseCase,
-        _getRemedyDetailsUseCase = getRemedyDetailsUseCase;
+  RemedyController(this._getRemediesUseCase, this._getRemedyDetailsUseCase);
 
-  final isLoading = false.obs;
-  final isDetailLoading = false.obs;
-  final remedies = <RemedyModel>[].obs;
-  final filteredRemedies = <RemedyModel>[].obs;
-  final selectedRemedy = Rxn<RemedyModel>();
-  final searchQuery = "".obs;
+  final RxList<RemedyModel> remedies = <RemedyModel>[].obs;
+  final RxBool isLoading = false.obs;
+  final RxBool isDetailLoading = false.obs;
+  final Rxn<RemedyModel> selectedRemedy = Rxn<RemedyModel>();
 
   @override
   void onInit() {
     super.onInit();
-    fetchRemedies();
+    getRemedies();
   }
 
-  Future<void> fetchRemedies() async {
+  Future<void> getRemedies() async {
     try {
       isLoading.value = true;
-      final result = await _getRemediesUseCase.execute();
-      remedies.assignAll(result);
-      _applyFilters();
+      Logger.d('Getting remedies...', tag: 'REMEDY');
+      final result = await _getRemediesUseCase.call();
+      Logger.d('Get remedies result: ${result.toString()}', tag: 'REMEDY');
+
+      if (result.isSuccess) {
+        final List<dynamic> data = result.body['remedies'] ?? [];
+        remedies.value = data.map((json) => RemedyModel.fromJson(json)).toList();
+        Logger.d('Loaded ${remedies.length} remedies', tag: 'REMEDY');
+      } else {
+        Logger.e('Failed to get remedies: ${result.message}', tag: 'REMEDY');
+        Get.snackbar(
+          'Error',
+          result.message,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red.withValues(alpha: 0.1),
+          colorText: Colors.red,
+        );
+      }
     } catch (e) {
-      debugPrint('Error fetching remedies: $e');
+      Logger.e('Exception in getRemedies: $e', tag: 'REMEDY');
+      Get.snackbar(
+        'Error',
+        'Something went wrong: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withValues(alpha: 0.1),
+        colorText: Colors.red,
+      );
     } finally {
       isLoading.value = false;
     }
   }
 
-  void updateSearchQuery(String query) {
-    searchQuery.value = query;
-    _applyFilters();
-  }
-
-  void _applyFilters() {
-    if (searchQuery.value.isEmpty) {
-      filteredRemedies.assignAll(remedies);
-    } else {
-      filteredRemedies.assignAll(remedies.where((remedy) {
-        final matchesSearch = remedy.title.toLowerCase().contains(searchQuery.value.toLowerCase()) ||
-                            remedy.description.toLowerCase().contains(searchQuery.value.toLowerCase());
-        return matchesSearch;
-      }).toList());
-    }
-  }
-
-  Future<void> refreshRemedies() async {
-    await fetchRemedies();
-  }
-
   Future<void> fetchRemedyDetails(int id) async {
     try {
       isDetailLoading.value = true;
-      selectedRemedy.value = null; // Clear previous
-      final result = await _getRemedyById(id);
-      selectedRemedy.value = result;
+      Logger.d('Fetching remedy details for id: $id', tag: 'REMEDY');
+      final result = await _getRemedyDetailsUseCase.execute(id);
+      if (result != null) {
+        selectedRemedy.value = result;
+        Logger.d('Loaded remedy details: ${result.title}', tag: 'REMEDY');
+      } else {
+        Logger.w('Remedy details not found for id: $id', tag: 'REMEDY');
+      }
     } catch (e) {
-      debugPrint('Error fetching remedy detail: $e');
+      Logger.e('Exception in fetchRemedyDetails: $e', tag: 'REMEDY');
     } finally {
       isDetailLoading.value = false;
     }
-  }
-
-  // Alias for fetchRemedyById to match use case or previous logic if needed
-  Future<RemedyModel?> _getRemedyById(int id) async {
-    return await _getRemedyDetailsUseCase.execute(id);
   }
 }

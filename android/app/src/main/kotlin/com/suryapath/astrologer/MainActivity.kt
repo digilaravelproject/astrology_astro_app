@@ -1,4 +1,4 @@
-package com.astro.astrologer
+package com.suryapath.astrologer
 
 import io.flutter.embedding.android.FlutterActivity
 

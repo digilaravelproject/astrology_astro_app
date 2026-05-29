@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/widgets/app_text.dart';
-import '../../../../core/widgets/custom_app_bar.dart';
-import '../../core/constants/app_urls.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/widgets/app_text.dart';
+import '../../core/widgets/custom_app_bar.dart';
 import 'presentation/controllers/remedy_controller.dart';
 import 'presentation/bindings/remedy_binding.dart';
-import 'domain/models/remedy_model.dart';
 import 'presentation/screens/remedy_detail_screen.dart';
 
 class SuggestedRemediesScreen extends StatefulWidget {
@@ -19,7 +16,6 @@ class SuggestedRemediesScreen extends StatefulWidget {
 
 class _SuggestedRemediesScreenState extends State<SuggestedRemediesScreen> {
   late RemedyController _controller;
-  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -28,187 +24,202 @@ class _SuggestedRemediesScreenState extends State<SuggestedRemediesScreen> {
       RemedyBinding().dependencies();
     }
     _controller = Get.find<RemedyController>();
-    _searchController.addListener(() {
-      _controller.updateSearchQuery(_searchController.text);
-    });
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: Colors.grey.shade100,
       appBar: const CustomAppBar(
-        title: 'Astrology Remedies',
+        title: 'Suggested Remedies',
       ),
-      body: Column(
-        children: [
-          _buildSearchBar(),
-          Expanded(
-            child: Obx(() {
-              if (_controller.isLoading.value && _controller.remedies.isEmpty) {
-                return const Center(child: CircularProgressIndicator());
-              }
+      body: Obx(() {
+        if (_controller.isLoading.value) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
 
-              if (_controller.filteredRemedies.isEmpty) {
-                return _buildEmptyState();
-              }
-
-              return RefreshIndicator(
-                onRefresh: _controller.refreshRemedies,
-                color: AppColors.primaryColor,
-                child: ListView.separated(
-                  padding: const EdgeInsets.all(20),
-                  itemCount: _controller.filteredRemedies.length,
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  separatorBuilder: (context, index) => const SizedBox(height: 16),
-                  itemBuilder: (context, index) {
-                    return RemedyCard(remedy: _controller.filteredRemedies[index]);
-                  },
+        if (_controller.remedies.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.healing_outlined, size: 64, color: Colors.grey.shade400),
+                const SizedBox(height: 16),
+                AppText(
+                  'No remedies available',
+                  fontSize: 16,
+                  color: Colors.grey.shade600,
                 ),
-              );
-            }),
-          ),
-        ],
-      ),
-    );
-  }
+              ],
+            ),
+          );
+        }
 
-  Widget _buildSearchBar() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      color: Colors.white,
-      child: TextField(
-        controller: _searchController,
-        decoration: InputDecoration(
-          hintText: 'Search remedies...',
-          hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
-          prefixIcon: const Icon(Iconsax.search_normal_1_copy, size: 20, color: AppColors.primaryColor),
-          filled: true,
-          fillColor: const Color(0xFFF8F8F8),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(15),
-            borderSide: BorderSide.none,
-          ),
-          contentPadding: const EdgeInsets.symmetric(vertical: 12),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Iconsax.document_text_1_copy, size: 64, color: Colors.grey.shade300),
-          const SizedBox(height: 16),
-          AppText('No remedies found', fontSize: 16, color: Colors.grey.shade500),
-        ],
-      ),
+        return ListView.separated(
+          padding: const EdgeInsets.all(16),
+          itemCount: _controller.remedies.length,
+          separatorBuilder: (context, index) => const SizedBox(height: 16),
+          itemBuilder: (context, index) {
+            final remedy = _controller.remedies[index];
+            return InkWell(
+              onTap: () => Get.to(() => RemedyDetailScreen(remedyId: remedy.id)),
+              borderRadius: BorderRadius.circular(16),
+              child: RemedyCard(
+                title: remedy.title,
+                description: remedy.description,
+                image: remedy.image,
+                isActive: remedy.isActive,
+              ),
+            );
+          },
+        );
+      }),
     );
   }
 }
 
 class RemedyCard extends StatelessWidget {
-  final RemedyModel remedy;
+  final String title;
+  final String description;
+  final String? image;
+  final bool isActive;
 
   const RemedyCard({
     super.key,
-    required this.remedy,
+    required this.title,
+    required this.description,
+    required this.image,
+    required this.isActive,
   });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => Get.to(() => RemedyDetailScreen(remedyId: remedy.id)),
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF7CB342).withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: const AppText(
-                            'Astrology Remedy',
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF7CB342),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        AppText(
-                          remedy.title,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFF2E1A47),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 8),
-                        AppText(
-                          remedy.description,
-                          fontSize: 13,
-                          color: Colors.grey.shade600,
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Image Section
+          if (image != null)
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+              ),
+              child: Image.network(
+                image!,
+                width: double.infinity,
+                height: 180,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    width: double.infinity,
+                    height: 180,
+                    color: Colors.grey.shade200,
+                    child: Icon(
+                      Icons.image_not_supported_outlined,
+                      size: 48,
+                      color: Colors.grey.shade400,
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Hero(
-                    tag: 'remedy_image_${remedy.id}',
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: Image.network(
-                        remedy.image ?? 'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=1000',
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          width: 100,
-                          height: 100,
-                          color: Colors.grey.shade100,
-                          child: Icon(Iconsax.image_copy, color: Colors.grey.shade400, size: 40),
-                        ),
+                  );
+                },
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Container(
+                    width: double.infinity,
+                    height: 180,
+                    color: Colors.grey.shade200,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                            : null,
                       ),
                     ),
-                  ),
-                ],
+                  );
+                },
               ),
-            ],
+            )
+          else
+            Container(
+              width: double.infinity,
+              height: 180,
+              decoration: BoxDecoration(
+                color: AppColors.primaryColor.withValues(alpha: 0.1),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
+                ),
+              ),
+              child: Icon(
+                Icons.healing_outlined,
+                size: 64,
+                color: AppColors.primaryColor.withValues(alpha: 0.5),
+              ),
+            ),
+
+          // Content Section
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: AppText(
+                        title,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF2E1A47),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: isActive
+                            ? Colors.green.withValues(alpha: 0.1)
+                            : Colors.red.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: AppText(
+                        isActive ? 'Active' : 'Inactive',
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: isActive ? Colors.green : Colors.red,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                AppText(
+                  description,
+                  fontSize: 13,
+                  color: Colors.grey.shade600,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  height: 1.5,
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

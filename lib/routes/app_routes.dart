@@ -26,4 +26,5 @@ class AppRoutes {
   static const String gallery = '/gallery';
   static const String myReviews = '/my-reviews';
   static const String liveSchedule = '/live-schedule';
+  static const String panchangScreen = '/panchang';
 }

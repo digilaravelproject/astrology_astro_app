@@ -92,7 +92,7 @@ class _RemedyDetailScreenState extends State<RemedyDetailScreen> {
           height: 300,
           width: double.infinity,
           decoration: BoxDecoration(
-            color: AppColors.primaryColor.withOpacity(0.05),
+            color: AppColors.primaryColor.withValues(alpha: 0.05),
           ),
           child: Hero(
             tag: 'remedy_image_${remedy.id}',
@@ -123,7 +123,7 @@ class _RemedyDetailScreenState extends State<RemedyDetailScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFF7CB342).withOpacity(0.1),
+        color: const Color(0xFF7CB342).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(100),
       ),
       child: const AppText(

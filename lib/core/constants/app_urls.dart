@@ -1,6 +1,11 @@
 class AppUrls {
-  static const String baseUrl = "https://darkgoldenrod-peafowl-305286.hostingersite.com/api/v1";
-  static const String baseImageUrl = "https://darkgoldenrod-peafowl-305286.hostingersite.com/storage/app/public/";
+  static const String baseUrl = "https://suryapathkundli.com/api/v1";
+  //static const String baseUrl = "https://darkgoldenrod-peafowl-305286.hostingersite.com/api/v1";
+  static const String baseImageUrl = "https://suryapathkundli.com/storage/app/public/";
+  //static const String baseImageUrl = "https://darkgoldenrod-peafowl-305286.hostingersite.com/storage/app/public/";
+  static const String webSocketUrl = "wss://suryapathkundli.com/app/astrology-key?protocol=7&client=js&version=8.4.0-rc2&flash=false";
+  static const String broadcastingAuth = "/broadcasting/auth";
+  
   static const String sendOtp = "/astrologer/send-otp";
   static const String verifyOtp = "/astrologer/verify-otp";
   static const String astrologerSignup = "/astrologer/signup";

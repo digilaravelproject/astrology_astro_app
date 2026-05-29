@@ -30,6 +30,8 @@ import '../features/home/screens/home_screen.dart';
 import '../features/home/screens/dashboard_screen.dart';
 import '../features/support/presentation/bindings/support_binding.dart';
 import 'app_routes.dart';
+import '../features/panchang/panchang_screen.dart';
+import '../features/panchang/bindings/panchang_binding.dart';
 
 class RouteHelper {
   static String getSplashRoute() => AppRoutes.splash;
@@ -38,6 +40,7 @@ class RouteHelper {
   static String getRegistrationNameRoute() => AppRoutes.registrationName;
   static String getHomeRoute() => AppRoutes.home;
   static String getDashboardRoute() => AppRoutes.dashboard;
+  static String getPanchangRoute() => AppRoutes.panchangScreen;
 
   static List<GetPage> routes = [
     GetPage(
@@ -167,6 +170,12 @@ class RouteHelper {
       page: () => const LiveScheduleScreen(),
       binding: LiveScheduleBinding(),
       transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.panchangScreen,
+      page: () => const PanchangScreen(),
+      binding: PanchangBinding(),
+      transition: Transition.fadeIn,
     ),
   ];
 }

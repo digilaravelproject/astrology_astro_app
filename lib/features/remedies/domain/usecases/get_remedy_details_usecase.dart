@@ -1,5 +1,5 @@
 import '../models/remedy_model.dart';
-import '../../data/repositories/remedy_repository.dart';
+import '../repositories/remedy_repository_interface.dart';
 
 class GetRemedyDetailsUseCase {
   final RemedyRepositoryInterface _repository;

@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <!-- Application -->
-    <application android:label="Astro Astrologer" android:name="${applicationName}" android:icon="@mipmap/ic_launcher">
+    <application android:label="Surya Path Astrologer" android:name="${applicationName}" android:icon="@mipmap/ic_launcher">
 
         <!-- Main Activity -->
         <activity android:name=".MainActivity" android:exported="true" android:launchMode="singleTop" android:theme="@style/LaunchTheme" android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode" android:hardwareAccelerated="true" android:windowSoftInputMode="adjustResize">
@@ -24,8 +24,8 @@
         <service android:name="com.solusibejo.flutter_dynamic_icon_plus.FlutterDynamicIconPlusService" android:stopWithTask="false"/>
 
         <!-- Activity aliases for alternate icons -->
-        <activity-alias android:label="Demo App" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher" android:name=".icon_1" android:exported="true" android:enabled="false" android:targetActivity=".MainActivity"/>
-        <activity-alias android:label="Demo App" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher" android:name=".icon_2" android:exported="true" android:enabled="false" android:targetActivity=".MainActivity"/>
+        <activity-alias android:label="Surya Path Astrologer" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher" android:name=".icon_1" android:exported="true" android:enabled="false" android:targetActivity=".MainActivity"/>
+        <activity-alias android:label="Surya Path Astrologer" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher" android:name=".icon_2" android:exported="true" android:enabled="false" android:targetActivity=".MainActivity"/>
 
     </application>
 

@@ -1,50 +1,34 @@
-import '../../../../core/constants/app_urls.dart';
-
 class RemedyModel {
   final int id;
   final String title;
   final String description;
   final String? image;
+  final String? imagePath;
   final bool isActive;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final String createdAt;
+  final String updatedAt;
 
   RemedyModel({
     required this.id,
     required this.title,
     required this.description,
     this.image,
+    this.imagePath,
     required this.isActive,
     required this.createdAt,
     required this.updatedAt,
   });
 
   factory RemedyModel.fromJson(Map<String, dynamic> json) {
-    String? imagePath = json['image_path']?.toString() ?? json['image']?.toString();
-    String? fullImageUrl;
-    
-    if (imagePath != null && imagePath.isNotEmpty) {
-      if (imagePath.startsWith('http')) {
-        fullImageUrl = imagePath;
-      } else {
-        // Clean leading slashes and storage/ prefix
-        String cleanedPath = imagePath;
-        if (cleanedPath.startsWith('/')) cleanedPath = cleanedPath.substring(1);
-        if (cleanedPath.startsWith('storage/')) cleanedPath = cleanedPath.replaceFirst('storage/', '');
-        if (cleanedPath.startsWith('/')) cleanedPath = cleanedPath.substring(1);
-        
-        fullImageUrl = "${AppUrls.baseImageUrl}$cleanedPath";
-      }
-    }
-
     return RemedyModel(
-      id: json['id'] is int ? json['id'] : int.tryParse(json['id'].toString()) ?? 0,
-      title: json['title']?.toString() ?? '',
-      description: json['description']?.toString() ?? '',
-      image: fullImageUrl,
+      id: json['id'] ?? 0,
+      title: json['title'] ?? '',
+      description: json['description'] ?? '',
+      image: json['image'],
+      imagePath: json['image_path'],
       isActive: json['is_active'] == true || json['is_active'] == 1,
-      createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at'].toString()) ?? DateTime.now() : DateTime.now(),
-      updatedAt: json['updated_at'] != null ? DateTime.tryParse(json['updated_at'].toString()) ?? DateTime.now() : DateTime.now(),
+      createdAt: json['created_at'] ?? '',
+      updatedAt: json['updated_at'] ?? '',
     );
   }
 
@@ -54,9 +38,10 @@ class RemedyModel {
       'title': title,
       'description': description,
       'image': image,
+      'image_path': imagePath,
       'is_active': isActive,
-      'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt.toIso8601String(),
+      'created_at': createdAt,
+      'updated_at': updatedAt,
     };
   }
 }

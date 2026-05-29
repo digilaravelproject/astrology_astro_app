@@ -864,7 +864,7 @@ class _HomeScreenState extends State<HomeScreen> {
         bgColor: const Color(0xFFFFF3E0),
         iconBgColor: const Color(0xFFFFE0B2),
         textColor: const Color(0xFFE65100),
-        onTap: () => Get.to(() => const PanchangScreen()),
+        onTap: () => Get.toNamed(AppRoutes.panchangScreen),
       ),
       _MenuData(
         title: 'Astrology Blog',
