@@ -279,18 +279,26 @@ class WebSocketService extends GetxService {
       } else if (rawData is Map) {
         eventData = Map<String, dynamic>.from(rawData);
       }
+
+      Logger.d('_handleChatInitiated: eventData keys = ${eventData.keys}');
       
       final session = eventData['session'];
       final senderData = eventData['senderData'];
       
+      Logger.d('_handleChatInitiated: session=$session, senderData=$senderData');
+
       if (session != null && senderData != null) {
-        Get.dialog(
-          IncomingChatDialog(
-            sessionData: Map<String, dynamic>.from(session),
-            senderData: Map<String, dynamic>.from(senderData),
-          ),
-          barrierDismissible: false,
-        );
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Get.dialog(
+            IncomingChatDialog(
+              sessionData: Map<String, dynamic>.from(session),
+              senderData: Map<String, dynamic>.from(senderData),
+            ),
+            barrierDismissible: false,
+          );
+        });
+      } else {
+        Logger.e('_handleChatInitiated: session or senderData is null! rawData=$rawData');
       }
     } catch (e) {
       Logger.e('Error handling ChatInitiated: $e');
