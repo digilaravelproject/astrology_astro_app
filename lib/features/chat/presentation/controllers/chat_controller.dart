@@ -22,6 +22,7 @@ import 'package:astro_astrologer/features/chat/presentation/widgets/chat_summary
 import 'package:astro_astrologer/features/chat/presentation/bindings/chat_binding.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
+import 'package:astro_astrologer/features/auth/controllers/auth_controller.dart';
 
 class ChatController extends GetxController {
   final LoadChatHistoryUseCase _loadChatHistoryUseCase;
@@ -59,6 +60,7 @@ class ChatController extends GetxController {
   StreamSubscription? _endSub;
   StreamSubscription? _statusSub;
   StreamSubscription? _dismissSub;
+  StreamSubscription? _statusUpdateSub;
 
   int? get sessionId => _sessionId;
 
@@ -153,6 +155,34 @@ class ChatController extends GetxController {
       }
     });
 
+    // Listen to WebSocket Message Status Updates (delivered/seen)
+    _statusUpdateSub?.cancel();
+    _statusUpdateSub = WebSocketService.messageStatusUpdates.listen((list) {
+      if (list.isNotEmpty) {
+        final lastUpdate = list.last;
+        final updateSessionId = int.tryParse(lastUpdate['session_id']?.toString() ?? '') ?? 0;
+        if (updateSessionId == _sessionId) {
+          final newStatus = lastUpdate['status']?.toString();
+          final messageIdsList = lastUpdate['message_ids'] as List<dynamic>?;
+          if (newStatus != null && messageIdsList != null && messageIdsList.isNotEmpty) {
+            final messageIds = messageIdsList.map((e) => int.tryParse(e.toString()) ?? 0).toList();
+            bool changed = false;
+            for (int i = 0; i < messages.length; i++) {
+              if (messageIds.contains(messages[i].id)) {
+                if (messages[i].status != 'seen') {
+                   messages[i] = messages[i].copyWith(status: newStatus);
+                   changed = true;
+                }
+              }
+            }
+            if (changed) {
+              messages.refresh();
+            }
+          }
+        }
+      }
+    });
+
     // Listen to WebSocket Chat Ended Event
     _endSub?.cancel();
     _endSub = WebSocketService.chatEndedSessionId.listen((endedSessionId) {
@@ -161,6 +191,9 @@ class ChatController extends GetxController {
         _timer?.cancel();
         if (_sessionId != null) {
           LocalNotificationService.cancelOngoingChatNotification(_sessionId!);
+        }
+        if (Get.isRegistered<AuthController>()) {
+          Get.find<AuthController>().checkLoginStatus();
         }
       }
     });
