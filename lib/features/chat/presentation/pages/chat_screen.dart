@@ -307,7 +307,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                             : Icons.done_all,
                                     size: 16,
                                     color: status == 'seen'
-                                        ? Colors.blue.shade100
+                                        ? Colors.blueAccent
                                         : Colors.white.withOpacity(0.7),
                                   ),
                                 ],
