@@ -9,6 +9,7 @@ import '../storage/shared_prefs.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../features/auth/domain/models/user_model.dart';
 import 'api_client.dart';
+import '../../../features/chat/presentation/widgets/incoming_chat_dialog.dart';
 import '../../../core/constants/app_urls.dart';
 import '../../utils/logger.dart';
 import 'package:flutter/material.dart';
@@ -157,6 +158,7 @@ class WebSocketService extends GetxService {
           Logger.d('|🔔 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          _handleChatInitiated(data['data']);
         } else if (event == AppUrls.eventMessageStatusUpdated) {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|🔔 WEBSOCKET EVENT: $event');
@@ -268,6 +270,32 @@ class WebSocketService extends GetxService {
     _isConnected = false;
     _channel?.sink.close();
     _channel = null;
+  }
+
+  void _handleChatInitiated(dynamic rawData) {
+    try {
+      Map<String, dynamic> eventData = {};
+      if (rawData is String) {
+        eventData = jsonDecode(rawData);
+      } else if (rawData is Map) {
+        eventData = Map<String, dynamic>.from(rawData);
+      }
+      
+      final session = eventData['session'];
+      final senderData = eventData['senderData'];
+      
+      if (session != null && senderData != null) {
+        Get.dialog(
+          IncomingChatDialog(
+            sessionData: Map<String, dynamic>.from(session),
+            senderData: Map<String, dynamic>.from(senderData),
+          ),
+          barrierDismissible: false,
+        );
+      }
+    } catch (e) {
+      Logger.e('Error handling ChatInitiated: $e');
+    }
   }
 
   void _handleChatAccepted(dynamic rawData) {
