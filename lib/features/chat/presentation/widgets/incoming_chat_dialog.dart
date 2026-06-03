@@ -174,7 +174,7 @@ class IncomingChatDialog extends StatelessWidget {
                   child: OutlinedButton(
                     onPressed: () async {
                       try {
-                        await ApiClient.post(AppUrls.rejectChatSession(sessionId));
+                        await Get.find<ApiClient>().post(AppUrls.rejectChatSession(sessionId));
                       } catch (e) {
                         debugPrint('Reject error: $e');
                       }
@@ -202,7 +202,7 @@ class IncomingChatDialog extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () async {
                       try {
-                        final response = await ApiClient.post(AppUrls.acceptChatSession(sessionId));
+                        final response = await Get.find<ApiClient>().post(AppUrls.acceptChatSession(sessionId));
                         if (response.isSuccess) {
                           Get.back(); // close dialog
                           Get.to(

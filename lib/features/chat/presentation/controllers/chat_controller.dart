@@ -404,7 +404,7 @@ class ChatController extends GetxController {
 
   Future<void> acceptChat(int incomingSessionId) async {
     try {
-      final response = await ApiClient.post(
+      final response = await Get.find<ApiClient>().post(
         AppUrls.acceptChatSession(incomingSessionId),
       );
       if (response.isSuccess) {
@@ -417,7 +417,7 @@ class ChatController extends GetxController {
 
   Future<void> rejectChat(int incomingSessionId) async {
     try {
-      await ApiClient.post(
+      await Get.find<ApiClient>().post(
         AppUrls.rejectChatSession(incomingSessionId),
       );
     } catch (e) {
