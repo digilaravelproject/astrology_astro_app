@@ -42,7 +42,11 @@ class WebSocketService extends GetxService {
   bool get isConnected => _isConnected;
 
   Future<WebSocketService> init() async {
-    // We will wait until we actually have user data to connect
+    // If user is already logged in, connect immediately on app start
+    final token = await TokenManager.getToken();
+    if (token != null && token.isNotEmpty) {
+      connect();
+    }
     return this;
   }
 
