@@ -245,15 +245,42 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
                           ),
                         ),
                         // Avatar
-                        CircleAvatar(
-                          radius: 44,
-                          backgroundColor: Colors.orange.shade100,
-                          backgroundImage: profilePhoto != null
-                              ? NetworkImage(profilePhoto)
-                              : null,
-                          child: profilePhoto == null
-                              ? Icon(Icons.person, size: 44, color: _orange)
-                              : null,
+                        // Avatar
+                        Container(
+                          width: 88,
+                          height: 88,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.orange.shade100,
+                          ),
+                          clipBehavior: Clip.hardEdge,
+                          child: profilePhoto != null && profilePhoto.isNotEmpty
+                              ? Image.network(
+                                  profilePhoto,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Center(
+                                      child: Text(
+                                        name.isNotEmpty ? name[0].toUpperCase() : 'U',
+                                        style: TextStyle(
+                                          fontSize: 36,
+                                          fontWeight: FontWeight.bold,
+                                          color: _orange,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                )
+                              : Center(
+                                  child: Text(
+                                    name.isNotEmpty ? name[0].toUpperCase() : 'U',
+                                    style: TextStyle(
+                                      fontSize: 36,
+                                      fontWeight: FontWeight.bold,
+                                      color: _orange,
+                                    ),
+                                  ),
+                                ),
                         ),
                       ],
                     ),
