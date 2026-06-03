@@ -71,7 +71,10 @@ class ChatController extends GetxController {
     required String userName,
     String? startedAtString,
   }) {
-    _sessionId = sessionId;
+    if (_sessionId != sessionId) {
+      messages.clear();
+      _sessionId = sessionId;
+    }
     if (currentUserId != 0) {
       _currentUserId = currentUserId;
     } else {
