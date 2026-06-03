@@ -107,7 +107,7 @@ class AppUrls {
   static const String eventChatDismissed = 'ChatDismissed';
 
   // Channel Names
-  static String privateUserChannel(int userId) => 'private-astrologer.$userId';
+  static String privateUserChannel(int userId) => 'private-user.$userId';
   static const String presenceRoomChannel = 'presence-room';
 
 }
