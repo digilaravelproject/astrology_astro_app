@@ -5,7 +5,7 @@ class AppUrls {
   //static const String baseImageUrl = "https://darkgoldenrod-peafowl-305286.hostingersite.com/storage/app/public/";
   static const String webSocketUrl = "wss://suryapathkundli.com/app/astrology-key?protocol=7&client=js&version=8.4.0-rc2&flash=false";
   static const String broadcastingAuth = "/broadcasting/auth";
-  
+
   static const String sendOtp = "/astrologer/send-otp";
   static const String verifyOtp = "/astrologer/verify-otp";
   static const String astrologerSignup = "/astrologer/signup";
@@ -39,13 +39,13 @@ class AppUrls {
   static const String aboutUs = '/static-pages/about_us';
   static const String feedback = '/feedback';
   static const String customerSupport = '/static-pages/customer_support';
-  
+
   static String toggleLike(int id) => "/astrologer/community/followers/$id/toggle-like";
   static String getProfile(int id) => "/astrologer/profile/$id";
   static String trainingVideoDetail(int id) => "/astrologer/training-videos/$id";
   static const String toggleOnline = "/astrologer/toggle-online";
   static const String updateOtherDetails = "/astrologer/profile/other-details";
-  
+
   // Gallery
   static const String uploadGallery = "/astrologer/gallery/upload";
   static const String galleryList = "/astrologer/gallery";
@@ -70,4 +70,42 @@ class AppUrls {
   // Remedies
   static const String remedies = "/user/remedies";
   static String remedyDetails(int id) => "/user/remedies/$id";
+
+  // Default Messages
+  static const String defaultMessages = "/astrologer/default-messages";
+  static const String activeDefaultMessage = "/astrologer/default-messages/active";
+  static String defaultMessageUpdate(int id) => "/astrologer/default-messages/$id";
+  static String defaultMessageDelete(int id) => "/astrologer/default-messages/$id";
+  static String setDefaultMessageActive(int id) => "/astrologer/default-messages/$id/set-default";
+
+  // Chat
+  static String loadChatHistory(int sessionId) => "/chat/sessions/$sessionId/messages";
+  static String sendChatMessage(int sessionId) => "/chat/sessions/$sessionId/messages";
+  static String markMessagesAsRead(int sessionId) => "/chat/sessions/$sessionId/read";
+  static String endChatSession(int sessionId) => "/chat/sessions/$sessionId/end";
+  static const String getCurrentSession = "/chat/sessions/current";
+  static String markChatRead(int sessionId) => "/chat/$sessionId/read";
+  static const String uploadAttachment = "/chat/upload-attachment";
+  static String getChatMessages(int sessionId) => "/chat/$sessionId/messages";
+
+  // WebSocket / Pusher Events
+  static const String pusherConnectionEstablished = 'pusher:connection_established';
+  static const String pusherSubscriptionSucceeded = 'pusher_internal:subscription_succeeded';
+  static const String pusherSubscribe = 'pusher:subscribe';
+  static const String pusherPing = 'pusher:ping';
+  static const String pusherPong = '{"event":"pusher:pong"}';
+
+  // Chat System Events
+  static const String eventChatInitiated = 'ChatInitiated';
+  static const String eventChatAccepted = 'ChatAccepted';
+  static const String eventChatEnded = 'ChatEnded';
+  static const String eventMessageSent = 'MessageSent';
+  static const String eventMessageStatusUpdated = 'MessageStatusUpdated';
+  static const String eventPresenceUpdated = 'PresenceUpdated';
+  static const String eventChatDismissed = 'ChatDismissed';
+
+  // Channel Names
+  static String privateUserChannel(int userId) => 'private-astrologer.$userId';
+  static const String presenceRoomChannel = 'presence-room';
+
 }

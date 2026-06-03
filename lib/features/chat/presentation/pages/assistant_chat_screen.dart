@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../core/widgets/loyal_badge.dart';
+import '../../../../../../../../../core/widgets/loyal_badge.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/widgets/app_text.dart';
-import '../../../../core/widgets/custom_app_bar.dart';
+import '../../../../../../../../../../core/theme/app_colors.dart';
+import '../../../../../../../../../../core/widgets/app_text.dart';
+import '../../../../../../../../../../core/widgets/custom_app_bar.dart';
 import 'package:astro_astrologer/features/home/widgets/animated_favorite_button.dart';
 import 'package:astro_astrologer/features/home/widgets/add_note_bottom_sheet.dart';
-import 'package:astro_astrologer/features/chat/assistant_chat_sort_bottom_sheet.dart';
+import 'package:astro_astrologer/features/chat/presentation/widgets/assistant_chat_sort_bottom_sheet.dart';
 import 'package:astro_astrologer/features/offers/discounted_session_screen.dart';
-import 'package:astro_astrologer/features/chat/chat_screen.dart';
+import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
 
 class AssistantChatScreen extends StatefulWidget {
   const AssistantChatScreen({super.key});
@@ -33,9 +33,13 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> with SingleTi
     super.dispose();
   }
 
-  // Placeholder navigation to a chat screen
   void _navigateToChat() {
-     Get.to(() => const ChatScreen(request: {'user': 'Assistant Chat User'}));
+     Get.to(() => const ChatScreen(
+        userName: 'Assistant Chat User',
+        userImage: '',
+        sessionId: 999, // dummy session id for now
+        initialStatus: 'ongoing',
+     ));
   }
 
   @override

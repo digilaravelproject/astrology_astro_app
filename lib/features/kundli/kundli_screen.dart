@@ -6,7 +6,7 @@ import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import 'package:astro_astrologer/features/kundli/kundli_chart_widget.dart';
 import 'package:astro_astrologer/features/kundli/kundli_list_screen.dart';
-import 'package:astro_astrologer/features/chat/chat_screen.dart';
+import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
 import 'kundli_tabs/shad_bala_tab.dart';
 import 'kundli_tabs/bhav_bala_tab.dart';
 import 'kundli_tabs/manglik_report_tab.dart';
@@ -72,12 +72,12 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
           ),
           const SizedBox(width: 16),
           GestureDetector(
-            onTap: () => Get.to(() => const ChatScreen(request: {
-              'id': 'KUNDLI-CHAT',
-              'user': 'Chat with Astrologer',
-              'image': 'https://randomuser.me/api/portraits/men/32.jpg',
-              'type': 'Chat',
-            })),
+            onTap: () => Get.to(() => const ChatScreen(
+              userName: 'Chat with Astrologer',
+              userImage: 'https://randomuser.me/api/portraits/men/32.jpg',
+              sessionId: 888, // dummy
+              initialStatus: 'ongoing',
+            )),
             child: const Icon(Iconsax.message_2_copy, color: AppColors.primaryColor),
           ),
           const SizedBox(width: 16),

@@ -21,7 +21,7 @@ class ResponseModel {
   factory ResponseModel.fromJson(Map<String, dynamic> json, {int? statusCode}) {
     // 1. Identify if it's a success
     final res = (json['res'] ?? json['status'])?.toString().toLowerCase();
-    final success = res == 'success' || (json['success'] == true) || json.containsKey('auth');
+    final success = res == 'success' || (json['success'] == true);
 
     // 2. Parse Errors
     List<ErrorDetail>? errors;
@@ -52,9 +52,7 @@ class ResponseModel {
 
     // 4. Extract Body (Prefer Map/List contents)
     dynamic body;
-    if (json.containsKey('auth')) {
-      body = json;
-    } else if (json['data'] is Map || json['data'] is List) {
+    if (json['data'] is Map || json['data'] is List) {
       body = json['data'];
     } else if (json['message'] is Map || json['message'] is List) {
       body = json['message'];
