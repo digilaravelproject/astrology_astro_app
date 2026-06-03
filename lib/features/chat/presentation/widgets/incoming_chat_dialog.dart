@@ -58,16 +58,14 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
 
     // Listen for ChatDismissed — auto-close dialog if session matches
     final sessionId = widget.sessionData['id'];
-    if (Get.isRegistered<WebSocketService>()) {
-      _dismissWorker = ever(
-        Get.find<WebSocketService>().chatDismissedSessionId,
-        (int dismissedId) {
-          if (dismissedId == sessionId && Get.isDialogOpen == true) {
-            Get.back();
-          }
-        },
-      );
-    }
+    _dismissWorker = ever(
+      WebSocketService.chatDismissedSessionId,
+      (int dismissedId) {
+        if (dismissedId == sessionId && Get.isDialogOpen == true) {
+          Get.back();
+        }
+      },
+    );
 
     // Ripple pulse around avatar
     _pulseController = AnimationController(
