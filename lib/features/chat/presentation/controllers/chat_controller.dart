@@ -407,7 +407,7 @@ class ChatController extends GetxController {
       final response = await ApiClient.post(
         AppUrls.acceptChatSession(incomingSessionId),
       );
-      if (response.success) {
+      if (response.isSuccess) {
         // Find user data to open screen or let WebSocket handle it
       }
     } catch (e) {

@@ -10,6 +10,9 @@ import '../../pages/chat_screen.dart';
 import '../../bindings/chat_binding.dart';
 import 'dart:convert';
 
+import '../bindings/chat_binding.dart';
+import '../pages/chat_screen.dart';
+
 class IncomingChatDialog extends StatelessWidget {
   final Map<String, dynamic> sessionData;
   final Map<String, dynamic> senderData;
@@ -200,7 +203,7 @@ class IncomingChatDialog extends StatelessWidget {
                     onPressed: () async {
                       try {
                         final response = await ApiClient.post(AppUrls.acceptChatSession(sessionId));
-                        if (response.success) {
+                        if (response.isSuccess) {
                           Get.back(); // close dialog
                           Get.to(
                             () => ChatScreen(
@@ -208,10 +211,13 @@ class IncomingChatDialog extends StatelessWidget {
                               userImage: profilePhoto ?? '',
                               sessionId: sessionId,
                               initialStatus: 'ongoing',
-                              startedAtString: response.data?['session']?['started_at']?.toString(),
+                              startedAtString: response.body?['data']?['session']?['started_at']?.toString(),
                             ),
                             binding: ChatBinding(),
                           );
+                        } else {
+                          Get.back();
+                          Get.snackbar('Error', response.message);
                         }
                       } catch (e) {
                         debugPrint('Accept error: $e');
