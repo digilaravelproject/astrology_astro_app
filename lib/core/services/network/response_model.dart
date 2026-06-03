@@ -56,6 +56,9 @@ class ResponseModel {
       body = json['data'];
     } else if (json['message'] is Map || json['message'] is List) {
       body = json['message'];
+    } else if (json.containsKey('auth')) {
+      // Handle non-standard responses like broadcasting/auth
+      body = json;
     } else {
       body = json['data']; // Fallback (likely String or null)
     }
