@@ -339,7 +339,11 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
                         } catch (e) {
                           debugPrint('Reject error: $e');
                         }
-                        Get.back();
+                        if (Navigator.of(context, rootNavigator: true).canPop()) {
+                          Navigator.of(context, rootNavigator: true).pop();
+                        } else {
+                          Navigator.of(context).pop();
+                        }
                       },
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 15),
@@ -363,26 +367,45 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
                           final response = await Get.find<ApiClient>()
                               .post(AppUrls.acceptChatSession(sessionId));
                           if (response.isSuccess) {
-                            Get.back();
+                            // Force close the dialog safely
+                            if (Navigator.of(context, rootNavigator: true).canPop()) {
+                              Navigator.of(context, rootNavigator: true).pop();
+                            } else {
+                              Navigator.of(context).pop();
+                            }
+                            
+                            // Ensure we have a valid start time to start the timer immediately
+                            final startedAt = response.body?['data']?['session']?['started_at']?.toString() 
+                                           ?? DateTime.now().toUtc().toIso8601String();
+
+                            // Add start time to WebSocketService so it persists
+                            WebSocketService.sessionStartTimes[sessionId] = startedAt;
+
                             Get.to(
                               () => ChatScreen(
                                 userName: name,
                                 userImage: profilePhoto ?? '',
                                 sessionId: sessionId,
                                 initialStatus: 'ongoing',
-                                startedAtString: response.body?['data']
-                                    ?['session']?['started_at']
-                                    ?.toString(),
+                                startedAtString: startedAt,
                               ),
                               binding: ChatBinding(),
                             );
                           } else {
-                            Get.back();
+                            if (Navigator.of(context, rootNavigator: true).canPop()) {
+                              Navigator.of(context, rootNavigator: true).pop();
+                            } else {
+                              Navigator.of(context).pop();
+                            }
                             Get.snackbar('Error', response.message);
                           }
                         } catch (e) {
                           debugPrint('Accept error: $e');
-                          Get.back();
+                          if (Navigator.of(context, rootNavigator: true).canPop()) {
+                            Navigator.of(context, rootNavigator: true).pop();
+                          } else {
+                            Navigator.of(context).pop();
+                          }
                         }
                       },
                       style: ElevatedButton.styleFrom(
