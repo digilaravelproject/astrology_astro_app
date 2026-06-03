@@ -191,7 +191,6 @@ class WebSocketService extends GetxService {
 
     final List<String> channelsToSubscribe = [
       AppUrls.privateUserChannel(_userId!),
-      'private-astrologer.private-astrologer.${_userId!}',
       AppUrls.presenceRoomChannel,
     ];
 

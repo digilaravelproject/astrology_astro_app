@@ -11,6 +11,7 @@ import '../../../core/utils/logger.dart';
 import '../domain/services/auth_service.dart';
 import '../../profile/model/other_details_model.dart';
 import '../../profile/model/skill_model.dart';
+import '../../../core/services/network/websocket_service.dart';
 
 class AuthController extends GetxController {
   final LoginUseCase _loginUseCase;
@@ -337,6 +338,8 @@ class AuthController extends GetxController {
         
         // Delay to ensure data is saved before navigation
         await Future.delayed(const Duration(milliseconds: 500));
+        // Connect WebSocket after successful login
+        Get.find<WebSocketService>().connect();
         Get.offAllNamed(RouteHelper.getDashboardRoute());
       } else {
         CustomSnackBar.showError(response.message ?? 'OTP verification failed');
