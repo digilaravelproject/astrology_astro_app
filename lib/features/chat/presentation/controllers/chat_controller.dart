@@ -280,6 +280,16 @@ class ChatController extends GetxController {
     }
   }
 
+  String _getLatestStatus(int messageId, String defaultStatus) {
+    String currentStatus = defaultStatus;
+    for (var event in WebSocketService.messageStatusUpdates) {
+      if (event['session_id'] == _sessionId && event['message_id'] == messageId) {
+        currentStatus = event['status'];
+      }
+    }
+    return currentStatus;
+  }
+
   Future<void> sendTextMessage() async {
     final text = messageController.text.trim();
     if (text.isEmpty || _sessionId == null) return;
@@ -308,7 +318,8 @@ class ChatController extends GetxController {
       final index = messages.indexWhere((m) => m.id == tempId);
       if (index != -1) {
         if (serverId != null) {
-          messages[index] = messages[index].copyWith(id: serverId, status: 'sent');
+          final newStatus = _getLatestStatus(serverId, 'sent');
+          messages[index] = messages[index].copyWith(id: serverId, status: newStatus);
         } else {
           messages[index] = messages[index].copyWith(status: 'failed');
         }
@@ -346,11 +357,12 @@ class ChatController extends GetxController {
       final index = messages.indexWhere((m) => m.id == tempId);
       if (index != -1) {
         if (result != null) {
+          final newStatus = _getLatestStatus(result.id, 'sent');
           messages[index] = messages[index].copyWith(
-            id: result!.id,
-            status: 'sent',
-            attachmentUrl: result!.url,
-            image: result!.url,
+            id: result.id,
+            status: newStatus,
+            image: result.image,
+            attachmentUrl: result.attachmentUrl,
           );
         } else {
           messages[index] = messages[index].copyWith(status: 'failed');
@@ -390,10 +402,11 @@ class ChatController extends GetxController {
       final index = messages.indexWhere((m) => m.id == tempId);
       if (index != -1) {
         if (result != null) {
+          final newStatus = _getLatestStatus(result.id, 'sent');
           messages[index] = messages[index].copyWith(
-            id: result!.id,
-            status: 'sent',
-            attachmentUrl: result!.url,
+            id: result.id,
+            status: newStatus,
+            attachmentUrl: result.attachmentUrl,
           );
         } else {
           messages[index] = messages[index].copyWith(status: 'failed');
