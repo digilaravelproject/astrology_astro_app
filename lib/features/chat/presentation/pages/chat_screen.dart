@@ -395,24 +395,45 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Avatar
-            CircleAvatar(
-              radius: 64,
-              backgroundColor: AppColors.deepPink.withOpacity(0.15),
-              backgroundImage: widget.userImage.isNotEmpty
-                  ? NetworkImage(widget.userImage)
-                  : null,
-              child: widget.userImage.isEmpty
-                  ? Text(
-                      widget.userName.isNotEmpty
-                          ? widget.userName.substring(0, 1).toUpperCase()
-                          : 'A',
-                      style: TextStyle(
-                        fontSize: 48,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.deepPink,
-                      ),
+            Container(
+              width: 128,
+              height: 128,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.deepPink.withOpacity(0.15),
+              ),
+              clipBehavior: Clip.hardEdge,
+              child: widget.userImage.isNotEmpty
+                  ? Image.network(
+                      widget.userImage,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Center(
+                          child: Text(
+                            widget.userName.isNotEmpty
+                                ? widget.userName.substring(0, 1).toUpperCase()
+                                : 'U',
+                            style: TextStyle(
+                              fontSize: 48,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.deepPink,
+                            ),
+                          ),
+                        );
+                      },
                     )
-                  : null,
+                  : Center(
+                      child: Text(
+                        widget.userName.isNotEmpty
+                            ? widget.userName.substring(0, 1).toUpperCase()
+                            : 'U',
+                        style: TextStyle(
+                          fontSize: 48,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.deepPink,
+                        ),
+                      ),
+                    ),
             ),
             const SizedBox(height: 28),
 
