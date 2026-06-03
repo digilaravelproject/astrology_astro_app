@@ -71,9 +71,23 @@ class ChatRepositoryImpl implements IChatRepository {
     if (response.isSuccess && response.body != null) {
       final data = response.body['data'] ?? response.body;
       if (data != null) {
-        final id = int.tryParse(data['id']?.toString() ?? '') ?? 0;
         final url = data['attachment_url']?.toString() ?? '';
-        return (id: id, url: url);
+        
+        // Now send the actual message with the attachment url
+        final msgResponse = await _remoteDataSource.sendAttachmentMessage(
+          sessionId: sessionId,
+          message: '📷 Image',
+          type: 'image',
+          attachmentUrl: url,
+        );
+        
+        if (msgResponse.isSuccess && msgResponse.body != null) {
+          final msgData = msgResponse.body['data'] ?? msgResponse.body;
+          if (msgData != null) {
+            final id = int.tryParse(msgData['id']?.toString() ?? '') ?? 0;
+            return (id: id, url: url);
+          }
+        }
       }
     }
     return null;
@@ -89,9 +103,23 @@ class ChatRepositoryImpl implements IChatRepository {
     if (response.isSuccess && response.body != null) {
       final data = response.body['data'] ?? response.body;
       if (data != null) {
-        final id = int.tryParse(data['id']?.toString() ?? '') ?? 0;
         final url = data['attachment_url']?.toString() ?? '';
-        return (id: id, url: url);
+        
+        // Now send the actual message with the attachment url
+        final msgResponse = await _remoteDataSource.sendAttachmentMessage(
+          sessionId: sessionId,
+          message: '📄 $fileName',
+          type: 'document',
+          attachmentUrl: url,
+        );
+        
+        if (msgResponse.isSuccess && msgResponse.body != null) {
+          final msgData = msgResponse.body['data'] ?? msgResponse.body;
+          if (msgData != null) {
+            final id = int.tryParse(msgData['id']?.toString() ?? '') ?? 0;
+            return (id: id, url: url);
+          }
+        }
       }
     }
     return null;
