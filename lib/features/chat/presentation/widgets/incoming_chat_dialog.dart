@@ -6,12 +6,9 @@ import '../../../../core/constants/app_urls.dart';
 import '../../../../core/widgets/app_text.dart';
 import '../../../../res/default_res.dart';
 import '../../../../core/services/network/api_client.dart';
-import '../../pages/chat_screen.dart';
-import '../../bindings/chat_binding.dart';
-import 'dart:convert';
-
-import '../bindings/chat_binding.dart';
 import '../pages/chat_screen.dart';
+import '../bindings/chat_binding.dart';
+import 'dart:convert';
 
 class IncomingChatDialog extends StatelessWidget {
   final Map<String, dynamic> sessionData;
