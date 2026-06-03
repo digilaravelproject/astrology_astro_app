@@ -387,6 +387,7 @@ class ChatController extends GetxController {
       final session = await _endChatSessionUseCase.execute(_sessionId!);
       status.value = 'ended';
       _timer?.cancel();
+      LocalNotificationService.cancelOngoingChatNotification(_sessionId!);
       FloatingChatBubble.dismiss();
       if (session != null) {
         WebSocketService.activeSessionId = null;
