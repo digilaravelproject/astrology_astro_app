@@ -220,9 +220,11 @@ class WebSocketService extends GetxService {
           showErrorScreen: false,
         );
 
-        if (response.isSuccess && response.body != null && response.body['auth'] != null) {
-          final authString = response.body['auth'];
-          
+        // broadcasting/auth returns {"auth": "..."} not standard format
+        // so check body['auth'] directly, not response.isSuccess
+        final authString = response.body?['auth']?.toString();
+        
+        if (authString != null && authString.isNotEmpty) {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|✅ WEBSOCKET AUTH SUCCESS');
           Logger.d('|🔑 Channel: $channelName');
@@ -235,6 +237,8 @@ class WebSocketService extends GetxService {
               "auth": authString
             }
           }));
+        } else {
+          Logger.e('|❌ WEBSOCKET AUTH FAILED for $channelName, body=${response.body}');
         }
       } catch (e) {
         Logger.e('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
