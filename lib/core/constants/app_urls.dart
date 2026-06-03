@@ -79,13 +79,13 @@ class AppUrls {
   static String setDefaultMessageActive(int id) => "/astrologer/default-messages/$id/set-default";
 
   // Chat
-  static String loadChatHistory(int sessionId) => "/chat/sessions/$sessionId/messages";
-  static String sendChatMessage(int sessionId) => "/chat/sessions/$sessionId/messages";
-  static String markMessagesAsRead(int sessionId) => "/chat/sessions/$sessionId/read";
-  static String endChatSession(int sessionId) => "/chat/sessions/$sessionId/end";
+  static String loadChatHistory(int sessionId) => "/chat/$sessionId/messages";
+  static String sendChatMessage(int sessionId) => "/chat/$sessionId/message";
+  static String markMessagesAsRead(int sessionId) => "/chat/$sessionId/read";
+  static String endChatSession(int sessionId) => "/chat/$sessionId/end";
   static String acceptChatSession(int sessionId) => "/chat/$sessionId/accept";
   static String rejectChatSession(int sessionId) => "/chat/$sessionId/reject";
-  static const String getCurrentSession = "/chat/sessions/current";
+  static const String getCurrentSession = "/chat/current-session";
   static String markChatRead(int sessionId) => "/chat/$sessionId/read";
   static const String uploadAttachment = "/chat/upload-attachment";
   static String getChatMessages(int sessionId) => "/chat/$sessionId/messages";
