@@ -3,17 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/services/network/websocket_service.dart';
+import 'package:flutter_overlay_window/flutter_overlay_window.dart';
+
 class FloatingChatBubble {
-  static OverlayEntry? _overlayEntry;
   static final RxInt unreadCount = 0.obs;
   static int? sessionId;
   static String? name;
   static VoidCallback? onTapCallback;
   static final RxString chatStatus = 'initiated'.obs;
 
-  static bool get isActive => _overlayEntry != null;
+  static bool _isActive = false;
+  static bool get isActive => _isActive;
 
-  static void show({
+  static Future<void> show({
     required BuildContext context,
     required int sessionId,
     required String name,
@@ -21,47 +23,97 @@ class FloatingChatBubble {
     String? startedAt,
     required String status,
     required VoidCallback onTap,
-  }) {
-    dismiss();
-    
+  }) async {
     FloatingChatBubble.sessionId = sessionId;
     FloatingChatBubble.name = name;
     unreadCount.value = 0;
     onTapCallback = onTap;
     chatStatus.value = status;
-
-    _overlayEntry = OverlayEntry(
-      builder: (context) => FloatingChatBubbleWidget(
-        sessionId: sessionId,
-        name: name,
-        imageUrl: imageUrl,
-        startedAt: startedAt,
-      ),
-    );
+    _isActive = true;
 
     try {
-      final overlay = Get.key.currentState?.overlay ??
-          (Navigator.of(context, rootNavigator: true).overlay ?? Overlay.of(context));
-      overlay.insert(_overlayEntry!);
+      final bool isGranted = await FlutterOverlayWindow.isPermissionGranted();
+      if (!isGranted) {
+        await FlutterOverlayWindow.requestPermission();
+      }
+
+      if (await FlutterOverlayWindow.isActive()) {
+        await FlutterOverlayWindow.shareData({
+          'type': 'update',
+          'sessionId': sessionId,
+          'name': name,
+          'imageUrl': imageUrl,
+          'status': status,
+          'unreadCount': 0,
+        });
+      } else {
+        await FlutterOverlayWindow.showOverlay(
+          enableDrag: true,
+          overlayTitle: "Chat Bubble",
+          overlayContent: "Ongoing chat",
+          flag: OverlayFlag.defaultFlag,
+          visibility: NotificationVisibility.visibilityPublic,
+          positionGravity: PositionGravity.auto,
+          height: 250,
+          width: 250,
+        );
+        
+        await FlutterOverlayWindow.shareData({
+          'type': 'init',
+          'sessionId': sessionId,
+          'name': name,
+          'imageUrl': imageUrl,
+          'status': status,
+          'startedAt': startedAt,
+          'unreadCount': 0,
+        });
+
+        // Listen for tap events from overlay
+        FlutterOverlayWindow.overlayListener.listen((event) {
+          if (event != null && event is Map && event['action'] == 'tap') {
+            onTapCallback?.call();
+          }
+        });
+      }
     } catch (e) {
       debugPrint("FloatingChatBubble show error: $e");
     }
   }
 
-  static void dismiss() {
-    if (_overlayEntry != null) {
-      try {
-        _overlayEntry!.remove();
-      } catch (_) {}
-      _overlayEntry = null;
-    }
+  static Future<void> dismiss() async {
+    _isActive = false;
     sessionId = null;
     onTapCallback = null;
     unreadCount.value = 0;
+    try {
+      if (await FlutterOverlayWindow.isActive()) {
+        await FlutterOverlayWindow.closeOverlay();
+      }
+    } catch (_) {}
   }
 
   static void incrementUnreadCount() {
     unreadCount.value++;
+    _syncData();
+  }
+
+  static void updateStatus(String status) {
+    chatStatus.value = status;
+    _syncData();
+  }
+
+  static Future<void> _syncData() async {
+    if (_isActive) {
+      try {
+        if (await FlutterOverlayWindow.isActive()) {
+          await FlutterOverlayWindow.shareData({
+            'type': 'update',
+            'status': chatStatus.value,
+            'unreadCount': unreadCount.value,
+          });
+        }
+      } catch (_) {}
+    }
   }
 }
 

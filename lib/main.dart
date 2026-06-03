@@ -10,9 +10,17 @@ import 'routes/route_helper.dart';
 import 'core/bindings/initial_bindings.dart';
 import 'core/utils/custom_snackbar.dart';
 
+import 'features/chat/presentation/widgets/overlay_main.dart';
+
 void main() async {
   await initApp();
   runApp(const MyApp());
+}
+
+@pragma("vm:entry-point")
+void overlayMain() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const OverlayChatBubbleApp());
 }
 
 class MyApp extends StatelessWidget {

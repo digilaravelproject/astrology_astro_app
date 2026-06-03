@@ -337,7 +337,7 @@ class WebSocketService extends GetxService {
 
       // Update FloatingChatBubble status directly!
       if (FloatingChatBubble.isActive && FloatingChatBubble.sessionId == sessionId) {
-        FloatingChatBubble.chatStatus.value = 'ongoing';
+        FloatingChatBubble.updateStatus('ongoing');
 
         // Show ongoing local notification since user minimized the chat and it just started!
         int? startedAtMillis;

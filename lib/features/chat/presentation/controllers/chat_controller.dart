@@ -123,7 +123,7 @@ class ChatController extends GetxController {
 
     ever(status, (val) {
       if (FloatingChatBubble.isActive && FloatingChatBubble.sessionId == _sessionId) {
-        FloatingChatBubble.chatStatus.value = val;
+        FloatingChatBubble.updateStatus(val);
       }
     });
 
