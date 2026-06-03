@@ -389,6 +389,7 @@ class ChatController extends GetxController {
       _timer?.cancel();
       FloatingChatBubble.dismiss();
       if (session != null) {
+        WebSocketService.activeSessionId = null;
         ChatSummaryDialog.show(
           sessionId: session.id,
           durationSeconds: session.durationSeconds,

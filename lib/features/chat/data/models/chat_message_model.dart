@@ -36,10 +36,11 @@ class ChatSessionModel extends ChatSession {
   });
 
   factory ChatSessionModel.fromJson(Map<String, dynamic> json) {
+    final sessionData = json.containsKey('session') ? json['session'] : json;
     return ChatSessionModel(
-      id: int.tryParse(json['id']?.toString() ?? '') ?? 0,
-      durationSeconds: int.tryParse(json['duration_seconds']?.toString() ?? '') ?? 0,
-      totalCost: double.tryParse(json['total_cost']?.toString() ?? '') ?? 0.0,
+      id: int.tryParse(sessionData['id']?.toString() ?? '') ?? 0,
+      durationSeconds: int.tryParse(sessionData['duration_seconds']?.toString() ?? '') ?? 0,
+      totalCost: double.tryParse(sessionData['total_cost']?.toString() ?? '') ?? 0.0,
     );
   }
 }
