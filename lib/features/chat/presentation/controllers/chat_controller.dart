@@ -361,8 +361,8 @@ class ChatController extends GetxController {
           messages[index] = messages[index].copyWith(
             id: result.id,
             status: newStatus,
-            image: result.image,
-            attachmentUrl: result.attachmentUrl,
+            image: result.url,
+            attachmentUrl: result.url,
           );
         } else {
           messages[index] = messages[index].copyWith(status: 'failed');
@@ -406,7 +406,7 @@ class ChatController extends GetxController {
           messages[index] = messages[index].copyWith(
             id: result.id,
             status: newStatus,
-            attachmentUrl: result.attachmentUrl,
+            attachmentUrl: result.url,
           );
         } else {
           messages[index] = messages[index].copyWith(status: 'failed');
