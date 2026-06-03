@@ -20,6 +20,8 @@ import 'package:astro_astrologer/features/auth/domain/models/user_model.dart';
 
 import 'package:astro_astrologer/features/chat/presentation/widgets/chat_summary_dialog.dart';
 import 'package:astro_astrologer/features/chat/presentation/bindings/chat_binding.dart';
+import 'package:astro_astrologer/core/services/network/api_client.dart';
+import 'package:astro_astrologer/core/constants/app_urls.dart';
 
 class ChatController extends GetxController {
   final LoadChatHistoryUseCase _loadChatHistoryUseCase;
@@ -397,6 +399,29 @@ class ChatController extends GetxController {
       debugPrint("Error ending chat session: $e");
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> acceptChat(int incomingSessionId) async {
+    try {
+      final response = await ApiClient.post(
+        AppUrls.acceptChatSession(incomingSessionId),
+      );
+      if (response.success) {
+        // Find user data to open screen or let WebSocket handle it
+      }
+    } catch (e) {
+      debugPrint("Error accepting chat: $e");
+    }
+  }
+
+  Future<void> rejectChat(int incomingSessionId) async {
+    try {
+      await ApiClient.post(
+        AppUrls.rejectChatSession(incomingSessionId),
+      );
+    } catch (e) {
+      debugPrint("Error rejecting chat: $e");
     }
   }
 

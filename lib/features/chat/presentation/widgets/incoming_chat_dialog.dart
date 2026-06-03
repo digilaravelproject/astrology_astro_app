@@ -5,7 +5,9 @@ import 'package:intl/intl.dart';
 import '../../../../core/constants/app_urls.dart';
 import '../../../../core/widgets/app_text.dart';
 import '../../../../res/default_res.dart';
-import '../controllers/chat_controller.dart';
+import '../../../../core/services/network/api_client.dart';
+import '../../pages/chat_screen.dart';
+import '../../bindings/chat_binding.dart';
 import 'dart:convert';
 
 class IncomingChatDialog extends StatelessWidget {
@@ -167,9 +169,13 @@ class IncomingChatDialog extends StatelessWidget {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      try {
+                        await ApiClient.post(AppUrls.rejectChatSession(sessionId));
+                      } catch (e) {
+                        debugPrint('Reject error: $e');
+                      }
                       Get.back(); // close dialog
-                      // Get.find<ChatController>().rejectChat(sessionId);
                     },
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
@@ -191,9 +197,26 @@ class IncomingChatDialog extends StatelessWidget {
                 const SizedBox(width: 16),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {
-                      Get.back(); // close dialog
-                      // Get.find<ChatController>().acceptChat(sessionId);
+                    onPressed: () async {
+                      try {
+                        final response = await ApiClient.post(AppUrls.acceptChatSession(sessionId));
+                        if (response.success) {
+                          Get.back(); // close dialog
+                          Get.to(
+                            () => ChatScreen(
+                              userName: name,
+                              userImage: profilePhoto ?? '',
+                              sessionId: sessionId,
+                              initialStatus: 'ongoing',
+                              startedAtString: response.data?['session']?['started_at']?.toString(),
+                            ),
+                            binding: ChatBinding(),
+                          );
+                        }
+                      } catch (e) {
+                        debugPrint('Accept error: $e');
+                        Get.back();
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
