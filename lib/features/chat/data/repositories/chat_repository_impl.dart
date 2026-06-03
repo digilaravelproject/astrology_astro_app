@@ -108,7 +108,8 @@ class ChatRepositoryImpl implements IChatRepository {
     if (response.isSuccess && response.body != null) {
       final data = response.body['data'] ?? response.body;
       if (data != null) {
-        return ChatSessionModel.fromJson(data);
+        final sessionData = data['session'] ?? data;
+        return ChatSessionModel.fromJson(sessionData);
       }
     }
     return null;
