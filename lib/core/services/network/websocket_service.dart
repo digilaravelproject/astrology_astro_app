@@ -151,31 +151,31 @@ class WebSocketService extends GetxService {
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleChatDismissed(data['data']);
-        } else if (event == AppUrls.eventMessageSent) {
+        } else if (event == AppUrls.eventMessageSent || event == 'App\\Events\\MessageSent') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|🔔 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleMessageSent(data['data']);
-        } else if (event == AppUrls.eventChatInitiated) {
+        } else if (event == AppUrls.eventChatInitiated || event == 'App\\Events\\ChatInitiated') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|🔔 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleChatInitiated(data['data']);
-        } else if (event == AppUrls.eventMessageStatusUpdated) {
+        } else if (event == AppUrls.eventMessageStatusUpdated || event == 'App\\Events\\MessageStatusUpdated') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|🔔 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleMessageStatusUpdated(data['data']);
-        } else if (event == AppUrls.eventPresenceUpdated) {
+        } else if (event == AppUrls.eventPresenceUpdated || event == 'App\\Events\\PresenceUpdated') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|🔔 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handlePresenceUpdated(data['data']);
-        } else if (event == AppUrls.eventChatDismissed) {
+        } else if (event == AppUrls.eventChatDismissed || event == 'App\\Events\\ChatDismissed') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|🔔 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
