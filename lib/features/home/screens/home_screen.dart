@@ -38,6 +38,11 @@ import '../../profile/screens/settings_screen.dart';
 import '../../../routes/app_routes.dart';
 import '../../../core/widgets/custom_image_widget.dart';
 import '../../../core/constants/app_urls.dart';
+import '../../wallet/presentation/controllers/wallet_controller.dart';
+import '../../wallet/domain/usecases/get_wallet_summary_usecase.dart';
+import '../../wallet/domain/usecases/get_wallet_earnings_usecase.dart';
+import '../../wallet/domain/usecases/get_wallet_withdrawals_usecase.dart';
+import '../../wallet/domain/usecases/request_withdrawal_usecase.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -48,51 +53,76 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final AuthController authController = Get.find<AuthController>();
+  late WalletController _walletController;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!Get.isRegistered<WalletController>()) {
+      Get.put(WalletController(
+        Get.find<GetWalletSummaryUseCase>(),
+        Get.find<GetWalletEarningsUseCase>(),
+        Get.find<GetWalletWithdrawalsUseCase>(),
+        Get.find<RequestWithdrawalUseCase>(),
+      ));
+    }
+    _walletController = Get.find<WalletController>();
+  }
+
+  Future<void> _onRefresh() async {
+    // Refresh wallet summary
+    await _walletController.fetchWalletSummary();
+    // Force UI refresh for anything else if needed
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            pinned: true,
-            floating: false,
-            elevation: 0,
-            backgroundColor: Colors.white,
-            automaticallyImplyLeading: false,
-            titleSpacing: 0,
-            title: _buildStickyTopBar(authController),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.all(16),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                _buildGreeting(authController),
-                const SizedBox(height: 12),
-                _buildServiceCard(),
-                const SizedBox(height: 12),
-                const SpecialOfferBanner(),
-                const SizedBox(height: 12),
-                const StartPaidSessionSection(),
-                const SizedBox(height: 12),
-                _buildEarningsCard(),
-                const SizedBox(height: 12),
-                _buildTodayProgressCard(),
-                const SizedBox(height: 8),
-                _buildMenuGrid(),
-                const SizedBox(height: 20),
-                _buildSleepTimeCard(),
-                const SizedBox(height: 20),
-                // _buildDNDBanner(),
-                // const SizedBox(height: 16),
-                const TrainingVideosSection(),
-                const SizedBox(height: 80), // Space for bottom bar
-              ]),
+      body: RefreshIndicator(
+        onRefresh: _onRefresh,
+        color: AppColors.primaryColor,
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverAppBar(
+              pinned: true,
+              floating: false,
+              elevation: 0,
+              backgroundColor: Colors.white,
+              automaticallyImplyLeading: false,
+              titleSpacing: 0,
+              title: _buildStickyTopBar(authController),
             ),
-          ),
-        ],
+            SliverPadding(
+              padding: const EdgeInsets.all(16),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  _buildGreeting(authController),
+                  const SizedBox(height: 12),
+                  _buildServiceCard(),
+                  const SizedBox(height: 12),
+                  const SpecialOfferBanner(),
+                  const SizedBox(height: 12),
+                  const StartPaidSessionSection(),
+                  const SizedBox(height: 12),
+                  _buildEarningsCard(),
+                  const SizedBox(height: 12),
+                  _buildTodayProgressCard(),
+                  const SizedBox(height: 8),
+                  _buildMenuGrid(),
+                  const SizedBox(height: 20),
+                  _buildSleepTimeCard(),
+                  const SizedBox(height: 20),
+                  const TrainingVideosSection(),
+                  const SizedBox(height: 80), // Space for bottom bar
+                ]),
+              ),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 20),
@@ -123,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
               final user = authController.currentUser.value;
               final photo = user?.astrologer?.profilePhoto ?? user?.profilePhoto;
               final String? imageUrl = (photo != null && photo.isNotEmpty)
-                  ? (photo.startsWith('http') ? photo : '${AppUrls.baseImageUrl}$photo')
+                  ? (photo.startsWith('http') ? photo : '\${AppUrls.baseImageUrl}$photo')
                   : null;
 
               return Container(
@@ -263,13 +293,16 @@ class _HomeScreenState extends State<HomeScreen> {
               child: const Icon(Icons.account_balance_wallet_rounded, color: Colors.white, size: 10),
             ),
             const SizedBox(width: 6),
-            AppText(
-              "100",
-              fontSize: 13,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF2E1A47),
-              letterSpacing: 0.5,
-            ),
+            Obx(() {
+              final balance = _walletController.summary.value?.totalBalance ?? 0.0;
+              return AppText(
+                balance.toStringAsFixed(0),
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                color: const Color(0xFF2E1A47),
+                letterSpacing: 0.5,
+              );
+            }),
           ],
         ),
       ),
