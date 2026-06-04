@@ -28,7 +28,7 @@ class OrdersRepositoryImpl implements IOrdersRepository {
     );
 
     if (response.isSuccess) {
-      final List<dynamic> data = response.body?['data']?['orders'] ?? [];
+      final List<dynamic> data = response.body?['orders'] ?? [];
       return data.map((e) => AstrologerOrderModel.fromJson(e)).toList();
     } else {
       throw Exception(response.message);
