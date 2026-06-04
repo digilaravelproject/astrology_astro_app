@@ -434,7 +434,7 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
           ),
           child: Row(
             children: [
-              AppText(_walletController.selectedEarningFilter, fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.primaryColor),
+              AppText(_walletController.selectedEarningFilter.value, fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.primaryColor),
               const SizedBox(width: 4),
               const Icon(Icons.keyboard_arrow_down_rounded, size: 14, color: AppColors.primaryColor),
             ],

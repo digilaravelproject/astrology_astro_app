@@ -32,7 +32,7 @@ class WalletController extends GetxController {
   final RxString earningsError = ''.obs;
   int _currentEarningsPage = 1;
   bool _hasMoreEarnings = true;
-  String selectedEarningFilter = 'Today'; // Default
+  final RxString selectedEarningFilter = 'Today'.obs; // Default
 
   // Withdrawals State
   final RxList<WalletTransactionModel> withdrawalsList = <WalletTransactionModel>[].obs;
@@ -63,7 +63,7 @@ class WalletController extends GetxController {
 
   Future<void> fetchEarnings({bool isRefresh = false, String? filter}) async {
     if (filter != null) {
-      selectedEarningFilter = filter;
+      selectedEarningFilter.value = filter;
       isRefresh = true;
     }
 
@@ -78,7 +78,7 @@ class WalletController extends GetxController {
 
     try {
       isLoadingEarnings.value = true;
-      String apiFilter = selectedEarningFilter.toLowerCase();
+      String apiFilter = selectedEarningFilter.value.toLowerCase();
       if (apiFilter == 'last 3 months') apiFilter = 'monthly'; // fallback or adjust according to API
 
       final response = await _getWalletEarningsUseCase.execute(
