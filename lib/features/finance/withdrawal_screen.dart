@@ -202,7 +202,7 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                               const SizedBox(height: 2),
                               AppText(
                                 defaultBank != null 
-                                  ? '**** \${defaultBank.accountNumber.substring(defaultBank.accountNumber.length - 4)}' 
+                                  ? '**** ${defaultBank.accountNumber.substring(defaultBank.accountNumber.length - 4)}' 
                                   : 'Tap to add an account', 
                                 fontSize: 12, 
                                 color: Colors.grey.shade500, 
@@ -242,27 +242,44 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                          return;
                       }
 
-                      Get.defaultDialog(
-                        title: 'Confirm',
-                        middleText: 'Are you sure you want to withdraw ₹\${_amountController.text} to \${defaultBank.bankName}?',
-                        textConfirm: 'Confirm',
-                        textCancel: 'Cancel',
-                        confirmTextColor: Colors.white,
-                        buttonColor: AppColors.primaryColor,
-                        onConfirm: () async {
-                          Get.back(); // Close dialog
-                          // Optional: show loading indicator
-                          Get.dialog(
-                            const Center(child: CircularProgressIndicator()),
-                            barrierDismissible: false,
-                          );
-                          final amount = double.tryParse(_amountController.text) ?? 0.0;
-                          final success = await _walletController.requestWithdrawal(amount, defaultBank.id);
-                          Get.back(); // close loading dialog
-                          if (success) {
-                            Get.back(); // close withdrawal screen
-                          }
-                        }
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          title: const AppText('Confirm', fontSize: 18, fontWeight: FontWeight.w700),
+                          content: AppText(
+                            'Are you sure you want to withdraw ₹${_amountController.text} to ${defaultBank.bankName}?',
+                            fontSize: 14,
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: AppText('Cancel', color: Colors.grey.shade600, fontWeight: FontWeight.w600),
+                            ),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primaryColor,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                              ),
+                              onPressed: () async {
+                                Navigator.of(context).pop(); // Close dialog
+                                // Optional: show loading indicator
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) => const Center(child: CircularProgressIndicator()),
+                                );
+                                final amount = double.tryParse(_amountController.text) ?? 0.0;
+                                final success = await _walletController.requestWithdrawal(amount, defaultBank.id);
+                                Navigator.of(context).pop(); // close loading dialog
+                                if (success) {
+                                  Navigator.of(context).pop(); // close withdrawal screen
+                                }
+                              },
+                              child: const AppText('Confirm', color: Colors.white, fontWeight: FontWeight.w600),
+                            ),
+                          ],
+                        ),
                       );
                     },
                     backgroundColor: AppColors.primaryColor,
