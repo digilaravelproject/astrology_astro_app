@@ -43,6 +43,8 @@ import '../../wallet/domain/usecases/get_wallet_summary_usecase.dart';
 import '../../wallet/domain/usecases/get_wallet_earnings_usecase.dart';
 import '../../wallet/domain/usecases/get_wallet_withdrawals_usecase.dart';
 import '../../wallet/domain/usecases/request_withdrawal_usecase.dart';
+import '../../wallet/data/repositories/wallet_repository_impl.dart';
+import '../../../core/services/network/api_client.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -59,11 +61,12 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     if (!Get.isRegistered<WalletController>()) {
+      final repository = WalletRepositoryImpl(apiClient: Get.find<ApiClient>());
       Get.put(WalletController(
-        Get.find<GetWalletSummaryUseCase>(),
-        Get.find<GetWalletEarningsUseCase>(),
-        Get.find<GetWalletWithdrawalsUseCase>(),
-        Get.find<RequestWithdrawalUseCase>(),
+        GetWalletSummaryUseCase(repository),
+        GetWalletEarningsUseCase(repository),
+        GetWalletWithdrawalsUseCase(repository),
+        RequestWithdrawalUseCase(repository),
       ));
     }
     _walletController = Get.find<WalletController>();
