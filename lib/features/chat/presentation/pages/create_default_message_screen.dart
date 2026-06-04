@@ -257,9 +257,10 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
                     Expanded(
                       child: AppText(
                         msg.title ?? "",
-                        fontSize: 15,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
+                        height: 1.3,
                       ),
                     ),
                     if (isDefault)
@@ -281,9 +282,9 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
                 const SizedBox(height: 8),
                 AppText(
                   msg.content ?? "",
-                  fontSize: 13,
+                  fontSize: 14,
                   color: Colors.black87.withOpacity(0.8),
-                  height: 1.5,
+                  height: 1.4,
                 ),
               ],
             ),
