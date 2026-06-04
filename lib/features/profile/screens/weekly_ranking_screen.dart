@@ -12,20 +12,7 @@ class WeeklyRankingScreen extends StatefulWidget {
   State<WeeklyRankingScreen> createState() => _WeeklyRankingScreenState();
 }
 
-class _WeeklyRankingScreenState extends State<WeeklyRankingScreen> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
+class _WeeklyRankingScreenState extends State<WeeklyRankingScreen> {
 
   @override
   Widget build(BuildContext context) {
@@ -37,39 +24,10 @@ class _WeeklyRankingScreenState extends State<WeeklyRankingScreen> with SingleTi
       ),
       body: Column(
         children: [
-          _buildTabBar(),
           Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildRankList('Astrotalk Earning (without Astromall) in this week (Monday to Sunday)'),
-                _buildRankList('Earning from Astromall in this week (Monday to Sunday)'),
-              ],
-            ),
+            child: _buildRankList('Astrotalk Earning in this week (Monday to Sunday)'),
           ),
           _buildStickyFooter(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTabBar() {
-    return Container(
-      color: Colors.white,
-      width: double.infinity,
-      child: TabBar(
-        controller: _tabController,
-        isScrollable: false,
-        dividerColor: Colors.grey.shade300,
-        labelColor: Colors.black,
-        unselectedLabelColor: Colors.grey,
-        indicatorColor: AppColors.primaryColor,
-        indicatorSize: TabBarIndicatorSize.tab,
-        labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, fontFamily: 'Poppins'),
-        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 13, fontFamily: 'Poppins'),
-        tabs: const [
-          Tab(text: 'Astrotalk'),
-          Tab(text: 'Astromall'),
         ],
       ),
     );
