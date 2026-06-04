@@ -7,11 +7,14 @@ import 'package:astro_astrologer/features/wallet/domain/repositories/i_wallet_re
 import 'package:astro_astrologer/features/wallet/presentation/controllers/weekly_ranking_controller.dart';
 import 'package:astro_astrologer/features/wallet/domain/models/weekly_ranking_model.dart';
 
+import 'package:astro_astrologer/features/wallet/data/repositories/wallet_repository_impl.dart';
+import 'package:astro_astrologer/core/services/network/api_client.dart';
+
 class WeeklyRankingScreen extends StatelessWidget {
   WeeklyRankingScreen({super.key});
 
   final WeeklyRankingController controller = Get.put(
-    WeeklyRankingController(Get.find<IWalletRepository>()),
+    WeeklyRankingController(WalletRepositoryImpl(apiClient: Get.find<ApiClient>())),
   );
 
   @override
