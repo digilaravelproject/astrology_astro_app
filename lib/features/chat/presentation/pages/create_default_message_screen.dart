@@ -313,13 +313,14 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
                   child: Icon(Icons.edit, color: Colors.grey.shade500, size: 20),
                 ),
               ),
-              GestureDetector(
-                onTap: () => _confirmDelete(msg.id!),
-                child: const Padding(
-                  padding: EdgeInsets.only(top: 4.0),
-                  child: Icon(Icons.delete_outline, color: Color(0xFFE57373), size: 20),
+              if (!isDefault)
+                GestureDetector(
+                  onTap: () => _confirmDelete(msg.id!),
+                  child: const Padding(
+                    padding: EdgeInsets.only(top: 4.0),
+                    child: Icon(Icons.delete_outline, color: Color(0xFFE57373), size: 20),
+                  ),
                 ),
-              ),
             ],
           ),
         ],
