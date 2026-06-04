@@ -78,12 +78,20 @@ class ChatSessionUserModel {
   final int id;
   final String name;
   final String? profilePhoto;
+  final String? gender;
+  final String? dateOfBirth;
+  final String? timeOfBirth;
+  final String? placeOfBirth;
   final int chatRatePerMinute;
 
   ChatSessionUserModel({
     required this.id,
     required this.name,
     this.profilePhoto,
+    this.gender,
+    this.dateOfBirth,
+    this.timeOfBirth,
+    this.placeOfBirth,
     required this.chatRatePerMinute,
   });
 
@@ -96,6 +104,10 @@ class ChatSessionUserModel {
       id: json['id'] ?? 0,
       name: json['name'] ?? '',
       profilePhoto: json['profile_photo']?.toString(),
+      gender: json['gender']?.toString(),
+      dateOfBirth: json['date_of_birth']?.toString(),
+      timeOfBirth: json['time_of_birth']?.toString(),
+      placeOfBirth: json['place_of_birth']?.toString(),
       chatRatePerMinute: chatRate,
     );
   }
