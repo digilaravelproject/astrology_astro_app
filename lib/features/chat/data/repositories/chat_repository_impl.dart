@@ -158,6 +158,7 @@ class ChatRepositoryImpl implements IChatRepository {
   Future<List<dynamic>> getAllDefaultMessages() async {
     final response = await _remoteDataSource.getAllDefaultMessages();
     if (response.isSuccess && response.body != null) {
+      if (response.body is List) return response.body as List<dynamic>;
       return response.body['data'] ?? [];
     }
     throw Exception(response.message ?? 'Failed to fetch default messages');
@@ -167,7 +168,7 @@ class ChatRepositoryImpl implements IChatRepository {
   Future<dynamic> getActiveDefaultMessage() async {
     final response = await _remoteDataSource.getActiveDefaultMessage();
     if (response.isSuccess && response.body != null) {
-      return response.body['data'];
+      return response.body['data'] ?? response.body;
     }
     return null;
   }
@@ -176,7 +177,7 @@ class ChatRepositoryImpl implements IChatRepository {
   Future<dynamic> createDefaultMessage({required String title, required String content, required bool isDefault}) async {
     final response = await _remoteDataSource.createDefaultMessage(title, content, isDefault);
     if (response.isSuccess && response.body != null) {
-      return response.body['data'];
+      return response.body['data'] ?? response.body;
     }
     throw Exception(response.message ?? 'Failed to create default message');
   }
@@ -185,7 +186,7 @@ class ChatRepositoryImpl implements IChatRepository {
   Future<dynamic> updateDefaultMessage({required int id, required String title, required String content, required bool isDefault}) async {
     final response = await _remoteDataSource.updateDefaultMessage(id, title, content, isDefault);
     if (response.isSuccess && response.body != null) {
-      return response.body['data'];
+      return response.body['data'] ?? response.body;
     }
     throw Exception(response.message ?? 'Failed to update default message');
   }
