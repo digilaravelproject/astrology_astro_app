@@ -251,6 +251,14 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
             model = tx.meta!['service_type'] ?? tx.description;
           }
 
+          String formattedDate = '';
+          try {
+            if (tx.createdAt.isNotEmpty) {
+              final dt = DateTime.parse(tx.createdAt).toLocal();
+              formattedDate = DateFormat('dd MMM yy, hh:mm a').format(dt);
+            }
+          } catch (_) {}
+
           return Container(
             margin: const EdgeInsets.only(bottom: 10),
             padding: const EdgeInsets.all(14),
@@ -270,7 +278,7 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
                   ),
                   child: Center(
                     child: AppText(
-                      name[0].toUpperCase(),
+                      name.isNotEmpty ? name[0].toUpperCase() : 'U',
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       color: AppColors.primaryColor,
@@ -284,7 +292,11 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
                     children: [
                       AppText(name, fontSize: 14, fontWeight: FontWeight.w700, color: const Color(0xFF2E1A47)),
                       const SizedBox(height: 2),
-                      AppText('$model', fontSize: 11, color: Colors.grey.shade500, fontWeight: FontWeight.w500),
+                      AppText(model, fontSize: 11, color: Colors.grey.shade500, fontWeight: FontWeight.w500),
+                      if (formattedDate.isNotEmpty) ...[
+                        const SizedBox(height: 2),
+                        AppText(formattedDate, fontSize: 10, color: Colors.grey.shade400, fontWeight: FontWeight.w600),
+                      ],
                     ],
                   ),
                 ),
