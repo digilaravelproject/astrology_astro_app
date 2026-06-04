@@ -32,113 +32,103 @@ class AstrologerSessionsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
       appBar: const CustomAppBar(title: 'Chat History', centerTitle: true),
-      body: Stack(
+      body: Column(
         children: [
-          Obx(() {
-            if (controller.isLoading.value) {
-              return const Center(
-                child: CircularProgressIndicator(color: AppColors.primaryColor),
-              );
-            }
+          Expanded(
+            child: Obx(() {
+              if (controller.isLoading.value) {
+                return const Center(
+                  child: CircularProgressIndicator(color: AppColors.primaryColor),
+                );
+              }
 
-            if (controller.error.value.isNotEmpty && controller.sessions.isEmpty) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.error_outline, size: 48, color: Colors.red.shade300),
-                    const SizedBox(height: 12),
-                    AppText(controller.error.value, color: Colors.red, textAlign: TextAlign.center),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: controller.refresh,
-                      style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryColor),
-                      child: const AppText('Retry', color: Colors.white),
-                    ),
-                  ],
-                ),
-              );
-            }
+              if (controller.error.value.isNotEmpty && controller.sessions.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.error_outline, size: 48, color: Colors.red.shade300),
+                      const SizedBox(height: 12),
+                      AppText(controller.error.value, color: Colors.red, textAlign: TextAlign.center),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: controller.refresh,
+                        style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryColor),
+                        child: const AppText('Retry', color: Colors.white),
+                      ),
+                    ],
+                  ),
+                );
+              }
 
-            if (controller.sessions.isEmpty) {
+              if (controller.sessions.isEmpty) {
+                return RefreshIndicator(
+                  color: AppColors.primaryColor,
+                  onRefresh: controller.refresh,
+                  child: ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    children: [
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.35),
+                      const Icon(Icons.chat_bubble_outline, size: 64, color: Colors.grey),
+                      const SizedBox(height: 16),
+                      const AppText('No chat sessions found', textAlign: TextAlign.center, color: Colors.grey, fontSize: 16),
+                    ],
+                  ),
+                );
+              }
+
               return RefreshIndicator(
                 color: AppColors.primaryColor,
                 onRefresh: controller.refresh,
-                child: ListView(
+                child: ListView.builder(
+                  controller: controller.scrollController,
                   physics: const AlwaysScrollableScrollPhysics(),
-                  children: [
-                    SizedBox(height: MediaQuery.of(context).size.height * 0.35),
-                    const Icon(Icons.chat_bubble_outline, size: 64, color: Colors.grey),
-                    const SizedBox(height: 16),
-                    const AppText('No chat sessions found', textAlign: TextAlign.center, color: Colors.grey, fontSize: 16),
-                  ],
+                  padding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 20),
+                  itemCount: controller.sessions.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index == controller.sessions.length) {
+                      return Obx(() => controller.isLoadingMore.value
+                          ? const Padding(
+                              padding: EdgeInsets.all(20),
+                              child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor, strokeWidth: 2)),
+                            )
+                          : const SizedBox.shrink());
+                    }
+                    return _buildHistoryCard(context, session: controller.sessions[index]);
+                  },
                 ),
               );
-            }
-
-            return RefreshIndicator(
-              color: AppColors.primaryColor,
-              onRefresh: controller.refresh,
-              child: ListView.builder(
-                controller: controller.scrollController,
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 140),
-                itemCount: controller.sessions.length + 1,
-                itemBuilder: (context, index) {
-                  if (index == controller.sessions.length) {
-                    return Obx(() => controller.isLoadingMore.value
-                        ? const Padding(
-                            padding: EdgeInsets.all(20),
-                            child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor, strokeWidth: 2)),
-                          )
-                        : const SizedBox.shrink());
-                  }
-                  return _buildHistoryCard(context, session: controller.sessions[index]);
-                },
-              ),
-            );
-          }),
+            }),
+          ),
 
           // Footer note
-          Positioned(
-            bottom: 90,
-            left: 0,
-            right: 0,
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              color: Colors.white,
-              child: Center(
-                child: AppText('Data shown for last 3 days only', fontSize: 13, fontWeight: FontWeight.w500, color: Colors.red.shade200),
-              ),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            color: Colors.white,
+            child: Center(
+              child: AppText('Data shown for last 3 days only', fontSize: 13, fontWeight: FontWeight.w500, color: Colors.red.shade200),
             ),
           ),
 
           // Sticky create default message button
-          Positioned(
-            bottom: 24,
-            left: 16,
-            right: 16,
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -2))],
+            ),
             child: SafeArea(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, -2))],
-                ),
-                child: SafeArea(
-                  top: false,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
-                    child: CustomButton(
-                      text: "Create default message",
-                      onPressed: () => Get.to(() => const CreateDefaultMessageScreen(), binding: ChatBinding()),
-                      height: 42,
-                      backgroundColor: AppColors.primaryColor,
-                      borderRadius: 10,
-                      prefixIcon: const Icon(Icons.add, color: Colors.white, size: 18),
-                      textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
-                    ),
-                  ),
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: CustomButton(
+                  text: "Create default message",
+                  onPressed: () => Get.to(() => const CreateDefaultMessageScreen(), binding: ChatBinding()),
+                  height: 48,
+                  backgroundColor: AppColors.primaryColor,
+                  borderRadius: 10,
+                  prefixIcon: const Icon(Icons.add, color: Colors.white, size: 18),
+                  textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
               ),
             ),
