@@ -105,14 +105,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        if (_controller.status.value != 'ended') {
+        if (_controller.status.value == 'ongoing') {
           _controller.minimizeToBubble(
             context,
             widget.userName,
             widget.userImage,
             shouldPop: false,
           );
-          return true;
+          return false;
         }
         return true;
       },
@@ -123,7 +123,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           centerTitle: false,
           showLeading: true,
           onLeadingPressed: () {
-            if (_controller.status.value != 'ended') {
+            if (_controller.status.value == 'ongoing') {
               _controller.minimizeToBubble(
                 context,
                 widget.userName,
