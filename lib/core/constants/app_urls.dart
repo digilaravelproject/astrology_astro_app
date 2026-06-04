@@ -85,7 +85,7 @@ class AppUrls {
   static String endChatSession(int sessionId) => "/chat/$sessionId/end";
   static String acceptChatSession(int sessionId) => "/chat/$sessionId/accept";
   static String rejectChatSession(int sessionId) => "/chat/$sessionId/reject";
-  static const String getCurrentSession = "/chat/current-session";
+  static const String getCurrentSession = "/chat/sessions/current";
   static String markChatRead(int sessionId) => "/chat/$sessionId/read";
   static const String uploadAttachment = "/chat/upload-attachment";
   static String getChatMessages(int sessionId) => "/chat/$sessionId/messages";

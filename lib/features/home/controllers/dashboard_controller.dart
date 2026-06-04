@@ -1,6 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
+import 'package:astro_astrologer/core/services/network/api_client.dart';
+import 'package:astro_astrologer/core/constants/app_urls.dart';
+import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
+import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
+import 'package:astro_astrologer/features/chat/bindings/chat_binding.dart';
 
 class DashboardController extends GetxController {
   var selectedIndex = 0.obs;
@@ -14,6 +19,7 @@ class DashboardController extends GetxController {
   void onReady() {
     super.onReady();
     _checkOverlayPermission();
+    _checkCurrentActiveSession();
   }
 
   Future<void> _checkOverlayPermission() async {
@@ -45,6 +51,49 @@ class DashboardController extends GetxController {
       } catch (e) {
         debugPrint('Error checking overlay permission: $e');
       }
+    }
+  }
+
+  Future<void> _checkCurrentActiveSession() async {
+    try {
+      if (await FlutterOverlayWindow.isActive()) return;
+      
+      final response = await Get.find<ApiClient>().get(AppUrls.getCurrentSession);
+      if (response.isSuccess && response.body['data'] != null) {
+        final session = response.body['data'];
+        final sessionId = session['id'];
+        final status = session['status'];
+        final startedAt = session['accepted_at'] ?? session['created_at'];
+        // For astrologer app, other person is consumer
+        final name = session['consumer']?['name'] ?? 'User';
+        
+        if (status == 'ongoing' || status == 'initiated' || status == 'accepted') {
+          FloatingChatBubble.show(
+             context: Get.context!,
+             sessionId: sessionId,
+             name: name,
+             imageUrl: '', // We don't have the image in this payload
+             status: status,
+             startedAt: startedAt,
+             onTap: () {
+               final currentStatus = FloatingChatBubble.chatStatus.value;
+               FloatingChatBubble.dismiss();
+               Get.to(
+                 () => ChatScreen(
+                   userName: name,
+                   userImage: '',
+                   sessionId: sessionId,
+                   initialStatus: currentStatus,
+                   startedAtString: startedAt,
+                 ),
+                 binding: ChatBinding(),
+               );
+             }
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint("Error checking active session: $e");
     }
   }
 }
