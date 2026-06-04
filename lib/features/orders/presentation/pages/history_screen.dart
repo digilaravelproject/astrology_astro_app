@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/widgets/app_text.dart';
-import '../../../core/widgets/custom_app_bar.dart';
-import '../../../core/widgets/custom_button.dart';
+import 'package:astro_astrologer/core/theme/app_colors.dart';
+import 'package:astro_astrologer/core/widgets/app_text.dart';
+import 'package:astro_astrologer/core/widgets/custom_app_bar.dart';
+import 'package:astro_astrologer/core/widgets/custom_button.dart';
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
-import '../../../core/widgets/loyal_badge.dart';
+import 'package:astro_astrologer/core/widgets/loyal_badge.dart';
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});
