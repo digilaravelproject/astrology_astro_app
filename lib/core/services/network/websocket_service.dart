@@ -447,10 +447,12 @@ class WebSocketService extends GetxService {
       sessionStatusUpdates[sessionId] = 'ended';
       sessionStatusUpdates.refresh();
 
-      // If active screen is open, signal it to close
+      // Always signal that this session was dismissed
+      chatDismissedSessionId.value = sessionId;
+
+      // If active screen is open, clear it
       if (activeSessionId == sessionId) {
         activeSessionId = null;
-        chatDismissedSessionId.value = sessionId;
       }
     } catch (e) {
       Logger.e('WebSocketService: error handling ChatDismissed -> $e');
