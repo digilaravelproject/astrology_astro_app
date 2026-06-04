@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:isolate';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/services/network/websocket_service.dart';
+import 'package:astro_astrologer/core/services/local_notification_service.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 
 class FloatingChatBubble {
@@ -19,6 +22,31 @@ class FloatingChatBubble {
   static StreamSubscription? _overlaySub;
   static const MethodChannel _appRetainChannel = MethodChannel('com.suryapath.astrologer/app_retain');
 
+  static ReceivePort? _receivePort;
+
+  static void _setupIsolatePort() {
+    if (_receivePort != null) return;
+    _receivePort = ReceivePort();
+    IsolateNameServer.removePortNameMapping('overlay_chat_port');
+    IsolateNameServer.registerPortWithName(_receivePort!.sendPort, 'overlay_chat_port');
+    _receivePort!.listen((message) async {
+      if (message == 'tap') {
+        debugPrint("==== OVERLAY TAPPED VIA ISOLATE PORT ====");
+        try {
+          debugPrint("==== ATTEMPTING TO BRING TO FOREGROUND ====");
+          await _appRetainChannel.invokeMethod('bringToForeground');
+          debugPrint("==== BROUGHT TO FOREGROUND SUCCESS ====");
+        } catch (e) {
+          debugPrint("==== Error bringing app to foreground: $e ====");
+        }
+        Future.delayed(const Duration(milliseconds: 500), () {
+          debugPrint("==== CALLING ON TAP CALLBACK ====");
+          onTapCallback?.call();
+        });
+      }
+    });
+  }
+
   static Future<void> show({
     required BuildContext context,
     required int sessionId,
@@ -28,6 +56,15 @@ class FloatingChatBubble {
     required String status,
     required VoidCallback onTap,
   }) async {
+    _setupIsolatePort();
+    
+    if (_isActive && FloatingChatBubble.sessionId == sessionId) {
+      // Just update status if already active
+      chatStatus.value = status;
+      _syncData();
+      return;
+    }
+    
     FloatingChatBubble.sessionId = sessionId;
     FloatingChatBubble.name = name;
     unreadCount.value = 0;
@@ -53,10 +90,10 @@ class FloatingChatBubble {
       } else {
         await FlutterOverlayWindow.showOverlay(
           enableDrag: true,
-          overlayTitle: "Chat Bubble",
-          overlayContent: "Ongoing chat",
+          overlayTitle: "Chat in progress",
+          overlayContent: "Active chat with $name",
           flag: OverlayFlag.defaultFlag,
-          visibility: NotificationVisibility.visibilityPublic,
+          visibility: NotificationVisibility.visibilitySecret,
           positionGravity: PositionGravity.none,
           height: 260,
           width: 260,
@@ -71,20 +108,32 @@ class FloatingChatBubble {
           'startedAt': startedAt,
           'unreadCount': 0,
         });
-
-        // Listen for tap events from overlay
-        _overlaySub?.cancel();
-        _overlaySub = FlutterOverlayWindow.overlayListener.listen((event) async {
-          if (event != null && event is Map && event['action'] == 'tap') {
-            try {
-              await _appRetainChannel.invokeMethod('bringToForeground');
-            } catch (e) {
-              debugPrint("Error bringing app to foreground: $e");
-            }
-            onTapCallback?.call();
-          }
-        });
       }
+      
+      // Cancel the local notification to avoid duplicates
+      try {
+        LocalNotificationService.cancelOngoingChatNotification(sessionId);
+      } catch (_) {}
+
+      // Listen for tap events from overlay ALWAYS
+      _overlaySub?.cancel();
+      _overlaySub = FlutterOverlayWindow.overlayListener.listen((event) async {
+        if (event != null && event is Map && event['action'] == 'tap') {
+          debugPrint("==== OVERLAY TAPPED ====");
+          try {
+            debugPrint("==== ATTEMPTING TO BRING TO FOREGROUND ====");
+            await _appRetainChannel.invokeMethod('bringToForeground');
+            debugPrint("==== BROUGHT TO FOREGROUND SUCCESS ====");
+          } catch (e) {
+            debugPrint("==== Error bringing app to foreground: $e ====");
+          }
+          Future.delayed(const Duration(milliseconds: 500), () {
+            debugPrint("==== CALLING ON TAP CALLBACK ====");
+            onTapCallback?.call();
+          });
+        }
+      });
+
     } catch (e) {
       debugPrint("FloatingChatBubble show error: $e");
     }

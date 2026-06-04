@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:isolate';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 
@@ -87,8 +89,12 @@ class _OverlayChatBubbleWidgetState extends State<OverlayChatBubbleWidget> {
       color: Colors.transparent,
       child: GestureDetector(
         onTap: () {
-           // When tapped, we send a message back to main app to open
+           debugPrint("==== GESTURE DETECTOR TAPPED ====");
+           // Try both methods just in case
            FlutterOverlayWindow.shareData({'action': 'tap'});
+           
+           final SendPort? sendPort = IsolateNameServer.lookupPortByName('overlay_chat_port');
+           sendPort?.send('tap');
         },
         child: Center(
           child: Stack(
