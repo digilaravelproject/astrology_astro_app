@@ -56,12 +56,6 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
                   _buildCompactEarningsRow(),
                   const SizedBox(height: 12),
                   _buildWeeklyEarningsCard(),
-                  const SizedBox(height: 12),
-                  _buildPeriodSelector(),
-                  const SizedBox(height: 12),
-                  _buildBalancePayableCard(),
-                  const SizedBox(height: 12),
-                  _buildAstromallEarningsCard(),
                   const SizedBox(height: 24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
