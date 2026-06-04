@@ -1,7 +1,9 @@
+import '../models/weekly_ranking_model.dart';
 import '../models/wallet_summary_model.dart';
 import '../models/wallet_transaction_model.dart';
 
 abstract class IWalletRepository {
+  Future<WeeklyRankingData> getWeeklyRankings();
   Future<WalletSummaryModel> getWalletSummary();
 
   Future<List<WalletTransactionModel>> getEarnings({

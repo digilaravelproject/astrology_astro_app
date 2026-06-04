@@ -2,6 +2,7 @@ import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import '../../domain/models/wallet_summary_model.dart';
 import '../../domain/models/wallet_transaction_model.dart';
+import '../../domain/models/weekly_ranking_model.dart';
 import '../../domain/repositories/i_wallet_repository.dart';
 
 class WalletRepositoryImpl implements IWalletRepository {
@@ -15,6 +16,17 @@ class WalletRepositoryImpl implements IWalletRepository {
 
     if (response.isSuccess) {
       return WalletSummaryModel.fromJson(response.body ?? {});
+    } else {
+      throw Exception(response.message);
+    }
+  }
+
+  @override
+  Future<WeeklyRankingData> getWeeklyRankings() async {
+    final response = await _apiClient.get(AppUrls.walletWeeklyRankings);
+
+    if (response.isSuccess) {
+      return WeeklyRankingData.fromJson(response.body?['data'] ?? {});
     } else {
       throw Exception(response.message);
     }

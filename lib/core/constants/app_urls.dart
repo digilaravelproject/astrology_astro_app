@@ -94,6 +94,7 @@ class AppUrls {
   static const String walletEarnings = "/astrologer/wallet/earnings";
   static const String walletWithdrawals = "/astrologer/wallet/withdrawals";
   static const String walletWithdraw = "/astrologer/wallet/withdraw";
+  static const String walletWeeklyRankings = "/wallet/weekly-rankings";
   
   static const String getCurrentSession = "/chat/sessions/current";
   static String markChatRead(int sessionId) => "/chat/$sessionId/read";
