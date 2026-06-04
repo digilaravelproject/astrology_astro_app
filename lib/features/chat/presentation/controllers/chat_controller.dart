@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:astro_astrologer/core/services/network/websocket_service.dart';
 import 'package:astro_astrologer/features/chat/domain/entities/chat_message.dart';
@@ -74,6 +76,14 @@ class ChatController extends GetxController {
     if (_sessionId != sessionId) {
       messages.clear();
       _sessionId = sessionId;
+    }
+
+    if (Platform.isAndroid) {
+      FlutterOverlayWindow.isPermissionGranted().then((isGranted) {
+        if (!isGranted) {
+          FlutterOverlayWindow.requestPermission();
+        }
+      });
     }
     if (currentUserId != 0) {
       _currentUserId = currentUserId;

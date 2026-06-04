@@ -6,9 +6,6 @@ import '../../../routes/route_helper.dart';
 import '../domain/services/splash_service.dart';
 import '../../../core/services/network/websocket_service.dart';
 
-import 'dart:io';
-import 'package:flutter_overlay_window/flutter_overlay_window.dart';
-
 class SplashController extends GetxController {
   final SplashService _splashService;
 
@@ -25,13 +22,6 @@ class SplashController extends GetxController {
   Future<void> initApp() async {
     try {
       isLoading.value = true;
-      
-      if (Platform.isAndroid) {
-        final bool isGranted = await FlutterOverlayWindow.isPermissionGranted();
-        if (!isGranted) {
-          await FlutterOverlayWindow.requestPermission();
-        }
-      }
 
       // Initialize splash service
       final isReady = await _splashService.initialize();
