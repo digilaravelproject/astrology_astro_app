@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/widgets/app_text.dart';
-import '../../../core/widgets/custom_app_bar.dart';
-import '../../../core/widgets/custom_button.dart';
+import 'package:astro_astrologer/core/theme/app_colors.dart';
+import 'package:astro_astrologer/core/widgets/app_text.dart';
+import 'package:astro_astrologer/core/widgets/custom_app_bar.dart';
+import 'package:astro_astrologer/core/widgets/custom_button.dart';
 import 'controllers/default_message_controller.dart';
 import 'package:astro_astrologer/features/chat/data/models/default_message_model.dart';
 import 'package:astro_astrologer/features/chat/domain/repositories/i_chat_repository.dart';
@@ -17,7 +17,7 @@ class CreateDefaultMessageScreen extends StatefulWidget {
 }
 
 class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen> {
-  final DefaultMessageController controller = Get.put(DefaultMessageController());
+  final DefaultMessageController controller = Get.put(DefaultMessageController(Get.find<IChatRepository>()));
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _messageController = TextEditingController();
@@ -106,7 +106,7 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
                     },
                     controlAffinity: ListTileControlAffinity.leading,
                     contentPadding: EdgeInsets.zero,
-                    activeColor: AppColors.primary,
+                    activeColor: AppColors.primaryColor,
                   ),
                   const SizedBox(height: 16),
                   Obx(() => CustomButton(
@@ -164,7 +164,7 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
       ),
       body: Obx(() {
         if (controller.isLoading.value && controller.messages.isEmpty) {
-          return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+          return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
         }
 
         if (controller.messages.isEmpty) {
@@ -220,10 +220,10 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDefault ? AppColors.primary.withOpacity(0.05) : Colors.white,
+        color: isDefault ? AppColors.primaryColor.withOpacity(0.05) : Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isDefault ? AppColors.primary.withOpacity(0.5) : Colors.grey.shade200,
+          color: isDefault ? AppColors.primaryColor.withOpacity(0.5) : Colors.grey.shade200,
           width: isDefault ? 1.5 : 1.0,
         ),
         boxShadow: [
@@ -255,13 +255,13 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
+                          color: AppColors.primaryColor.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: const AppText(
                           "Active",
                           fontSize: 10,
-                          color: AppColors.primary,
+                          color: AppColors.primaryColor,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
