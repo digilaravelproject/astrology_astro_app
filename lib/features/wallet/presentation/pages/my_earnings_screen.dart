@@ -50,11 +50,21 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
       appBar: const CustomAppBar(
         title: 'My Earnings',
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildWalletCard(),
-            Padding(
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await Future.wait([
+            _walletController.fetchWalletSummary(),
+            _walletController.fetchEarnings(isRefresh: true),
+            _walletController.fetchWithdrawals(isRefresh: true),
+          ]);
+        },
+        color: AppColors.primaryColor,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            children: [
+              _buildWalletCard(),
+              Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
