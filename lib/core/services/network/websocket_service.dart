@@ -165,7 +165,7 @@ class WebSocketService extends GetxService {
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleChatInitiated(data['data']);
-        } else if (event == 'App\\Events\\ChatQueueUpdated') {
+        } else if (event == AppUrls.eventChatQueueUpdated || event == 'App\\Events\\ChatQueueUpdated') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|🔔 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');

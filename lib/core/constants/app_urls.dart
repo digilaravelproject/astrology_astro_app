@@ -104,6 +104,7 @@ class AppUrls {
 
   // Chat System Events
   static const String eventChatInitiated = 'ChatInitiated';
+  static const String eventChatQueueUpdated = 'ChatQueueUpdated';
   static const String eventChatAccepted = 'ChatAccepted';
   static const String eventChatEnded = 'ChatEnded';
   static const String eventMessageSent = 'MessageSent';
