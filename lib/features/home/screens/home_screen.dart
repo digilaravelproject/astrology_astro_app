@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import '../../profile/screens/my_earnings_screen.dart';
+import 'package:astro_astrologer/features/wallet/presentation/pages/my_earnings_screen.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/constants/app_strings.dart';

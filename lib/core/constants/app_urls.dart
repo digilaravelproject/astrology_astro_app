@@ -88,6 +88,12 @@ class AppUrls {
 
   // Orders
   static const String astrologerOrders = "/astrologer/orders";
+
+  // Wallet
+  static const String walletSummary = "/astrologer/wallet";
+  static const String walletEarnings = "/astrologer/wallet/earnings";
+  static const String walletWithdrawals = "/astrologer/wallet/withdrawals";
+  static const String walletWithdraw = "/astrologer/wallet/withdraw";
   
   static const String getCurrentSession = "/chat/sessions/current";
   static String markChatRead(int sessionId) => "/chat/$sessionId/read";
