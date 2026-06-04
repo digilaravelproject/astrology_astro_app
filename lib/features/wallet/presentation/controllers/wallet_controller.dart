@@ -128,7 +128,7 @@ class WalletController extends GetxController {
     }
   }
 
-  Future<bool> requestWithdrawal(double amount, int bankAccountId) async {
+  Future<Map<String, dynamic>> requestWithdrawal(double amount, int bankAccountId) async {
     try {
       final tx = await _requestWithdrawalUseCase.execute(
         amount: amount,
@@ -137,13 +137,9 @@ class WalletController extends GetxController {
       // Refresh summary to reflect new balance, and add to withdrawals list
       fetchWalletSummary();
       withdrawalsList.insert(0, tx);
-      Get.snackbar('Success', 'Withdrawal request submitted successfully.',
-          backgroundColor: Colors.green.shade100, colorText: Colors.green.shade800);
-      return true;
+      return {'success': true, 'message': 'Withdrawal request submitted successfully.'};
     } catch (e) {
-      Get.snackbar('Error', e.toString().replaceAll('Exception: ', ''),
-          backgroundColor: Colors.red.shade100, colorText: Colors.red.shade800);
-      return false;
+      return {'success': false, 'message': e.toString().replaceAll('Exception: ', '')};
     }
   }
 }

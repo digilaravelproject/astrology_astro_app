@@ -242,43 +242,41 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                          return;
                       }
 
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                          title: const AppText('Confirm', fontSize: 18, fontWeight: FontWeight.w700),
-                          content: AppText(
-                            'Are you sure you want to withdraw ₹${_amountController.text} to ${defaultBank.bankName}?',
-                            fontSize: 14,
+                      Get.defaultDialog(
+                        title: 'Confirm',
+                        middleText: 'Are you sure you want to withdraw ₹${_amountController.text} to ${defaultBank.bankName}?',
+                        cancel: TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text('Cancel', style: TextStyle(color: AppColors.primaryColor)),
+                        ),
+                        confirm: TextButton(
+                          style: TextButton.styleFrom(
+                            backgroundColor: AppColors.primaryColor,
                           ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              child: AppText('Cancel', color: Colors.grey.shade600, fontWeight: FontWeight.w600),
-                            ),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primaryColor,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                              ),
-                              onPressed: () async {
-                                Navigator.of(context).pop(); // Close dialog
-                                // Optional: show loading indicator
-                                showDialog(
-                                  context: context,
-                                  barrierDismissible: false,
-                                  builder: (context) => const Center(child: CircularProgressIndicator()),
-                                );
-                                final amount = double.tryParse(_amountController.text) ?? 0.0;
-                                final success = await _walletController.requestWithdrawal(amount, defaultBank.id);
-                                Navigator.of(context).pop(); // close loading dialog
-                                if (success) {
-                                  Navigator.of(context).pop(); // close withdrawal screen
-                                }
-                              },
-                              child: const AppText('Confirm', color: Colors.white, fontWeight: FontWeight.w600),
-                            ),
-                          ],
+                          onPressed: () async {
+                            Navigator.of(context).pop(); // Close confirm dialog safely
+
+                            // Show loading dialog natively
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) => const Center(child: CircularProgressIndicator()),
+                            );
+
+                            final amount = double.tryParse(_amountController.text) ?? 0.0;
+                            final result = await _walletController.requestWithdrawal(amount, defaultBank.id);
+                            
+                            // Close loading dialog safely BEFORE showing any snackbar
+                            Navigator.of(context).pop();
+
+                            if (result['success'] == true) {
+                              Get.snackbar('Success', result['message'], backgroundColor: Colors.green.shade100, colorText: Colors.green.shade800);
+                              Get.back(); // close withdrawal screen
+                            } else {
+                              Get.snackbar('Error', result['message'], backgroundColor: Colors.red.shade100, colorText: Colors.red.shade800);
+                            }
+                          },
+                          child: const Text('Confirm', style: TextStyle(color: Colors.white)),
                         ),
                       );
                     },
