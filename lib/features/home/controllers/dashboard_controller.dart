@@ -5,7 +5,7 @@ import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
 import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
-import 'package:astro_astrologer/features/chat/bindings/chat_binding.dart';
+import 'package:astro_astrologer/features/chat/presentation/bindings/chat_binding.dart';
 
 class DashboardController extends GetxController {
   var selectedIndex = 0.obs;
