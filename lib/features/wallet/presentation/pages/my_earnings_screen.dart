@@ -89,8 +89,9 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildWalletCard() {
     return Container(
