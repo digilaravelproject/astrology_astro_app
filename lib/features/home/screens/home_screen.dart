@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:astro_astrologer/features/wallet/presentation/pages/my_earnings_screen.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
@@ -171,9 +172,31 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 child: ClipOval(
                   child: imageUrl != null
-                      ? CustomImageWidget(
-                          imagePath: imageUrl,
+                      ? CachedNetworkImage(
+                          imageUrl: imageUrl,
                           fit: BoxFit.cover,
+                          placeholder: (context, url) => const Center(
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Container(
+                            decoration: const BoxDecoration(
+                              gradient: AppColors.primaryGradient,
+                            ),
+                            child: Center(
+                              child: Text(
+                                user?.name.isNotEmpty == true ? user!.name[0].toUpperCase() : 'A',
+                                style: const TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
                         )
                       : Container(
                           decoration: const BoxDecoration(

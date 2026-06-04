@@ -84,12 +84,15 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                     children: [
                       AppText('Available Balance', fontSize: 13, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
                       const SizedBox(height: 4),
-                      Obx(() => AppText(
-                        '₹\${_walletController.summary.value?.totalBalance ?? 0.0}', 
-                        fontSize: 20, 
-                        fontWeight: FontWeight.w800, 
-                        color: const Color(0xFF2E1A47),
-                      )),
+                      Obx(() {
+                        final val = _walletController.summary.value;
+                        return AppText(
+                          '₹${val?.totalBalance ?? 0.0}', 
+                          fontSize: 20, 
+                          fontWeight: FontWeight.w800, 
+                          color: const Color(0xFF2E1A47),
+                        );
+                      }),
                     ],
                   ),
                 ],
@@ -153,7 +156,10 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
             
             // Bank Card Preview
             Obx(() {
-              final defaultBank = _financeController.bankAccounts.firstWhereOrNull((b) => b.isDefault);
+              final accounts = _financeController.bankAccounts;
+              // Force register observable by accessing length
+              final _ = accounts.length;
+              final defaultBank = accounts.firstWhereOrNull((b) => b.isDefault);
               
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
