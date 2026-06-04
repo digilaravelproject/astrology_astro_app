@@ -1,15 +1,21 @@
 class ChatSessionListResponse {
   final int currentPage;
+  final int lastPage;
+  final String? nextPageUrl;
   final List<ChatSessionModel> data;
 
   ChatSessionListResponse({
     required this.currentPage,
+    required this.lastPage,
+    this.nextPageUrl,
     required this.data,
   });
 
   factory ChatSessionListResponse.fromJson(Map<String, dynamic> json) {
     return ChatSessionListResponse(
       currentPage: json['current_page'] ?? 1,
+      lastPage: json['last_page'] ?? 1,
+      nextPageUrl: json['next_page_url']?.toString(),
       data: (json['data'] as List<dynamic>?)
               ?.map((e) => ChatSessionModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -71,11 +77,13 @@ class ChatSessionModel {
 class ChatSessionUserModel {
   final int id;
   final String name;
+  final String? profilePhoto;
   final int chatRatePerMinute;
 
   ChatSessionUserModel({
     required this.id,
     required this.name,
+    this.profilePhoto,
     required this.chatRatePerMinute,
   });
 
@@ -87,6 +95,7 @@ class ChatSessionUserModel {
     return ChatSessionUserModel(
       id: json['id'] ?? 0,
       name: json['name'] ?? '',
+      profilePhoto: json['profile_photo']?.toString(),
       chatRatePerMinute: chatRate,
     );
   }

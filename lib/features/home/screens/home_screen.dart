@@ -12,6 +12,7 @@ import '../widgets/home_greeting.dart';
 import '../controllers/dashboard_controller.dart';
 import '../../call/call_history_screen.dart';
 import '../../chat/presentation/pages/chat_history_screen.dart';
+import '../../chat/presentation/pages/astrologer_sessions_screen.dart';
 import '../../kundli/kundli_list_screen.dart';
 import '../../astromall/astromall_orders_screen.dart';
 import '../../waitlist/waitlist_screen.dart';
@@ -856,7 +857,7 @@ class _HomeScreenState extends State<HomeScreen> {
         bgColor: const Color(0xFFEAF8F1),
         iconBgColor: const Color(0xFFD0F0E0),
         textColor: const Color(0xFF0D9D57),
-        onTap: () => Get.to(() => ChatHistoryScreen()),
+        onTap: () => Get.to(() => AstrologerSessionsScreen()),
       ),
       _MenuData(
         title: 'Call',
