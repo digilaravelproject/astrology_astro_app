@@ -293,14 +293,17 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
           const SizedBox(width: 12),
           Column(
             children: [
-              Transform.scale(
-                scale: 0.8,
-                child: Switch(
-                  value: isDefault,
-                  activeColor: AppColors.primaryColor,
-                  onChanged: (val) {
-                    controller.toggleDefaultStatus(msg);
-                  },
+              GestureDetector(
+                onTap: () {
+                  controller.toggleDefaultStatus(msg);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Icon(
+                    isDefault ? Icons.star : Icons.star_border,
+                    color: isDefault ? Colors.orange : Colors.grey.shade400,
+                    size: 24,
+                  ),
                 ),
               ),
               GestureDetector(
