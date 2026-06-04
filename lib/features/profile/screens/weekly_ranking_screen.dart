@@ -119,42 +119,91 @@ class WeeklyRankingScreen extends StatelessWidget {
     );
   }
 
+  String _toTitleCase(String text) {
+    if (text.isEmpty) return text;
+    return text
+        .split(' ')
+        .map((w) => w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1).toLowerCase()}' : '')
+        .join(' ');
+  }
+
+  Widget _buildAvatar(WeeklyRankingModel astrologer) {
+    final rawPhoto = astrologer.profilePhoto;
+    final photoUrl = rawPhoto != null && rawPhoto.isNotEmpty
+        ? (rawPhoto.startsWith('http') ? rawPhoto : '${AppUrls.baseImageUrl}$rawPhoto')
+        : null;
+    final initials = astrologer.name.isNotEmpty ? astrologer.name[0].toUpperCase() : '?';
+
+    return CircleAvatar(
+      radius: 20,
+      backgroundColor: AppColors.primaryColor.withValues(alpha: 0.15),
+      backgroundImage: photoUrl != null ? NetworkImage(photoUrl) : null,
+      child: photoUrl == null
+          ? AppText(
+              initials,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primaryColor,
+            )
+          : null,
+    );
+  }
+
   Widget _buildRankingRow(WeeklyRankingModel astrologer) {
     final bool isTopThree = astrologer.rank <= 3;
+    final titleName = _toTitleCase(astrologer.name);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              if (isTopThree)
-                Container(
-                  width: 28,
-                  height: 28,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFFFD700),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.star, color: Colors.white, size: 18),
-                )
-              else
-                const SizedBox(
-                  width: 28,
-                  height: 28,
-                  child: Icon(Icons.emoji_events, color: Color(0xFFFFD700), size: 24),
-                ),
-              const SizedBox(width: 16),
-              AppText(
-                '${astrologer.rank}',
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-            ],
+          // Rank badge (star or trophy)
+          SizedBox(
+            width: 28,
+            height: 28,
+            child: isTopThree
+                ? Container(
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFFFD700),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.star, color: Colors.white, size: 18),
+                  )
+                : const Icon(Icons.emoji_events, color: Color(0xFFFFD700), size: 24),
           ),
+          const SizedBox(width: 10),
+
+          // Rank number
+          SizedBox(
+            width: 22,
+            child: AppText(
+              '${astrologer.rank}',
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(width: 10),
+
+          // Avatar
+          _buildAvatar(astrologer),
+          const SizedBox(width: 10),
+
+          // Name
+          Expanded(
+            child: AppText(
+              titleName,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Colors.black87,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+
+          // Earnings + arrow
           Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
               AppText(
                 '₹${astrologer.weeklyEarnings.toStringAsFixed(0)}',
@@ -162,7 +211,7 @@ class WeeklyRankingScreen extends StatelessWidget {
                 fontWeight: FontWeight.w500,
                 color: Colors.black87,
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 4),
               Icon(
                 astrologer.weeklyEarnings > 0 ? Icons.arrow_drop_up : Icons.remove,
                 color: astrologer.weeklyEarnings > 0 ? Colors.green : Colors.grey,
