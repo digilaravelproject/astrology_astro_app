@@ -270,10 +270,14 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                             Navigator.of(context).pop();
 
                             if (result['success'] == true) {
-                              Get.snackbar('Success', result['message'], backgroundColor: Colors.green.shade100, colorText: Colors.green.shade800);
                               Get.back(); // close withdrawal screen
+                              Future.delayed(const Duration(milliseconds: 300), () {
+                                Get.snackbar('Success', result['message'], backgroundColor: Colors.green.shade100, colorText: Colors.green.shade800);
+                              });
                             } else {
-                              Get.snackbar('Error', result['message'], backgroundColor: Colors.red.shade100, colorText: Colors.red.shade800);
+                              Future.delayed(const Duration(milliseconds: 300), () {
+                                Get.snackbar('Error', result['message'], backgroundColor: Colors.red.shade100, colorText: Colors.red.shade800);
+                              });
                             }
                           },
                           child: const Text('Confirm', style: TextStyle(color: Colors.white)),
