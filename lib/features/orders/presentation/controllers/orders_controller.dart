@@ -78,6 +78,7 @@ class OrdersController extends GetxController {
       isLoadingChat.value = true;
       final response = await _getAstrologerOrdersUseCase.execute(
         type: 'chat',
+        status: 'waiting',
         page: _currentChatPage,
       );
       
@@ -108,6 +109,7 @@ class OrdersController extends GetxController {
       isLoadingCall.value = true;
       final response = await _getAstrologerOrdersUseCase.execute(
         type: 'call',
+        status: 'waiting',
         page: _currentCallPage,
       );
       
