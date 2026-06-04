@@ -100,6 +100,16 @@ class DefaultMessageController extends GetxController {
     }
   }
 
+  Future<void> toggleDefaultStatus(DefaultMessageModel msg) async {
+    if (msg.isDefault == true) {
+      // Toggle off: use update API to set is_default to false
+      await updateMessage(msg.id!, msg.title ?? "", msg.content ?? "", false);
+    } else {
+      // Toggle on: use set-default API
+      await setActiveDefault(msg.id!);
+    }
+  }
+
   Future<void> deleteMessage(int id) async {
     try {
       isLoading.value = true;

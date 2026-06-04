@@ -133,9 +133,10 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
                               _isDefaultChecked,
                             );
                           }
-                          
                           if (success) {
-                            Get.back();
+                            if (context.mounted) {
+                              Navigator.of(context).pop();
+                            }
                           }
                         },
                       )),
@@ -292,19 +293,14 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
           const SizedBox(width: 12),
           Column(
             children: [
-              GestureDetector(
-                onTap: () {
-                  if (!isDefault) {
-                    controller.setActiveDefault(msg.id!);
-                  }
-                },
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: Icon(
-                    isDefault ? Icons.star : Icons.star_border,
-                    color: isDefault ? Colors.orange : Colors.grey.shade400,
-                    size: 24,
-                  ),
+              Transform.scale(
+                scale: 0.8,
+                child: Switch(
+                  value: isDefault,
+                  activeColor: AppColors.primaryColor,
+                  onChanged: (val) {
+                    controller.toggleDefaultStatus(msg);
+                  },
                 ),
               ),
               GestureDetector(
@@ -335,12 +331,14 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
         content: const Text('Are you sure you want to delete this default message?'),
         actions: [
           TextButton(
-            onPressed: () => Get.back(),
+            onPressed: () {
+              if (context.mounted) Navigator.of(context).pop();
+            },
             child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
-              Get.back();
+              if (context.mounted) Navigator.of(context).pop();
               controller.deleteMessage(id);
             },
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
