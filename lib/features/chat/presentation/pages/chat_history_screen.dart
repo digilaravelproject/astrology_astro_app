@@ -11,6 +11,7 @@ import 'package:astro_astrologer/features/call/call_details_screen.dart';
 import 'package:astro_astrologer/features/home/widgets/add_note_bottom_sheet.dart';
 import 'package:astro_astrologer/features/home/widgets/animated_favorite_button.dart';
 import '../../../../../../../../../core/widgets/loyal_badge.dart';
+import '../bindings/chat_binding.dart';
 
 class ChatHistoryScreen extends StatelessWidget {
   final bool showDefaultMessageButton;
@@ -458,7 +459,7 @@ class ChatHistoryScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: CustomButton(
             text: "Create default message",
-            onPressed: () => Get.to(() => const CreateDefaultMessageScreen()),
+            onPressed: () => Get.to(() => const CreateDefaultMessageScreen(), binding: ChatBinding()),
             height: 42,
             backgroundColor: AppColors.primaryColor,
             borderRadius: 10,
