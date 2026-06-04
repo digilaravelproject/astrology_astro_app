@@ -26,7 +26,10 @@ class WalletRepositoryImpl implements IWalletRepository {
     final response = await _apiClient.get(AppUrls.walletWeeklyRankings);
 
     if (response.isSuccess) {
-      return WeeklyRankingData.fromJson(response.body?['data'] ?? {});
+      final body = response.body;
+      // ResponseModel already extracts json['data'] as body, so body IS the data object
+      final dataMap = (body is Map<String, dynamic>) ? body : <String, dynamic>{};
+      return WeeklyRankingData.fromJson(dataMap);
     } else {
       throw Exception(response.message);
     }
