@@ -5,6 +5,11 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_app_bar.dart';
+import '../presentation/bindings/finance_binding.dart';
+import '../presentation/controllers/finance_controller.dart';
+import '../../wallet/presentation/controllers/wallet_controller.dart';
+import '../presentation/screens/bank_accounts_screen.dart';
+import '../domain/models/bank_account_model.dart';
 
 class WithdrawalScreen extends StatefulWidget {
   const WithdrawalScreen({super.key});
@@ -15,7 +20,21 @@ class WithdrawalScreen extends StatefulWidget {
 
 class _WithdrawalScreenState extends State<WithdrawalScreen> {
   final TextEditingController _amountController = TextEditingController();
-  final double _availableBalance = 12450.00;
+  late FinanceController _financeController;
+  late WalletController _walletController;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!Get.isRegistered<FinanceController>()) {
+      FinanceBinding().dependencies();
+    }
+    _financeController = Get.find<FinanceController>();
+    _walletController = Get.find<WalletController>();
+    
+    // Ensure we have latest bank accounts
+    _financeController.getBankAccounts();
+  }
 
   @override
   void dispose() {
@@ -65,7 +84,12 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                     children: [
                       AppText('Available Balance', fontSize: 13, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
                       const SizedBox(height: 4),
-                      AppText('₹$_availableBalance', fontSize: 20, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
+                      Obx(() => AppText(
+                        '₹\${_walletController.summary.value?.totalBalance ?? 0.0}', 
+                        fontSize: 20, 
+                        fontWeight: FontWeight.w800, 
+                        color: const Color(0xFF2E1A47),
+                      )),
                     ],
                   ),
                 ],
@@ -128,78 +152,119 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
             const SizedBox(height: 16),
             
             // Bank Card Preview
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.grey.shade100),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.02),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Row(
+            Obx(() {
+              final defaultBank = _financeController.bankAccounts.firstWhereOrNull((b) => b.isDefault);
+              
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   Container(
-                    padding: const EdgeInsets.all(10),
+                  Container(
+                    padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.blue.shade50,
-                      shape: BoxShape.circle,
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.grey.shade100),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.02),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    child: Icon(Iconsax.bank_copy, color: Colors.blue.shade600, size: 20),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Row(
                       children: [
-                        AppText('HDFC Bank', fontSize: 15, fontWeight: FontWeight.w700, color: const Color(0xFF2E1A47)),
-                        const SizedBox(height: 2),
-                        AppText('**** 4512', fontSize: 12, color: Colors.grey.shade500, fontWeight: FontWeight.w500),
+                         Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.blue.shade50,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(Iconsax.bank_copy, color: Colors.blue.shade600, size: 20),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              AppText(
+                                defaultBank != null ? defaultBank.bankName : 'No Bank Set', 
+                                fontSize: 15, 
+                                fontWeight: FontWeight.w700, 
+                                color: const Color(0xFF2E1A47),
+                              ),
+                              const SizedBox(height: 2),
+                              AppText(
+                                defaultBank != null 
+                                  ? '**** \${defaultBank.accountNumber.substring(defaultBank.accountNumber.length - 4)}' 
+                                  : 'Tap to add an account', 
+                                fontSize: 12, 
+                                color: Colors.grey.shade500, 
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ],
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Get.to(() => const BankAccountsScreen())?.then((_) {
+                              _financeController.getBankAccounts();
+                            });
+                          },
+                          child: AppText(
+                            defaultBank != null ? 'Change' : 'Add', 
+                            fontSize: 13, 
+                            fontWeight: FontWeight.w700, 
+                            color: AppColors.primaryColor,
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                  TextButton(
-                    onPressed: () {},
-                    child: const AppText('Change', fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.primaryColor),
+                  
+                  const SizedBox(height: 48),
+                  
+                  CustomButton(
+                    text: 'Confirm Withdrawal',
+                    onPressed: () {
+                      if (_amountController.text.isEmpty) {
+                         Get.snackbar('Invalid Amount', 'Please enter a valid amount', backgroundColor: Colors.red.shade100, colorText: Colors.red.shade800);
+                         return;
+                      }
+                      if (defaultBank == null) {
+                         Get.snackbar('No Bank', 'Please select or add a bank account', backgroundColor: Colors.red.shade100, colorText: Colors.red.shade800);
+                         return;
+                      }
+
+                      Get.defaultDialog(
+                        title: 'Confirm',
+                        middleText: 'Are you sure you want to withdraw ₹\${_amountController.text} to \${defaultBank.bankName}?',
+                        textConfirm: 'Confirm',
+                        textCancel: 'Cancel',
+                        confirmTextColor: Colors.white,
+                        buttonColor: AppColors.primaryColor,
+                        onConfirm: () async {
+                          Get.back(); // Close dialog
+                          // Optional: show loading indicator
+                          Get.dialog(
+                            const Center(child: CircularProgressIndicator()),
+                            barrierDismissible: false,
+                          );
+                          final amount = double.tryParse(_amountController.text) ?? 0.0;
+                          final success = await _walletController.requestWithdrawal(amount, defaultBank.id);
+                          Get.back(); // close loading dialog
+                          if (success) {
+                            Get.back(); // close withdrawal screen
+                          }
+                        }
+                      );
+                    },
+                    backgroundColor: AppColors.primaryColor,
+                    borderRadius: 100,
                   ),
                 ],
-              ),
-            ),
-            
-            const SizedBox(height: 48),
-            
-            CustomButton(
-              text: 'Confirm Withdrawal',
-              onPressed: () {
-                if (_amountController.text.isNotEmpty) {
-                   Get.defaultDialog(
-                    title: 'Confirm',
-                    middleText: 'Are you sure you want to withdraw ₹${_amountController.text}?',
-                    textConfirm: 'Confirm',
-                    textCancel: 'Cancel',
-                    confirmTextColor: Colors.white,
-                    buttonColor: AppColors.primaryColor,
-                    onConfirm: () {
-                      Get.back();
-                      Get.back();
-                      Get.snackbar(
-                        'Request Sent',
-                        'Your withdrawal request has been submitted!',
-                        backgroundColor: Colors.green,
-                        colorText: Colors.white,
-                      );
-                    }
-                  );
-                }
-              },
-              backgroundColor: AppColors.primaryColor,
-              borderRadius: 100,
-            ),
+              );
+            }),
             
             const SizedBox(height: 20),
             Center(
