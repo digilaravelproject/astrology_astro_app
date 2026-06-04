@@ -6,8 +6,8 @@ import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.da
 import 'package:astro_astrologer/features/chat/presentation/bindings/chat_binding.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-import '../domain/models/astrologer_order_model.dart';
-import '../domain/usecases/get_astrologer_orders_usecase.dart';
+import '../../domain/models/astrologer_order_model.dart';
+import '../../domain/usecases/get_astrologer_orders_usecase.dart';
 
 class OrdersController extends GetxController {
   final GetAstrologerOrdersUseCase _getAstrologerOrdersUseCase;

@@ -11,7 +11,7 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import '../../profile/screens/live_schedule_screen.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../notification/notice_screen.dart';
-import '../../orders/orders_screen.dart';
+import '../../orders/presentation/pages/orders_screen.dart';
 import '../../../routes/app_routes.dart';
 
 class DashboardScreen extends StatefulWidget {
