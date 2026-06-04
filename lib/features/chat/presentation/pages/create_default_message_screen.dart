@@ -245,10 +245,10 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
           ),
         ],
       ),
-      child: Stack(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(right: 30.0), // space for icons
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -289,42 +289,39 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
               ],
             ),
           ),
-          Positioned(
-            right: 0,
-            top: 0,
-            child: Column(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    if (!isDefault) {
-                      controller.setActiveDefault(msg.id!);
-                    }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: Icon(
-                      isDefault ? Icons.star : Icons.star_border,
-                      color: isDefault ? Colors.orange : Colors.grey.shade400,
-                      size: 24,
-                    ),
+          const SizedBox(width: 12),
+          Column(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  if (!isDefault) {
+                    controller.setActiveDefault(msg.id!);
+                  }
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Icon(
+                    isDefault ? Icons.star : Icons.star_border,
+                    color: isDefault ? Colors.orange : Colors.grey.shade400,
+                    size: 24,
                   ),
                 ),
-                GestureDetector(
-                  onTap: () => _showAddEditMessageSheet(messageToEdit: msg),
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0, top: 4.0),
-                    child: Icon(Icons.edit, color: Colors.grey.shade500, size: 20),
-                  ),
+              ),
+              GestureDetector(
+                onTap: () => _showAddEditMessageSheet(messageToEdit: msg),
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0, top: 4.0),
+                  child: Icon(Icons.edit, color: Colors.grey.shade500, size: 20),
                 ),
-                GestureDetector(
-                  onTap: () => _confirmDelete(msg.id!),
-                  child: const Padding(
-                    padding: EdgeInsets.only(top: 4.0),
-                    child: Icon(Icons.delete_outline, color: Color(0xFFE57373), size: 20),
-                  ),
+              ),
+              GestureDetector(
+                onTap: () => _confirmDelete(msg.id!),
+                child: const Padding(
+                  padding: EdgeInsets.only(top: 4.0),
+                  child: Icon(Icons.delete_outline, color: Color(0xFFE57373), size: 20),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ],
       ),
