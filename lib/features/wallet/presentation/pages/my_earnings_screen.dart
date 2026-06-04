@@ -200,7 +200,7 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
 
   Widget _buildWeeklyEarningsCard() {
     return GestureDetector(
-      onTap: () => Get.to(() => const WeeklyRankingScreen()),
+      onTap: () => Get.to(() => WeeklyRankingScreen()),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
