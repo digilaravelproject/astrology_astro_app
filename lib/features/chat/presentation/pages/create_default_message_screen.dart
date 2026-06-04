@@ -167,18 +167,29 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
           return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
         }
 
-        if (controller.messages.isEmpty) {
-          return _buildEmptyState();
-        }
-
-        return ListView.separated(
-          padding: const EdgeInsets.all(24),
-          itemCount: controller.messages.length,
-          separatorBuilder: (context, index) => const SizedBox(height: 16),
-          itemBuilder: (context, index) {
-            final msg = controller.messages[index];
-            return _buildMessageCard(msg);
+        return RefreshIndicator(
+          color: AppColors.primaryColor,
+          onRefresh: () async {
+            await controller.fetchMessages();
           },
+          child: controller.messages.isEmpty
+              ? SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.7,
+                    child: _buildEmptyState(),
+                  ),
+                )
+              : ListView.separated(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(24),
+                  itemCount: controller.messages.length,
+                  separatorBuilder: (context, index) => const SizedBox(height: 16),
+                  itemBuilder: (context, index) {
+                    final msg = controller.messages[index];
+                    return _buildMessageCard(msg);
+                  },
+                ),
         );
       }),
       bottomNavigationBar: Padding(
