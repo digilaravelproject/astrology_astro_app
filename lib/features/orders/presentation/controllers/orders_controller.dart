@@ -34,6 +34,7 @@ class OrdersController extends GetxController {
 
   StreamSubscription? _chatInitiatedSub;
   StreamSubscription? _chatDismissedSub;
+  StreamSubscription? _chatQueueUpdatedSub;
 
   @override
   void onInit() {
@@ -49,12 +50,17 @@ class OrdersController extends GetxController {
     _chatDismissedSub = WebSocketService.chatDismissedSessionId.listen((_) {
       fetchChatOrders(isRefresh: true);
     });
+
+    _chatQueueUpdatedSub = WebSocketService.chatQueueUpdatedEvent.stream.listen((_) {
+      fetchChatOrders(isRefresh: true);
+    });
   }
 
   @override
   void onClose() {
     _chatInitiatedSub?.cancel();
     _chatDismissedSub?.cancel();
+    _chatQueueUpdatedSub?.cancel();
     super.onClose();
   }
 

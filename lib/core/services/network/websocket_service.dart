@@ -36,6 +36,7 @@ class WebSocketService extends GetxService {
   static final RxInt chatEndedSessionId = (-1).obs;
   static final RxInt chatDismissedSessionId = (-1).obs;
   static final StreamController<Map<String, dynamic>> chatInitiatedEvent = StreamController.broadcast();
+  static final StreamController<Map<String, dynamic>> chatQueueUpdatedEvent = StreamController.broadcast();
   static final RxMap<String, dynamic> chatEndedBilling = <String, dynamic>{}.obs;
 
   final String _wsUrl = AppUrls.webSocketUrl;
@@ -164,6 +165,12 @@ class WebSocketService extends GetxService {
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleChatInitiated(data['data']);
+        } else if (event == 'App\\Events\\ChatQueueUpdated') {
+          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          Logger.d('|🔔 WEBSOCKET EVENT: $event');
+          Logger.d('|📦 Data: ${data['data']}');
+          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          chatQueueUpdatedEvent.add(data['data'] ?? {});
         } else if (event == AppUrls.eventMessageStatusUpdated || event == 'App\\Events\\MessageStatusUpdated') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|🔔 WEBSOCKET EVENT: $event');
