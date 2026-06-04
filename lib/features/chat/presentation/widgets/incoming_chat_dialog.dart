@@ -58,6 +58,16 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
 
     // Listen for ChatDismissed — auto-close dialog if session matches
     final sessionId = widget.sessionData['id'];
+    
+    // Check if already dismissed before dialog rendered
+    if (WebSocketService.chatDismissedSessionId.value == sessionId) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (Get.isDialogOpen == true) {
+          Get.back();
+        }
+      });
+    }
+
     _dismissWorker = ever(
       WebSocketService.chatDismissedSessionId,
       (int dismissedId) {

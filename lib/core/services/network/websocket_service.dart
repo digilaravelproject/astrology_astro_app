@@ -35,6 +35,7 @@ class WebSocketService extends GetxService {
   // Signal: when set to a sessionId, that chat session has been ended remotely
   static final RxInt chatEndedSessionId = (-1).obs;
   static final RxInt chatDismissedSessionId = (-1).obs;
+  static final StreamController<Map<String, dynamic>> chatInitiatedEvent = StreamController.broadcast();
   static final RxMap<String, dynamic> chatEndedBilling = <String, dynamic>{}.obs;
 
   final String _wsUrl = AppUrls.webSocketUrl;
@@ -296,6 +297,7 @@ class WebSocketService extends GetxService {
       Logger.d('_handleChatInitiated: session=$session, senderData=$senderData');
 
       if (session != null && senderData != null) {
+        chatInitiatedEvent.add(Map<String, dynamic>.from(session));
         WidgetsBinding.instance.addPostFrameCallback((_) {
           Get.dialog(
             IncomingChatDialog(

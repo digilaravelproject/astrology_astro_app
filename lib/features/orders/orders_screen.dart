@@ -8,11 +8,10 @@ import '../../../core/widgets/custom_button.dart';
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
 import '../../../core/widgets/loyal_badge.dart';
 import 'controllers/orders_controller.dart';
-import 'package:astro_astrologer/features/chat/domain/usecases/get_chat_sessions_usecase.dart';
-import 'package:astro_astrologer/features/chat/domain/repositories/i_chat_repository.dart';
-import 'package:astro_astrologer/features/chat/data/repositories/chat_repository_impl.dart';
-import 'package:astro_astrologer/features/chat/data/datasources/chat_remote_data_source.dart';
-import 'package:astro_astrologer/features/chat/data/datasources/chat_local_data_source.dart';
+import 'package:astro_astrologer/features/orders/domain/usecases/get_astrologer_orders_usecase.dart';
+import 'package:astro_astrologer/features/orders/domain/repositories/i_orders_repository.dart';
+import 'package:astro_astrologer/features/orders/data/repositories/orders_repository_impl.dart';
+import 'domain/models/astrologer_order_model.dart';
 import 'package:intl/intl.dart';
 
 class OrdersScreen extends StatefulWidget {
@@ -30,18 +29,19 @@ class _OrdersScreenState extends State<OrdersScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 2, vsync: this); // Only Chat and Call
 
     if (!Get.isRegistered<OrdersController>()) {
-      if (!Get.isRegistered<IChatRepository>()) {
-         Get.put<IChatRemoteDataSource>(ChatRemoteDataSourceImpl(apiClient: Get.find()));
-         Get.put<IChatLocalDataSource>(ChatLocalDataSourceImpl());
-         Get.put<IChatRepository>(ChatRepositoryImpl(remoteDataSource: Get.find(), localDataSource: Get.find()));
+      if (!Get.isRegistered<IOrdersRepository>()) {
+         Get.put<IOrdersRepository>(OrdersRepositoryImpl(apiClient: Get.find()));
       }
-      if (!Get.isRegistered<GetChatSessionsUseCase>()) {
-        Get.put(GetChatSessionsUseCase(Get.find<IChatRepository>()));
+      if (!Get.isRegistered<GetAstrologerOrdersUseCase>()) {
+        Get.put(GetAstrologerOrdersUseCase(Get.find<IOrdersRepository>()));
       }
-      Get.put(OrdersController(getChatSessionsUseCase: Get.find()));
+      Get.put(OrdersController(
+        getAstrologerOrdersUseCase: Get.find(),
+        apiClient: Get.find(),
+      ));
     }
     _ordersController = Get.find<OrdersController>();
   }
@@ -61,7 +61,13 @@ class _OrdersScreenState extends State<OrdersScreen>
         showLeading: false,
         actions: [
           TextButton.icon(
-            onPressed: () => setState(() {}),
+            onPressed: () {
+              if (_tabController.index == 0) {
+                _ordersController.fetchChatOrders(isRefresh: true);
+              } else {
+                _ordersController.fetchCallOrders(isRefresh: true);
+              }
+            },
             icon: const Icon(Icons.refresh_rounded, color: Colors.black87, size: 18),
             label: const AppText('Refresh', fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black87),
           ),
@@ -75,35 +81,17 @@ class _OrdersScreenState extends State<OrdersScreen>
             width: double.infinity,
             child: TabBar(
               controller: _tabController,
-              isScrollable: true,
+              isScrollable: false,
               dividerColor: Colors.transparent,
               labelColor: Colors.black,
               unselectedLabelColor: Colors.grey,
               indicatorColor: AppColors.primaryColor,
               indicatorSize: TabBarIndicatorSize.tab,
-              labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, fontFamily: 'Poppins'),
-              unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 13, fontFamily: 'Poppins'),
-              tabs: [
-                Tab(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text('WaitList'),
-                      const SizedBox(width: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade200,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const AppText('2', fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black87),
-                      ),
-                    ],
-                  ),
-                ),
-                const Tab(text: 'Chat'),
-                const Tab(text: 'Call'),
-                const Tab(text: 'AstroMall'),
+              labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, fontFamily: 'Poppins'),
+              unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 15, fontFamily: 'Poppins'),
+              tabs: const [
+                Tab(text: 'Chat'),
+                Tab(text: 'Call'),
               ],
             ),
           ),
@@ -111,10 +99,8 @@ class _OrdersScreenState extends State<OrdersScreen>
             child: TabBarView(
               controller: _tabController,
               children: [
-                _buildWaitListTab(),
                 _buildChatTab(),
                 _buildCallTab(),
-                _buildAstroMallTab(),
               ],
             ),
           ),
@@ -123,67 +109,17 @@ class _OrdersScreenState extends State<OrdersScreen>
     );
   }
 
-  // ── Tab content builders ────────────────────────────────────────────────
-
-  Widget _buildWaitListTab() {
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(12, 12, 12, 120),
-      children: [
-        _buildSessionCard(
-          type: 'Repeat (Indian)',
-          status: 'Waiting',
-          statusColor: Colors.orange,
-          sessionId: '#338579629',
-          date: '20 Feb 26, 10:50 AM',
-          details: {
-            'Name': 'Kishore (AT-ZDXL297)',
-            'Type': 'Chat',
-            'Token': '1',
-          },
-          actions: [
-            _outlinedAction('Chat Assistant', Icons.chat_bubble_rounded, Colors.green),
-            const SizedBox(height: 8),
-            _outlinedAction('Start Offline Session', Iconsax.clock_copy, Colors.grey),
-          ],
-        ),
-        const SizedBox(height: 12),
-        _buildSessionCard(
-          type: 'New (Indian)',
-          status: 'Waiting',
-          statusColor: Colors.orange,
-          sessionId: '#338581777',
-          date: '20 Feb 26, 11:11 AM',
-          details: {
-            'Name': 'Rahul (AT-MKK63GE)',
-            'Type': 'Chat',
-            'Token': '1',
-          },
-          actions: [
-            _outlinedAction('Chat Assistant', Icons.chat_bubble_rounded, Colors.green),
-            const SizedBox(height: 8),
-            _outlinedAction('Start Offline Session', Iconsax.clock_copy, Colors.grey),
-          ],
-        ),
-        const SizedBox(height: 16),
-        _buildInfoBanner(
-          'Offline sessions monthly limit: 7/150',
-          'System allows maximum 150 offline sessions a month. If your last 7 days average daily busy time is more than 3 hours, unlimited offline sessions are allowed.',
-        ),
-      ],
-    );
-  }
-
   Widget _buildChatTab() {
     return Obx(() {
-      if (_ordersController.isLoading.value && _ordersController.chatSessions.isEmpty) {
+      if (_ordersController.isLoadingChat.value && _ordersController.chatOrders.isEmpty) {
         return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
       }
 
-      if (_ordersController.error.value.isNotEmpty && _ordersController.chatSessions.isEmpty) {
-        return Center(child: Text("Error: ${_ordersController.error.value}"));
+      if (_ordersController.chatError.value.isNotEmpty && _ordersController.chatOrders.isEmpty) {
+        return Center(child: Text("Error: ${_ordersController.chatError.value}"));
       }
 
-      if (_ordersController.chatSessions.isEmpty) {
+      if (_ordersController.chatOrders.isEmpty) {
         return Center(
           child: AppText(
             "No chat history available.",
@@ -193,43 +129,13 @@ class _OrdersScreenState extends State<OrdersScreen>
       }
 
       return RefreshIndicator(
-        onRefresh: () => _ordersController.fetchChatSessions(isRefresh: true),
+        onRefresh: () => _ordersController.fetchChatOrders(isRefresh: true),
         child: ListView.builder(
           padding: const EdgeInsets.fromLTRB(12, 12, 12, 120),
-          itemCount: _ordersController.chatSessions.length,
+          itemCount: _ordersController.chatOrders.length,
           itemBuilder: (context, index) {
-            final session = _ordersController.chatSessions[index];
-            final isCompleted = session.status == 'completed';
-            final customerName = session.consumer?.name ?? 'User';
-            
-            DateTime? date;
-            try {
-              date = DateTime.parse(session.createdAt);
-            } catch (_) {}
-            
-            final dateStr = date != null ? DateFormat('dd MMM yy, hh:mm a').format(date) : "N/A";
-            final durationMins = (session.durationSeconds / 60).ceil();
-            
-            return _buildSessionCard(
-              type: 'Chat Session',
-              status: session.status.capitalizeFirst ?? session.status,
-              statusColor: isCompleted ? Colors.green : Colors.red,
-              sessionId: '#${session.id}',
-              date: dateStr,
-              earnings: '₹ ${session.totalCost}',
-              details: {
-                'Name': customerName,
-                'Duration': '$durationMins minutes',
-                'Rate': '₹ ${session.ratePerMinute}/min',
-              },
-              actions: isCompleted ? [
-                Row(children: [
-                  Expanded(child: _outlinedAction('Suggest Remedy', Iconsax.health_copy, AppColors.primaryColor)),
-                  const SizedBox(width: 8),
-                  Expanded(child: _outlinedAction('Open Kundli', Iconsax.book_1_copy, AppColors.primaryColor)),
-                ]),
-              ] : [],
-            );
+            final session = _ordersController.chatOrders[index];
+            return _buildOrderCard(session);
           },
         ),
       );
@@ -237,246 +143,103 @@ class _OrdersScreenState extends State<OrdersScreen>
   }
 
   Widget _buildCallTab() {
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(12, 12, 12, 120),
-      children: [
-        _buildSessionCard(
-          type: 'Repeat (Indian)',
-          status: 'Completed',
-          statusColor: Colors.green,
-          sessionId: '#1771487754310752',
-          date: '19 Feb 26 (01:26 – 01:41 PM)',
-          earnings: '₹ 337.5',
-          isLoyal: true,
-          details: {
-            'Name': 'Pooja (AT-VLQM7E)',
-            'Gender': 'Female',
-            'DOB': '15-Apr-1992, 10:35 PM',
-            'Duration': '15 minutes',
-            'Rate': '₹ 22.5/min',
-            'Rating': '⭐⭐⭐⭐☆',
-            'POB': 'Mumbai, Maharashtra',
+    return Obx(() {
+      if (_ordersController.isLoadingCall.value && _ordersController.callOrders.isEmpty) {
+        return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
+      }
+
+      if (_ordersController.callError.value.isNotEmpty && _ordersController.callOrders.isEmpty) {
+        return Center(child: Text("Error: ${_ordersController.callError.value}"));
+      }
+
+      if (_ordersController.callOrders.isEmpty) {
+        return Center(
+          child: AppText(
+            "No call history available.",
+            color: Colors.grey.shade500,
+          ),
+        );
+      }
+
+      return RefreshIndicator(
+        onRefresh: () => _ordersController.fetchCallOrders(isRefresh: true),
+        child: ListView.builder(
+          padding: const EdgeInsets.fromLTRB(12, 12, 12, 120),
+          itemCount: _ordersController.callOrders.length,
+          itemBuilder: (context, index) {
+            final session = _ordersController.callOrders[index];
+            return _buildOrderCard(session);
           },
-          actions: [
-            Row(children: [
-              Expanded(child: _outlinedAction('Suggest Remedy', Iconsax.health_copy, AppColors.primaryColor)),
-              const SizedBox(width: 8),
-              Expanded(child: _outlinedAction('Open Kundli', Iconsax.book_1_copy, AppColors.primaryColor)),
-            ]),
+        ),
+      );
+    });
+  }
+
+  Widget _buildOrderCard(AstrologerOrderModel session) {
+    final isCompleted = session.status == 'completed';
+    final isPending = session.status == 'waiting' || session.status == 'pending' || session.status == 'initiated';
+    final customerName = session.userName;
+    
+    DateTime? date;
+    try {
+      if (session.requestedAt != null) {
+        date = DateTime.parse(session.requestedAt!);
+      }
+    } catch (_) {}
+    
+    final dateStr = date != null ? DateFormat('dd MMM yy, hh:mm a').format(date.toLocal()) : "N/A";
+    final durationMins = (session.durationSeconds / 60).ceil();
+
+    List<Widget> actionButtons = [];
+
+    if (isPending) {
+      actionButtons = [
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton(
+                onPressed: () => _ordersController.rejectChatOrder(session),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  side: const BorderSide(color: Colors.red, width: 1.5),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                child: const AppText('Reject', color: Colors.red, fontWeight: FontWeight.bold),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () => _ordersController.acceptChatOrder(session),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2DB84B),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  elevation: 0,
+                ),
+                child: const AppText('Accept', color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            ),
           ],
-        ),
-      ],
-    );
-  }
+        )
+      ];
+    } else if (isCompleted) {
+      actionButtons = [
+        Row(children: [
+          Expanded(child: _outlinedAction('Suggest Remedy', Iconsax.health_copy, AppColors.primaryColor)),
+          const SizedBox(width: 8),
+          Expanded(child: _outlinedAction('Open Kundli', Iconsax.book_1_copy, AppColors.primaryColor)),
+        ]),
+      ];
+    }
 
-  Widget _buildAstroMallTab() {
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(12, 12, 12, 120),
-      children: [
-        _buildAstroMallCard(
-          orderId: '1752982547415',
-          date: '20 Jul 25, 09:05 AM',
-          status: 'Closed',
-          statusColor: Colors.green,
-          customerName: 'Kartikee (AT-GG4V2W8)',
-          productName: 'Evil Eye Protection Bracelet',
-          quantity: 1,
-          earnings: '₹ 116.31',
-        ),
-      ],
-    );
-  }
-
-  // ── Reusable card widgets ────────────────────────────────────────────────
-
-  Widget _buildSessionCard({
-    required String type,
-    required String status,
-    required Color statusColor,
-    required String sessionId,
-    required String date,
-    String? earnings,
-    bool isLoyal = false,
-    required Map<String, String> details,
-    List<Widget> actions = const [],
-  }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      child: Stack(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey.shade200),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.02),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header row
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: AppText(
-                      type,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.lightBlue.shade400,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Flexible(
-                        child: AppText(
-                          status,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: statusColor,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      if (status == 'Completed') ...[
-                        const SizedBox(width: 4),
-                        Icon(Icons.check_circle, color: statusColor, size: 16),
-                      ],
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              
-              // Astrotalk and Earnings row
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Colors.orange.shade300, Colors.deepOrange.shade400],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.wb_sunny_rounded, color: Colors.white, size: 20),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const AppText('Astrotalk', fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
-                        const SizedBox(height: 2),
-                        AppText(
-                          sessionId,
-                          fontSize: 13,
-                          color: Colors.grey.shade500,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ],
-                    ),
-                  ),
-                  if (earnings != null)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        AppText(earnings, fontSize: 18, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
-                        const AppText('Earnings', fontSize: 10, color: Colors.grey),
-                      ]
-                    )
-                  else 
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Icon(Iconsax.document_copy, size: 16, color: Colors.grey.shade600),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Icon(Icons.more_vert, size: 16, color: Colors.grey.shade600),
-                        ),
-                      ],
-                    ),
-                ],
-              ),
-              
-              const SizedBox(height: 16),
-              Container(height: 1, color: Colors.grey.shade100),
-              const SizedBox(height: 16),
-              
-              // Date
-              AppText(date, fontSize: 13, fontWeight: FontWeight.w700, color: Colors.black87),
-              const SizedBox(height: 12),
-              
-              // Details
-              ...details.entries.map((e) => Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(width: 80, child: AppText(e.key, fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black87)),
-                    const AppText(':  ', fontWeight: FontWeight.bold),
-                    Expanded(child: AppText(e.value, fontSize: 13, color: Colors.grey.shade700)),
-                  ],
-                ),
-              )),
-              
-              if (actions.isNotEmpty) ...[
-                const SizedBox(height: 16),
-                const Divider(height: 1, color: Color(0xFFEEEEEE)),
-                const SizedBox(height: 16),
-                ...actions,
-              ],
-            ],
-          ),
-        ),
-        if (isLoyal) LoyalBadge.positioned(top: 0, left: 0),
-      ],
-    ),
-  );
-}
-
-  Widget _buildAstroMallCard({
-    required String orderId,
-    required String date,
-    required String status,
-    required Color statusColor,
-    required String customerName,
-    required String productName,
-    required int quantity,
-    required String earnings,
-  }) {
-    return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: isPending ? Colors.orange.shade300 : Colors.grey.shade200, width: isPending ? 1.5 : 1.0),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.02),
@@ -491,71 +254,77 @@ class _OrdersScreenState extends State<OrdersScreen>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              AppText(
+                session.requestType.capitalizeFirst ?? 'Chat',
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: Colors.lightBlue.shade400,
+              ),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  AppText(status, fontSize: 13, fontWeight: FontWeight.w700, color: statusColor),
-                  const SizedBox(width: 4),
-                  Icon(Icons.check_circle, color: statusColor, size: 14),
+                  AppText(
+                    session.status.capitalizeFirst ?? session.status,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: isPending ? Colors.orange : (isCompleted ? Colors.green : Colors.red),
+                  ),
+                  if (isCompleted) ...[
+                    const SizedBox(width: 4),
+                    const Icon(Icons.check_circle, color: Colors.green, size: 16),
+                  ],
                 ],
-              ),
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(Iconsax.receipt_2_copy, size: 16, color: Colors.grey.shade600),
               ),
             ],
           ),
-          
           const SizedBox(height: 16),
-          Container(height: 1, color: Colors.grey.shade100),
-          const SizedBox(height: 16),
-          
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              CircleAvatar(
+                radius: 20,
+                backgroundImage: session.userProfileImage != null ? NetworkImage(session.userProfileImage!) : null,
+                backgroundColor: AppColors.primaryColor.withOpacity(0.2),
+                child: session.userProfileImage == null 
+                  ? AppText(customerName.isNotEmpty ? customerName[0].toUpperCase() : 'U', fontWeight: FontWeight.bold, color: AppColors.primaryColor)
+                  : null,
+              ),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AppText('Order: $orderId', fontSize: 13, fontWeight: FontWeight.w700, color: Colors.black87),
+                    AppText(customerName, fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
                     const SizedBox(height: 2),
-                    AppText(date, fontSize: 12, color: Colors.grey.shade500),
+                    AppText('#${session.sessionId}', fontSize: 13, color: Colors.grey.shade500),
                   ],
                 ),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  AppText(earnings, fontSize: 18, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
-                  const AppText('Your Earnings', fontSize: 10, color: Colors.grey),
-                ],
-              ),
+              if (isCompleted)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    AppText('₹ ${session.amount}', fontSize: 18, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
+                    const AppText('Earnings', fontSize: 10, color: Colors.grey),
+                  ]
+                )
             ],
           ),
-          
           const SizedBox(height: 16),
-          
-          _detailRow('Name', customerName),
-          _detailRow('Product', productName),
-          _detailRow('Quantity', quantity.toString()),
-          
+          Container(height: 1, color: Colors.grey.shade100),
           const SizedBox(height: 16),
-          const Divider(height: 1, color: Color(0xFFEEEEEE)),
-          const SizedBox(height: 16),
+          AppText(dateStr, fontSize: 13, fontWeight: FontWeight.w700, color: Colors.black87),
+          const SizedBox(height: 12),
+          _detailRow('Duration', '$durationMins minutes'),
+          _detailRow('Rate', '₹ ${session.ratePerMinute}/min'),
+          if (session.queuePosition != null && isPending)
+            _detailRow('WaitList #', '${session.queuePosition}'),
           
-          OutlinedButton(
-            onPressed: () {},
-            style: OutlinedButton.styleFrom(
-              side: BorderSide(color: AppColors.primaryColor.withOpacity(0.5)),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              minimumSize: const Size(double.infinity, 44),
-            ),
-            child: const AppText('Call with User', fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.primaryColor),
-          ),
+          if (actionButtons.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            const Divider(height: 1, color: Color(0xFFEEEEEE)),
+            const SizedBox(height: 16),
+            ...actionButtons,
+          ],
         ],
       ),
     );
@@ -565,9 +334,9 @@ class _OrdersScreenState extends State<OrdersScreen>
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        SizedBox(width: 70, child: AppText(label, fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black87)),
+        SizedBox(width: 80, child: AppText(label, fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black87)),
         const AppText(':  ', fontWeight: FontWeight.bold),
-        Expanded(child: AppText(value, fontSize: 12, color: Colors.grey.shade700)),
+        Expanded(child: AppText(value, fontSize: 13, color: Colors.grey.shade700)),
       ]),
     );
   }
@@ -584,26 +353,6 @@ class _OrdersScreenState extends State<OrdersScreen>
         minimumSize: const Size(0, 38),
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
-    );
-  }
-
-  Widget _buildInfoBanner(String title, String message) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.lightPink,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.softPink),
-      ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          Icon(Iconsax.info_circle_copy, size: 16, color: AppColors.primaryColor),
-          const SizedBox(width: 8),
-          Expanded(child: AppText(title, fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.primaryColor)),
-        ]),
-        const SizedBox(height: 6),
-        AppText(message, fontSize: 11, color: Colors.black54, height: 1.5),
-      ]),
     );
   }
 }
