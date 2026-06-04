@@ -1,4 +1,4 @@
-import '../../../core/constants/app_urls.dart';
+import '../../../../core/constants/app_urls.dart';
 
 class AstrologerOrderModel {
   final int sessionId;
