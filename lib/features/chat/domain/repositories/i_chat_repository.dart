@@ -23,4 +23,12 @@ abstract class IChatRepository {
   Future<void> markMessagesRead(int sessionId);
   Future<ChatSession?> endChatSession(int sessionId);
   Future<ChatSessionListResponse> getChatSessions({int page = 1});
+
+  // Default Messages
+  Future<List<dynamic>> getAllDefaultMessages();
+  Future<dynamic> getActiveDefaultMessage();
+  Future<dynamic> createDefaultMessage({required String title, required String content, required bool isDefault});
+  Future<dynamic> updateDefaultMessage({required int id, required String title, required String content, required bool isDefault});
+  Future<bool> setDefaultMessageActive(int id);
+  Future<bool> deleteDefaultMessage(int id);
 }

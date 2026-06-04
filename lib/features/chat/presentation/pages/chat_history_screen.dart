@@ -5,7 +5,7 @@ import '../../../../../../../../../core/theme/app_colors.dart';
 import '../../../../../../../../../core/widgets/app_text.dart';
 import '../../../../../../../../../core/widgets/custom_app_bar.dart';
 import '../../../../../../../../../core/widgets/custom_button.dart';
-// import 'create_default_message_screen.dart';
+import 'create_default_message_screen.dart';
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
 import 'package:astro_astrologer/features/call/call_details_screen.dart';
 import 'package:astro_astrologer/features/home/widgets/add_note_bottom_sheet.dart';
@@ -458,8 +458,7 @@ class ChatHistoryScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: CustomButton(
             text: "Create default message",
-            // onPressed: () => Get.to(() => const CreateDefaultMessageScreen()),
-            onPressed: () {}, // TODO: CreateDefaultMessageScreen is incomplete
+            onPressed: () => Get.to(() => const CreateDefaultMessageScreen()),
             height: 42,
             backgroundColor: AppColors.primaryColor,
             borderRadius: 10,

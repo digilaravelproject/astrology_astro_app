@@ -6,7 +6,8 @@ import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import '../../../core/widgets/custom_button.dart';
 import 'controllers/default_message_controller.dart';
-import 'models/default_message_model.dart';
+import 'package:astro_astrologer/features/chat/data/models/default_message_model.dart';
+import 'package:astro_astrologer/features/chat/domain/repositories/i_chat_repository.dart';
 
 class CreateDefaultMessageScreen extends StatefulWidget {
   const CreateDefaultMessageScreen({super.key});

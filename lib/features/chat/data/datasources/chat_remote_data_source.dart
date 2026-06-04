@@ -18,6 +18,14 @@ abstract class IChatRemoteDataSource {
   Future<ResponseModel> markMessagesRead(int sessionId);
   Future<ResponseModel> endChatSession(int sessionId);
   Future<ResponseModel> getChatSessions(int page);
+
+  // Default Messages
+  Future<ResponseModel> getAllDefaultMessages();
+  Future<ResponseModel> getActiveDefaultMessage();
+  Future<ResponseModel> createDefaultMessage(String title, String content, bool isDefault);
+  Future<ResponseModel> updateDefaultMessage(int id, String title, String content, bool isDefault);
+  Future<ResponseModel> setDefaultMessageActive(int id);
+  Future<ResponseModel> deleteDefaultMessage(int id);
 }
 
 class ChatRemoteDataSourceImpl implements IChatRemoteDataSource {
@@ -115,5 +123,43 @@ class ChatRemoteDataSourceImpl implements IChatRemoteDataSource {
       handleError: true,
       showToaster: false,
     );
+  }
+
+  @override
+  Future<ResponseModel> getAllDefaultMessages() async {
+    return await _apiClient.get(AppUrls.defaultMessages);
+  }
+
+  @override
+  Future<ResponseModel> getActiveDefaultMessage() async {
+    return await _apiClient.get(AppUrls.activeDefaultMessage);
+  }
+
+  @override
+  Future<ResponseModel> createDefaultMessage(String title, String content, bool isDefault) async {
+    return await _apiClient.post(AppUrls.defaultMessages, data: {
+      'title': title,
+      'content': content,
+      'is_default': isDefault,
+    });
+  }
+
+  @override
+  Future<ResponseModel> updateDefaultMessage(int id, String title, String content, bool isDefault) async {
+    return await _apiClient.put(AppUrls.defaultMessageUpdate(id), data: {
+      'title': title,
+      'content': content,
+      'is_default': isDefault,
+    });
+  }
+
+  @override
+  Future<ResponseModel> setDefaultMessageActive(int id) async {
+    return await _apiClient.post(AppUrls.setDefaultMessageActive(id), data: {});
+  }
+
+  @override
+  Future<ResponseModel> deleteDefaultMessage(int id) async {
+    return await _apiClient.delete(AppUrls.defaultMessageDelete(id));
   }
 }
