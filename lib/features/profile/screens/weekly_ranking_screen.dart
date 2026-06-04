@@ -127,25 +127,37 @@ class WeeklyRankingScreen extends StatelessWidget {
         .join(' ');
   }
 
-  Widget _buildAvatar(WeeklyRankingModel astrologer) {
-    final rawPhoto = astrologer.profilePhoto;
+  Widget _buildAvatar({required String name, required String? rawPhoto, double radius = 20}) {
     final photoUrl = rawPhoto != null && rawPhoto.isNotEmpty
         ? (rawPhoto.startsWith('http') ? rawPhoto : '${AppUrls.baseImageUrl}$rawPhoto')
         : null;
-    final initials = astrologer.name.isNotEmpty ? astrologer.name[0].toUpperCase() : '?';
+    final initials = name.isNotEmpty ? name[0].toUpperCase() : '?';
+
+    Widget letterWidget = AppText(
+      initials,
+      fontSize: radius * 0.8,
+      fontWeight: FontWeight.bold,
+      color: AppColors.primaryColor,
+    );
 
     return CircleAvatar(
-      radius: 20,
+      radius: radius,
       backgroundColor: AppColors.primaryColor.withValues(alpha: 0.15),
-      backgroundImage: photoUrl != null ? NetworkImage(photoUrl) : null,
-      child: photoUrl == null
-          ? AppText(
-              initials,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: AppColors.primaryColor,
+      child: photoUrl != null
+          ? ClipOval(
+              child: Image.network(
+                photoUrl,
+                width: radius * 2,
+                height: radius * 2,
+                fit: BoxFit.cover,
+                // Image load fail ho to letter dikhao
+                errorBuilder: (_, __, ___) => letterWidget,
+                // Load hone tak bhi letter dikhao
+                loadingBuilder: (_, child, progress) =>
+                    progress == null ? child : letterWidget,
+              ),
             )
-          : null,
+          : letterWidget,
     );
   }
 
@@ -186,7 +198,7 @@ class WeeklyRankingScreen extends StatelessWidget {
           const SizedBox(width: 10),
 
           // Avatar
-          _buildAvatar(astrologer),
+          _buildAvatar(name: astrologer.name, rawPhoto: astrologer.profilePhoto),
           const SizedBox(width: 10),
 
           // Name
@@ -229,9 +241,6 @@ class WeeklyRankingScreen extends StatelessWidget {
     final user = authController.currentUser.value;
     final name = user?.name ?? 'My Profile';
     final rawPhoto = user?.astrologer?.profilePhoto ?? user?.profilePhoto;
-    final photoUrl = rawPhoto != null
-        ? (rawPhoto.startsWith('http') ? rawPhoto : '${AppUrls.baseImageUrl}$rawPhoto')
-        : null;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -259,14 +268,7 @@ class WeeklyRankingScreen extends StatelessWidget {
             const SizedBox(height: 12),
             Row(
               children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundColor: Colors.grey.shade200,
-                  backgroundImage: photoUrl != null ? NetworkImage(photoUrl) : null,
-                  child: photoUrl == null
-                      ? const Icon(Icons.person, color: Colors.grey)
-                      : null,
-                ),
+                _buildAvatar(name: name, rawPhoto: rawPhoto),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
