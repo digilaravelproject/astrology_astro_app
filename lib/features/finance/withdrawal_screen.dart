@@ -5,11 +5,11 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_app_bar.dart';
-import '../presentation/bindings/finance_binding.dart';
-import '../presentation/controllers/finance_controller.dart';
-import '../../wallet/presentation/controllers/wallet_controller.dart';
-import '../presentation/screens/bank_accounts_screen.dart';
-import '../domain/models/bank_account_model.dart';
+import 'presentation/bindings/finance_binding.dart';
+import 'presentation/controllers/finance_controller.dart';
+import '../wallet/presentation/controllers/wallet_controller.dart';
+import 'presentation/screens/bank_accounts_screen.dart';
+import 'domain/models/bank_account_model.dart';
 
 class WithdrawalScreen extends StatefulWidget {
   const WithdrawalScreen({super.key});
@@ -207,7 +207,7 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                         ),
                         TextButton(
                           onPressed: () {
-                            Get.to(() => const BankAccountsScreen())?.then((_) {
+                            Get.to(() => BankAccountsScreen())?.then((_) {
                               _financeController.getBankAccounts();
                             });
                           },
