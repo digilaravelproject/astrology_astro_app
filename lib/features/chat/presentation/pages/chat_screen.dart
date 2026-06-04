@@ -155,11 +155,22 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             // Timer / Status Bar
             Obx(() {
               final seconds = _controller.elapsedSeconds.value;
-              final status = _controller.status.value;
-              final isEnded = status == 'ended';
+              final status = _controller.status.value.toLowerCase();
+              final isEnded = status == 'ended' || status == 'completed' || status == 'cancelled' || status == 'rejected';
               final isInitiated = status == 'initiated';
 
               if (isInitiated) return const SizedBox.shrink();
+
+              String statusText = "Chat has ended";
+              if (status == 'ongoing') {
+                statusText = "Chat in progress • ${_formatDuration(seconds)} mins";
+              } else if (status == 'cancelled') {
+                statusText = "Chat Cancelled";
+              } else if (status == 'rejected') {
+                statusText = "Chat Rejected";
+              } else if (status == 'completed') {
+                statusText = "Chat Completed";
+              }
 
               return Container(
                 width: double.infinity,
@@ -167,9 +178,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 color: isEnded ? Colors.grey.shade300 : AppColors.lightPink.withOpacity(0.3),
                 child: Center(
                   child: AppText(
-                    isEnded
-                        ? "Chat has ended"
-                        : "Chat in progress • ${_formatDuration(seconds)} mins",
+                    statusText,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: isEnded ? Colors.black54 : AppColors.deepPink,
@@ -324,8 +333,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
             // Input Area
             Obx(() {
-              final isEnded = _controller.status.value == 'ended';
-              final isInitiated = _controller.status.value == 'initiated';
+              final status = _controller.status.value.toLowerCase();
+              final isEnded = status == 'ended' || status == 'completed' || status == 'cancelled' || status == 'rejected';
+              final isInitiated = status == 'initiated';
               if (isEnded || isInitiated) return const SizedBox.shrink();
 
               return Container(
