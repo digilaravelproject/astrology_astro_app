@@ -63,7 +63,7 @@ class DashboardController extends GetxController {
         final session = response.body['data'];
         final sessionId = session['id'];
         final status = session['status'];
-        final startedAt = session['accepted_at'] ?? session['created_at'];
+        final startedAt = session['started_at'] ?? session['accepted_at'] ?? session['created_at'];
         // For astrologer app, other person is consumer
         final name = session['consumer']?['name'] ?? 'User';
         
