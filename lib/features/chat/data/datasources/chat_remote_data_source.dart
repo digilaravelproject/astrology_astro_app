@@ -17,6 +17,7 @@ abstract class IChatRemoteDataSource {
   });
   Future<ResponseModel> markMessagesRead(int sessionId);
   Future<ResponseModel> endChatSession(int sessionId);
+  Future<ResponseModel> getChatSessions(int page);
 }
 
 class ChatRemoteDataSourceImpl implements IChatRemoteDataSource {
@@ -103,6 +104,15 @@ class ChatRemoteDataSourceImpl implements IChatRemoteDataSource {
       AppUrls.endChatSession(sessionId),
       data: {},
       handleError: false,
+      showToaster: false,
+    );
+  }
+
+  @override
+  Future<ResponseModel> getChatSessions(int page) async {
+    return await _apiClient.get(
+      '${AppUrls.astrologerChatSessions}?page=$page',
+      handleError: true,
       showToaster: false,
     );
   }

@@ -90,104 +90,106 @@ class _OverlayChatBubbleWidgetState extends State<OverlayChatBubbleWidget> {
            // When tapped, we send a message back to main app to open
            FlutterOverlayWindow.shareData({'action': 'tap'});
         },
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Container(
-              width: 65,
-              height: 65,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white,
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 8,
-                    offset: Offset(0, 4),
+        child: Center(
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: 65,
+                height: 65,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                  border: Border.all(
+                    color: const Color(0xFFFF6F00), // Saffron border
+                    width: 2.5,
                   ),
-                ],
-                border: Border.all(
-                  color: const Color(0xFFFF6F00), // Saffron border
-                  width: 2.5,
+                ),
+                child: ClipOval(
+                  child: _imageUrl.isNotEmpty
+                      ? Image.network(
+                          _imageUrl.startsWith('http')
+                              ? _imageUrl
+                              : 'https://suryapathkundli.com/storage/app/public/$_imageUrl',
+                          fit: BoxFit.cover,
+                          errorBuilder: (c, e, s) => _buildInitials(),
+                        )
+                      : _buildInitials(),
                 ),
               ),
-              child: ClipOval(
-                child: _imageUrl.isNotEmpty
-                    ? Image.network(
-                        _imageUrl.startsWith('http')
-                            ? _imageUrl
-                            : 'https://suryapathkundli.com/storage/app/public/$_imageUrl',
-                        fit: BoxFit.cover,
-                        errorBuilder: (c, e, s) => _buildInitials(),
-                      )
-                    : _buildInitials(),
-              ),
-            ),
-            
-            // Timing overlay
-            Positioned(
-              bottom: -4,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF2E1A47), // Deep Violet
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Builder(builder: (context) {
-                    if (_status == 'initiated' || _status == 'ringing') {
-                      return const Text(
-                        'Waiting',
-                        style: TextStyle(
+              
+              // Timing overlay
+              Positioned(
+                bottom: -12, // adjust position slightly more downwards so it is clearly at the bottom center
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2E1A47), // Deep Violet
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Builder(builder: (context) {
+                      if (_status == 'initiated' || _status == 'ringing') {
+                        return const Text(
+                          'Waiting',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      }
+                      return Text(
+                        _formatDuration(_elapsedSeconds),
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 9,
                           fontWeight: FontWeight.bold,
                         ),
                       );
-                    }
-                    return Text(
-                      _formatDuration(_elapsedSeconds),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 9,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    );
-                  }),
+                    }),
+                  ),
                 ),
               ),
-            ),
-            
-            // Unread count badge
-            if (_unreadCount > 0)
-              Positioned(
-                top: -2,
-                right: -2,
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
-                    shape: BoxShape.circle,
-                  ),
-                  constraints: const BoxConstraints(
-                    minWidth: 18,
-                    minHeight: 18,
-                  ),
-                  child: Center(
-                    child: Text(
-                      '$_unreadCount',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 9,
-                        fontWeight: FontWeight.bold,
+              
+              // Unread count badge
+              if (_unreadCount > 0)
+                Positioned(
+                  top: -2,
+                  right: -2,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 18,
+                      minHeight: 18,
+                    ),
+                    child: Center(
+                      child: Text(
+                        '$_unreadCount',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );

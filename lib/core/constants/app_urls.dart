@@ -89,6 +89,7 @@ class AppUrls {
   static String markChatRead(int sessionId) => "/chat/$sessionId/read";
   static const String uploadAttachment = "/chat/upload-attachment";
   static String getChatMessages(int sessionId) => "/chat/$sessionId/messages";
+  static const String astrologerChatSessions = "/chat/sessions/astrologer";
 
   // WebSocket / Pusher Events
   static const String pusherConnectionEstablished = 'pusher:connection_established';

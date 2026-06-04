@@ -23,8 +23,9 @@ import 'package:astro_astrologer/features/chat/presentation/bindings/chat_bindin
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/features/auth/controllers/auth_controller.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-class ChatController extends GetxController {
+class ChatController extends GetxController with WidgetsBindingObserver {
   final LoadChatHistoryUseCase _loadChatHistoryUseCase;
   final SendTextMessageUseCase _sendTextMessageUseCase;
   final SendAttachmentUseCase _sendAttachmentUseCase;
@@ -63,6 +64,24 @@ class ChatController extends GetxController {
   StreamSubscription? _statusUpdateSub;
 
   int? get sessionId => _sessionId;
+
+  @override
+  void onInit() {
+    super.onInit();
+    WidgetsBinding.instance.addObserver(this);
+    LocalNotificationService.initialize();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      if (status.value != 'ended' && _sessionId != null && _userName != null) {
+        minimizeToBubble(Get.context!, _userName!, "", shouldPop: false);
+      }
+    } else if (state == AppLifecycleState.resumed) {
+      FloatingChatBubble.dismiss();
+    }
+  }
 
   void initSession({
     required int sessionId,
@@ -521,6 +540,7 @@ class ChatController extends GetxController {
 
   @override
   void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel();
     _msgSub?.cancel();
     _endSub?.cancel();

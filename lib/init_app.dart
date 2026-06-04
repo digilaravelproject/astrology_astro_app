@@ -6,6 +6,7 @@ import 'features/language/controllers/localization_controller.dart';
 import 'core/theme/theme_controller.dart';
 import 'core/services/storage/shared_prefs.dart';
 import 'translations/translations.dart';
+import 'core/services/local_notification_service.dart';
 
 Future<void> initApp() async {
   // Set environment configuration
@@ -20,6 +21,9 @@ Future<void> initApp() async {
 
   // Initialize shared preferences
   await SharedPrefs.init();
+
+  // Initialize notifications
+  await LocalNotificationService.initialize();
 
   // Register controllers
   // Get.lazyPut(() => ThemeController());

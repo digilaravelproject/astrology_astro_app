@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/services/network/websocket_service.dart';
@@ -14,6 +15,9 @@ class FloatingChatBubble {
 
   static bool _isActive = false;
   static bool get isActive => _isActive;
+  
+  static StreamSubscription? _overlaySub;
+  static const MethodChannel _appRetainChannel = MethodChannel('com.suryapath.astrologer/app_retain');
 
   static Future<void> show({
     required BuildContext context,
@@ -53,9 +57,9 @@ class FloatingChatBubble {
           overlayContent: "Ongoing chat",
           flag: OverlayFlag.defaultFlag,
           visibility: NotificationVisibility.visibilityPublic,
-          positionGravity: PositionGravity.auto,
-          height: 250,
-          width: 250,
+          positionGravity: PositionGravity.none,
+          height: 260,
+          width: 260,
         );
         
         await FlutterOverlayWindow.shareData({
@@ -69,8 +73,14 @@ class FloatingChatBubble {
         });
 
         // Listen for tap events from overlay
-        FlutterOverlayWindow.overlayListener.listen((event) {
+        _overlaySub?.cancel();
+        _overlaySub = FlutterOverlayWindow.overlayListener.listen((event) async {
           if (event != null && event is Map && event['action'] == 'tap') {
+            try {
+              await _appRetainChannel.invokeMethod('bringToForeground');
+            } catch (e) {
+              debugPrint("Error bringing app to foreground: $e");
+            }
             onTapCallback?.call();
           }
         });
@@ -85,6 +95,8 @@ class FloatingChatBubble {
     sessionId = null;
     onTapCallback = null;
     unreadCount.value = 0;
+    _overlaySub?.cancel();
+    _overlaySub = null;
     try {
       if (await FlutterOverlayWindow.isActive()) {
         await FlutterOverlayWindow.closeOverlay();

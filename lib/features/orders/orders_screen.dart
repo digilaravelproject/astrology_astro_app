@@ -7,6 +7,13 @@ import '../../../core/widgets/custom_app_bar.dart';
 import '../../../core/widgets/custom_button.dart';
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
 import '../../../core/widgets/loyal_badge.dart';
+import 'controllers/orders_controller.dart';
+import 'package:astro_astrologer/features/chat/domain/usecases/get_chat_sessions_usecase.dart';
+import 'package:astro_astrologer/features/chat/domain/repositories/i_chat_repository.dart';
+import 'package:astro_astrologer/features/chat/data/repositories/chat_repository_impl.dart';
+import 'package:astro_astrologer/features/chat/data/datasources/chat_remote_data_source.dart';
+import 'package:astro_astrologer/features/chat/data/datasources/chat_local_data_source.dart';
+import 'package:intl/intl.dart';
 
 class OrdersScreen extends StatefulWidget {
   const OrdersScreen({super.key});
@@ -18,11 +25,25 @@ class OrdersScreen extends StatefulWidget {
 class _OrdersScreenState extends State<OrdersScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late final OrdersController _ordersController;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
+
+    if (!Get.isRegistered<OrdersController>()) {
+      if (!Get.isRegistered<IChatRepository>()) {
+         Get.put<IChatRemoteDataSource>(ChatRemoteDataSourceImpl(apiClient: Get.find()));
+         Get.put<IChatLocalDataSource>(ChatLocalDataSourceImpl());
+         Get.put<IChatRepository>(ChatRepositoryImpl(remoteDataSource: Get.find(), localDataSource: Get.find()));
+      }
+      if (!Get.isRegistered<GetChatSessionsUseCase>()) {
+        Get.put(GetChatSessionsUseCase(Get.find<IChatRepository>()));
+      }
+      Get.put(OrdersController(getChatSessionsUseCase: Get.find()));
+    }
+    _ordersController = Get.find<OrdersController>();
   }
 
   @override
@@ -153,48 +174,66 @@ class _OrdersScreenState extends State<OrdersScreen>
   }
 
   Widget _buildChatTab() {
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(12, 12, 12, 120),
-      children: [
-        _buildSessionCard(
-          type: 'Repeat (Indian)',
-          status: 'Completed',
-          statusColor: Colors.green,
-          sessionId: '#1771563549910',
-          date: '20 Feb 26, 10:29 – 10:41 AM',
-          earnings: '₹ 129.0',
-          isLoyal: true,
-          details: {
-            'Name': 'Kishore (AT-ZDXL297)',
-            'DOB': '21-Aug-1976, 07:00 AM',
-            'Duration': '12 minutes',
-            'Rate': '₹ 11.8/min',
-            'POB': 'Kolhapur, Maharashtra',
+    return Obx(() {
+      if (_ordersController.isLoading.value && _ordersController.chatSessions.isEmpty) {
+        return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
+      }
+
+      if (_ordersController.error.value.isNotEmpty && _ordersController.chatSessions.isEmpty) {
+        return Center(child: Text("Error: ${_ordersController.error.value}"));
+      }
+
+      if (_ordersController.chatSessions.isEmpty) {
+        return Center(
+          child: AppText(
+            "No chat history available.",
+            color: Colors.grey.shade500,
+          ),
+        );
+      }
+
+      return RefreshIndicator(
+        onRefresh: () => _ordersController.fetchChatSessions(isRefresh: true),
+        child: ListView.builder(
+          padding: const EdgeInsets.fromLTRB(12, 12, 12, 120),
+          itemCount: _ordersController.chatSessions.length,
+          itemBuilder: (context, index) {
+            final session = _ordersController.chatSessions[index];
+            final isCompleted = session.status == 'completed';
+            final customerName = session.consumer?.name ?? 'User';
+            
+            DateTime? date;
+            try {
+              date = DateTime.parse(session.createdAt);
+            } catch (_) {}
+            
+            final dateStr = date != null ? DateFormat('dd MMM yy, hh:mm a').format(date) : "N/A";
+            final durationMins = (session.durationSeconds / 60).ceil();
+            
+            return _buildSessionCard(
+              type: 'Chat Session',
+              status: session.status.capitalizeFirst ?? session.status,
+              statusColor: isCompleted ? Colors.green : Colors.red,
+              sessionId: '#${session.id}',
+              date: dateStr,
+              earnings: '₹ ${session.totalCost}',
+              details: {
+                'Name': customerName,
+                'Duration': '$durationMins minutes',
+                'Rate': '₹ ${session.ratePerMinute}/min',
+              },
+              actions: isCompleted ? [
+                Row(children: [
+                  Expanded(child: _outlinedAction('Suggest Remedy', Iconsax.health_copy, AppColors.primaryColor)),
+                  const SizedBox(width: 8),
+                  Expanded(child: _outlinedAction('Open Kundli', Iconsax.book_1_copy, AppColors.primaryColor)),
+                ]),
+              ] : [],
+            );
           },
-          actions: [
-            Row(children: [
-              Expanded(child: _outlinedAction('Suggest Remedy', Iconsax.health_copy, AppColors.primaryColor)),
-              const SizedBox(width: 8),
-              Expanded(child: _outlinedAction('Open Kundli', Iconsax.book_1_copy, AppColors.primaryColor)),
-            ]),
-          ],
         ),
-        const SizedBox(height: 12),
-        _buildSessionCard(
-          type: 'Repeat (Indian)',
-          status: 'Cancelled',
-          statusColor: Colors.red,
-          sessionId: '#1771561025979',
-          date: '20 Feb 26, 09:47 AM',
-          earnings: '₹ 0.0',
-          details: {
-            'Name': 'Kishore (AT-ZDXL297)',
-            'DOB': '21-Aug-1976, 07:00 AM',
-            'POB': 'Kolhapur, Maharashtra',
-          },
-        ),
-      ],
-    );
+      );
+    });
   }
 
   Widget _buildCallTab() {

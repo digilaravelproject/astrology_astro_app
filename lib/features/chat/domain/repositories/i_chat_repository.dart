@@ -1,5 +1,6 @@
 import 'package:astro_astrologer/features/chat/domain/entities/chat_message.dart';
 import 'package:astro_astrologer/features/chat/domain/entities/chat_session.dart';
+import 'package:astro_astrologer/features/chat/domain/models/chat_session_model.dart';
 
 abstract class IChatRepository {
   Future<({List<ChatMessage> messages, String? startedAt})> getChatHistory({
@@ -21,4 +22,5 @@ abstract class IChatRepository {
   });
   Future<void> markMessagesRead(int sessionId);
   Future<ChatSession?> endChatSession(int sessionId);
+  Future<ChatSessionListResponse> getChatSessions({int page = 1});
 }

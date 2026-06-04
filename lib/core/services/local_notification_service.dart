@@ -1,4 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
 
 class LocalNotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
@@ -17,6 +18,11 @@ class LocalNotificationService {
       initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
         // Tap handler (navigates back or restores app state)
+        if (response.payload != null) {
+          if (FloatingChatBubble.onTapCallback != null) {
+            FloatingChatBubble.onTapCallback?.call();
+          }
+        }
       },
     );
 
@@ -60,6 +66,7 @@ class LocalNotificationService {
       title,
       body,
       notificationDetails,
+      payload: sessionId.toString(),
     );
   }
 
