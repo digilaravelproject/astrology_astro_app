@@ -132,6 +132,11 @@ class ChatRepositoryImpl implements IChatRepository {
   }
 
   @override
+  Future<void> syncMessageStatus({required int sessionId, required List<int> messageIds, required String status}) async {
+    await _remoteDataSource.syncMessageStatus(sessionId, messageIds, status);
+  }
+
+  @override
   Future<ChatSession?> endChatSession(int sessionId) async {
     final response = await _remoteDataSource.endChatSession(sessionId);
     if (response.isSuccess && response.body != null) {

@@ -16,6 +16,7 @@ abstract class IChatRemoteDataSource {
     required String attachmentUrl,
   });
   Future<ResponseModel> markMessagesRead(int sessionId);
+  Future<ResponseModel> syncMessageStatus(int sessionId, List<int> messageIds, String status);
   Future<ResponseModel> endChatSession(int sessionId);
   Future<ResponseModel> getChatSessions(int page);
 
@@ -101,6 +102,19 @@ class ChatRemoteDataSourceImpl implements IChatRemoteDataSource {
     return await _apiClient.post(
       AppUrls.markChatRead(sessionId),
       data: {},
+      handleError: false,
+      showToaster: false,
+    );
+  }
+
+  @override
+  Future<ResponseModel> syncMessageStatus(int sessionId, List<int> messageIds, String status) async {
+    return await _apiClient.post(
+      AppUrls.syncChatStatus(sessionId),
+      data: {
+        'status': status,
+        'message_ids': messageIds,
+      },
       handleError: false,
       showToaster: false,
     );

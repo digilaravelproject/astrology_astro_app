@@ -21,6 +21,7 @@ abstract class IChatRepository {
     required dynamic pickerResult,
   });
   Future<void> markMessagesRead(int sessionId);
+  Future<void> syncMessageStatus({required int sessionId, required List<int> messageIds, required String status});
   Future<ChatSession?> endChatSession(int sessionId);
   Future<ChatSessionListResponse> getChatSessions({int page = 1});
 

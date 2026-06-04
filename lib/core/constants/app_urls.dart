@@ -98,6 +98,7 @@ class AppUrls {
   
   static const String getCurrentSession = "/chat/sessions/current";
   static String markChatRead(int sessionId) => "/chat/$sessionId/read";
+  static String syncChatStatus(int sessionId) => "/chat/$sessionId/sync-status";
   static const String uploadAttachment = "/chat/upload-attachment";
   static String getChatMessages(int sessionId) => "/chat/$sessionId/messages";
   static const String astrologerChatSessions = "/chat/sessions/astrologer";

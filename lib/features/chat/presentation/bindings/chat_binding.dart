@@ -14,24 +14,7 @@ import '../controllers/chat_controller.dart';
 class ChatBinding extends Bindings {
   @override
   void dependencies() {
-    // 1. Data sources
-    Get.lazyPut<IChatRemoteDataSource>(
-      () => ChatRemoteDataSourceImpl(apiClient: Get.find<ApiClient>()),
-      fenix: true,
-    );
-    Get.lazyPut<IChatLocalDataSource>(
-      () => ChatLocalDataSourceImpl(),
-      fenix: true,
-    );
-
-    // 2. Repository implementation
-    Get.lazyPut<IChatRepository>(
-      () => ChatRepositoryImpl(
-        remoteDataSource: Get.find<IChatRemoteDataSource>(),
-        localDataSource: Get.find<IChatLocalDataSource>(),
-      ),
-      fenix: true,
-    );
+    // Data sources and Repositories are now provided globally in InitialBindings
 
     // 3. Use Cases
     Get.lazyPut(() => LoadChatHistoryUseCase(Get.find<IChatRepository>()), fenix: true);
