@@ -6,6 +6,7 @@ import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import 'price_increase_history_screen.dart';
+import '../../auth/controllers/auth_controller.dart';
 
 class PriceSettingScreen extends StatefulWidget {
   const PriceSettingScreen({super.key});
