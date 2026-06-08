@@ -14,6 +14,8 @@ import '../../notification/notice_screen.dart';
 import '../../orders/presentation/pages/orders_screen.dart';
 import '../../../routes/app_routes.dart';
 
+import 'package:permission_handler/permission_handler.dart';
+
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
@@ -23,6 +25,17 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   final DashboardController controller = Get.find<DashboardController>();
+
+  @override
+  void initState() {
+    super.initState();
+    _requestPermissions();
+  }
+
+  Future<void> _requestPermissions() async {
+    // Request microphone permission on launch
+    await Permission.microphone.request();
+  }
 
   final List<Widget> _screens = [
     const HomeScreen(),
