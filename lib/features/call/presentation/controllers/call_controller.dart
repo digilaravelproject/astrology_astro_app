@@ -117,7 +117,7 @@ class CallController extends GetxController {
         showErrorScreen: false,
       );
 
-      if (response.isSuccess && response.body?['success'] == true) {
+      if (response.isSuccess) {
         _startCallTimer();
         _showOngoingNotification();
       } else {
