@@ -15,10 +15,26 @@ class PriceSettingScreen extends StatefulWidget {
 }
 
 class _PriceSettingScreenState extends State<PriceSettingScreen> {
-  // Mock state for rates
+  // State for rates (initially mocked, loaded from profile in initState)
   String _chatRate = '15';
   String _callRate = '20';
   String _videoRate = '30';
+
+  @override
+  void initState() {
+    super.initState();
+    try {
+      final authController = Get.find<AuthController>();
+      final astrologer = authController.currentUser.value?.astrologer;
+      if (astrologer != null) {
+        _chatRate = double.tryParse(astrologer.chatRate)?.toStringAsFixed(0) ?? astrologer.chatRate;
+        _callRate = double.tryParse(astrologer.callRate)?.toStringAsFixed(0) ?? astrologer.callRate;
+        _videoRate = double.tryParse(astrologer.videoCallRate)?.toStringAsFixed(0) ?? astrologer.videoCallRate;
+      }
+    } catch (e) {
+      // Fallback to default mock rates if AuthController is not registered
+    }
+  }
 
   void _showPriceEditBottomSheet({
     required String title,
