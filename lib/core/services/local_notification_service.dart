@@ -73,4 +73,46 @@ class LocalNotificationService {
   static Future<void> cancelOngoingChatNotification(int sessionId) async {
     await _notificationsPlugin.cancel(sessionId);
   }
+
+  static Future<void> showOngoingCallNotification({
+    required int sessionId,
+    required String title,
+    required String body,
+    int? startedAtMillis,
+  }) async {
+    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+      'active_call_channel_v1',
+      'Active Calls',
+      channelDescription: 'Ongoing notification for active call sessions',
+      importance: Importance.max,
+      priority: Priority.high,
+      ongoing: true,
+      autoCancel: false,
+      onlyAlertOnce: true,
+      showWhen: true,
+      usesChronometer: startedAtMillis != null,
+      when: startedAtMillis,
+    );
+
+    final NotificationDetails notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      ),
+    );
+
+    await _notificationsPlugin.show(
+      sessionId + 100000,
+      title,
+      body,
+      notificationDetails,
+      payload: 'call_$sessionId',
+    );
+  }
+
+  static Future<void> cancelOngoingCallNotification(int sessionId) async {
+    await _notificationsPlugin.cancel(sessionId + 100000);
+  }
 }

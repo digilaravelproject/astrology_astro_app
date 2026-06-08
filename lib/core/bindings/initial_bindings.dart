@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import '../services/network/api_client.dart';
 import '../services/network/network_info.dart';
@@ -159,5 +160,8 @@ class InitialBindings extends Bindings {
       ),
       permanent: true,
     );
+
+    // Call dependencies
+    Get.put(CallController(), permanent: true);
   }
 }
