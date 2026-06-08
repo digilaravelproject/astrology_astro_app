@@ -122,7 +122,7 @@ class CallController extends GetxController {
         _showOngoingNotification();
       } else {
         cleanUp();
-        CustomSnackBar.show('Failed to accept call.', isError: true);
+        CustomSnackBar.showError('Failed to accept call.');
       }
     } catch (e) {
       Logger.e('CallController: Error accepting call -> $e');
