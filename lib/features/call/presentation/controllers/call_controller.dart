@@ -30,6 +30,7 @@ class CallController extends GetxController {
   AudioPlayer? _audioPlayer;
   Timer? _callTimer;
   Timer? _ringingTimer;
+  bool _isSummaryShown = false;
   StreamSubscription? _initiatedSubscription;
   StreamSubscription? _dismissedSubscription;
   StreamSubscription? _iceSubscription;
@@ -96,6 +97,7 @@ class CallController extends GetxController {
   }
 
   void _handleIncomingCall(String offerSdp) {
+    _isSummaryShown = false;
     status.value = 'ringing';
     _startRingtone(isIncoming: true);
     _startRingingTimeout();
@@ -114,6 +116,7 @@ class CallController extends GetxController {
     }
     Logger.d('CallController: acceptCall started for sessionId: $sessionId');
     try {
+      _isSummaryShown = false;
       _stopRingtone();
       _ringingTimer?.cancel();
       status.value = 'ongoing';
@@ -207,6 +210,9 @@ class CallController extends GetxController {
         showErrorScreen: false,
       );
       if (response.isSuccess) {
+        if (_isSummaryShown) return;
+        _isSummaryShown = true;
+        
         status.value = 'completed';
         CustomSnackBar.showInfo('Call ended successfully.');
         
@@ -257,6 +263,9 @@ class CallController extends GetxController {
   }
 
   void _handleCallEnded(Map<String, dynamic> data) {
+    if (_isSummaryShown) return;
+    _isSummaryShown = true;
+    
     status.value = 'completed';
     CustomSnackBar.showInfo('Call ended.');
     
