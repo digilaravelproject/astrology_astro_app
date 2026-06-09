@@ -103,8 +103,8 @@ class IncomingCallDialog extends StatelessWidget {
                         children: [
                           GestureDetector(
                             onTap: () {
-                              Logger.d('IncomingCallDialog: Decline button clicked. Calling cancelCall...');
-                              controller.cancelCall();
+                              Logger.d('IncomingCallDialog: Decline button clicked. Calling rejectCall...');
+                              controller.rejectCall();
                               Get.back(); // Close dialog
                             },
                             child: Container(
