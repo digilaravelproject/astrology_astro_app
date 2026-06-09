@@ -13,6 +13,9 @@ class WebRTCService {
   Function(MediaStream)? onRemoteStreamAdded;
   Function(RTCIceConnectionState)? onConnectionStateChanged;
 
+  bool _isRemoteDescriptionSet = false;
+  final List<RTCIceCandidate> _remoteCandidateQueue = [];
+
   final Map<String, dynamic> _iceConfig = {
     'iceServers': [
       {'urls': AppConstants.webrtcStunServer},
@@ -111,7 +114,9 @@ class WebRTCService {
       final normalized = _normalizeSdp(answerSdp);
       RTCSessionDescription answer = RTCSessionDescription(normalized, 'answer');
       await peerConnection!.setRemoteDescription(answer);
+      _isRemoteDescriptionSet = true;
       Logger.d('WebRTCService: Remote Answer SDP set successfully.');
+      _flushRemoteCandidates();
     } catch (e) {
       Logger.e('WebRTCService: Error setting remote answer -> $e');
       rethrow;
@@ -155,6 +160,8 @@ class WebRTCService {
       Logger.d('WebRTCService: normalized SDP value: $normalized');
       RTCSessionDescription offer = RTCSessionDescription(normalized, 'offer');
       await peerConnection!.setRemoteDescription(offer);
+      _isRemoteDescriptionSet = true;
+      _flushRemoteCandidates();
 
       RTCSessionDescription answer = await peerConnection!.createAnswer(_constraints);
       await peerConnection!.setLocalDescription(answer);
@@ -169,20 +176,34 @@ class WebRTCService {
 
   Future<void> addRemoteCandidate(String candidateJson) async {
     try {
-      if (peerConnection == null) {
-        Logger.e('WebRTCService: PeerConnection is null. Cannot add remote candidate.');
-        return;
-      }
       Map<String, dynamic> candidateMap = jsonDecode(candidateJson);
       RTCIceCandidate candidate = RTCIceCandidate(
         candidateMap['candidate']?.toString() ?? candidateMap['iceCandidate']?.toString() ?? '',
         candidateMap['sdpMid']?.toString() ?? '',
         candidateMap['sdpMLineIndex'] is int ? candidateMap['sdpMLineIndex'] : int.tryParse(candidateMap['sdpMLineIndex']?.toString() ?? '') ?? 0,
       );
-      await peerConnection!.addCandidate(candidate);
-      Logger.d('WebRTCService: Ice Candidate added successfully.');
+
+      if (peerConnection != null && _isRemoteDescriptionSet) {
+        await peerConnection!.addCandidate(candidate);
+        Logger.d('WebRTCService: Ice Candidate added successfully.');
+      } else {
+        _remoteCandidateQueue.add(candidate);
+        Logger.d('WebRTCService: Queued remote ICE candidate. Total queued: ${_remoteCandidateQueue.length}');
+      }
     } catch (e) {
       Logger.e('WebRTCService: Error adding remote candidate -> $e');
+    }
+  }
+
+  void _flushRemoteCandidates() {
+    if (_remoteCandidateQueue.isNotEmpty) {
+      Logger.d('WebRTCService: Flushing ${_remoteCandidateQueue.length} queued remote candidates.');
+      for (var candidate in _remoteCandidateQueue) {
+        peerConnection?.addCandidate(candidate).catchError((e) {
+          Logger.e('WebRTCService: Error adding flushed remote candidate -> $e');
+        });
+      }
+      _remoteCandidateQueue.clear();
     }
   }
 
@@ -232,6 +253,8 @@ class WebRTCService {
       remoteStream?.dispose();
       peerConnection?.close();
       peerConnection?.dispose();
+      _isRemoteDescriptionSet = false;
+      _remoteCandidateQueue.clear();
       Logger.d('WebRTCService: Disposed peer connection & streams.');
     } catch (e) {
       Logger.e('WebRTCService: Error disposing WebRTC resources -> $e');
