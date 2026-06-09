@@ -39,6 +39,9 @@ class WebRTCService {
       };
       localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
       Logger.d('WebRTCService: Local audio stream initialized successfully.');
+      
+      // Force audio routing to earpiece by default (speakerphone off)
+      toggleSpeaker(false);
     } catch (e) {
       Logger.e('WebRTCService: Error initializing local stream -> $e');
       rethrow;
