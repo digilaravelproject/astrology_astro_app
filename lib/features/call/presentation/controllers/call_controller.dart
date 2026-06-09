@@ -164,6 +164,29 @@ class CallController extends GetxController {
     }
   }
 
+  Future<void> cancelCall() async {
+    if (sessionId == null) {
+      Logger.e('CallController: Cannot cancel call because sessionId is null.');
+      return;
+    }
+    Logger.d('CallController: cancelCall started for sessionId: $sessionId');
+    try {
+      final response = await _apiClient.post(
+        AppUrls.cancelCall(sessionId!),
+        handleError: true,
+        showErrorScreen: false,
+      );
+      Logger.d('CallController: Cancel Call API response isSuccess: ${response.isSuccess}');
+      if (response.isSuccess) {
+        status.value = 'cancelled';
+      }
+    } catch (e) {
+      Logger.e('CallController: Error cancelling call -> $e');
+    } finally {
+      cleanUp();
+    }
+  }
+
   Future<void> endCall() async {
     if (sessionId == null) return;
     try {
