@@ -82,13 +82,34 @@ class WebRTCService {
     }
   }
 
+  String _normalizeSdp(String sdp) {
+    String cleanSdp = sdp.trim();
+    if (cleanSdp.startsWith('"') && cleanSdp.endsWith('"')) {
+      cleanSdp = cleanSdp.substring(1, cleanSdp.length - 1);
+    }
+    
+    // Convert all escaped newlines to standard LF
+    cleanSdp = cleanSdp
+        .replaceAll('\\r\\n', '\n')
+        .replaceAll('\\n', '\n')
+        .replaceAll('\\r', '\n')
+        .replaceAll(r'\r\n', '\n')
+        .replaceAll(r'\n', '\n')
+        .replaceAll(r'\r', '\n');
+
+    // Split by LF and join using CRLF to ensure every line ends with \r\n
+    List<String> lines = cleanSdp.split('\n');
+    return lines.map((line) => line.trim()).where((line) => line.isNotEmpty).join('\r\n') + '\r\n';
+  }
+
   Future<void> setRemoteAnswer(String answerSdp) async {
     try {
       if (peerConnection == null) {
         Logger.e('WebRTCService: peerConnection is null. Cannot set remote answer.');
         return;
       }
-      RTCSessionDescription answer = RTCSessionDescription(answerSdp, 'answer');
+      final normalized = _normalizeSdp(answerSdp);
+      RTCSessionDescription answer = RTCSessionDescription(normalized, 'answer');
       await peerConnection!.setRemoteDescription(answer);
       Logger.d('WebRTCService: Remote Answer SDP set successfully.');
     } catch (e) {
@@ -127,7 +148,12 @@ class WebRTCService {
         peerConnection!.addTrack(track, localStream!);
       });
 
-      RTCSessionDescription offer = RTCSessionDescription(offerSdp, 'offer');
+      Logger.d('WebRTCService: offerSdp (raw) length: ${offerSdp.length}');
+      Logger.d('WebRTCService: offerSdp value: $offerSdp');
+      final normalized = _normalizeSdp(offerSdp);
+      Logger.d('WebRTCService: normalized SDP length: ${normalized.length}');
+      Logger.d('WebRTCService: normalized SDP value: $normalized');
+      RTCSessionDescription offer = RTCSessionDescription(normalized, 'offer');
       await peerConnection!.setRemoteDescription(offer);
 
       RTCSessionDescription answer = await peerConnection!.createAnswer(_constraints);

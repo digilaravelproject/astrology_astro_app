@@ -96,8 +96,12 @@ class CallController extends GetxController {
     );
   }
 
-  Future<void> acceptCall(String offerSdp) async {
-    if (sessionId == null) return;
+  Future<bool> acceptCall(String offerSdp) async {
+    if (sessionId == null) {
+      Logger.e('CallController: Cannot accept call because sessionId is null.');
+      return false;
+    }
+    Logger.d('CallController: acceptCall started for sessionId: $sessionId');
     try {
       _stopRingtone();
       _ringingTimer?.cancel();
@@ -105,9 +109,12 @@ class CallController extends GetxController {
       durationSeconds.value = 0;
 
       // 1. Create SDP Answer
+      Logger.d('CallController: Creating SDP Answer...');
       final answerDescription = await webrtcService.acceptOffer(sessionId!, offerSdp);
+      Logger.d('CallController: SDP Answer created.');
 
       // 2. Post to Accept API
+      Logger.d('CallController: Posting answer to Accept Call API...');
       final response = await _apiClient.post(
         AppUrls.acceptCall(sessionId!),
         data: {
@@ -117,27 +124,36 @@ class CallController extends GetxController {
         showErrorScreen: false,
       );
 
+      Logger.d('CallController: Accept Call API response isSuccess: ${response.isSuccess}');
       if (response.isSuccess) {
         _startCallTimer();
         _showOngoingNotification();
+        return true;
       } else {
         cleanUp();
         CustomSnackBar.showError('Failed to accept call.');
+        return false;
       }
     } catch (e) {
       Logger.e('CallController: Error accepting call -> $e');
       cleanUp();
+      return false;
     }
   }
 
   Future<void> rejectCall() async {
-    if (sessionId == null) return;
+    if (sessionId == null) {
+      Logger.e('CallController: Cannot reject call because sessionId is null.');
+      return;
+    }
+    Logger.d('CallController: rejectCall started for sessionId: $sessionId');
     try {
       final response = await _apiClient.post(
         AppUrls.rejectCall(sessionId!),
         handleError: true,
         showErrorScreen: false,
       );
+      Logger.d('CallController: Reject Call API response isSuccess: ${response.isSuccess}');
       if (response.isSuccess) {
         status.value = 'rejected';
       }

@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/theme/app_colors.dart';
 import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 
@@ -24,7 +25,9 @@ class CallScreen extends StatelessWidget {
             // Blurred profile background
             if (controller.consumerImage != null && controller.consumerImage!.isNotEmpty)
               CachedNetworkImage(
-                imageUrl: controller.consumerImage!,
+                imageUrl: controller.consumerImage!.startsWith('http')
+                    ? controller.consumerImage!
+                    : '${AppUrls.baseImageUrl}${controller.consumerImage!.startsWith('/') ? controller.consumerImage!.substring(1) : controller.consumerImage}',
                 fit: BoxFit.cover,
                 errorWidget: (context, url, error) => Container(color: AppColors.primaryColor.withValues(alpha: 0.8)),
               )
@@ -86,7 +89,11 @@ class CallScreen extends StatelessWidget {
                             child: CircleAvatar(
                               radius: 66,
                               backgroundImage: controller.consumerImage != null && controller.consumerImage!.isNotEmpty
-                                  ? CachedNetworkImageProvider(controller.consumerImage!)
+                                  ? CachedNetworkImageProvider(
+                                      controller.consumerImage!.startsWith('http')
+                                          ? controller.consumerImage!
+                                          : '${AppUrls.baseImageUrl}${controller.consumerImage!.startsWith('/') ? controller.consumerImage!.substring(1) : controller.consumerImage}'
+                                    )
                                   : null,
                               child: controller.consumerImage == null || controller.consumerImage!.isEmpty
                                   ? const Icon(Icons.person, size: 60, color: Colors.white)

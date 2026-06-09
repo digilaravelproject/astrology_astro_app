@@ -2,9 +2,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/theme/app_colors.dart';
 import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 import 'package:astro_astrologer/features/call/presentation/pages/call_screen.dart';
+import 'package:astro_astrologer/core/utils/logger.dart';
 
 class IncomingCallDialog extends StatelessWidget {
   final String offerSdp;
@@ -57,7 +59,11 @@ class IncomingCallDialog extends StatelessWidget {
                         child: CircleAvatar(
                           radius: 60,
                           backgroundImage: controller.consumerImage != null && controller.consumerImage!.isNotEmpty
-                              ? CachedNetworkImageProvider(controller.consumerImage!)
+                              ? CachedNetworkImageProvider(
+                                  controller.consumerImage!.startsWith('http')
+                                      ? controller.consumerImage!
+                                      : '${AppUrls.baseImageUrl}${controller.consumerImage!.startsWith('/') ? controller.consumerImage!.substring(1) : controller.consumerImage}'
+                                )
                               : null,
                           child: controller.consumerImage == null || controller.consumerImage!.isEmpty
                               ? const Icon(Icons.person, size: 50, color: Colors.white)
@@ -97,6 +103,7 @@ class IncomingCallDialog extends StatelessWidget {
                         children: [
                           GestureDetector(
                             onTap: () {
+                              Logger.d('IncomingCallDialog: Decline button clicked. Calling rejectCall...');
                               controller.rejectCall();
                               Get.back(); // Close dialog
                             },
@@ -139,9 +146,17 @@ class IncomingCallDialog extends StatelessWidget {
                         children: [
                           GestureDetector(
                             onTap: () async {
+                              Logger.d('IncomingCallDialog: Accept button clicked. Closing dialog.');
                               Get.back(); // Pop incoming dialog
-                              Get.to(() => const CallScreen()); // Go to active CallScreen
-                              await controller.acceptCall(offerSdp);
+                              Logger.d('IncomingCallDialog: Calling controller.acceptCall()...');
+                              final success = await controller.acceptCall(offerSdp);
+                              Logger.d('IncomingCallDialog: acceptCall finished. success = $success');
+                              if (success) {
+                                Logger.d('IncomingCallDialog: Navigating to CallScreen.');
+                                Get.to(() => const CallScreen()); // Go to active CallScreen
+                              } else {
+                                Logger.e('IncomingCallDialog: acceptCall failed. Will not navigate.');
+                              }
                             },
                             child: Container(
                               width: 68,
