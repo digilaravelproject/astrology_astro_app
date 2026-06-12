@@ -429,11 +429,11 @@ class CallController extends GetxController with WidgetsBindingObserver {
         if (session != null) {
           final sessionStatus = session['status']?.toString();
           Logger.d('CallController: currentCallSession sessionStatus: $sessionStatus');
-          if (sessionStatus == 'ongoing' || sessionStatus == 'ringing' || sessionStatus == 'dialing') {
+          if (sessionStatus == 'ongoing' || sessionStatus == 'ringing' || sessionStatus == 'dialing' || sessionStatus == 'initiated') {
             _isSummaryShown = false;
             sessionId = int.tryParse(session['id']?.toString() ?? '');
             webrtcService.activeSessionId = sessionId;
-            status.value = sessionStatus!;
+            status.value = sessionStatus == 'initiated' ? 'ringing' : sessionStatus!;
             
             consumerId = int.tryParse(session['consumer_id']?.toString() ?? '');
             final consumer = session['consumer'];
@@ -451,14 +451,21 @@ class CallController extends GetxController with WidgetsBindingObserver {
                 }
               }
               
-              final offerSdp = session['offer']?.toString() ?? session['offer_sdp']?.toString();
+              final offerSdp = session['offer']?.toString() ?? session['offer_sdp']?.toString() ?? session['consumer_sdp']?.toString();
               Logger.d('CallController: currentCallSession offerSdp length: ${offerSdp?.length}');
               if (offerSdp != null && offerSdp.isNotEmpty) {
                 await webrtcService.acceptOffer(sessionId!, offerSdp);
               }
-            } else if (sessionStatus == 'ringing' || sessionStatus == 'dialing') {
-              _startRingtone(isIncoming: true);
-              _startRingingTimeout();
+            } else if (sessionStatus == 'ringing' || sessionStatus == 'dialing' || sessionStatus == 'initiated') {
+              final offerSdp = session['offer']?.toString() ?? session['offer_sdp']?.toString() ?? session['consumer_sdp']?.toString();
+              if (offerSdp != null && offerSdp.isNotEmpty) {
+                incomingOfferSdp = offerSdp;
+                _handleIncomingCall(offerSdp);
+              } else {
+                status.value = 'ringing';
+                _startRingtone(isIncoming: true);
+                _startRingingTimeout();
+              }
             }
             
             // Show Notification
