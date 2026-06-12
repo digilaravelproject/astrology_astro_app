@@ -141,4 +141,9 @@ class AppUrls {
   static const String eventCallDismissed = 'CallDismissed';
   static const String eventCallEnded = 'CallEnded';
   static const String eventIceCandidateSent = 'IceCandidateSent';
+
+  // Price Increase Request
+  static const String priceIncreaseStatus = "/price-increase/status";
+  static const String priceIncreaseRequest = "/price-increase/request";
+  static const String priceIncreaseHistory = "/price-increase/history";
 }
