@@ -61,15 +61,26 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
   }
 
   void _handlePriceCardTap(String priceType) {
-    if (_controller.canRequest.value) {
+    final totalBusy = _controller.totalBusyMinutes.value;
+    final currentReq = _controller.currentLevel['required_busy_minutes'] != null
+        ? double.tryParse(_controller.currentLevel['required_busy_minutes'].toString()) ?? 0.0
+        : 0.0;
+    final nextReq = _controller.nextLevel['required_busy_minutes'] != null
+        ? double.tryParse(_controller.nextLevel['required_busy_minutes'].toString()) ?? 0.0
+        : 0.0;
+    final targetRequired = nextReq > 0 ? nextReq : currentReq;
+
+    final isEligible = totalBusy >= targetRequired && _controller.pendingRequest.isEmpty;
+
+    if (isEligible) {
       final double currentRate = double.tryParse(
           (priceType == 'chat'
               ? _controller.currentRates['chat_rate_per_minute']
               : _controller.currentRates['call_rate_per_minute'])?.toString() ?? '0'
       ) ?? 0.0;
       final double maxIncrease = double.tryParse(
-          _controller.currentLevel['max_increase_amount']?.toString() ?? '0'
-      ) ?? 0.0;
+          (_controller.currentLevel['max_increase_amount'] ?? _controller.nextLevel['max_increase_amount'])?.toString() ?? '1'
+      ) ?? 1.0;
       _showRequestConfirmation(priceType, currentRate, maxIncrease);
     } else {
       if (_controller.pendingRequest.isNotEmpty) {

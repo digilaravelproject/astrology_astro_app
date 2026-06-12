@@ -143,7 +143,7 @@ class AppUrls {
   static const String eventIceCandidateSent = 'IceCandidateSent';
 
   // Price Increase Request
-  static const String priceIncreaseStatus = "/price-increase/status";
-  static const String priceIncreaseRequest = "/price-increase/request";
-  static const String priceIncreaseHistory = "/price-increase/history";
+  static const String priceIncreaseStatus = "/astrologer/price-increase/status";
+  static const String priceIncreaseRequest = "/astrologer/price-increase/request";
+  static const String priceIncreaseHistory = "/astrologer/price-increase/history";
 }
