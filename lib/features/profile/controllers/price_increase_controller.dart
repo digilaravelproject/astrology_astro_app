@@ -17,7 +17,7 @@ class PriceIncreaseController extends GetxController {
   final RxMap nextLevel = {}.obs;
   final RxMap currentRates = {}.obs;
   final RxMap pendingRequest = {}.obs;
-  final RxBool canRequest = false.obs;
+  final RxMap canRequestMap = {}.obs;
 
   // History List
   final RxList<dynamic> historyList = <dynamic>[].obs;
@@ -41,7 +41,7 @@ class PriceIncreaseController extends GetxController {
         currentRates.value = data['current_rates'] as Map<String, dynamic>? ?? {};
         pendingRequest.value = data['pending_request'] as Map<String, dynamic>? ?? {};
         
-        canRequest.value = data['can_request'] == true;
+        canRequestMap.value = data['can_request'] as Map<String, dynamic>? ?? {};
         Logger.d('PriceIncreaseController: status loaded successfully');
       } else {
         Logger.e('PriceIncreaseController: Failed to fetch status: ${response.message}');

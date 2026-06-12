@@ -206,6 +206,7 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
                   iconColor: const Color(0xFF2196F3),
                   backgroundColor: const Color(0xFFE3F2FD),
                   onTap: () => _handlePriceCardTap('chat'),
+                  showEditIcon: _controller.canRequestMap['chat'] == true,
                 ),
                 
                 _buildPriceCard(
@@ -215,6 +216,7 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
                   iconColor: const Color(0xFF4CAF50),
                   backgroundColor: const Color(0xFFE8F5E9),
                   onTap: () => _handlePriceCardTap('call'),
+                  showEditIcon: _controller.canRequestMap['call'] == true,
                 ),
                 
                 _buildPriceCard(
@@ -226,6 +228,7 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
                   onTap: () {
                     Get.snackbar("Video Rate Update", "Video price increase request is not supported yet.");
                   },
+                  showEditIcon: false,
                 ),
                 
                 const SizedBox(height: 32),
@@ -398,6 +401,7 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
     required Color iconColor,
     required Color backgroundColor,
     required VoidCallback onTap,
+    bool showEditIcon = true,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -415,7 +419,7 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: onTap,
+          onTap: showEditIcon ? onTap : null,
           borderRadius: BorderRadius.circular(24),
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -464,14 +468,15 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
                     ],
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
-                    shape: BoxShape.circle,
+                if (showEditIcon)
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade50,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.edit_rounded, color: Colors.grey.shade400, size: 18),
                   ),
-                  child: Icon(Icons.edit_rounded, color: Colors.grey.shade400, size: 18),
-                ),
               ],
             ),
           ),
