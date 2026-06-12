@@ -9,19 +9,17 @@ import 'init_app.dart';
 import 'routes/route_helper.dart';
 import 'core/bindings/initial_bindings.dart';
 import 'core/utils/custom_snackbar.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'features/chat/presentation/widgets/overlay_main.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
+  // Silent fallback
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await initApp();
   runApp(const MyApp());
