@@ -375,8 +375,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
         minimizeToBubble(Get.context!, consumerName!, consumerImage ?? "", shouldPop: false);
       }
     } else if (state == AppLifecycleState.resumed) {
-      // Keep floating bubble visible in foreground
-      // FloatingCallBubble.dismiss();
+      checkCurrentActiveCallSession();
     }
   }
 
