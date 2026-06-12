@@ -16,6 +16,9 @@ class MainActivity : FlutterActivity() {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                 context.startActivity(intent)
                 result.success(null)
+            } else if (call.method == "sendToBackground") {
+                moveTaskToBack(true)
+                result.success(null)
             } else {
                 result.notImplemented()
             }

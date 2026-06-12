@@ -15,6 +15,7 @@ import '../../orders/presentation/pages/orders_screen.dart';
 import '../../../routes/app_routes.dart';
 
 import 'package:permission_handler/permission_handler.dart';
+import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -60,6 +61,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
         
+        final callController = Get.isRegistered<CallController>()
+            ? Get.find<CallController>()
+            : null;
+        if (callController != null && callController.sessionId != null) {
+          try {
+            const channel = MethodChannel('com.suryapath.astrologer/app_retain');
+            await channel.invokeMethod('sendToBackground');
+          } catch (e) {
+            debugPrint("Error sending to background: $e");
+          }
+          return;
+        }
+
         if (controller.selectedIndex.value != 0) {
           // If not on Home tab, go to Home tab
           controller.changeIndex(0);
