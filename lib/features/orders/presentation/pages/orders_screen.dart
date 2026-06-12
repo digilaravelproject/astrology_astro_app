@@ -198,7 +198,9 @@ class _OrdersScreenState extends State<OrdersScreen>
           children: [
             Expanded(
               child: OutlinedButton(
-                onPressed: () => _ordersController.rejectChatOrder(session),
+                onPressed: () => session.requestType == 'call'
+                    ? _ordersController.rejectCallOrder(session)
+                    : _ordersController.rejectChatOrder(session),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   side: const BorderSide(color: Colors.red, width: 1.5),
@@ -210,7 +212,9 @@ class _OrdersScreenState extends State<OrdersScreen>
             const SizedBox(width: 12),
             Expanded(
               child: ElevatedButton(
-                onPressed: () => _ordersController.acceptChatOrder(session),
+                onPressed: () => session.requestType == 'call'
+                    ? _ordersController.acceptCallOrder(session)
+                    : _ordersController.acceptChatOrder(session),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF2DB84B),
                   padding: const EdgeInsets.symmetric(vertical: 12),

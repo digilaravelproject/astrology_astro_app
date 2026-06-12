@@ -1,9 +1,9 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
-import 'package:astro_astrologer/features/call/presentation/pages/call_screen.dart';
 import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 import 'package:astro_astrologer/features/call/presentation/widgets/incoming_call_dialog.dart';
+import 'package:astro_astrologer/features/call/presentation/pages/call_screen.dart';
 
 class LocalNotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
@@ -26,17 +26,24 @@ class LocalNotificationService {
           if (response.payload!.startsWith('call_')) {
             if (Get.isRegistered<CallController>()) {
               final callController = Get.find<CallController>();
-              if (callController.status.value == 'ringing' && callController.incomingOfferSdp != null) {
-                if (Get.isDialogOpen == true) {
-                  // The dialog is already showing in the UI, do nothing.
-                } else {
-                  Get.to(() => IncomingCallDialog(offerSdp: callController.incomingOfferSdp!));
+              final currentStatus = callController.status.value;
+
+              if (currentStatus == 'ongoing') {
+                // Active call — go straight to CallScreen
+                Get.to(() => const CallScreen());
+              } else if (currentStatus == 'ringing') {
+                // Incoming call ringing — show IncomingCallDialog
+                if (Get.isDialogOpen != true) {
+                  final sdp = callController.incomingOfferSdp ?? '';
+                  Get.dialog(
+                    IncomingCallDialog(offerSdp: sdp),
+                    barrierDismissible: false,
+                  );
                 }
               } else {
-                Get.to(() => const CallScreen());
+                // App was killed/restarted — check pending or current session
+                callController.checkPendingCall();
               }
-            } else {
-              Get.to(() => const CallScreen());
             }
           } else if (FloatingChatBubble.onTapCallback != null) {
             FloatingChatBubble.onTapCallback?.call();

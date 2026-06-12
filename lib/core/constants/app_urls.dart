@@ -131,6 +131,7 @@ class AppUrls {
   static String endCallSession(int sessionId) => '/call/$sessionId/end';
   static String sendIceCandidate(int sessionId) => '/call/$sessionId/ice-candidate';
   static const String currentCallSession = '/call/current-session';
+  static const String pendingCallSessions = '/call/pending';
   static const String userCallSessions = '/call/sessions/user';
   static const String astrologerCallSessions = '/call/sessions/astrologer';
 

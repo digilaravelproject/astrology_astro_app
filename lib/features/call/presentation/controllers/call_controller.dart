@@ -172,6 +172,57 @@ class CallController extends GetxController with WidgetsBindingObserver {
     }
   }
 
+  /// Accept a call directly WITHOUT a consumer SDP offer.
+  /// Used when the call is in 'initiated' status and consumer_sdp is null
+  /// (SDP exchange happens only via WebSocket, not stored in DB).
+  /// Creates a WebRTC offer from the astrologer side and sends it as 'answer'.
+  Future<bool> acceptCallDirect() async {
+    if (sessionId == null) {
+      Logger.e('CallController: Cannot acceptCallDirect because sessionId is null.');
+      return false;
+    }
+    Logger.d('CallController: acceptCallDirect started for sessionId: $sessionId');
+    try {
+      _isSummaryShown = false;
+      _stopRingtone();
+      _ringingTimer?.cancel();
+      status.value = 'ongoing';
+      durationSeconds.value = 0;
+
+      // Since consumer_sdp is null (SDP exchange is WebSocket-only),
+      // create a WebRTC offer from the astrologer side to satisfy the backend.
+      Logger.d('CallController: Creating WebRTC offer (astrologer side)...');
+      final offerDescription = await webrtcService.createOffer(sessionId!);
+      Logger.d('CallController: WebRTC offer created. Sending to Accept API as answer...');
+
+      final response = await _apiClient.post(
+        AppUrls.acceptCall(sessionId!),
+        data: {
+          'answer': offerDescription.sdp,
+        },
+        handleError: true,
+        showErrorScreen: false,
+      );
+
+      Logger.d('CallController: acceptCallDirect API response isSuccess: ${response.isSuccess}');
+      if (response.isSuccess) {
+        LocalNotificationService.cancelIncomingCallNotification(sessionId!);
+        _startCallTimer();
+        _showOngoingNotification();
+        return true;
+      } else {
+        Logger.e('CallController: acceptCallDirect failed: ${response.message}');
+        cleanUp();
+        CustomSnackBar.showError('Failed to accept call: ${response.message}');
+        return false;
+      }
+    } catch (e) {
+      Logger.e('CallController: Error in acceptCallDirect -> $e');
+      cleanUp();
+      return false;
+    }
+  }
+
   Future<void> rejectCall() async {
     if (sessionId == null) {
       Logger.e('CallController: Cannot reject call because sessionId is null.');
@@ -231,7 +282,6 @@ class CallController extends GetxController with WidgetsBindingObserver {
         _isSummaryShown = true;
         
         status.value = 'completed';
-        CustomSnackBar.showInfo('Call ended successfully.');
         
         final bodyMap = response.body;
         final sessionData = bodyMap is Map ? (bodyMap['session'] ?? bodyMap['data']?['session'] ?? bodyMap['data']) : null;
@@ -284,7 +334,6 @@ class CallController extends GetxController with WidgetsBindingObserver {
     _isSummaryShown = true;
     
     status.value = 'completed';
-    CustomSnackBar.showInfo('Call ended.');
     
     final session = data['session'];
     int sId = sessionId ?? 0;
@@ -350,7 +399,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
       await _audioPlayer?.setReleaseMode(ReleaseMode.loop);
       await _audioPlayer?.play(AssetSource(path));
 
-      if (isIncoming && (await Vibration.hasVibrator() ?? false)) {
+      if (isIncoming && ((await Vibration.hasVibrator()) == true)) {
         Vibration.vibrate(pattern: [500, 1000, 500, 1000], repeat: 0);
       }
     } catch (e) {
@@ -392,7 +441,8 @@ class CallController extends GetxController with WidgetsBindingObserver {
         minimizeToBubble(Get.context!, consumerName!, consumerImage ?? "", shouldPop: false);
       }
     } else if (state == AppLifecycleState.resumed) {
-      checkCurrentActiveCallSession();
+      // First check pending calls (incoming not yet accepted), then fall back to current session
+      checkPendingCall();
     }
   }
 
@@ -414,6 +464,103 @@ class CallController extends GetxController with WidgetsBindingObserver {
     if (shouldPop) {
       Navigator.of(context).pop();
     }
+  }
+
+  /// Fetches the offer SDP from /call/current-session for cases when the
+  /// astrologer taps Accept but SDP was not available at dialog open time.
+  Future<String?> fetchOfferSdpFromCurrentSession() async {
+    try {
+      final response = await _apiClient.get(
+        AppUrls.currentCallSession,
+        handleError: false,
+        showErrorScreen: false,
+      );
+      if (response.isSuccess && response.body != null) {
+        final bodyMap = response.body;
+        final session = bodyMap is Map
+            ? (bodyMap['session'] ?? bodyMap['data']?['session'])
+            : null;
+        if (session != null) {
+          final sdp = session['offer']?.toString() ??
+              session['offer_sdp']?.toString() ??
+              session['consumer_sdp']?.toString();
+          Logger.d('CallController: fetchOfferSdpFromCurrentSession sdp length: ${sdp?.length}');
+          return sdp;
+        }
+      }
+    } catch (e) {
+      Logger.e('CallController: Error fetching offer SDP -> $e');
+    }
+    return null;
+  }
+
+  /// Checks /call/pending for any pending (initiated) calls and shows IncomingCallDialog.
+  /// Returns true if a pending call was found and handled.
+  Future<bool> checkPendingCall() async {
+    Logger.d('CallController: checkPendingCall started');
+    try {
+      final response = await _apiClient.get(
+        AppUrls.pendingCallSessions,
+        handleError: false,
+        showErrorScreen: false,
+      );
+      Logger.d('CallController: pendingCall API response success: ${response.isSuccess}');
+      if (response.isSuccess && response.body != null) {
+        final bodyMap = response.body;
+        final pendingCalls = bodyMap is Map
+            ? (bodyMap['pending_calls'] ?? bodyMap['data']?['pending_calls'])
+            : null;
+        if (pendingCalls is List && pendingCalls.isNotEmpty) {
+          final call = pendingCalls.first;
+          final int newSessionId = int.tryParse(call['id']?.toString() ?? '') ?? 0;
+          final caller = call['caller'];
+          final String callerName = caller?['name']?.toString() ?? 'User';
+          final String? callerImage = caller?['profile_photo']?.toString();
+
+          Logger.d('CallController: Pending call found, sessionId=$newSessionId, caller=$callerName');
+
+          // Skip if we're already handling this call
+          if (status.value == 'ringing' && sessionId == newSessionId) {
+            Logger.d('CallController: Already handling this pending call, skipping.');
+            return true;
+          }
+
+          // Set up call data without SDP (will wait for WebSocket or accept with null SDP)
+          sessionId = newSessionId;
+          consumerId = int.tryParse(caller?['id']?.toString() ?? '') ?? 0;
+          consumerName = callerName;
+          consumerImage = callerImage;
+          _isSummaryShown = false;
+          status.value = 'ringing';
+          _startRingtone(isIncoming: true);
+          _startRingingTimeout();
+
+          LocalNotificationService.showIncomingCallNotification(
+            sessionId: sessionId!,
+            title: 'Incoming Call',
+            body: 'Call from $callerName',
+          );
+
+          // Show IncomingCallDialog — pass empty string as offerSdp since we may not have it yet
+          // The accept flow will fetch the SDP when the astrologer taps Accept
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (Get.isDialogOpen != true) {
+              Get.dialog(
+                IncomingCallDialog(offerSdp: ''),
+                barrierDismissible: false,
+              );
+            }
+          });
+          return true;
+        }
+      }
+    } catch (e, stack) {
+      Logger.e('CallController: Error checking pending call -> $e');
+      Logger.e('CallController: Stack -> $stack');
+    }
+    // No pending call found; fall back to checking current active session
+    await checkCurrentActiveCallSession();
+    return false;
   }
 
   Future<void> checkCurrentActiveCallSession() async {
@@ -447,15 +594,38 @@ class CallController extends GetxController with WidgetsBindingObserver {
               if (startedAtStr != null) {
                 final startedAt = DateTime.tryParse(startedAtStr)?.toLocal();
                 if (startedAt != null) {
+                  // Calculate elapsed time from server's started_at
                   durationSeconds.value = DateTime.now().difference(startedAt).inSeconds;
-                  _startCallTimer();
                 }
               }
-              
-              final offerSdp = session['offer']?.toString() ?? session['offer_sdp']?.toString() ?? session['consumer_sdp']?.toString();
+              // Start/restart timer (cancels old timer first)
+              _startCallTimer();
+
+              final offerSdp = session['offer']?.toString() ??
+                  session['offer_sdp']?.toString() ??
+                  session['consumer_sdp']?.toString();
               Logger.d('CallController: currentCallSession offerSdp length: ${offerSdp?.length}');
+
               if (offerSdp != null && offerSdp.isNotEmpty) {
+                // Normal path: use consumer's SDP to create WebRTC answer
                 await webrtcService.acceptOffer(sessionId!, offerSdp);
+              } else {
+                // App was killed — SDP not in DB, re-initiate WebRTC from our side
+                // so audio can be re-established.
+                Logger.d('CallController: App restarted during call — re-initiating WebRTC...');
+                try {
+                  final newOffer = await webrtcService.createOffer(sessionId!);
+                  Logger.d('CallController: Re-initiate offer created, re-posting to accept API...');
+                  await _apiClient.post(
+                    AppUrls.acceptCall(sessionId!),
+                    data: {'answer': newOffer.sdp},
+                    handleError: false,
+                    showErrorScreen: false,
+                  );
+                  Logger.d('CallController: WebRTC re-initiation complete.');
+                } catch (e) {
+                  Logger.e('CallController: Failed to re-initiate WebRTC -> $e');
+                }
               }
             } else if (sessionStatus == 'ringing' || sessionStatus == 'dialing' || sessionStatus == 'initiated') {
               final offerSdp = session['offer']?.toString() ?? session['offer_sdp']?.toString() ?? session['consumer_sdp']?.toString();
@@ -487,6 +657,16 @@ class CallController extends GetxController with WidgetsBindingObserver {
                     ? DateTime.tryParse(session['started_at'].toString())?.millisecondsSinceEpoch
                     : null,
               );
+
+              // Navigate to CallScreen if not already visible
+              if (!isCallScreenVisible) {
+                Logger.d('CallController: Navigating to CallScreen for ongoing call.');
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (Get.currentRoute != '/CallScreen') {
+                    Get.to(() => const CallScreen());
+                  }
+                });
+              }
             }
 
             // Show Floating Bubble

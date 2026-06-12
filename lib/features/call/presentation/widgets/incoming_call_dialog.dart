@@ -148,8 +148,22 @@ class IncomingCallDialog extends StatelessWidget {
                             onTap: () async {
                               Logger.d('IncomingCallDialog: Accept button clicked. Closing dialog.');
                               Get.back(); // Pop incoming dialog
+                              
+                              String sdpToUse = offerSdp;
+                              
+                              // If no SDP was provided (pending call flow), fetch it from current-session
+                              if (sdpToUse.isEmpty && controller.sessionId != null) {
+                                Logger.d('IncomingCallDialog: No SDP — fetching from current-session...');
+                                sdpToUse = await controller.fetchOfferSdpFromCurrentSession() ?? '';
+                              }
+                              
+                              if (sdpToUse.isEmpty) {
+                                Logger.e('IncomingCallDialog: Could not obtain SDP. Cannot accept call.');
+                                return;
+                              }
+                              
                               Logger.d('IncomingCallDialog: Calling controller.acceptCall()...');
-                              final success = await controller.acceptCall(offerSdp);
+                              final success = await controller.acceptCall(sdpToUse);
                               Logger.d('IncomingCallDialog: acceptCall finished. success = $success');
                               if (success) {
                                 Logger.d('IncomingCallDialog: Navigating to CallScreen.');
