@@ -59,7 +59,7 @@ class CallSessionModel {
       consumerId: int.tryParse(json['consumer_id']?.toString() ?? '') ?? 0,
       providerId: int.tryParse(json['provider_id']?.toString() ?? '') ?? 0,
       status: json['status']?.toString() ?? '',
-      ratePerMinute: int.tryParse(json['rate_per_minute']?.toString() ?? '') ?? 0,
+      ratePerMinute: num.tryParse(json['rate_per_minute']?.toString() ?? '')?.toInt() ?? 0,
       durationSeconds: int.tryParse(json['duration_seconds']?.toString() ?? '') ?? 0,
       totalCost: num.tryParse(json['total_cost']?.toString() ?? '') ?? 0.0,
       createdAt: json['created_at']?.toString(),
@@ -77,12 +77,20 @@ class CallSessionUserModel {
   final String name;
   final String? profilePhoto;
   final int callRatePerMinute;
+  final String? gender;
+  final String? dateOfBirth;
+  final String? timeOfBirth;
+  final String? placeOfBirth;
 
   CallSessionUserModel({
     required this.id,
     required this.name,
     this.profilePhoto,
     required this.callRatePerMinute,
+    this.gender,
+    this.dateOfBirth,
+    this.timeOfBirth,
+    this.placeOfBirth,
   });
 
   factory CallSessionUserModel.fromJson(Map<String, dynamic> json) {
@@ -95,6 +103,10 @@ class CallSessionUserModel {
       name: json['name']?.toString() ?? '',
       profilePhoto: json['astrologer']?['profile_photo']?.toString() ?? json['profile_photo']?.toString(),
       callRatePerMinute: callRate,
+      gender: json['gender']?.toString(),
+      dateOfBirth: json['date_of_birth']?.toString(),
+      timeOfBirth: json['time_of_birth']?.toString(),
+      placeOfBirth: json['place_of_birth']?.toString(),
     );
   }
 }

@@ -61,13 +61,33 @@ class CallHistoryScreen extends StatelessWidget {
                       final session = controller.callSessions[index];
                       final durationMinutes = (session.durationSeconds / 60).ceil();
                       
+                      // Format DOB
+                      String dobStr = "N/A";
+                      if (session.consumer?.dateOfBirth != null) {
+                        try {
+                          final dobDate = DateTime.tryParse(session.consumer!.dateOfBirth!)?.toLocal();
+                          if (dobDate != null) {
+                            final months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                            final monthName = months[dobDate.month - 1];
+                            final day = dobDate.day.toString().padLeft(2, '0');
+                            final year = dobDate.year.toString();
+                            
+                            String timeStr = "";
+                            if (session.consumer?.timeOfBirth != null && session.consumer!.timeOfBirth!.isNotEmpty) {
+                              timeStr = ",${session.consumer!.timeOfBirth!}";
+                            }
+                            dobStr = "$day-$monthName-$year$timeStr";
+                          }
+                        } catch (_) {}
+                      }
+
                       final Map<String, String> details = {
                         "Name": session.consumer?.name ?? "User (AT-${session.consumerId})",
-                        "Gender": "Male", // fallback mock values for user info
-                        "DOB": "N/A",
+                        "Gender": session.consumer?.gender?.capitalizeFirst ?? "N/A",
+                        "DOB": dobStr,
                         "Duration": "$durationMinutes minutes",
                         "Rate": "₹ ${session.ratePerMinute}/min",
-                        "POB": "N/A",
+                        "POB": session.consumer?.placeOfBirth ?? "N/A",
                       };
 
                       return _buildHistoryCard(
