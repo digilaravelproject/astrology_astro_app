@@ -27,7 +27,11 @@ class LocalNotificationService {
             if (Get.isRegistered<CallController>()) {
               final callController = Get.find<CallController>();
               if (callController.status.value == 'ringing' && callController.incomingOfferSdp != null) {
-                Get.to(() => IncomingCallDialog(offerSdp: callController.incomingOfferSdp!));
+                if (Get.isDialogOpen == true) {
+                  // The dialog is already showing in the UI, do nothing.
+                } else {
+                  Get.to(() => IncomingCallDialog(offerSdp: callController.incomingOfferSdp!));
+                }
               } else {
                 Get.to(() => const CallScreen());
               }
