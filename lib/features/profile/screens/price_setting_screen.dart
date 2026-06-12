@@ -234,9 +234,11 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
             ? double.tryParse(_controller.nextLevel['required_busy_minutes'].toString()) ?? 0.0
             : 0.0;
         
-        final maxIncrease = _controller.currentLevel['max_increase_amount'] != null
-            ? double.tryParse(_controller.currentLevel['max_increase_amount'].toString()) ?? 1.0
-            : 1.0;
+        // Show next_level's max increase in the criteria table (aligns with next_level's required time)
+        // Fall back to current_level if next_level is not available
+        final maxIncrease = _controller.nextLevel.isNotEmpty
+            ? double.tryParse(_controller.nextLevel['max_increase_amount']?.toString() ?? '1') ?? 1.0
+            : double.tryParse(_controller.currentLevel['max_increase_amount']?.toString() ?? '1') ?? 1.0;
 
         final targetRequired = nextReq > 0 ? nextReq : currentReq;
         final diff = (targetRequired - totalBusy).clamp(0.0, double.infinity);
