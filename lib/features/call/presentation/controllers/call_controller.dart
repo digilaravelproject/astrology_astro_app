@@ -24,7 +24,8 @@ class CallController extends GetxController with WidgetsBindingObserver {
   final RxString status = 'idle'.obs; // idle, ringing, ongoing, completed, rejected, cancelled, missed
   final RxInt durationSeconds = 0.obs;
   final RxBool isMuted = false.obs;
-  final RxBool isSpeakerOn = false.obs;
+
+  bool isCallScreenVisible = false;
 
   int? sessionId;
   int? consumerId;
@@ -459,20 +460,22 @@ class CallController extends GetxController with WidgetsBindingObserver {
             );
 
             // Show Floating Bubble
-            Logger.d('CallController: Showing floating call bubble overlay...');
-            FloatingCallBubble.show(
-              context: Get.context!,
-              sessionId: sessionId!,
-              name: consumerName!,
-              imageUrl: consumerImage ?? "",
-              startedAt: session['started_at']?.toString(),
-              status: status.value,
-              onTap: () {
-                final currentStatus = FloatingCallBubble.callStatus.value;
-                FloatingCallBubble.dismiss();
-                Get.to(() => const CallScreen());
-              },
-            );
+            if (!isCallScreenVisible) {
+              Logger.d('CallController: Showing floating call bubble overlay...');
+              FloatingCallBubble.show(
+                context: Get.context!,
+                sessionId: sessionId!,
+                name: consumerName!,
+                imageUrl: consumerImage ?? "",
+                startedAt: session['started_at']?.toString(),
+                status: status.value,
+                onTap: () {
+                  final currentStatus = FloatingCallBubble.callStatus.value;
+                  FloatingCallBubble.dismiss();
+                  Get.to(() => const CallScreen());
+                },
+              );
+            }
             Logger.d('CallController: checkCurrentActiveCallSession setup complete');
           }
         }

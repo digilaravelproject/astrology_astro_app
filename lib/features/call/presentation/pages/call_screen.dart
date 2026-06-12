@@ -6,13 +6,44 @@ import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/theme/app_colors.dart';
 import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 
-class CallScreen extends StatelessWidget {
+import 'package:astro_astrologer/features/call/presentation/widgets/floating_call_bubble.dart';
+
+class CallScreen extends StatefulWidget {
   const CallScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final controller = Get.find<CallController>();
+  State<CallScreen> createState() => _CallScreenState();
+}
 
+class _CallScreenState extends State<CallScreen> {
+  late final CallController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = Get.find<CallController>();
+    controller.isCallScreenVisible = true;
+    FloatingCallBubble.dismiss();
+  }
+
+  @override
+  void dispose() {
+    controller.isCallScreenVisible = false;
+    // Minimize to bubble if the call is still active
+    if (controller.status.value == 'ongoing' || 
+        controller.status.value == 'ringing' || 
+        controller.status.value == 'dialing') {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (controller.sessionId != null && controller.consumerName != null) {
+          controller.minimizeToBubble(Get.context!, controller.consumerName!, controller.consumerImage ?? "", shouldPop: false);
+        }
+      });
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Obx(() {
         final status = controller.status.value;
