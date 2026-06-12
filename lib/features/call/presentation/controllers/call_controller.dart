@@ -156,6 +156,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
 
       Logger.d('CallController: Accept Call API response isSuccess: ${response.isSuccess}');
       if (response.isSuccess) {
+        LocalNotificationService.cancelIncomingCallNotification(sessionId!);
         _startCallTimer();
         _showOngoingNotification();
         return true;
