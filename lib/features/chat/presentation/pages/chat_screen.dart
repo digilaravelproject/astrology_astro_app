@@ -112,7 +112,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             widget.userImage,
             shouldPop: false,
           );
-          return false;
+          return true;
         }
         return true;
       },
