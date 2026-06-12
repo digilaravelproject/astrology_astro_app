@@ -197,6 +197,43 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
                   color: Colors.grey.shade600,
                   fontWeight: FontWeight.w400,
                 ),
+                if (_controller.pendingRequest.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFF9E6),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.amber.shade200),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(Icons.info_rounded, color: Colors.amber, size: 22),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const AppText(
+                                'Price Increase Request Pending',
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF855B00),
+                              ),
+                              const SizedBox(height: 4),
+                              AppText(
+                                'Request submitted for ${_controller.pendingRequest['price_type']?.toString().toUpperCase()} rate. Old Rate: ₹${double.tryParse(_controller.pendingRequest['old_price']?.toString() ?? '')?.toStringAsFixed(0) ?? ''}, New Rate: ₹${double.tryParse(_controller.pendingRequest['new_price']?.toString() ?? '')?.toStringAsFixed(0) ?? ''}.',
+                                fontSize: 12,
+                                color: const Color(0xFF855B00),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 24),
                 
                 _buildPriceCard(
