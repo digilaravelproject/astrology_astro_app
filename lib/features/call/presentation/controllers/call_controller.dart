@@ -399,12 +399,16 @@ class CallController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> checkCurrentActiveCallSession() async {
+    Logger.d('CallController: checkCurrentActiveCallSession started');
     try {
       final response = await _apiClient.get(AppUrls.currentCallSession, handleError: false, showErrorScreen: false);
+      Logger.d('CallController: currentCallSession API response success: ${response.isSuccess}');
       if (response.isSuccess && response.body != null && response.body['data'] != null) {
         final session = response.body['data']['session'];
+        Logger.d('CallController: currentCallSession session: $session');
         if (session != null) {
           final sessionStatus = session['status']?.toString();
+          Logger.d('CallController: currentCallSession sessionStatus: $sessionStatus');
           if (sessionStatus == 'ongoing' || sessionStatus == 'ringing' || sessionStatus == 'dialing') {
             _isSummaryShown = false;
             sessionId = int.tryParse(session['id']?.toString() ?? '');
@@ -415,6 +419,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
             final consumer = session['consumer'];
             consumerName = consumer?['name']?.toString() ?? 'User';
             consumerImage = consumer?['image']?.toString() ?? consumer?['profile_image']?.toString() ?? consumer?['profile_photo']?.toString() ?? '';
+            Logger.d('CallController: currentCallSession consumerName: $consumerName, status: $status');
             
             if (sessionStatus == 'ongoing') {
               final startedAtStr = session['started_at']?.toString();
@@ -427,8 +432,8 @@ class CallController extends GetxController with WidgetsBindingObserver {
               }
               
               final offerSdp = session['offer']?.toString() ?? session['offer_sdp']?.toString();
+              Logger.d('CallController: currentCallSession offerSdp length: ${offerSdp?.length}');
               if (offerSdp != null && offerSdp.isNotEmpty) {
-                // For astrologer (receiver), accept offer
                 await webrtcService.acceptOffer(sessionId!, offerSdp);
               }
             } else if (sessionStatus == 'ringing' || sessionStatus == 'dialing') {
@@ -439,6 +444,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
             // Show Notification
             final minutes = (durationSeconds.value ~/ 60).toString().padLeft(2, '0');
             final seconds = (durationSeconds.value % 60).toString().padLeft(2, '0');
+            Logger.d('CallController: Showing ongoing call notification...');
             LocalNotificationService.showOngoingCallNotification(
               sessionId: sessionId!,
               title: 'Active Call in Progress',
@@ -449,6 +455,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
             );
 
             // Show Floating Bubble
+            Logger.d('CallController: Showing floating call bubble overlay...');
             FloatingCallBubble.show(
               context: Get.context!,
               sessionId: sessionId!,
@@ -462,11 +469,13 @@ class CallController extends GetxController with WidgetsBindingObserver {
                 Get.to(() => const CallScreen());
               },
             );
+            Logger.d('CallController: checkCurrentActiveCallSession setup complete');
           }
         }
       }
-    } catch (e) {
+    } catch (e, stack) {
       Logger.e('CallController: Error checking current active call session -> $e');
+      Logger.e('CallController: Error stack -> $stack');
     }
   }
 
