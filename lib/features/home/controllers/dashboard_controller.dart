@@ -6,6 +6,7 @@ import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
 import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
 import 'package:astro_astrologer/features/chat/presentation/bindings/chat_binding.dart';
+import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 
 class DashboardController extends GetxController {
   var selectedIndex = 0.obs;
@@ -20,6 +21,7 @@ class DashboardController extends GetxController {
     super.onReady();
     _checkOverlayPermission();
     _checkCurrentActiveSession();
+    Get.find<CallController>().checkCurrentActiveCallSession();
   }
 
   Future<void> _checkOverlayPermission() async {
@@ -59,7 +61,7 @@ class DashboardController extends GetxController {
       if (await FlutterOverlayWindow.isActive()) return;
       
       final response = await Get.find<ApiClient>().get(AppUrls.getCurrentSession);
-      if (response.isSuccess && response.body['data'] != null) {
+      if (response.isSuccess && response.body != null && response.body['data'] != null) {
         final session = response.body['data'];
         final sessionId = session['id'];
         final status = session['status'];

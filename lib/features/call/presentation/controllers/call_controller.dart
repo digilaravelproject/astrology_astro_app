@@ -13,7 +13,11 @@ import 'package:astro_astrologer/features/call/presentation/widgets/incoming_cal
 import 'package:astro_astrologer/features/call/presentation/widgets/call_summary_dialog.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
-class CallController extends GetxController {
+import 'package:flutter/material.dart';
+import 'package:astro_astrologer/features/call/presentation/widgets/floating_call_bubble.dart';
+import 'package:astro_astrologer/features/call/presentation/pages/call_screen.dart';
+
+class CallController extends GetxController with WidgetsBindingObserver {
   final ApiClient _apiClient = Get.find<ApiClient>();
   final WebRTCService webrtcService = WebRTCService();
 
@@ -39,6 +43,7 @@ class CallController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    WidgetsBinding.instance.addObserver(this);
     _setupWebSocketListeners();
   }
 
@@ -355,6 +360,7 @@ class CallController extends GetxController {
     if (sessionId != null) {
       LocalNotificationService.cancelOngoingCallNotification(sessionId!);
     }
+    FloatingCallBubble.dismiss();
     webrtcService.dispose();
     status.value = 'idle';
     isMuted.value = false;
@@ -362,7 +368,111 @@ class CallController extends GetxController {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      if ((status.value == 'ongoing' || status.value == 'ringing' || status.value == 'dialing') && sessionId != null && consumerName != null) {
+        minimizeToBubble(Get.context!, consumerName!, consumerImage ?? "", shouldPop: false);
+      }
+    } else if (state == AppLifecycleState.resumed) {
+      FloatingCallBubble.dismiss();
+    }
+  }
+
+  void minimizeToBubble(BuildContext context, String name, String image, {bool shouldPop = true}) {
+    if (sessionId == null || (status.value != 'ongoing' && status.value != 'ringing' && status.value != 'dialing')) return;
+    FloatingCallBubble.show(
+      context: context,
+      sessionId: sessionId!,
+      name: name,
+      imageUrl: image,
+      startedAt: status.value == 'ongoing' ? DateTime.now().subtract(Duration(seconds: durationSeconds.value)).toUtc().toIso8601String() : null,
+      status: status.value,
+      onTap: () {
+        final currentStatus = FloatingCallBubble.callStatus.value;
+        FloatingCallBubble.dismiss();
+        Get.to(() => const CallScreen());
+      },
+    );
+    if (shouldPop) {
+      Navigator.of(context).pop();
+    }
+  }
+
+  Future<void> checkCurrentActiveCallSession() async {
+    try {
+      final response = await _apiClient.get(AppUrls.currentCallSession, handleError: false, showErrorScreen: false);
+      if (response.isSuccess && response.body != null && response.body['data'] != null) {
+        final session = response.body['data']['session'];
+        if (session != null) {
+          final sessionStatus = session['status']?.toString();
+          if (sessionStatus == 'ongoing' || sessionStatus == 'ringing' || sessionStatus == 'dialing') {
+            _isSummaryShown = false;
+            sessionId = int.tryParse(session['id']?.toString() ?? '');
+            webrtcService.activeSessionId = sessionId;
+            status.value = sessionStatus!;
+            
+            consumerId = int.tryParse(session['consumer_id']?.toString() ?? '');
+            final consumer = session['consumer'];
+            consumerName = consumer?['name']?.toString() ?? 'User';
+            consumerImage = consumer?['image']?.toString() ?? consumer?['profile_image']?.toString() ?? consumer?['profile_photo']?.toString() ?? '';
+            
+            if (sessionStatus == 'ongoing') {
+              final startedAtStr = session['started_at']?.toString();
+              if (startedAtStr != null) {
+                final startedAt = DateTime.tryParse(startedAtStr)?.toLocal();
+                if (startedAt != null) {
+                  durationSeconds.value = DateTime.now().difference(startedAt).inSeconds;
+                  _startCallTimer();
+                }
+              }
+              
+              final offerSdp = session['offer']?.toString() ?? session['offer_sdp']?.toString();
+              if (offerSdp != null && offerSdp.isNotEmpty) {
+                // For astrologer (receiver), accept offer
+                await webrtcService.acceptOffer(sessionId!, offerSdp);
+              }
+            } else if (sessionStatus == 'ringing' || sessionStatus == 'dialing') {
+              _startRingtone(isIncoming: true);
+              _startRingingTimeout();
+            }
+            
+            // Show Notification
+            final minutes = (durationSeconds.value ~/ 60).toString().padLeft(2, '0');
+            final seconds = (durationSeconds.value % 60).toString().padLeft(2, '0');
+            LocalNotificationService.showOngoingCallNotification(
+              sessionId: sessionId!,
+              title: 'Active Call in Progress',
+              body: 'Talking with $consumerName - $minutes:$seconds',
+              startedAtMillis: sessionStatus == 'ongoing' && session['started_at'] != null 
+                  ? DateTime.tryParse(session['started_at'].toString())?.millisecondsSinceEpoch
+                  : null,
+            );
+
+            // Show Floating Bubble
+            FloatingCallBubble.show(
+              context: Get.context!,
+              sessionId: sessionId!,
+              name: consumerName!,
+              imageUrl: consumerImage ?? "",
+              startedAt: session['started_at']?.toString(),
+              status: status.value,
+              onTap: () {
+                final currentStatus = FloatingCallBubble.callStatus.value;
+                FloatingCallBubble.dismiss();
+                Get.to(() => const CallScreen());
+              },
+            );
+          }
+        }
+      }
+    } catch (e) {
+      Logger.e('CallController: Error checking current active call session -> $e');
+    }
+  }
+
+  @override
   void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
     _initiatedSubscription?.cancel();
     _dismissedSubscription?.cancel();
     _iceSubscription?.cancel();

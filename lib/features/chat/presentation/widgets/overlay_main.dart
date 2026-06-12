@@ -31,6 +31,7 @@ class _OverlayChatBubbleWidgetState extends State<OverlayChatBubbleWidget> {
   int _elapsedSeconds = 0;
   Timer? _timer;
   DateTime? _startedAt;
+  bool _isCall = false;
 
   @override
   void initState() {
@@ -46,6 +47,7 @@ class _OverlayChatBubbleWidgetState extends State<OverlayChatBubbleWidget> {
           _name = event['name'] ?? _name;
           _imageUrl = event['imageUrl'] ?? _imageUrl;
           _unreadCount = event['unreadCount'] ?? _unreadCount;
+          _isCall = event['isCall'] ?? _isCall;
 
           if (event['type'] == 'init' || event['type'] == 'update') {
              final startedAtStr = event['startedAt'];
@@ -93,7 +95,8 @@ class _OverlayChatBubbleWidgetState extends State<OverlayChatBubbleWidget> {
            // Try both methods just in case
            FlutterOverlayWindow.shareData({'action': 'tap'});
            
-           final SendPort? sendPort = IsolateNameServer.lookupPortByName('overlay_chat_port');
+           final String portName = _isCall ? 'overlay_call_port' : 'overlay_chat_port';
+           final SendPort? sendPort = IsolateNameServer.lookupPortByName(portName);
            sendPort?.send('tap');
         },
         child: Center(
@@ -114,7 +117,7 @@ class _OverlayChatBubbleWidgetState extends State<OverlayChatBubbleWidget> {
                     ),
                   ],
                   border: Border.all(
-                    color: const Color(0xFFFF6F00), // Saffron border
+                    color: _isCall ? Colors.green.shade600 : const Color(0xFFFF6F00), // Green for call, Saffron for chat
                     width: 2.5,
                   ),
                 ),
@@ -202,6 +205,18 @@ class _OverlayChatBubbleWidgetState extends State<OverlayChatBubbleWidget> {
   }
 
   Widget _buildInitials() {
+    if (_isCall) {
+      return Container(
+        color: const Color(0xFF2E1A47),
+        child: const Center(
+          child: Icon(
+            Icons.phone,
+            color: Colors.white,
+            size: 28,
+          ),
+        ),
+      );
+    }
     final String initial = _name.isNotEmpty ? _name[0].toUpperCase() : 'C';
     return Container(
       color: const Color(0xFF2E1A47),

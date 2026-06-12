@@ -1,5 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get.dart';
 import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
+import 'package:astro_astrologer/features/call/presentation/pages/call_screen.dart';
 
 class LocalNotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
@@ -19,7 +21,9 @@ class LocalNotificationService {
       onDidReceiveNotificationResponse: (NotificationResponse response) {
         // Tap handler (navigates back or restores app state)
         if (response.payload != null) {
-          if (FloatingChatBubble.onTapCallback != null) {
+          if (response.payload!.startsWith('call_')) {
+            Get.to(() => const CallScreen());
+          } else if (FloatingChatBubble.onTapCallback != null) {
             FloatingChatBubble.onTapCallback?.call();
           }
         }
