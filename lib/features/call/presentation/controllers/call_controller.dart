@@ -469,18 +469,20 @@ class CallController extends GetxController with WidgetsBindingObserver {
               }
             }
             
-            // Show Notification
-            final minutes = (durationSeconds.value ~/ 60).toString().padLeft(2, '0');
-            final seconds = (durationSeconds.value % 60).toString().padLeft(2, '0');
-            Logger.d('CallController: Showing ongoing call notification...');
-            LocalNotificationService.showOngoingCallNotification(
-              sessionId: sessionId!,
-              title: 'Active Call in Progress',
-              body: 'Talking with $consumerName - $minutes:$seconds',
-              startedAtMillis: sessionStatus == 'ongoing' && session['started_at'] != null 
-                  ? DateTime.tryParse(session['started_at'].toString())?.millisecondsSinceEpoch
-                  : null,
-            );
+            // Show Notification if the call is ongoing
+            if (sessionStatus == 'ongoing') {
+              final minutes = (durationSeconds.value ~/ 60).toString().padLeft(2, '0');
+              final seconds = (durationSeconds.value % 60).toString().padLeft(2, '0');
+              Logger.d('CallController: Showing ongoing call notification...');
+              LocalNotificationService.showOngoingCallNotification(
+                sessionId: sessionId!,
+                title: 'Active Call in Progress',
+                body: 'Talking with $consumerName - $minutes:$seconds',
+                startedAtMillis: session['started_at'] != null 
+                    ? DateTime.tryParse(session['started_at'].toString())?.millisecondsSinceEpoch
+                    : null,
+              );
+            }
 
             // Show Floating Bubble
             // if (!isCallScreenVisible) {
