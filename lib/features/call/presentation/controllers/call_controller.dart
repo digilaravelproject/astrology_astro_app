@@ -404,8 +404,11 @@ class CallController extends GetxController with WidgetsBindingObserver {
     try {
       final response = await _apiClient.get(AppUrls.currentCallSession, handleError: false, showErrorScreen: false);
       Logger.d('CallController: currentCallSession API response success: ${response.isSuccess}');
-      if (response.isSuccess && response.body != null && response.body['data'] != null) {
-        final session = response.body['data']['session'];
+      if (response.isSuccess && response.body != null) {
+        final bodyMap = response.body;
+        final session = bodyMap is Map 
+            ? (bodyMap['session'] ?? bodyMap['data']?['session'])
+            : null;
         Logger.d('CallController: currentCallSession session: $session');
         if (session != null) {
           final sessionStatus = session['status']?.toString();
