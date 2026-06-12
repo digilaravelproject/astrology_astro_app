@@ -466,6 +466,11 @@ class CallController extends GetxController with WidgetsBindingObserver {
                 status.value = 'ringing';
                 _startRingtone(isIncoming: true);
                 _startRingingTimeout();
+                LocalNotificationService.showIncomingCallNotification(
+                  sessionId: sessionId!,
+                  title: 'Incoming Call',
+                  body: 'Call from $consumerName',
+                );
               }
             }
             
