@@ -39,10 +39,11 @@ class PriceIncreaseController extends GetxController {
         currentLevel.value = data['current_level'] as Map<String, dynamic>? ?? {};
         nextLevel.value = data['next_level'] as Map<String, dynamic>? ?? {};
         currentRates.value = data['current_rates'] as Map<String, dynamic>? ?? {};
-        pendingRequest.value = data['pending_request'] as Map<String, dynamic>? ?? {};
+        final pendingList = data['pending_requests'] as List<dynamic>? ?? [];
+        pendingRequest.value = pendingList.isNotEmpty ? pendingList.first as Map<String, dynamic>? ?? {} : (data['pending_request'] as Map<String, dynamic>? ?? {});
         
-        canRequestMap.value = data['can_request'] as Map<String, dynamic>? ?? {};
-        Logger.d('PriceIncreaseController: status loaded successfully');
+        canRequestMap.assignAll(data['can_request'] as Map<dynamic, dynamic>? ?? {});
+        Logger.d('PriceIncreaseController: status loaded successfully, canRequestMap: $canRequestMap');
       } else {
         Logger.e('PriceIncreaseController: Failed to fetch status: ${response.message}');
       }
