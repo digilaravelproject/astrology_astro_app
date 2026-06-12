@@ -31,6 +31,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
   int? consumerId;
   String? consumerName;
   String? consumerImage;
+  String? incomingOfferSdp;
 
   AudioPlayer? _audioPlayer;
   Timer? _callTimer;
@@ -103,6 +104,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
   }
 
   void _handleIncomingCall(String offerSdp) {
+    incomingOfferSdp = offerSdp;
     _isSummaryShown = false;
     status.value = 'ringing';
     _startRingtone(isIncoming: true);
@@ -379,6 +381,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
     consumerId = null;
     consumerName = null;
     consumerImage = null;
+    incomingOfferSdp = null;
   }
 
   @override

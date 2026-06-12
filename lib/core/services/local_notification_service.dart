@@ -2,6 +2,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
 import 'package:astro_astrologer/features/call/presentation/pages/call_screen.dart';
+import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
+import 'package:astro_astrologer/features/call/presentation/widgets/incoming_call_dialog.dart';
 
 class LocalNotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
@@ -22,7 +24,16 @@ class LocalNotificationService {
         // Tap handler (navigates back or restores app state)
         if (response.payload != null) {
           if (response.payload!.startsWith('call_')) {
-            Get.to(() => const CallScreen());
+            if (Get.isRegistered<CallController>()) {
+              final callController = Get.find<CallController>();
+              if (callController.status.value == 'ringing' && callController.incomingOfferSdp != null) {
+                Get.to(() => IncomingCallDialog(offerSdp: callController.incomingOfferSdp!));
+              } else {
+                Get.to(() => const CallScreen());
+              }
+            } else {
+              Get.to(() => const CallScreen());
+            }
           } else if (FloatingChatBubble.onTapCallback != null) {
             FloatingChatBubble.onTapCallback?.call();
           }
