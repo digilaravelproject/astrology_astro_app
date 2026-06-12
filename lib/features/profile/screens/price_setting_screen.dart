@@ -25,37 +25,92 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
   }
 
   void _showRequestConfirmation(String priceType, double currentRate, double maxIncrease) {
+    final amountController = TextEditingController();
+    String? errorText;
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: AppText("Request Price Increase", fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF2E1A47)),
-        content: AppText(
-          "Are you sure you want to submit a price increase request for ${priceType.toUpperCase()}? Your rate will increase from ₹${currentRate.toStringAsFixed(0)} to ₹${(currentRate + maxIncrease).toStringAsFixed(0)}.",
-          fontSize: 14,
-          color: Colors.grey.shade700,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text("Cancel"),
-          ),
-          Obx(() {
-            return TextButton(
-              onPressed: _controller.isSubmitting.value
-                  ? null
-                  : () async {
-                      final success = await _controller.submitRequest(priceType);
-                      if (success) {
-                        Navigator.of(context).pop();
-                      }
-                    },
-              child: _controller.isSubmitting.value
-                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Text("Submit", style: TextStyle(color: AppColors.primaryColor)),
-            );
-          }),
-        ],
+      builder: (context) => StatefulBuilder(
+        builder: (context, setStateDialog) {
+          final text = amountController.text.trim();
+          final amount = double.tryParse(text);
+          final isValid = amount != null && amount > 0 && amount <= maxIncrease;
+
+          void validate() {
+            if (text.isEmpty) {
+              errorText = null;
+            } else if (amount == null) {
+              errorText = 'Enter a valid number';
+            } else if (amount <= 0) {
+              errorText = 'Amount must be greater than 0';
+            } else if (amount > maxIncrease) {
+              errorText = 'Maximum limit is ₹${maxIncrease.toStringAsFixed(0)}';
+            } else {
+              errorText = null;
+            }
+          }
+
+          return AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: AppText("Request Price Increase", fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF2E1A47)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppText(
+                  "Submit price increase request for ${priceType.toUpperCase()} rate.",
+                  fontSize: 14,
+                  color: Colors.grey.shade700,
+                ),
+                const SizedBox(height: 12),
+                AppText(
+                  "Current Rate: ₹${currentRate.toStringAsFixed(0)}/min",
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey.shade600,
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: amountController,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  decoration: InputDecoration(
+                    labelText: "Desired Increase Amount (₹)",
+                    helperText: "Max limit: ₹${maxIncrease.toStringAsFixed(0)}",
+                    errorText: errorText,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                  ),
+                  onChanged: (val) {
+                    setStateDialog(() {
+                      validate();
+                    });
+                  },
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("Cancel"),
+              ),
+              Obx(() {
+                return TextButton(
+                  onPressed: (!isValid || _controller.isSubmitting.value)
+                      ? null
+                      : () async {
+                          final success = await _controller.submitRequest(priceType, amount);
+                          if (success) {
+                            Navigator.of(context).pop();
+                          }
+                        },
+                  child: _controller.isSubmitting.value
+                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                      : const Text("Submit", style: TextStyle(color: AppColors.primaryColor)),
+                );
+              }),
+            ],
+          );
+        }
       ),
     );
   }

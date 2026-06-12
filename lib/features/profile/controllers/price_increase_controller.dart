@@ -40,7 +40,13 @@ class PriceIncreaseController extends GetxController {
         nextLevel.value = data['next_level'] as Map<String, dynamic>? ?? {};
         currentRates.value = data['current_rates'] as Map<String, dynamic>? ?? {};
         final pendingList = data['pending_requests'] as List<dynamic>? ?? [];
-        pendingRequest.value = pendingList.isNotEmpty ? pendingList.first as Map<String, dynamic>? ?? {} : (data['pending_request'] as Map<String, dynamic>? ?? {});
+        if (pendingList.isNotEmpty) {
+          pendingRequest.assignAll(pendingList.first as Map<dynamic, dynamic>);
+        } else if (data['pending_request'] != null) {
+          pendingRequest.assignAll(data['pending_request'] as Map<dynamic, dynamic>);
+        } else {
+          pendingRequest.clear();
+        }
         
         canRequestMap.assignAll(data['can_request'] as Map<dynamic, dynamic>? ?? {});
         Logger.d('PriceIncreaseController: status loaded successfully, canRequestMap: $canRequestMap');
@@ -71,12 +77,15 @@ class PriceIncreaseController extends GetxController {
     }
   }
 
-  Future<bool> submitRequest(String priceType) async {
+  Future<bool> submitRequest(String priceType, double increaseAmount) async {
     isSubmitting.value = true;
     try {
       final response = await _apiClient.post(
         AppUrls.priceIncreaseRequest,
-        data: {'price_type': priceType},
+        data: {
+          'price_type': priceType,
+          'increase_amount': increaseAmount,
+        },
       );
       if (response.isSuccess) {
         CustomSnackBar.showSuccess(response.message ?? "Request submitted successfully.");
