@@ -78,6 +78,45 @@ class LocalNotificationService {
     await _notificationsPlugin.cancel(sessionId);
   }
 
+  static Future<void> showIncomingCallNotification({
+    required int sessionId,
+    required String title,
+    required String body,
+  }) async {
+    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+      'incoming_call_channel_v1',
+      'Incoming Calls',
+      channelDescription: 'Alert for incoming calls',
+      importance: Importance.max,
+      priority: Priority.high,
+      ongoing: false,
+      autoCancel: true,
+      onlyAlertOnce: false,
+      showWhen: true,
+    );
+
+    final NotificationDetails notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      ),
+    );
+
+    await _notificationsPlugin.show(
+      sessionId + 200000,
+      title,
+      body,
+      notificationDetails,
+      payload: 'call_$sessionId',
+    );
+  }
+
+  static Future<void> cancelIncomingCallNotification(int sessionId) async {
+    await _notificationsPlugin.cancel(sessionId + 200000);
+  }
+
   static Future<void> showOngoingCallNotification({
     required int sessionId,
     required String title,

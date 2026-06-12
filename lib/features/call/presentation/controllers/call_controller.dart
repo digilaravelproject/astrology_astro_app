@@ -108,6 +108,14 @@ class CallController extends GetxController with WidgetsBindingObserver {
     _startRingtone(isIncoming: true);
     _startRingingTimeout();
 
+    if (sessionId != null) {
+      LocalNotificationService.showIncomingCallNotification(
+        sessionId: sessionId!,
+        title: 'Incoming Call',
+        body: 'Call from $consumerName',
+      );
+    }
+
     // Trigger Incoming Call screen/dialog
     Get.dialog(
       IncomingCallDialog(offerSdp: offerSdp),
@@ -360,6 +368,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
     _ringingTimer?.cancel();
     if (sessionId != null) {
       LocalNotificationService.cancelOngoingCallNotification(sessionId!);
+      LocalNotificationService.cancelIncomingCallNotification(sessionId!);
     }
     FloatingCallBubble.dismiss();
     webrtcService.dispose();
