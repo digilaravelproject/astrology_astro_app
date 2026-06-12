@@ -385,19 +385,19 @@ class CallController extends GetxController with WidgetsBindingObserver {
 
   void minimizeToBubble(BuildContext context, String name, String image, {bool shouldPop = true}) {
     if (sessionId == null || (status.value != 'ongoing' && status.value != 'ringing' && status.value != 'dialing')) return;
-    FloatingCallBubble.show(
-      context: context,
-      sessionId: sessionId!,
-      name: name,
-      imageUrl: image,
-      startedAt: status.value == 'ongoing' ? DateTime.now().subtract(Duration(seconds: durationSeconds.value)).toUtc().toIso8601String() : null,
-      status: status.value,
-      onTap: () {
-        final currentStatus = FloatingCallBubble.callStatus.value;
-        FloatingCallBubble.dismiss();
-        Get.to(() => const CallScreen());
-      },
-    );
+    // FloatingCallBubble.show(
+    //   context: context,
+    //   sessionId: sessionId!,
+    //   name: name,
+    //   imageUrl: image,
+    //   startedAt: status.value == 'ongoing' ? DateTime.now().subtract(Duration(seconds: durationSeconds.value)).toUtc().toIso8601String() : null,
+    //   status: status.value,
+    //   onTap: () {
+    //     final currentStatus = FloatingCallBubble.callStatus.value;
+    //     FloatingCallBubble.dismiss();
+    //     Get.to(() => const CallScreen());
+    //   },
+    // );
     if (shouldPop) {
       Navigator.of(context).pop();
     }
@@ -463,22 +463,22 @@ class CallController extends GetxController with WidgetsBindingObserver {
             );
 
             // Show Floating Bubble
-            if (!isCallScreenVisible) {
-              Logger.d('CallController: Showing floating call bubble overlay...');
-              FloatingCallBubble.show(
-                context: Get.context!,
-                sessionId: sessionId!,
-                name: consumerName!,
-                imageUrl: consumerImage ?? "",
-                startedAt: session['started_at']?.toString(),
-                status: status.value,
-                onTap: () {
-                  final currentStatus = FloatingCallBubble.callStatus.value;
-                  FloatingCallBubble.dismiss();
-                  Get.to(() => const CallScreen());
-                },
-              );
-            }
+            // if (!isCallScreenVisible) {
+            //   Logger.d('CallController: Showing floating call bubble overlay...');
+            //   FloatingCallBubble.show(
+            //     context: Get.context!,
+            //     sessionId: sessionId!,
+            //     name: consumerName!,
+            //     imageUrl: consumerImage ?? "",
+            //     startedAt: session['started_at']?.toString(),
+            //     status: status.value,
+            //     onTap: () {
+            //       final currentStatus = FloatingCallBubble.callStatus.value;
+            //       FloatingCallBubble.dismiss();
+            //       Get.to(() => const CallScreen());
+            //     },
+            //   );
+            // }
             Logger.d('CallController: checkCurrentActiveCallSession setup complete');
           } else {
             cleanUp();
