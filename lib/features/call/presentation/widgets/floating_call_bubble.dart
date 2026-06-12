@@ -37,7 +37,12 @@ class FloatingCallBubble {
         }
         Future.delayed(const Duration(milliseconds: 500), () {
           debugPrint("==== CALLING CALL ON TAP CALLBACK ====");
-          onTapCallback?.call();
+          if (onTapCallback != null) {
+            onTapCallback?.call();
+          } else {
+            FloatingCallBubble.dismiss();
+            Get.to(() => const CallScreen());
+          }
         });
       }
     });
@@ -116,7 +121,12 @@ class FloatingCallBubble {
             debugPrint("==== Error bringing app to foreground: $e ====");
           }
           Future.delayed(const Duration(milliseconds: 500), () {
-            onTapCallback?.call();
+            if (onTapCallback != null) {
+              onTapCallback?.call();
+            } else {
+              FloatingCallBubble.dismiss();
+              Get.to(() => const CallScreen());
+            }
           });
         }
       });
