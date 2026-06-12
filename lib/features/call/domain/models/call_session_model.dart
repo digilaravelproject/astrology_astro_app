@@ -8,9 +8,13 @@ class CallSessionListResponse {
   });
 
   factory CallSessionListResponse.fromJson(Map<String, dynamic> json) {
+    final Map<String, dynamic> targetJson = (json['data'] is Map<String, dynamic>)
+        ? json['data'] as Map<String, dynamic>
+        : json;
+
     return CallSessionListResponse(
-      currentPage: int.tryParse(json['current_page']?.toString() ?? '') ?? 1,
-      data: (json['data'] as List<dynamic>?)
+      currentPage: int.tryParse(targetJson['current_page']?.toString() ?? '') ?? 1,
+      data: (targetJson['data'] as List<dynamic>?)
               ?.map((e) => CallSessionModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
