@@ -32,8 +32,8 @@ class PriceIncreaseController extends GetxController {
     isLoadingStatus.value = true;
     try {
       final response = await _apiClient.get(AppUrls.priceIncreaseStatus);
-      if (response.isSuccess && response.data != null) {
-        final data = response.data;
+      if (response.isSuccess && response.body != null) {
+        final data = response.body;
         totalBusyMinutes.value = double.tryParse(data['total_busy_minutes']?.toString() ?? '0.0') ?? 0.0;
         
         currentLevel.value = data['current_level'] as Map<String, dynamic>? ?? {};
@@ -57,8 +57,8 @@ class PriceIncreaseController extends GetxController {
     isLoadingHistory.value = true;
     try {
       final response = await _apiClient.get(AppUrls.priceIncreaseHistory);
-      if (response.isSuccess && response.data != null) {
-        historyList.assignAll(response.data as List<dynamic>? ?? []);
+      if (response.isSuccess && response.body != null) {
+        historyList.assignAll(response.body as List<dynamic>? ?? []);
         Logger.d('PriceIncreaseController: history loaded successfully');
       } else {
         Logger.e('PriceIncreaseController: Failed to fetch history: ${response.message}');
