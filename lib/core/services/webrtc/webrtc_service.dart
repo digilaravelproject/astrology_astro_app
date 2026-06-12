@@ -49,6 +49,21 @@ class WebRTCService {
     }
   }
 
+  int? _activeSessionId;
+  final List<RTCIceCandidate> _queuedIceCandidates = [];
+
+  int? get activeSessionId => _activeSessionId;
+  set activeSessionId(int? id) {
+    _activeSessionId = id;
+    if (id != null && id > 0 && _queuedIceCandidates.isNotEmpty) {
+      Logger.d('WebRTCService: Flushing ${_queuedIceCandidates.length} queued ICE candidates for session $id.');
+      for (var candidate in _queuedIceCandidates) {
+        _sendIceCandidate(id, candidate);
+      }
+      _queuedIceCandidates.clear();
+    }
+  }
+
   Future<RTCSessionDescription> createOffer(int sessionId) async {
     try {
       await initLocalStream();
