@@ -123,26 +123,28 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
     );
   }
 
+  /// Format a rate value: show decimals only if non-zero (e.g. 21.6, not 21.00 or 21)
+  String _formatRate(dynamic rawRate) {
+    final double? val = double.tryParse(rawRate?.toString() ?? '');
+    if (val == null) return rawRate?.toString() ?? '0';
+    // If value has no fractional part, show as integer
+    if (val == val.truncateToDouble()) return val.toStringAsFixed(0);
+    // Otherwise strip trailing zeros (e.g. 21.60 → 21.6)
+    return val.toStringAsFixed(2).replaceAll(RegExp(r'0+$'), '').replaceAll(RegExp(r'\.$'), '');
+  }
+
   void _handlePriceCardTap(String priceType) {
-    final totalBusy = _controller.totalBusyMinutes.value;
-    final currentReq = _controller.currentLevel['required_busy_minutes'] != null
-        ? double.tryParse(_controller.currentLevel['required_busy_minutes'].toString()) ?? 0.0
-        : 0.0;
-    final nextReq = _controller.nextLevel['required_busy_minutes'] != null
-        ? double.tryParse(_controller.nextLevel['required_busy_minutes'].toString()) ?? 0.0
-        : 0.0;
-    final targetRequired = nextReq > 0 ? nextReq : currentReq;
+    // Use canRequestMap directly from API response
+    final canRequest = _controller.canRequestMap[priceType] == true;
 
-    final isEligible = totalBusy >= targetRequired && _controller.pendingRequest.isEmpty;
-
-    if (isEligible) {
+    if (canRequest) {
       final double currentRate = double.tryParse(
           (priceType == 'chat'
               ? _controller.currentRates['chat_rate_per_minute']
               : _controller.currentRates['call_rate_per_minute'])?.toString() ?? '0'
       ) ?? 0.0;
       final double maxIncrease = double.tryParse(
-          (_controller.currentLevel['max_increase_amount'] ?? _controller.nextLevel['max_increase_amount'])?.toString() ?? '1'
+          _controller.currentLevel['max_increase_amount']?.toString() ?? '1'
       ) ?? 1.0;
       _showRequestConfirmation(priceType, currentRate, maxIncrease);
     } else {
@@ -209,16 +211,16 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
         String videoRate = '30';
 
         if (_controller.currentRates.isNotEmpty) {
-          chatRate = double.tryParse(_controller.currentRates['chat_rate_per_minute']?.toString() ?? '')?.toStringAsFixed(0) ?? '15';
-          callRate = double.tryParse(_controller.currentRates['call_rate_per_minute']?.toString() ?? '')?.toStringAsFixed(0) ?? '20';
+          chatRate = _formatRate(_controller.currentRates['chat_rate_per_minute']);
+          callRate = _formatRate(_controller.currentRates['call_rate_per_minute']);
         } else {
           try {
             final authController = Get.find<AuthController>();
             final astrologer = authController.currentUser.value?.astrologer;
             if (astrologer != null) {
-              chatRate = double.tryParse(astrologer.chatRate)?.toStringAsFixed(0) ?? astrologer.chatRate;
-              callRate = double.tryParse(astrologer.callRate)?.toStringAsFixed(0) ?? astrologer.callRate;
-              videoRate = double.tryParse(astrologer.videoCallRate)?.toStringAsFixed(0) ?? astrologer.videoCallRate;
+              chatRate = _formatRate(astrologer.chatRate);
+              callRate = _formatRate(astrologer.callRate);
+              videoRate = _formatRate(astrologer.videoCallRate);
             }
           } catch (_) {}
         }
