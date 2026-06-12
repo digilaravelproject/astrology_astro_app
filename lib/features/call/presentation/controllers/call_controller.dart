@@ -24,7 +24,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
   final RxString status = 'idle'.obs; // idle, ringing, ongoing, completed, rejected, cancelled, missed
   final RxInt durationSeconds = 0.obs;
   final RxBool isMuted = false.obs;
-
+  final RxBool isSpeakerOn = false.obs;
   bool isCallScreenVisible = false;
 
   int? sessionId;
