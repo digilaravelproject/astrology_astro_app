@@ -81,6 +81,14 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                   ),
                   onChanged: (val) {
+                    final double? valDouble = double.tryParse(val);
+                    if (valDouble != null && valDouble > maxIncrease) {
+                      final maxStr = maxIncrease.toStringAsFixed(0);
+                      amountController.text = maxStr;
+                      amountController.selection = TextSelection.fromPosition(
+                        TextPosition(offset: maxStr.length),
+                      );
+                    }
                     setStateDialog(() {
                       validate();
                     });
