@@ -1,8 +1,15 @@
 import 'package:get/get.dart';
+import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import '../services/network/api_client.dart';
 import '../services/network/network_info.dart';
 import 'package:dio/dio.dart';
+import '../services/network/websocket_service.dart';
+import '../../features/chat/data/datasources/chat_remote_data_source.dart';
+import '../../features/chat/data/datasources/chat_local_data_source.dart';
+import '../../features/chat/data/repositories/chat_repository_impl.dart';
+import '../../features/chat/domain/repositories/i_chat_repository.dart';
+import '../../features/chat/domain/usecases/sync_message_status_usecase.dart';
 import '../../features/notification/data/repositories/notice_repository.dart';
 import '../../features/notification/domain/services/notice_service.dart';
 import '../../features/notification/controllers/notice_controller.dart';
@@ -30,6 +37,7 @@ import '../../features/notification/data/repositories/notification_repository.da
 import '../../features/notification/domain/usecases/get_notification_count_usecase.dart';
 import '../../features/notification/domain/usecases/get_notifications_usecase.dart';
 import '../../features/notification/domain/usecases/get_notification_detail_usecase.dart';
+import '../../features/notification/domain/usecases/mark_notification_read_usecase.dart';
 import '../../features/notification/controllers/notification_controller.dart';
 import '../../features/schedule/data/datasources/schedule_remote_data_source.dart';
 import '../../features/schedule/data/repositories/schedule_repository.dart';
@@ -45,6 +53,13 @@ class InitialBindings extends Bindings {
     Get.lazyPut(() => ApiClient(), fenix: true);
     Get.lazyPut(() => Connectivity(), fenix: true);
     Get.lazyPut(() => NetworkInfo(Get.find<Connectivity>()), fenix: true);
+    Get.putAsync<WebSocketService>(() => WebSocketService().init(), permanent: true);
+    
+    // Chat global dependencies (needed by WebSocketService)
+    Get.lazyPut<IChatRemoteDataSource>(() => ChatRemoteDataSourceImpl(apiClient: Get.find<ApiClient>()), fenix: true);
+    Get.lazyPut<IChatLocalDataSource>(() => ChatLocalDataSourceImpl(), fenix: true);
+    Get.lazyPut<IChatRepository>(() => ChatRepositoryImpl(remoteDataSource: Get.find<IChatRemoteDataSource>(), localDataSource: Get.find<IChatLocalDataSource>()), fenix: true);
+    Get.lazyPut(() => SyncMessageStatusUseCase(Get.find<IChatRepository>()), fenix: true);
 
     // Splash
     Get.lazyPut(() => SplashRepository(Get.find<ApiClient>()), fenix: true);
@@ -135,13 +150,18 @@ class InitialBindings extends Bindings {
     Get.lazyPut(() => GetNotificationCountUseCase(Get.find<NotificationRepository>()), fenix: true);
     Get.lazyPut(() => GetNotificationsUseCase(Get.find<NotificationRepository>()), fenix: true);
     Get.lazyPut(() => GetNotificationDetailUseCase(Get.find<NotificationRepository>()), fenix: true);
+    Get.lazyPut(() => MarkNotificationReadUseCase(Get.find<NotificationRepository>()), fenix: true);
     Get.put(
       NotificationController(
         Get.find<GetNotificationCountUseCase>(),
         Get.find<GetNotificationsUseCase>(),
         Get.find<GetNotificationDetailUseCase>(),
+        Get.find<MarkNotificationReadUseCase>(),
       ),
       permanent: true,
     );
+
+    // Call dependencies
+    Get.put(CallController(), permanent: true);
   }
 }

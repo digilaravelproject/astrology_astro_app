@@ -63,14 +63,9 @@ class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
   }
 
   String _formatTime(TimeOfDay time) {
-    final now = DateTime.now();
-    final dt = DateTime(now.year, now.month, now.day, time.hour, time.minute);
-    
-    // Manual format to avoiding bringing in intl package unless necessary
-    final hour = dt.hour > 12 ? dt.hour - 12 : (dt.hour == 0 ? 12 : dt.hour);
-    final minute = dt.minute.toString().padLeft(2, '0');
-    final period = dt.hour >= 12 ? 'PM' : 'AM';
-    return '${hour.toString().padLeft(2, '0')}:$minute $period';
+    final hour = time.hour.toString().padLeft(2, '0');
+    final minute = time.minute.toString().padLeft(2, '0');
+    return '$hour:$minute';
   }
 
   String _calculateSleepDuration() {
@@ -112,7 +107,10 @@ class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
               primary: AppColors.primaryColor,
             ),
           ),
-          child: child!,
+          child: MediaQuery(
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+            child: child!,
+          ),
         );
       },
     );

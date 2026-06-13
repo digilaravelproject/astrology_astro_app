@@ -3,9 +3,10 @@ import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
-import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import 'price_increase_history_screen.dart';
+import '../../auth/controllers/auth_controller.dart';
+import '../controllers/price_increase_controller.dart';
 
 class PriceSettingScreen extends StatefulWidget {
   const PriceSettingScreen({super.key});
@@ -15,128 +16,174 @@ class PriceSettingScreen extends StatefulWidget {
 }
 
 class _PriceSettingScreenState extends State<PriceSettingScreen> {
-  // Mock state for rates
-  String _chatRate = '15';
-  String _callRate = '20';
-  String _videoRate = '30';
+  late final PriceIncreaseController _controller;
 
-  void _showPriceEditBottomSheet({
-    required String title,
-    required String currentValue,
-    required IconData icon,
-    required Color iconColor,
-    required Function(String) onSave,
-  }) {
-    final controller = TextEditingController(text: currentValue);
-    showModalBottomSheet(
+  @override
+  void initState() {
+    super.initState();
+    _controller = Get.put(PriceIncreaseController());
+  }
+
+  void _showRequestConfirmation(String priceType, double currentRate, double maxIncrease) {
+    final amountController = TextEditingController();
+    String? errorText;
+
+    showDialog(
       context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) => Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(30),
-              topRight: Radius.circular(30),
-            ),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 50,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setStateDialog) {
+          final text = amountController.text.trim();
+          final amount = double.tryParse(text);
+          final isValid = amount != null && amount > 0 && amount <= maxIncrease;
+
+          void validate() {
+            if (text.isEmpty) {
+              errorText = null;
+            } else if (amount == null) {
+              errorText = 'Enter a valid number';
+            } else if (amount <= 0) {
+              errorText = 'Amount must be greater than 0';
+            } else if (amount > maxIncrease) {
+              errorText = 'Maximum limit is ₹${maxIncrease.toStringAsFixed(0)}';
+            } else {
+              errorText = null;
+            }
+          }
+
+          return AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: AppText("Request Price Increase", fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF2E1A47)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppText(
+                  "Submit price increase request for ${priceType.toUpperCase()} rate.",
+                  fontSize: 14,
+                  color: Colors.grey.shade700,
                 ),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: iconColor.withOpacity(0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(icon, color: iconColor, size: 20),
-                  ),
-                  const SizedBox(width: 12),
-                  AppText(
-                    'Set $title Rate',
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF2E1A47),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              AppText(
-                'Enter rate per minute (₹)',
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey.shade600,
-              ),
-              const SizedBox(height: 12),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: Colors.grey.shade200),
+                const SizedBox(height: 12),
+                AppText(
+                  "Current Rate: ₹${currentRate.toStringAsFixed(0)}/min",
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey.shade600,
                 ),
-                child: TextField(
-                  controller: controller,
-                  keyboardType: TextInputType.number,
-                  autofocus: true,
-                  style: TextStyle(
-                    fontSize: 18, 
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF2E1A47),
-                  ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: amountController,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   decoration: InputDecoration(
-                    prefixIcon: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                      child: const AppText('₹', fontSize: 18, fontWeight: FontWeight.w700, color: Color(0xFF2E1A47)),
-                    ),
-                    suffixIcon: const Padding(
-                      padding: EdgeInsets.only(right: 16, top: 15),
-                      child: AppText('/ min', fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey),
-                    ),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 15),
+                    labelText: "Desired Increase Amount (₹)",
+                    helperText: "Max limit: ₹${maxIncrease.toStringAsFixed(0)}",
+                    errorText: errorText,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                   ),
+                  onChanged: (val) {
+                    final double? valDouble = double.tryParse(val);
+                    if (valDouble != null && valDouble > maxIncrease) {
+                      final maxStr = maxIncrease.toStringAsFixed(0);
+                      amountController.text = maxStr;
+                      amountController.selection = TextSelection.fromPosition(
+                        TextPosition(offset: maxStr.length),
+                      );
+                    }
+                    setStateDialog(() {
+                      validate();
+                    });
+                  },
                 ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("Cancel"),
               ),
-              const SizedBox(height: 12),
-              AppText(
-                '* Note: This rate will be applied for all new consultations.',
-                fontSize: 12,
-                color: Colors.grey.shade500,
-                fontStyle: FontStyle.italic,
-              ),
-              const SizedBox(height: 32),
-              CustomButton(
-                text: 'Update Rate',
-                onPressed: () {
-                  onSave(controller.text);
-                  Get.back();
-                },
-                backgroundColor: AppColors.primaryColor,
-                borderRadius: 100,
-              ),
-              const SizedBox(height: 20),
+              Obx(() {
+                return TextButton(
+                  onPressed: (!isValid || _controller.isSubmitting.value)
+                      ? null
+                      : () async {
+                          final success = await _controller.submitRequest(priceType, amount);
+                          if (success) {
+                            Navigator.of(context).pop();
+                          }
+                        },
+                  child: _controller.isSubmitting.value
+                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                      : const Text("Submit", style: TextStyle(color: AppColors.primaryColor)),
+                );
+              }),
             ],
-          ),
-        ),
+          );
+        }
       ),
     );
+  }
+
+  /// Format a rate value: show decimals only if non-zero (e.g. 21.6, not 21.00 or 21)
+  String _formatRate(dynamic rawRate) {
+    final double? val = double.tryParse(rawRate?.toString() ?? '');
+    if (val == null) return rawRate?.toString() ?? '0';
+    // If value has no fractional part, show as integer
+    if (val == val.truncateToDouble()) return val.toStringAsFixed(0);
+    // Otherwise strip trailing zeros (e.g. 21.60 → 21.6)
+    return val.toStringAsFixed(2).replaceAll(RegExp(r'0+$'), '').replaceAll(RegExp(r'\.$'), '');
+  }
+
+  void _handlePriceCardTap(String priceType) {
+    // Use canRequestMap directly from API response
+    final canRequest = _controller.canRequestMap[priceType] == true;
+
+    if (canRequest) {
+      final double currentRate = double.tryParse(
+          (priceType == 'chat'
+              ? _controller.currentRates['chat_rate_per_minute']
+              : _controller.currentRates['call_rate_per_minute'])?.toString() ?? '0'
+      ) ?? 0.0;
+      final double maxIncrease = double.tryParse(
+          _controller.currentLevel['max_increase_amount']?.toString() ?? '1'
+      ) ?? 1.0;
+      _showRequestConfirmation(priceType, currentRate, maxIncrease);
+    } else {
+      if (_controller.pendingRequest.isNotEmpty) {
+        Get.dialog(
+          AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: const AppText("Request Pending", fontSize: 18, fontWeight: FontWeight.bold),
+            content: AppText(
+              "You already have a pending price increase request for ${_controller.pendingRequest['price_type']?.toString().toUpperCase()}.",
+              fontSize: 14,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Get.back(),
+                child: const Text("OK"),
+              )
+            ],
+          )
+        );
+      } else {
+        Get.dialog(
+          AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: const AppText("Not Eligible", fontSize: 18, fontWeight: FontWeight.bold),
+            content: const AppText(
+              "You are not eligible for a price increase yet. Please meet the busy time criteria first.",
+              fontSize: 14,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Get.back(),
+                child: const Text("OK"),
+              )
+            ],
+          )
+        );
+      }
+    }
   }
 
   @override
@@ -153,123 +200,99 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
           const SizedBox(width: 8),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AppText(
-              'Consultation Rates',
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF2E1A47),
-            ),
-            const SizedBox(height: 8),
-            AppText(
-              'Set your per-minute charges for different consultation modes.',
-              fontSize: 13,
-              color: Colors.grey.shade600,
-              fontWeight: FontWeight.w400,
-            ),
-            const SizedBox(height: 24),
-            
-            _buildPriceCard(
-              icon: Iconsax.message_copy,
-              title: 'Chat Rate',
-              rate: _chatRate,
-              iconColor: const Color(0xFF2196F3),
-              backgroundColor: const Color(0xFFE3F2FD),
-              onTap: () => _showPriceEditBottomSheet(
-                title: 'Chat',
-                currentValue: _chatRate,
-                icon: Iconsax.message_copy,
-                iconColor: const Color(0xFF2196F3),
-                onSave: (val) => setState(() => _chatRate = val),
-              ),
-            ),
-            
-            _buildPriceCard(
-              icon: Iconsax.call_copy,
-              title: 'Call Rate',
-              rate: _callRate,
-              iconColor: const Color(0xFF4CAF50),
-              backgroundColor: const Color(0xFFE8F5E9),
-              onTap: () => _showPriceEditBottomSheet(
-                title: 'Call',
-                currentValue: _callRate,
-                icon: Iconsax.call_copy,
-                iconColor: const Color(0xFF4CAF50),
-                onSave: (val) => setState(() => _callRate = val),
-              ),
-            ),
-            
-            _buildPriceCard(
-              icon: Iconsax.video_copy,
-              title: 'Video Rate',
-              rate: _videoRate,
-              iconColor: AppColors.primaryColor,
-              backgroundColor: AppColors.primaryColor.withOpacity(0.1),
-              onTap: () => _showPriceEditBottomSheet(
-                title: 'Video',
-                currentValue: _videoRate,
-                icon: Iconsax.video_copy,
-                iconColor: AppColors.primaryColor,
-                onSave: (val) => setState(() => _videoRate = val),
-              ),
-            ),
-            
-            const SizedBox(height: 32),
-            
-            // Price Increase Criteria Section
-            AppText(
-              'Price Increase Criteria',
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF2E1A47),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.grey.shade200),
-              ),
-              child: Column(
-                children: [
-                  // Table Header
+      body: Obx(() {
+        if (_controller.isLoadingStatus.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        // Get rates from API or fallback to AuthController's astrologer rates
+        String chatRate = '15';
+        String callRate = '20';
+        String videoRate = '30';
+
+        if (_controller.currentRates.isNotEmpty) {
+          chatRate = _formatRate(_controller.currentRates['chat_rate_per_minute']);
+          callRate = _formatRate(_controller.currentRates['call_rate_per_minute']);
+        } else {
+          try {
+            final authController = Get.find<AuthController>();
+            final astrologer = authController.currentUser.value?.astrologer;
+            if (astrologer != null) {
+              chatRate = _formatRate(astrologer.chatRate);
+              callRate = _formatRate(astrologer.callRate);
+              videoRate = _formatRate(astrologer.videoCallRate);
+            }
+          } catch (_) {}
+        }
+
+        // Get level/criteria values
+        final totalBusy = _controller.totalBusyMinutes.value;
+        final currentReq = _controller.currentLevel['required_busy_minutes'] != null
+            ? double.tryParse(_controller.currentLevel['required_busy_minutes'].toString()) ?? 0.0
+            : 0.0;
+        final nextReq = _controller.nextLevel['required_busy_minutes'] != null
+            ? double.tryParse(_controller.nextLevel['required_busy_minutes'].toString()) ?? 0.0
+            : 0.0;
+        
+        // Show next_level's max increase in the criteria table (aligns with next_level's required time)
+        // Fall back to current_level if next_level is not available
+        final maxIncrease = _controller.nextLevel.isNotEmpty
+            ? double.tryParse(_controller.nextLevel['max_increase_amount']?.toString() ?? '1') ?? 1.0
+            : double.tryParse(_controller.currentLevel['max_increase_amount']?.toString() ?? '1') ?? 1.0;
+
+        final targetRequired = nextReq > 0 ? nextReq : currentReq;
+        final diff = (targetRequired - totalBusy).clamp(0.0, double.infinity);
+
+        return RefreshIndicator(
+          onRefresh: () => _controller.fetchStatus(),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppText(
+                  'Consultation Rates',
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF2E1A47),
+                ),
+                const SizedBox(height: 8),
+                AppText(
+                  'Set your per-minute charges for different consultation modes.',
+                  fontSize: 13,
+                  color: Colors.grey.shade600,
+                  fontWeight: FontWeight.w400,
+                ),
+                if (_controller.pendingRequest.isNotEmpty) ...[
+                  const SizedBox(height: 16),
                   Container(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFFF9F9),
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20),
-                      ),
+                      color: const Color(0xFFFFF9E6),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.amber.shade200),
                     ),
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(child: Center(child: AppText('My Busy Time', fontSize: 13, fontWeight: FontWeight.w600, color: const Color(0xFF2E1A47)))),
-                        Expanded(child: Center(child: AppText('Required Time', fontSize: 13, fontWeight: FontWeight.w600, color: const Color(0xFF2E1A47)))),
-                        Expanded(child: Center(child: AppText('Price Increase', fontSize: 13, fontWeight: FontWeight.w600, color: const Color(0xFF2E1A47)))),
-                      ],
-                    ),
-                  ),
-                  const Divider(height: 1, color: Color(0xFFF0F0F0)),
-                  // Table Data
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    child: Row(
-                      children: [
-                        Expanded(child: Center(child: AppText('168 mins', fontSize: 15, fontWeight: FontWeight.w500, color: Colors.grey.shade700))),
-                        Expanded(child: Center(child: AppText('300 mins', fontSize: 15, fontWeight: FontWeight.w500, color: Colors.grey.shade700))),
+                        const Icon(Icons.info_rounded, color: Colors.amber, size: 22),
+                        const SizedBox(width: 12),
                         Expanded(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const AppText('₹1 ', fontSize: 15, fontWeight: FontWeight.w500, color: Color(0xFF2E1A47)),
-                              Container(
-                                decoration: const BoxDecoration(color: Colors.green, shape: BoxShape.circle),
-                                child: const Icon(Icons.arrow_upward_rounded, color: Colors.white, size: 14),
+                              const AppText(
+                                'Price Increase Request Pending',
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF855B00),
+                              ),
+                              const SizedBox(height: 4),
+                              AppText(
+                                'Request submitted for ${_controller.pendingRequest['price_type']?.toString().toUpperCase()} rate. Old Rate: ₹${double.tryParse(_controller.pendingRequest['old_price']?.toString() ?? '')?.toStringAsFixed(0) ?? ''}, New Rate: ₹${double.tryParse(_controller.pendingRequest['new_price']?.toString() ?? '')?.toStringAsFixed(0) ?? ''}.',
+                                fontSize: 12,
+                                color: const Color(0xFF855B00),
                               ),
                             ],
                           ),
@@ -277,80 +300,178 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
                       ],
                     ),
                   ),
-                  // Eligibility Banner
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFF1FDF5),
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(20),
-                        bottomRight: Radius.circular(20),
-                      ),
-                    ),
-                    child: Center(
-                      child: AppText(
-                        'Only 132 mins more to be eligible for price increase.',
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF1B5E20),
-                      ),
-                    ),
-                  ),
                 ],
-              ),
-            ),
+                const SizedBox(height: 24),
+                
+                _buildPriceCard(
+                  icon: Iconsax.message_copy,
+                  title: 'Chat Rate',
+                  rate: chatRate,
+                  iconColor: const Color(0xFF2196F3),
+                  backgroundColor: const Color(0xFFE3F2FD),
+                  onTap: () => _handlePriceCardTap('chat'),
+                  showEditIcon: _controller.canRequestMap['chat'] == true,
+                ),
+                
+                _buildPriceCard(
+                  icon: Iconsax.call_copy,
+                  title: 'Call Rate',
+                  rate: callRate,
+                  iconColor: const Color(0xFF4CAF50),
+                  backgroundColor: const Color(0xFFE8F5E9),
+                  onTap: () => _handlePriceCardTap('call'),
+                  showEditIcon: _controller.canRequestMap['call'] == true,
+                ),
+                
+                _buildPriceCard(
+                  icon: Iconsax.video_copy,
+                  title: 'Video Rate',
+                  rate: videoRate,
+                  iconColor: AppColors.primaryColor,
+                  backgroundColor: AppColors.primaryColor.withOpacity(0.1),
+                  onTap: () {
+                    Get.snackbar("Video Rate Update", "Video price increase request is not supported yet.");
+                  },
+                  showEditIcon: false,
+                ),
+                
+                const SizedBox(height: 32),
+                
+                // Price Increase Criteria Section
+                AppText(
+                  'Price Increase Criteria',
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF2E1A47),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.grey.shade200),
+                  ),
+                  child: Column(
+                    children: [
+                      // Table Header
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFFFF9F9),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
+                          ),
+                        ),
+                        child: const Row(
+                          children: [
+                            Expanded(child: Center(child: AppText('My Busy Time', fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF2E1A47)))),
+                            Expanded(child: Center(child: AppText('Required Time', fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF2E1A47)))),
+                            Expanded(child: Center(child: AppText('Price Increase', fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF2E1A47)))),
+                          ],
+                        ),
+                      ),
+                      const Divider(height: 1, color: Color(0xFFF0F0F0)),
+                      // Table Data
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: Row(
+                          children: [
+                            Expanded(child: Center(child: AppText('${totalBusy.toStringAsFixed(0)} mins', fontSize: 15, fontWeight: FontWeight.w500, color: Colors.grey.shade700))),
+                            Expanded(child: Center(child: AppText('${targetRequired.toStringAsFixed(0)} mins', fontSize: 15, fontWeight: FontWeight.w500, color: Colors.grey.shade700))),
+                            Expanded(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  AppText('₹${maxIncrease.toStringAsFixed(0)} ', fontSize: 15, fontWeight: FontWeight.w500, color: const Color(0xFF2E1A47)),
+                                  Container(
+                                    decoration: const BoxDecoration(color: Colors.green, shape: BoxShape.circle),
+                                    child: const Icon(Icons.arrow_upward_rounded, color: Colors.white, size: 14),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // Eligibility Banner
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: diff > 0 ? const Color(0xFFFFF9E6) : const Color(0xFFF1FDF5),
+                          borderRadius: const BorderRadius.only(
+                            bottomLeft: Radius.circular(20),
+                            bottomRight: Radius.circular(20),
+                          ),
+                        ),
+                        child: Center(
+                          child: AppText(
+                            diff > 0
+                                ? 'Only ${diff.toStringAsFixed(0)} mins more to be eligible for price increase.'
+                                : 'You are eligible for a price increase request!',
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: diff > 0 ? const Color(0xFF855B00) : const Color(0xFF1B5E20),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 
-            const SizedBox(height: 32),
-            
-            // Terms & Conditions Section
-            AppText(
-              'Terms & Conditions',
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF2E1A47),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: Colors.grey.shade100),
-              ),
-              child: Column(
-                children: [
-                  _buildTermItem(
-                    icon: Iconsax.repeat_copy,
-                    color: Colors.red.shade100,
-                    text: 'You can increase your price by ₹1.0 in every 90 day, if your busy time for last 30 days is > 5 hours',
+                const SizedBox(height: 32),
+                
+                // Terms & Conditions Section
+                AppText(
+                  'Terms & Conditions',
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF2E1A47),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: Colors.grey.shade100),
                   ),
-                  const SizedBox(height: 20),
-                  _buildTermItem(
-                    icon: Iconsax.status_up_copy,
-                    color: Colors.red.shade50.withOpacity(0.5),
-                    text: 'Price increase offer will be applied on your profile for 30 days.',
+                  child: Column(
+                    children: [
+                      _buildTermItem(
+                        icon: Iconsax.repeat_copy,
+                        color: Colors.red.shade100,
+                        text: 'You can increase your price based on level thresholds and performance parameters.',
+                      ),
+                      const SizedBox(height: 20),
+                      _buildTermItem(
+                        icon: Iconsax.status_up_copy,
+                        color: Colors.red.shade50.withOpacity(0.5),
+                        text: 'Price increase offers will be applied on your profile after admin review.',
+                      ),
+                      const SizedBox(height: 20),
+                      _buildTermItem(
+                        icon: Iconsax.clock_copy,
+                        color: Colors.red.shade50.withOpacity(0.5),
+                        text: 'If you don’t want to increase your price now, you can do it later — once your profile meets the required parameters.',
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 20),
-                  _buildTermItem(
-                    icon: Iconsax.clock_copy,
-                    color: Colors.red.shade50.withOpacity(0.5),
-                    text: 'If you don’t want to increase your price now, you can do it later — once your profile meets the required parameters.',
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 16),
+                const AppText(
+                  '**Other normalised parameters are also considered.',
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primaryColor,
+                ),
+                const SizedBox(height: 40),
+              ],
             ),
-            const SizedBox(height: 16),
-            const AppText(
-              '**Other normalised parameters are also considered.',
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: AppColors.primaryColor,
-            ),
-            const SizedBox(height: 40),
-          ],
-        ),
-      ),
+          ),
+        );
+      }),
     );
   }
 
@@ -384,6 +505,7 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
     required Color iconColor,
     required Color backgroundColor,
     required VoidCallback onTap,
+    bool showEditIcon = true,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -401,7 +523,7 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: onTap,
+          onTap: showEditIcon ? onTap : null,
           borderRadius: BorderRadius.circular(24),
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -450,14 +572,15 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
                     ],
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
-                    shape: BoxShape.circle,
+                if (showEditIcon)
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade50,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.edit_rounded, color: Colors.grey.shade400, size: 18),
                   ),
-                  child: Icon(Icons.edit_rounded, color: Colors.grey.shade400, size: 18),
-                ),
               ],
             ),
           ),

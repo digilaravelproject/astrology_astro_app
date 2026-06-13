@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import '../../profile/screens/my_earnings_screen.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:astro_astrologer/features/wallet/presentation/pages/my_earnings_screen.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/constants/app_strings.dart';
@@ -10,16 +11,17 @@ import '../../profile/screens/profile_screen.dart';
 import '../widgets/home_greeting.dart';
 import '../controllers/dashboard_controller.dart';
 import '../../call/call_history_screen.dart';
-import '../../chat/chat_history_screen.dart';
+import '../../chat/presentation/pages/chat_history_screen.dart';
+import '../../chat/presentation/pages/astrologer_sessions_screen.dart';
 import '../../kundli/kundli_list_screen.dart';
 import '../../astromall/astromall_orders_screen.dart';
 import '../../waitlist/waitlist_screen.dart';
-import '../../chat/assistant_chat_screen.dart';
-import '../../orders/orders_screen.dart';
+import '../../chat/presentation/pages/assistant_chat_screen.dart';
+import '../../orders/presentation/pages/orders_screen.dart';
 import '../../profile/screens/live_schedule_screen.dart';
 import '../../profile/screens/settings_screen.dart';
 import '../../profile/screens/my_reviews_screen.dart';
-import '../../orders/history_screen.dart';
+import '../../orders/presentation/pages/history_screen.dart';
 import '../../followers/my_followers_screen.dart';
 import '../../remedies/suggested_remedies_screen.dart';
 import '../../offers/offers_screen.dart';
@@ -35,7 +37,16 @@ import '../../notification/controllers/notification_controller.dart';
 import '../../profile/screens/invoice_screen.dart';
 import '../../profile/screens/performance_screen.dart';
 import '../../profile/screens/settings_screen.dart';
-
+import '../../../routes/app_routes.dart';
+import '../../../core/widgets/custom_image_widget.dart';
+import '../../../core/constants/app_urls.dart';
+import '../../wallet/presentation/controllers/wallet_controller.dart';
+import '../../wallet/domain/usecases/get_wallet_summary_usecase.dart';
+import '../../wallet/domain/usecases/get_wallet_earnings_usecase.dart';
+import '../../wallet/domain/usecases/get_wallet_withdrawals_usecase.dart';
+import '../../wallet/domain/usecases/request_withdrawal_usecase.dart';
+import '../../wallet/data/repositories/wallet_repository_impl.dart';
+import '../../../core/services/network/api_client.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -46,51 +57,77 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final AuthController authController = Get.find<AuthController>();
+  late WalletController _walletController;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!Get.isRegistered<WalletController>()) {
+      final repository = WalletRepositoryImpl(apiClient: Get.find<ApiClient>());
+      Get.put(WalletController(
+        GetWalletSummaryUseCase(repository),
+        GetWalletEarningsUseCase(repository),
+        GetWalletWithdrawalsUseCase(repository),
+        RequestWithdrawalUseCase(repository),
+      ));
+    }
+    _walletController = Get.find<WalletController>();
+  }
+
+  Future<void> _onRefresh() async {
+    // Refresh wallet summary
+    await _walletController.fetchWalletSummary();
+    // Force UI refresh for anything else if needed
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            pinned: true,
-            floating: false,
-            elevation: 0,
-            backgroundColor: Colors.white,
-            automaticallyImplyLeading: false,
-            titleSpacing: 0,
-            title: _buildStickyTopBar(authController),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.all(16),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                _buildGreeting(authController),
-                const SizedBox(height: 12),
-                _buildServiceCard(),
-                const SizedBox(height: 12),
-                const SpecialOfferBanner(),
-                const SizedBox(height: 12),
-                const StartPaidSessionSection(),
-                const SizedBox(height: 12),
-                _buildEarningsCard(),
-                const SizedBox(height: 12),
-                _buildTodayProgressCard(),
-                const SizedBox(height: 8),
-                _buildMenuGrid(),
-                const SizedBox(height: 20),
-                _buildSleepTimeCard(),
-                const SizedBox(height: 20),
-                // _buildDNDBanner(),
-                // const SizedBox(height: 16),
-                const TrainingVideosSection(),
-                const SizedBox(height: 80), // Space for bottom bar
-              ]),
+      body: RefreshIndicator(
+        onRefresh: _onRefresh,
+        color: AppColors.primaryColor,
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverAppBar(
+              pinned: true,
+              floating: false,
+              elevation: 0,
+              backgroundColor: Colors.white,
+              automaticallyImplyLeading: false,
+              titleSpacing: 0,
+              title: _buildStickyTopBar(authController),
             ),
-          ),
-        ],
+            SliverPadding(
+              padding: const EdgeInsets.all(16),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  _buildGreeting(authController),
+                  const SizedBox(height: 12),
+                  _buildServiceCard(),
+                  const SizedBox(height: 12),
+                  const SpecialOfferBanner(),
+                  const SizedBox(height: 12),
+                  const StartPaidSessionSection(),
+                  const SizedBox(height: 12),
+                  _buildEarningsCard(),
+                  const SizedBox(height: 12),
+                  _buildTodayProgressCard(),
+                  const SizedBox(height: 8),
+                  _buildMenuGrid(),
+                  const SizedBox(height: 20),
+                  _buildSleepTimeCard(),
+                  const SizedBox(height: 20),
+                  const TrainingVideosSection(),
+                  const SizedBox(height: 80), // Space for bottom bar
+                ]),
+              ),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 20),
@@ -117,43 +154,69 @@ class _HomeScreenState extends State<HomeScreen> {
               debugPrint('Profile icon tapped - shifting to index 4');
               Get.find<DashboardController>().changeIndex(4);
             },
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppColors.primaryColor,
-                  width: 2,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primaryColor.withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: ClipOval(
-                child: Container(
-                  decoration: const BoxDecoration(
-                    gradient: AppColors.primaryGradient,
-                  ),
-                  child: Center(
-                    child: Text(
-                      authController.currentUser.value?.name.isNotEmpty == true
-                          ? authController.currentUser.value!.name[0].toUpperCase()
-                          : 'A',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
+            child: Obx(() {
+              final user = authController.currentUser.value;
+              final photo = user?.astrologer?.profilePhoto ?? user?.profilePhoto;
+              final String? imageUrl = (photo != null && photo.isNotEmpty)
+                  ? (photo.startsWith('http') ? photo : '\${AppUrls.baseImageUrl}$photo')
+                  : null;
+
+              return Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: AppColors.primaryColor,
+                    width: 2.5,
                   ),
                 ),
-              ),
-            ),
+                child: ClipOval(
+                  child: imageUrl != null
+                      ? CachedNetworkImage(
+                          imageUrl: imageUrl,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => const Center(
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Container(
+                            decoration: const BoxDecoration(
+                              gradient: AppColors.primaryGradient,
+                            ),
+                            child: Center(
+                              child: Text(
+                                user?.name.isNotEmpty == true ? user!.name[0].toUpperCase() : 'A',
+                                style: const TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      : Container(
+                          decoration: const BoxDecoration(
+                            gradient: AppColors.primaryGradient,
+                          ),
+                          child: Center(
+                            child: Text(
+                              user?.name.isNotEmpty == true ? user!.name[0].toUpperCase() : 'A',
+                              style: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                ),
+              );
+            }),
           ),
           Row(
             children: [
@@ -257,13 +320,16 @@ class _HomeScreenState extends State<HomeScreen> {
               child: const Icon(Icons.account_balance_wallet_rounded, color: Colors.white, size: 10),
             ),
             const SizedBox(width: 6),
-            AppText(
-              "100",
-              fontSize: 13,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF2E1A47),
-              letterSpacing: 0.5,
-            ),
+            Obx(() {
+              final balance = _walletController.summary.value?.totalBalance ?? 0.0;
+              return AppText(
+                balance.toStringAsFixed(0),
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                color: const Color(0xFF2E1A47),
+                letterSpacing: 0.5,
+              );
+            }),
           ],
         ),
       ),
@@ -528,19 +594,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String _formatDisplayTime(String time24) {
-    try {
-      final parts = time24.split(':');
-      final hour = int.parse(parts[0]);
-      final minute = int.parse(parts[1]);
-      
-      final displayHour = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
-      final period = hour >= 12 ? 'PM' : 'AM';
-      final displayMinute = minute.toString().padLeft(2, '0');
-      
-      return '${displayHour.toString().padLeft(2, '0')}:$displayMinute $period';
-    } catch (e) {
-      return time24; // Return original if parsing fails
-    }
+    return time24;
   }
 
   }
@@ -803,7 +857,7 @@ class _HomeScreenState extends State<HomeScreen> {
         bgColor: const Color(0xFFEAF8F1),
         iconBgColor: const Color(0xFFD0F0E0),
         textColor: const Color(0xFF0D9D57),
-        onTap: () => Get.to(() => ChatHistoryScreen()),
+        onTap: () => Get.to(() => AstrologerSessionsScreen()),
       ),
       _MenuData(
         title: 'Call',
@@ -870,7 +924,7 @@ class _HomeScreenState extends State<HomeScreen> {
         bgColor: const Color(0xFFFFF3E0),
         iconBgColor: const Color(0xFFFFE0B2),
         textColor: const Color(0xFFE65100),
-        onTap: () => Get.to(() => const PanchangScreen()),
+        onTap: () => Get.toNamed(AppRoutes.panchangScreen),
       ),
       _MenuData(
         title: 'Astrology Blog',
@@ -998,7 +1052,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: OutlinedButton(
                 onPressed: () {
                   Get.back();
-                  Get.to(() => const LiveScheduleScreen());
+                  Get.toNamed(AppRoutes.liveSchedule);
                 },
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: Color(0xFF2196F3), width: 1.5), // Blue for Schedule

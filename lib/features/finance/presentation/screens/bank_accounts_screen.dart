@@ -27,94 +27,105 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext dialogContext) {
-        return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryColor.withOpacity(0.1),
-                    shape: BoxShape.circle,
+        return Obx(() {
+          final isLoading = _controller.isLoading.value;
+          return Dialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryColor.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Iconsax.verify_copy,
+                      color: AppColors.primaryColor,
+                      size: 32,
+                    ),
                   ),
-                  child: Icon(
-                    Iconsax.verify_copy,
-                    color: AppColors.primaryColor,
-                    size: 32,
+                  const SizedBox(height: 20),
+                  const AppText(
+                    'Set as Default?',
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF2E1A47),
                   ),
-                ),
-                const SizedBox(height: 20),
-                const AppText(
-                  'Set as Default?',
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF2E1A47),
-                ),
-                const SizedBox(height: 12),
-                AppText(
-                  'Are you sure you want to set this account as your default bank account?',
-                  fontSize: 14,
-                  color: Colors.grey.shade600,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 28),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.of(dialogContext).pop();
-                        },
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            side: BorderSide(color: Colors.grey.shade300),
+                  const SizedBox(height: 12),
+                  AppText(
+                    'Are you sure you want to set this as your default bank account?',
+                    fontSize: 14,
+                    color: Colors.grey.shade600,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 28),
+                  if (isLoading)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: CircularProgressIndicator(),
+                    )
+                  else
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.of(dialogContext).pop();
+                            },
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                side: BorderSide(color: Colors.grey.shade300),
+                              ),
+                            ),
+                            child: const AppText(
+                              'Cancel',
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF2E1A47),
+                            ),
                           ),
                         ),
-                        child: const AppText(
-                          'Cancel',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF2E1A47),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: TextButton(
-                        onPressed: () {
-                          _controller.setDefaultBankAccount(accountId);
-                          Navigator.of(dialogContext).pop();
-                        },
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          backgroundColor: AppColors.primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () async {
+                              await _controller.setDefaultBankAccount(accountId);
+                              if (dialogContext.mounted) {
+                                Navigator.of(dialogContext).pop();
+                              }
+                            },
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              backgroundColor: AppColors.primaryColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: const AppText(
+                              'Set Default',
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
-                        child: const AppText(
-                          'Yes, Set Default',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
+          );
+        });
       },
     );
   }

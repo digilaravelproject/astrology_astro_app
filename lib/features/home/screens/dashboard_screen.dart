@@ -11,7 +11,11 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import '../../profile/screens/live_schedule_screen.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../notification/notice_screen.dart';
-import '../../orders/orders_screen.dart';
+import '../../orders/presentation/pages/orders_screen.dart';
+import '../../../routes/app_routes.dart';
+
+import 'package:permission_handler/permission_handler.dart';
+import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -22,6 +26,17 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   final DashboardController controller = Get.find<DashboardController>();
+
+  @override
+  void initState() {
+    super.initState();
+    _requestPermissions();
+  }
+
+  Future<void> _requestPermissions() async {
+    // Request microphone permission on launch
+    await Permission.microphone.request();
+  }
 
   final List<Widget> _screens = [
     const HomeScreen(),
@@ -46,6 +61,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
         
+        final callController = Get.isRegistered<CallController>()
+            ? Get.find<CallController>()
+            : null;
+        if (callController != null && callController.sessionId != null) {
+          try {
+            const channel = MethodChannel('com.suryapath.astrologer/app_retain');
+            await channel.invokeMethod('sendToBackground');
+          } catch (e) {
+            debugPrint("Error sending to background: $e");
+          }
+          return;
+        }
+
         if (controller.selectedIndex.value != 0) {
           // If not on Home tab, go to Home tab
           controller.changeIndex(0);
@@ -189,7 +217,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: OutlinedButton(
                 onPressed: () {
                   Get.back();
-                  Get.to(() => const LiveScheduleScreen());
+                  Get.toNamed(AppRoutes.liveSchedule);
                 },
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: Color(0xFF2196F3), width: 1.5), // Blue for Schedule

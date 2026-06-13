@@ -1,8 +1,8 @@
 import '../../../../core/services/network/response_model.dart';
-import '../../data/repositories/remedy_repository.dart';
+import '../repositories/remedy_repository_interface.dart';
 
 class GetRemediesUseCase {
-  final RemedyRepository _repository;
+  final RemedyRepositoryInterface _repository;
 
   GetRemediesUseCase(this._repository);
 

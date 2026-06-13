@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/constants/app_urls.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
@@ -16,7 +17,7 @@ import 'availability_screen.dart';
 import 'live_schedule_screen.dart';
 import 'my_reviews_screen.dart';
 import 'performance_screen.dart';
-import 'my_earnings_screen.dart';
+import 'package:astro_astrologer/features/wallet/presentation/pages/my_earnings_screen.dart';
 import 'change_language_screen.dart';
 import 'help_support_screen.dart';
 import 'faq_screen.dart';
@@ -98,27 +99,59 @@ class ProfileScreen extends StatelessWidget {
                   final user = authController.currentUser.value;
                   final profilePhoto = user?.astrologer?.profilePhoto;
 
-                  ImageProvider imageProvider;
-
-                  if (profilePhoto != null && profilePhoto.isNotEmpty) {
-                    imageProvider = NetworkImage('${AppUrls.baseImageUrl}$profilePhoto');
-                  } else {
-                    imageProvider = const NetworkImage('https://i.pravatar.cc/300?u=a042581f4e29026704d');
-                  }
+                  final String? imageUrl = (profilePhoto != null && profilePhoto.isNotEmpty)
+                      ? (profilePhoto.startsWith('http') ? profilePhoto : '${AppUrls.baseImageUrl}$profilePhoto')
+                      : null;
 
                   return Container(
                     height: 100,
                     width: 100,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      image: DecorationImage(
-                        image: imageProvider,
-                        fit: BoxFit.cover,
-                      ),
                       border: Border.all(
                         color: AppColors.primaryColor.withOpacity(0.2),
                         width: 1,
                       ),
+                    ),
+                    child: ClipOval(
+                      child: imageUrl != null
+                          ? CachedNetworkImage(
+                              imageUrl: imageUrl,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => const Center(
+                                child: SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                ),
+                              ),
+                              errorWidget: (context, url, error) => Container(
+                                color: Colors.white,
+                                child: Center(
+                                  child: Text(
+                                    user?.name.isNotEmpty == true ? user!.name[0].toUpperCase() : 'A',
+                                    style: const TextStyle(
+                                      fontSize: 40,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.primaryColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )
+                          : Container(
+                              color: Colors.white,
+                              child: Center(
+                                child: Text(
+                                  user?.name.isNotEmpty == true ? user!.name[0].toUpperCase() : 'A',
+                                  style: const TextStyle(
+                                    fontSize: 40,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.primaryColor,
+                                  ),
+                                ),
+                              ),
+                            ),
                     ),
                   );
                 }

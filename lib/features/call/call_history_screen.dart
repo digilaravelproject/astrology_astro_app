@@ -10,13 +10,26 @@ import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
 import 'package:astro_astrologer/features/call/call_details_screen.dart';
 import 'package:astro_astrologer/features/home/widgets/add_note_bottom_sheet.dart';
 import 'package:astro_astrologer/features/home/widgets/animated_favorite_button.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/widgets/loyal_badge.dart';
+
+import 'package:astro_astrologer/core/services/network/api_client.dart';
+import 'package:astro_astrologer/features/orders/presentation/controllers/history_controller.dart';
+import 'package:astro_astrologer/features/orders/domain/usecases/get_astrologer_call_sessions_usecase.dart';
+import 'package:astro_astrologer/features/orders/data/repositories/history_repository.dart';
 
 class CallHistoryScreen extends StatelessWidget {
   const CallHistoryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Instantiate the HistoryController with its dependencies
+    final HistoryController controller = Get.put(HistoryController(
+      getAstrologerCallSessionsUseCase: GetAstrologerCallSessionsUseCase(
+        HistoryRepositoryImpl(apiClient: Get.find<ApiClient>()),
+      ),
+    ));
+
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
       appBar: const CustomAppBar(
@@ -25,48 +38,74 @@ class CallHistoryScreen extends StatelessWidget {
       body: Column(
         children: [
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(12),
-              children: [
-                _buildHistoryCard(
-                  context,
-                  type: "New (indian)",
-                  status: "Completed",
-                  id: "#1770633564107018",
-                  price: "2.5",
-                  date: "09 Feb 2026 (04:09-04:10 PM)",
-                  details: {
-                    "Name": "Gurudev (AT-8MWK66Q)",
-                    "Gender": "Male",
-                    "DOB": "05-November-2003,12:00 PM",
-                    "Duration": "2 minutes",
-                    "Rate": "₹ 2.5/min",
-                    "POB": "Shahada, Maharashtra, India",
+            child: Obx(() {
+              if (controller.isLoading.value && controller.callSessions.isEmpty) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (controller.callSessions.isEmpty) {
+                return const Center(child: AppText("No call history available.", fontSize: 16));
+              }
+              return RefreshIndicator(
+                onRefresh: () => controller.fetchCallSessions(isRefresh: true),
+                child: NotificationListener<ScrollNotification>(
+                  onNotification: (ScrollNotification scrollInfo) {
+                    if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                      controller.fetchCallSessions();
+                    }
+                    return true;
                   },
-                  showRefund: true,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(12),
+                    itemCount: controller.callSessions.length,
+                    itemBuilder: (context, index) {
+                      final session = controller.callSessions[index];
+                      final durationMinutes = (session.durationSeconds / 60).ceil();
+                      
+                      // Format DOB
+                      String dobStr = "N/A";
+                      if (session.consumer?.dateOfBirth != null) {
+                        try {
+                          final dobDate = DateTime.tryParse(session.consumer!.dateOfBirth!)?.toLocal();
+                          if (dobDate != null) {
+                            final months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                            final monthName = months[dobDate.month - 1];
+                            final day = dobDate.day.toString().padLeft(2, '0');
+                            final year = dobDate.year.toString();
+                            
+                            String timeStr = "";
+                            if (session.consumer?.timeOfBirth != null && session.consumer!.timeOfBirth!.isNotEmpty) {
+                              timeStr = ",${session.consumer!.timeOfBirth!}";
+                            }
+                            dobStr = "$day-$monthName-$year$timeStr";
+                          }
+                        } catch (_) {}
+                      }
+
+                      final Map<String, String> details = {
+                        "Name": session.consumer?.name ?? "User (AT-${session.consumerId})",
+                        "Gender": session.consumer?.gender?.capitalizeFirst ?? "N/A",
+                        "DOB": dobStr,
+                        "Duration": "$durationMinutes minutes",
+                        "Rate": "₹ ${session.ratePerMinute}/min",
+                        "POB": session.consumer?.placeOfBirth ?? "N/A",
+                      };
+
+                      return _buildHistoryCard(
+                        context,
+                        type: "New (indian)",
+                        status: session.status.capitalizeFirst ?? "Completed",
+                        id: "${session.id}",
+                        price: session.totalCost.toString(),
+                        date: session.createdAt ?? "N/A",
+                        details: details,
+                        showRefund: false,
+                        imageUrl: session.consumer?.profilePhoto,
+                      );
+                    },
+                  ),
                 ),
-                const SizedBox(height: 12),
-                _buildHistoryCard(
-                  context,
-                  type: "Repeat (indian)",
-                  status: "Completed",
-                  id: "#1770627442093338",
-                  price: "105.0",
-                  date: "09 Feb 2026 (02:27-02:35 PM)",
-                  isLoyal: true,
-                  details: {
-                    "Name": "Pallavi (AT-MKK63GE)",
-                    "Gender": "Female",
-                    "DOB": "10-December-1982,04:15 PM",
-                    "Duration": "8 minutes",
-                    "Rate": "₹ 15.0/min",
-                    "Rating": "⭐⭐⭐⭐⭐",
-                    "POB": "Nashik, Maharashtra, India",
-                  },
-                  showSuggestRemedy: true,
-                ),
-              ],
-            ),
+              );
+            }),
           ),
           _buildFooterNote(),
         ],
@@ -85,6 +124,7 @@ class CallHistoryScreen extends StatelessWidget {
     bool isLoyal = false,
     bool showRefund = false,
     bool showSuggestRemedy = false,
+    String? imageUrl,
   }) {
     return Container(
       margin: const EdgeInsets.only(top: 14, bottom: 8),
@@ -172,15 +212,39 @@ class CallHistoryScreen extends StatelessWidget {
                       Container(
                         width: 44,
                         height: 44,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Colors.orange.shade300, Colors.deepOrange.shade400],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
+                        decoration: const BoxDecoration(
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.wb_sunny_rounded, color: Colors.white, size: 24),
+                        child: ClipOval(
+                          child: imageUrl != null && imageUrl.isNotEmpty
+                              ? CachedNetworkImage(
+                                  imageUrl: imageUrl.startsWith('http')
+                                      ? imageUrl
+                                      : 'https://suryapathkundli.com/storage/app/public/$imageUrl',
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) => const CircularProgressIndicator(strokeWidth: 2),
+                                  errorWidget: (context, url, error) => Container(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [Colors.orange.shade300, Colors.deepOrange.shade400],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ),
+                                    ),
+                                    child: const Icon(Icons.wb_sunny_rounded, color: Colors.white, size: 20),
+                                  ),
+                                )
+                              : Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [Colors.orange.shade300, Colors.deepOrange.shade400],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                  ),
+                                  child: const Icon(Icons.wb_sunny_rounded, color: Colors.white, size: 20),
+                                ),
+                        ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(

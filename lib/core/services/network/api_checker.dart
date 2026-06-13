@@ -32,6 +32,9 @@ class ApiChecker {
   static Response checkResponse(Response response, {bool showToaster = false}) {
     switch (response.statusCode) {
       case 200:
+        if (response.data is Map && response.data.containsKey('auth')) {
+          return response;
+        }
         final res = (response.data['res'] ?? response.data['status'])?.toString().toLowerCase();
         Logger.d('ApiChecker: checkResponse 200, res/status: $res');
         if (res == 'success') {
@@ -310,7 +313,7 @@ class ApiChecker {
       }
     }
 
-    final result = response.data is Map && (response.data['res'] ?? response.data['status'])?.toString().toLowerCase() == 'success'
+    final result = response.data is Map && ((response.data['res'] ?? response.data['status'])?.toString().toLowerCase() == 'success' || response.data.containsKey('auth'))
         ? ResponseModel.fromJson(response.data, statusCode: statusCode)
         : ResponseModel(
             isSuccess: false,

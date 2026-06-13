@@ -4,6 +4,7 @@ import '../../../core/services/storage/shared_prefs.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../routes/route_helper.dart';
 import '../domain/services/splash_service.dart';
+import '../../../core/services/network/websocket_service.dart';
 
 class SplashController extends GetxController {
   final SplashService _splashService;
@@ -37,6 +38,8 @@ class SplashController extends GetxController {
 
         if (isLoggedIn && userData != null && userData.isNotEmpty) {
           print('[SPLASH] User is logged in, navigating to dashboard');
+          // Connect WebSocket now that user is logged in
+          Get.find<WebSocketService>().connect();
           Get.offAllNamed(RouteHelper.getDashboardRoute());
         } else {
           print('[SPLASH] User is not logged in, navigating to login');

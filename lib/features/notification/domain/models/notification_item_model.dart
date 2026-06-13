@@ -17,6 +17,26 @@ class NotificationItemModel {
     required this.createdAt,
   });
 
+  NotificationItemModel copyWith({
+    int? id,
+    int? userId,
+    String? title,
+    String? body,
+    dynamic meta,
+    bool? isRead,
+    String? createdAt,
+  }) {
+    return NotificationItemModel(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      title: title ?? this.title,
+      body: body ?? this.body,
+      meta: meta ?? this.meta,
+      isRead: isRead ?? this.isRead,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
   factory NotificationItemModel.fromJson(Map<String, dynamic> json) {
     return NotificationItemModel(
       id: json['id'] ?? 0,

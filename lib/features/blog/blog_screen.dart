@@ -5,6 +5,10 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import 'blog_detail_screen.dart';
+import 'domain/models/blog_model.dart';
+import 'presentation/controllers/blog_controller.dart';
+import 'presentation/bindings/blog_binding.dart';
+import '../../core/constants/app_urls.dart';
 
 class BlogScreen extends StatefulWidget {
   const BlogScreen({super.key});
@@ -14,65 +18,25 @@ class BlogScreen extends StatefulWidget {
 }
 
 class _BlogScreenState extends State<BlogScreen> {
+  late BlogController _controller;
   final TextEditingController _searchController = TextEditingController();
-  
-  final List<String> _categories = ["All", "Planetary Influence", "Transits", "Wellness", "Vedic"];
-  String _selectedCategory = "All";
-
-  final List<Map<String, dynamic>> _allBlogs = [
-    {
-      "title": "The Power of Saturn in Vedic Astrology",
-      "excerpt": "Learn how the 'Great Teacher' influences your life through discipline, hard work, and eventual rewards.",
-      "image": "https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=1000",
-      "author": "Acharya Rahul",
-      "authorAvatar": "R",
-      "date": "20 Feb 2026",
-      "readTime": "8 min read",
-      "category": "Planetary Influence",
-      "content": "Saturn, known as Shani in Vedic astrology, is often misunderstood as a purely malefic planet. However, its true purpose is to bring structure and discipline to our lives. When Saturn is well-placed, it bestows immense patience, durability, and success through grit..."
-    },
-    {
-      "title": "Mars Transit 2026: Energy and Action",
-      "excerpt": "Prepare for a surge in energy as Mars moves through Aries. Find out what this means for your zodiac sign.",
-      "image": "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?q=80&w=1000",
-      "author": "Sneha Astro",
-      "authorAvatar": "S",
-      "date": "18 Feb 2026",
-      "readTime": "5 min read",
-      "category": "Transits",
-      "content": "Mars, the planet of courage and vitality, enters its own sign Aries this month. This transition marks a period of high motivation and new beginnings. For fire signs, this is the time to execute long-pending plans..."
-    },
-    {
-      "title": "Meditation Secrets for better Zodiac Health",
-      "excerpt": "Discover specific meditation techniques tailored for each zodiac sign to balance your inner energy.",
-      "image": "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=1000",
-      "author": "Swami Ji",
-      "authorAvatar": "S",
-      "date": "15 Feb 2026",
-      "readTime": "12 min read",
-      "category": "Wellness",
-      "content": "Our cosmic energy is deeply tied to our mental peace. Earth signs find grounding through forest meditation, while Water signs excel with sound-based focus. In this blog, we explore how to align your mind with your stars..."
-    },
-  ];
-
-  List<Map<String, dynamic>> _filteredBlogs = [];
 
   @override
   void initState() {
     super.initState();
-    _filteredBlogs = _allBlogs;
+    if (!Get.isRegistered<BlogController>()) {
+      BlogBinding().dependencies();
+    }
+    _controller = Get.find<BlogController>();
+    _searchController.addListener(() {
+      _controller.updateSearchQuery(_searchController.text);
+    });
   }
 
-  void _filterBlogs() {
-    String query = _searchController.text.toLowerCase();
-    setState(() {
-      _filteredBlogs = _allBlogs.where((blog) {
-        bool matchesQuery = blog['title']!.toLowerCase().contains(query) ||
-            blog['category']!.toLowerCase().contains(query);
-        bool matchesCategory = _selectedCategory == "All" || blog['category'] == _selectedCategory;
-        return matchesQuery && matchesCategory;
-      }).toList();
-    });
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -82,23 +46,36 @@ class _BlogScreenState extends State<BlogScreen> {
       appBar: const CustomAppBar(
         title: 'Astrology Blogs',
       ),
-      body: Column(
-        children: [
-          _buildSearchBar(),
-          _buildCategoryFilter(),
-          Expanded(
-            child: _filteredBlogs.isEmpty
-                ? _buildEmptyState()
-                : ListView.builder(
-                    padding: const EdgeInsets.all(20),
-                    itemCount: _filteredBlogs.length,
-                    itemBuilder: (context, index) {
-                      return _buildPremiumBlogCard(_filteredBlogs[index]);
-                    },
-                  ),
+      body: Obx(() {
+        if (_controller.isLoading.value && _controller.allBlogs.isEmpty) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        return RefreshIndicator(
+          onRefresh: _controller.refreshBlogs,
+          color: AppColors.primaryColor,
+          child: Column(
+            children: [
+              _buildSearchBar(),
+              _buildCategoryFilter(),
+              Expanded(
+                child: _controller.filteredBlogs.isEmpty
+                    ? _buildEmptyState()
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(20),
+                        itemCount: _controller.filteredBlogs.length,
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return _buildPremiumBlogCard(_controller.filteredBlogs[index]);
+                        },
+                      ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      }),
     );
   }
 
@@ -108,7 +85,6 @@ class _BlogScreenState extends State<BlogScreen> {
       color: Colors.white,
       child: TextField(
         controller: _searchController,
-        onChanged: (_) => _filterBlogs(),
         decoration: InputDecoration(
           hintText: 'Search blogs...',
           hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
@@ -129,21 +105,16 @@ class _BlogScreenState extends State<BlogScreen> {
     return Container(
       height: 60,
       color: Colors.white,
-      child: ListView.separated(
+      child: Obx(() => ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         scrollDirection: Axis.horizontal,
-        itemCount: _categories.length,
+        itemCount: _controller.categories.length,
         separatorBuilder: (context, index) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
-          final category = _categories[index];
-          final isSelected = category == _selectedCategory;
+          final category = _controller.categories[index];
+          final isSelected = category == _controller.selectedCategory.value;
           return GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedCategory = category;
-                _filterBlogs();
-              });
-            },
+            onTap: () => _controller.updateCategory(category),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
@@ -162,53 +133,60 @@ class _BlogScreenState extends State<BlogScreen> {
             ),
           );
         },
-      ),
+      )),
     );
   }
 
-  Widget _buildPremiumBlogCard(Map<String, dynamic> blog) {
+  Widget _buildPremiumBlogCard(BlogModel blog) {
     return GestureDetector(
       onTap: () => Get.to(() => BlogDetailScreen(blog: blog)),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 24),
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 15,
+              offset: const Offset(0, 5),
             ),
           ],
         ),
-        child: Column(
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image Section
+            // Left: Image Section
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                  borderRadius: BorderRadius.circular(16),
                   child: Image.network(
-                    blog['image'],
-                    height: 200,
-                    width: double.infinity,
+                    '${AppUrls.baseImageUrl}${blog.blogImage}',
+                    height: 110,
+                    width: 110,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Image.network(
+                      'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=1000',
+                      height: 110,
+                      width: 110,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 Positioned(
-                  top: 16,
-                  left: 16,
+                  top: 8,
+                  left: 8,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: AppColors.primaryColor.withOpacity(0.9),
-                      borderRadius: BorderRadius.circular(100),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     child: AppText(
-                      blog['category'],
-                      fontSize: 11,
+                      blog.type ?? 'General',
+                      fontSize: 9,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
                     ),
@@ -217,27 +195,29 @@ class _BlogScreenState extends State<BlogScreen> {
               ],
             ),
             
-            Padding(
-              padding: const EdgeInsets.all(20),
+            const SizedBox(width: 16),
+            
+            // Right: Content Section
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       AppText(
-                        blog['date'],
-                        fontSize: 12,
+                        "${blog.createdAt.day} ${_getMonth(blog.createdAt.month)} ${blog.createdAt.year}",
+                        fontSize: 11,
                         color: Colors.grey.shade500,
                         fontWeight: FontWeight.w500,
                       ),
                       Row(
                         children: [
-                          const Icon(Iconsax.clock_copy, size: 14, color: AppColors.primaryColor),
+                          const Icon(Iconsax.clock_copy, size: 12, color: AppColors.primaryColor),
                           const SizedBox(width: 4),
                           AppText(
-                            blog['readTime'],
-                            fontSize: 12,
+                            '8m',
+                            fontSize: 11,
                             color: Colors.grey.shade500,
                             fontWeight: FontWeight.w500,
                           ),
@@ -245,45 +225,47 @@ class _BlogScreenState extends State<BlogScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
-                  AppText(
-                    blog['title'],
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF2E1A47),
-                    height: 1.3,
-                  ),
                   const SizedBox(height: 8),
                   AppText(
-                    blog['excerpt'],
-                    fontSize: 13,
-                    color: Colors.grey.shade600,
-                    height: 1.5,
+                    blog.title,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF2E1A47),
+                    height: 1.2,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 4),
+                  AppText(
+                    blog.subtitle,
+                    fontSize: 12,
+                    color: Colors.grey.shade600,
+                    height: 1.4,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 12),
                   Row(
                     children: [
                       CircleAvatar(
-                        radius: 12,
+                        radius: 10,
                         backgroundColor: AppColors.primaryColor.withOpacity(0.1),
                         child: AppText(
-                          blog['authorAvatar'],
-                          fontSize: 10,
+                          blog.author.isNotEmpty ? blog.author[0].toUpperCase() : 'A',
+                          fontSize: 8,
                           fontWeight: FontWeight.w800,
                           color: AppColors.primaryColor,
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 6),
                       AppText(
-                        blog['author'],
-                        fontSize: 13,
+                        blog.author,
+                        fontSize: 11,
                         fontWeight: FontWeight.w600,
                         color: Colors.black87,
                       ),
                       const Spacer(),
-                      const Icon(Iconsax.arrow_right_3_copy, size: 18, color: AppColors.primaryColor),
+                      const Icon(Iconsax.arrow_right_3_copy, size: 14, color: AppColors.primaryColor),
                     ],
                   ),
                 ],
@@ -293,6 +275,11 @@ class _BlogScreenState extends State<BlogScreen> {
         ),
       ),
     );
+  }
+
+  String _getMonth(int month) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return (month >= 1 && month <= 12) ? months[month - 1] : '';
   }
 
   Widget _buildEmptyState() {

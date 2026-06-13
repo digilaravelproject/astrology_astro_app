@@ -1,31 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/widgets/app_text.dart';
-import '../../../core/widgets/custom_app_bar.dart';
+import 'package:astro_astrologer/core/constants/app_urls.dart';
+import 'package:astro_astrologer/core/theme/app_colors.dart';
+import 'package:astro_astrologer/core/widgets/app_text.dart';
+import 'package:astro_astrologer/core/widgets/custom_app_bar.dart';
+import 'package:astro_astrologer/features/auth/controllers/auth_controller.dart';
+import 'package:astro_astrologer/features/wallet/presentation/controllers/weekly_ranking_controller.dart';
+import 'package:astro_astrologer/features/wallet/domain/models/weekly_ranking_model.dart';
+import 'package:astro_astrologer/features/wallet/data/repositories/wallet_repository_impl.dart';
+import 'package:astro_astrologer/core/services/network/api_client.dart';
 
-class WeeklyRankingScreen extends StatefulWidget {
-  const WeeklyRankingScreen({super.key});
-
-  @override
-  State<WeeklyRankingScreen> createState() => _WeeklyRankingScreenState();
-}
-
-class _WeeklyRankingScreenState extends State<WeeklyRankingScreen> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+class WeeklyRankingScreen extends StatelessWidget {
+  WeeklyRankingScreen({super.key}) {
+    if (!Get.isRegistered<WeeklyRankingController>()) {
+      Get.put(WeeklyRankingController(
+        WalletRepositoryImpl(apiClient: Get.find<ApiClient>()),
+      ));
+    }
   }
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
+  WeeklyRankingController get controller => Get.find<WeeklyRankingController>();
 
   @override
   Widget build(BuildContext context) {
@@ -35,144 +29,228 @@ class _WeeklyRankingScreenState extends State<WeeklyRankingScreen> with SingleTi
         title: 'Weekly Ranking',
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          _buildTabBar(),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
+      body: Obx(() {
+        if (controller.isLoading.value && controller.rankingData.value == null) {
+          return const Center(
+            child: CircularProgressIndicator(color: AppColors.primaryColor),
+          );
+        }
+
+        if (controller.error.value.isNotEmpty && controller.rankingData.value == null) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildRankList('Astrotalk Earning (without Astromall) in this week (Monday to Sunday)'),
-                _buildRankList('Earning from Astromall in this week (Monday to Sunday)'),
+                AppText(controller.error.value, color: Colors.red),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: controller.fetchRankings,
+                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryColor),
+                  child: const AppText('Retry', color: Colors.white),
+                ),
               ],
             ),
-          ),
-          _buildStickyFooter(),
-        ],
-      ),
+          );
+        }
+
+        final data = controller.rankingData.value;
+        if (data == null) {
+          return const Center(child: AppText('No ranking data available'));
+        }
+
+        return Column(
+          children: [
+            // Header
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              color: const Color(0xFFF8F8F8),
+              child: const AppText(
+                'Earnings in this week (Monday to Sunday)',
+                textAlign: TextAlign.center,
+                fontSize: 13,
+                color: Colors.black87,
+              ),
+            ),
+
+            // Table header
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  AppText('Rank', fontSize: 16, color: Colors.black54, fontWeight: FontWeight.w500),
+                  AppText('Earning', fontSize: 16, color: Colors.black54, fontWeight: FontWeight.w500),
+                ],
+              ),
+            ),
+
+            // Ranking list
+            Expanded(
+              child: RefreshIndicator(
+                color: AppColors.primaryColor,
+                onRefresh: () async {
+                  await controller.fetchRankings();
+                },
+                child: ListView.separated(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.only(bottom: 20),
+                  itemCount: data.topAstrologers.length,
+                  separatorBuilder: (context, index) =>
+                      Divider(color: Colors.grey.shade200, height: 1),
+                  itemBuilder: (context, index) {
+                    final astrologer = data.topAstrologers[index];
+                    return _buildRankingRow(astrologer);
+                  },
+                ),
+              ),
+            ),
+
+            // Sticky bottom bar
+            if (data.myRank != null && data.myWeeklyEarnings != null)
+              _buildStickyBottomBar(data),
+          ],
+        );
+      }),
     );
   }
 
-  Widget _buildTabBar() {
-    return Container(
-      color: Colors.white,
-      width: double.infinity,
-      child: TabBar(
-        controller: _tabController,
-        isScrollable: false,
-        dividerColor: Colors.grey.shade300,
-        labelColor: Colors.black,
-        unselectedLabelColor: Colors.grey,
-        indicatorColor: AppColors.primaryColor,
-        indicatorSize: TabBarIndicatorSize.tab,
-        labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, fontFamily: 'Poppins'),
-        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 13, fontFamily: 'Poppins'),
-        tabs: const [
-          Tab(text: 'Astrotalk'),
-          Tab(text: 'Astromall'),
-        ],
-      ),
+  String _toTitleCase(String text) {
+    if (text.isEmpty) return text;
+    return text
+        .split(' ')
+        .map((w) => w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1).toLowerCase()}' : '')
+        .join(' ');
+  }
+
+  Widget _buildAvatar({required String name, required String? rawPhoto, double radius = 20}) {
+    final photoUrl = rawPhoto != null && rawPhoto.isNotEmpty
+        ? (rawPhoto.startsWith('http') ? rawPhoto : '${AppUrls.baseImageUrl}$rawPhoto')
+        : null;
+    final initials = name.isNotEmpty ? name[0].toUpperCase() : '?';
+
+    Widget letterWidget = AppText(
+      initials,
+      fontSize: radius * 0.8,
+      fontWeight: FontWeight.bold,
+      color: AppColors.primaryColor,
+    );
+
+    return CircleAvatar(
+      radius: radius,
+      backgroundColor: AppColors.primaryColor.withValues(alpha: 0.15),
+      child: photoUrl != null
+          ? ClipOval(
+              child: Image.network(
+                photoUrl,
+                width: radius * 2,
+                height: radius * 2,
+                fit: BoxFit.cover,
+                // Image load fail ho to letter dikhao
+                errorBuilder: (_, __, ___) => letterWidget,
+                // Load hone tak bhi letter dikhao
+                loadingBuilder: (_, child, progress) =>
+                    progress == null ? child : letterWidget,
+              ),
+            )
+          : letterWidget,
     );
   }
 
-  Widget _buildRankList(String subTitle) {
-    return Column(
-      children: [
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          color: AppColors.fieldBackground,
-          child: AppText(
-            subTitle,
-            fontSize: 11,
-            color: Colors.black87,
-            textAlign: TextAlign.center,
+  Widget _buildRankingRow(WeeklyRankingModel astrologer) {
+    final bool isTopThree = astrologer.rank <= 3;
+    final titleName = _toTitleCase(astrologer.name);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+      child: Row(
+        children: [
+          // Rank badge (star or trophy)
+          SizedBox(
+            width: 28,
+            height: 28,
+            child: isTopThree
+                ? Container(
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFFFD700),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.star, color: Colors.white, size: 18),
+                  )
+                : const Icon(Icons.emoji_events, color: Color(0xFFFFD700), size: 24),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          const SizedBox(width: 10),
+
+          // Rank number
+          SizedBox(
+            width: 22,
+            child: AppText(
+              '${astrologer.rank}',
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(width: 10),
+
+          // Avatar
+          _buildAvatar(name: astrologer.name, rawPhoto: astrologer.profilePhoto),
+          const SizedBox(width: 10),
+
+          // Name
+          Expanded(
+            child: AppText(
+              titleName,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Colors.black87,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+
+          // Earnings + arrow
+          Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              AppText('Rank', fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey.shade600),
-              AppText('Earning', fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey.shade600),
+              AppText(
+                '₹${astrologer.weeklyEarnings.toStringAsFixed(0)}',
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black87,
+              ),
+              const SizedBox(width: 4),
+              Icon(
+                astrologer.weeklyEarnings > 0 ? Icons.arrow_drop_up : Icons.remove,
+                color: astrologer.weeklyEarnings > 0 ? Colors.green : Colors.grey,
+                size: 20,
+              ),
             ],
           ),
-        ),
-        const Divider(height: 1),
-        Expanded(
-          child: ListView.separated(
-            itemCount: 20,
-            separatorBuilder: (context, index) => const Divider(height: 1, color: Color(0xFFF9F9F9)),
-            itemBuilder: (context, index) {
-              int rank = index + 1;
-              return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border(bottom: BorderSide(color: Colors.grey.shade100)),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        _buildRankIcon(rank),
-                        const SizedBox(width: 12),
-                        AppText(rank.toString(), fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black87),
-                      ],
-                    ),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const AppText('-', fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black87),
-                        const SizedBox(width: 8),
-                        Icon(
-                          index % 3 == 0 ? Icons.arrow_drop_up_rounded : Icons.arrow_drop_down_rounded,
-                          color: index % 3 == 0 ? AppColors.successColor : AppColors.errorColor,
-                          size: 24,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
-  Widget _buildRankIcon(int rank) {
-    if (rank <= 3) {
-      return Container(
-        width: 28,
-        height: 28,
-        decoration: const BoxDecoration(
-          color: AppColors.goldAccent,
-          shape: BoxShape.circle,
-        ),
-        child: const Center(
-          child: Icon(Icons.star_rounded, color: Colors.white, size: 20),
-        ),
-      );
-    } else if (rank <= 9) {
-      return const Icon(Icons.emoji_events_rounded, color: AppColors.goldAccent, size: 28);
-    }
-    return const SizedBox(width: 28);
-  }
+  Widget _buildStickyBottomBar(WeeklyRankingData data) {
+    final authController = Get.find<AuthController>();
+    final user = authController.currentUser.value;
+    final name = user?.name ?? 'My Profile';
+    final rawPhoto = user?.astrologer?.profilePhoto ?? user?.profilePhoto;
 
-  Widget _buildStickyFooter() {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
+            color: Colors.black.withValues(alpha: 0.05),
             offset: const Offset(0, -4),
+            blurRadius: 8,
           ),
         ],
       ),
@@ -182,31 +260,39 @@ class _WeeklyRankingScreenState extends State<WeeklyRankingScreen> with SingleTi
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                AppText('Your Weekly Earning', fontSize: 12, fontWeight: FontWeight.bold),
+              children: [
+                const AppText('Your Weekly Earning', fontSize: 12, fontWeight: FontWeight.bold),
                 AppText('Your Rank', fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.goldAccent),
               ],
             ),
             const SizedBox(height: 12),
             Row(
               children: [
-                const CircleAvatar(
-                  radius: 20,
-                  backgroundImage: NetworkImage('https://i.pravatar.cc/100?u=astrologer'),
-                ),
+                _buildAvatar(name: name, rawPhoto: rawPhoto),
                 const SizedBox(width: 12),
-                const Expanded(
-                  child: AppText(
-                    'Saurabh Sawant',
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppText(
+                        name,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                      AppText(
+                        '₹${data.myWeeklyEarnings?.toStringAsFixed(0) ?? '0'}',
+                        fontSize: 13,
+                        color: Colors.grey,
+                      ),
+                    ],
                   ),
                 ),
-                const AppText(
-                  '5629',
+                AppText(
+                  '${data.myRank ?? '-'}',
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
+                  color: Colors.black87,
                 ),
               ],
             ),

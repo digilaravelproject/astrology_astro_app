@@ -17,6 +17,8 @@ import '../features/profile/screens/payment_policy_screen.dart';
 import '../features/profile/screens/privacy_policy_screen.dart';
 import '../features/profile/screens/terms_and_conditions_screen.dart';
 import '../features/profile/screens/about_us_screen.dart';
+import '../features/profile/screens/live_schedule_screen.dart';
+import '../features/profile/presentation/bindings/live_schedule_binding.dart';
 import '../features/profile/screens/feedback_screen.dart';
 import '../features/profile/screens/help_support_screen.dart';
 import 'package:astro_astrologer/features/profile/screens/gallery_screen.dart';
@@ -28,6 +30,8 @@ import '../features/home/screens/home_screen.dart';
 import '../features/home/screens/dashboard_screen.dart';
 import '../features/support/presentation/bindings/support_binding.dart';
 import 'app_routes.dart';
+import '../features/panchang/panchang_screen.dart';
+import '../features/panchang/bindings/panchang_binding.dart';
 
 class RouteHelper {
   static String getSplashRoute() => AppRoutes.splash;
@@ -36,6 +40,7 @@ class RouteHelper {
   static String getRegistrationNameRoute() => AppRoutes.registrationName;
   static String getHomeRoute() => AppRoutes.home;
   static String getDashboardRoute() => AppRoutes.dashboard;
+  static String getPanchangRoute() => AppRoutes.panchangScreen;
 
   static List<GetPage> routes = [
     GetPage(
@@ -159,6 +164,18 @@ class RouteHelper {
       page: () => const AddBankAccountScreen(),
       binding: FinanceBinding(),
       transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.liveSchedule,
+      page: () => const LiveScheduleScreen(),
+      binding: LiveScheduleBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.panchangScreen,
+      page: () => const PanchangScreen(),
+      binding: PanchangBinding(),
+      transition: Transition.fadeIn,
     ),
   ];
 }
