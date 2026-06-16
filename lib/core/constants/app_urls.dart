@@ -57,6 +57,7 @@ class AppUrls {
 
   // Live Sessions
   static const String liveSessions = "/astrologer/live";
+  static const String currentLiveSession = "/astrologer/live/current";
   static String deleteLiveSession(int id) => "/astrologer/live/$id";
   static String startLiveSession(int id) => "/astrologer/live/$id/start";
   static String stopLiveSession(int id) => "/astrologer/live/$id/stop";

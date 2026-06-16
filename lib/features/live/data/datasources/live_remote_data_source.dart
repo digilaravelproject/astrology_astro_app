@@ -2,15 +2,22 @@ import '../../../../core/constants/app_urls.dart';
 import '../../../../core/services/network/api_client.dart';
 import '../../../../core/services/network/response_model.dart';
 
-class LiveSessionRemoteDataSource {
+class LiveRemoteDataSource {
   final ApiClient _apiClient;
 
-  LiveSessionRemoteDataSource(this._apiClient);
+  LiveRemoteDataSource(this._apiClient);
 
   Future<ResponseModel> getLiveSessions({String filter = 'all', int perPage = 15}) async {
     print('[LIVE_DS] Getting live sessions: filter=$filter, perPage=$perPage');
     final result = await _apiClient.get('${AppUrls.liveSessions}?filter=$filter&per_page=$perPage');
     print('[LIVE_DS] Get live sessions response: ${result.toString()}');
+    return result;
+  }
+
+  Future<ResponseModel> getCurrentLiveSession() async {
+    print('[LIVE_DS] Getting current active live session');
+    final result = await _apiClient.get(AppUrls.currentLiveSession);
+    print('[LIVE_DS] Get current live session response: ${result.toString()}');
     return result;
   }
 

@@ -2,19 +2,24 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/utils/custom_snackbar.dart';
 import '../../../../core/services/network/api_checker.dart';
-import '../../domain/models/live_session_model.dart';
-import '../../domain/usecases/live_session_usecases.dart';
+import '../../../../core/services/local_notification_service.dart';
+import '../../data/models/live_session_model.dart';
+import '../../domain/usecases/live_usecases.dart';
+import '../widgets/floating_live_bubble.dart';
+import '../pages/live_room_screen.dart';
 
-class LiveSessionController extends GetxController {
+class LiveController extends GetxController {
   final GetLiveSessionsUseCase _getSessionsUseCase;
+  final GetCurrentLiveSessionUseCase _getCurrentSessionUseCase;
   final CreateLiveSessionUseCase _createSessionUseCase;
   final DeleteLiveSessionUseCase _deleteSessionUseCase;
   final StartLiveSessionUseCase _startSessionUseCase;
   final StopLiveSessionUseCase _stopSessionUseCase;
   final UpdateLiveSessionUseCase _updateSessionUseCase;
 
-  LiveSessionController(
+  LiveController(
     this._getSessionsUseCase,
+    this._getCurrentSessionUseCase,
     this._createSessionUseCase,
     this._deleteSessionUseCase,
     this._startSessionUseCase,
@@ -24,6 +29,7 @@ class LiveSessionController extends GetxController {
 
   final RxList<LiveSessionModel> upcomingSessions = <LiveSessionModel>[].obs;
   final RxList<LiveSessionModel> completedSessions = <LiveSessionModel>[].obs;
+  final Rx<LiveSessionModel?> currentActiveSession = Rx<LiveSessionModel?>(null);
   final RxBool isLoading = false.obs;
   final RxBool isCreating = false.obs;
 
@@ -31,6 +37,55 @@ class LiveSessionController extends GetxController {
   void onInit() {
     super.onInit();
     getSessions();
+    checkCurrentActiveSession();
+  }
+
+  void showLiveBubbleAndNotification(LiveSessionModel session) {
+    if (Get.context != null) {
+      FloatingLiveBubble.show(
+        context: Get.context!,
+        sessionId: session.id,
+        title: session.title,
+        status: 'ongoing',
+        startedAt: session.startedAt?.toIso8601String(),
+        onTap: () {
+          Get.to(() => LiveRoomScreen(session: session));
+        },
+      );
+      LocalNotificationService.showOngoingLiveNotification(
+        sessionId: session.id,
+        title: 'Live Session in Progress',
+        body: 'Ongoing session: ${session.title}',
+        startedAtMillis: session.startedAt?.millisecondsSinceEpoch,
+      );
+    }
+  }
+
+  void stopLiveBubbleAndNotification(int sessionId) {
+    FloatingLiveBubble.dismiss();
+    LocalNotificationService.cancelOngoingLiveNotification(sessionId);
+  }
+
+  Future<void> checkCurrentActiveSession() async {
+    try {
+      final result = await _getCurrentSessionUseCase.call();
+      if (result.isSuccess && result.body != null) {
+        final bodyMap = result.body as Map<String, dynamic>;
+        if (bodyMap['data'] != null) {
+          final session = LiveSessionModel.fromJson(bodyMap['data']);
+          currentActiveSession.value = session;
+          print('[LIVE] Active ongoing session found: ${session.title}');
+          showLiveBubbleAndNotification(session);
+        } else {
+          if (currentActiveSession.value != null) {
+            stopLiveBubbleAndNotification(currentActiveSession.value!.id);
+          }
+          currentActiveSession.value = null;
+        }
+      }
+    } catch (e) {
+      print('[LIVE] Exception in checkCurrentActiveSession: $e');
+    }
   }
 
   Future<void> getSessions() async {
@@ -46,7 +101,6 @@ class LiveSessionController extends GetxController {
         if (result.body is Map) {
           final bodyMap = result.body as Map<String, dynamic>;
           
-          // Case 1: API returns { upcoming: { data: [...] }, completed: { data: [...] } }
           if (bodyMap.containsKey('upcoming') || bodyMap.containsKey('completed')) {
             if (bodyMap['upcoming'] is Map && bodyMap['upcoming']['data'] is List) {
               final List<dynamic> upcomingData = bodyMap['upcoming']['data'];
@@ -56,16 +110,12 @@ class LiveSessionController extends GetxController {
               final List<dynamic> completedData = bodyMap['completed']['data'];
               allCompleted = completedData.map((json) => LiveSessionModel.fromJson(json)).toList();
             }
-          } 
-          // Case 2: API returns { data: [...] }
-          else if (bodyMap['data'] is List) {
+          } else if (bodyMap['data'] is List) {
             final List<dynamic> data = bodyMap['data'];
             final all = data.map((json) => LiveSessionModel.fromJson(json)).toList();
             _splitSessions(all, allUpcoming, allCompleted);
           }
-        } 
-        // Case 3: API returns [...] directly
-        else if (result.body is List) {
+        } else if (result.body is List) {
           final List<dynamic> data = result.body;
           final all = data.map((json) => LiveSessionModel.fromJson(json)).toList();
           _splitSessions(all, allUpcoming, allCompleted);
@@ -74,7 +124,6 @@ class LiveSessionController extends GetxController {
         upcomingSessions.value = allUpcoming;
         completedSessions.value = allCompleted;
         
-        // Sort sessions
         upcomingSessions.sort((a, b) {
           if (a.status == 'ongoing' && b.status != 'ongoing') return -1;
           if (b.status == 'ongoing' && a.status != 'ongoing') return 1;
@@ -97,32 +146,39 @@ class LiveSessionController extends GetxController {
   Future<void> createSession({
     required String title,
     required String description,
-    required DateTime scheduledAt,
+    DateTime? scheduledAt,
     required String sessionType,
     required int duration,
     required int maxParticipants,
+    bool isInstant = false,
   }) async {
     try {
       isCreating.value = true;
       
-      // Format: 2026-06-20 18:00:00
-      final formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(scheduledAt);
-      
-      final data = {
+      final Map<String, dynamic> data = {
         'title': title,
         'description': description,
-        'scheduled_at': formattedDate,
         'session_type': sessionType,
         'duration_minutes': duration,
         'max_participants': maxParticipants,
       };
+
+      if (isInstant) {
+        data['is_instant'] = true;
+      } else if (scheduledAt != null) {
+        data['scheduled_at'] = DateFormat('yyyy-MM-dd HH:mm:ss').format(scheduledAt);
+      }
 
       final result = await _createSessionUseCase.call(data);
       
       if (result.isSuccess) {
         ApiChecker.handleResponse(result, showSuccess: true);
         await getSessions();
-        Get.back(); // Close bottom sheet
+        await checkCurrentActiveSession();
+        Get.back();
+        if (isInstant && currentActiveSession.value != null) {
+          Get.to(() => LiveRoomScreen(session: currentActiveSession.value!));
+        }
       } else {
         ApiChecker.handleResponse(result);
       }
@@ -142,6 +198,7 @@ class LiveSessionController extends GetxController {
       if (result.isSuccess) {
         ApiChecker.handleResponse(result, showSuccess: true);
         await getSessions();
+        await checkCurrentActiveSession();
       } else {
         ApiChecker.handleResponse(result);
       }
@@ -160,6 +217,11 @@ class LiveSessionController extends GetxController {
       if (result.isSuccess) {
         ApiChecker.handleResponse(result, showSuccess: true);
         await getSessions();
+        await checkCurrentActiveSession();
+        if (currentActiveSession.value != null) {
+          showLiveBubbleAndNotification(currentActiveSession.value!);
+          Get.to(() => LiveRoomScreen(session: currentActiveSession.value!));
+        }
       } else {
         ApiChecker.handleResponse(result);
       }
@@ -178,6 +240,8 @@ class LiveSessionController extends GetxController {
       if (result.isSuccess) {
         ApiChecker.handleResponse(result, showSuccess: true);
         await getSessions();
+        await checkCurrentActiveSession();
+        stopLiveBubbleAndNotification(id);
       } else {
         ApiChecker.handleResponse(result);
       }
@@ -213,7 +277,8 @@ class LiveSessionController extends GetxController {
       if (result.isSuccess) {
         ApiChecker.handleResponse(result, showSuccess: true);
         await getSessions();
-        Get.back(); // Close bottom sheet
+        await checkCurrentActiveSession();
+        Get.back();
       } else {
         ApiChecker.handleResponse(result);
       }

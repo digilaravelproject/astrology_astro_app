@@ -4,6 +4,9 @@ import 'package:astro_astrologer/features/chat/presentation/widgets/floating_cha
 import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 import 'package:astro_astrologer/features/call/presentation/widgets/incoming_call_dialog.dart';
 import 'package:astro_astrologer/features/call/presentation/pages/call_screen.dart';
+import 'package:astro_astrologer/features/live/presentation/widgets/floating_live_bubble.dart';
+import 'package:astro_astrologer/features/live/presentation/controllers/live_controller.dart';
+import 'package:astro_astrologer/features/live/presentation/pages/live_schedule_screen.dart';
 
 class LocalNotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
@@ -44,6 +47,12 @@ class LocalNotificationService {
                 // App was killed/restarted — check pending or current session
                 callController.checkPendingCall();
               }
+            }
+          } else if (response.payload!.startsWith('live_')) {
+            if (FloatingLiveBubble.onTapCallback != null) {
+              FloatingLiveBubble.onTapCallback?.call();
+            } else {
+              Get.to(() => const LiveScheduleScreen());
             }
           } else if (FloatingChatBubble.onTapCallback != null) {
             FloatingChatBubble.onTapCallback?.call();
@@ -179,5 +188,47 @@ class LocalNotificationService {
 
   static Future<void> cancelOngoingCallNotification(int sessionId) async {
     await _notificationsPlugin.cancel(sessionId + 100000);
+  }
+
+  static Future<void> showOngoingLiveNotification({
+    required int sessionId,
+    required String title,
+    required String body,
+    int? startedAtMillis,
+  }) async {
+    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+      'active_live_channel_v1',
+      'Active Live Sessions',
+      channelDescription: 'Ongoing notification for active live stream sessions',
+      importance: Importance.max,
+      priority: Priority.high,
+      ongoing: true,
+      autoCancel: false,
+      onlyAlertOnce: true,
+      showWhen: true,
+      usesChronometer: startedAtMillis != null,
+      when: startedAtMillis,
+    );
+
+    final NotificationDetails notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      ),
+    );
+
+    await _notificationsPlugin.show(
+      sessionId + 300000,
+      title,
+      body,
+      notificationDetails,
+      payload: 'live_$sessionId',
+    );
+  }
+
+  static Future<void> cancelOngoingLiveNotification(int sessionId) async {
+    await _notificationsPlugin.cancel(sessionId + 300000);
   }
 }

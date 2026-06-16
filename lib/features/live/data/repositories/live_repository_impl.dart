@@ -1,15 +1,20 @@
 import '../../../../core/services/network/response_model.dart';
-import '../../domain/repositories/live_session_repository_interface.dart';
-import '../datasources/live_session_remote_data_source.dart';
+import '../../domain/repositories/live_repository.dart';
+import '../datasources/live_remote_data_source.dart';
 
-class LiveSessionRepository implements LiveSessionRepositoryInterface {
-  final LiveSessionRemoteDataSource dataSource;
+class LiveRepositoryImpl implements LiveRepository {
+  final LiveRemoteDataSource dataSource;
 
-  LiveSessionRepository(this.dataSource);
+  LiveRepositoryImpl(this.dataSource);
 
   @override
   Future<ResponseModel> getLiveSessions({String filter = 'all', int perPage = 15}) async {
     return await dataSource.getLiveSessions(filter: filter, perPage: perPage);
+  }
+
+  @override
+  Future<ResponseModel> getCurrentLiveSession() async {
+    return await dataSource.getCurrentLiveSession();
   }
 
   @override

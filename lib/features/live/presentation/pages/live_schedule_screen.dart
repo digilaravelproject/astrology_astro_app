@@ -3,13 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:intl/intl.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/widgets/app_text.dart';
-import '../../../core/widgets/custom_button.dart';
-import '../../../core/widgets/custom_app_bar.dart';
-import '../presentation/controllers/live_session_controller.dart';
-import '../domain/models/live_session_model.dart';
-import '../../../core/utils/custom_snackbar.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/app_text.dart';
+import '../../../../core/widgets/custom_button.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
+import '../controllers/live_controller.dart';
+import '../../data/models/live_session_model.dart';
+import '../../../../core/utils/custom_snackbar.dart';
 
 class LiveScheduleScreen extends StatefulWidget {
   const LiveScheduleScreen({super.key});
@@ -20,13 +20,13 @@ class LiveScheduleScreen extends StatefulWidget {
 
 class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  late LiveSessionController _controller;
+  late LiveController _controller;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _controller = Get.find<LiveSessionController>();
+    _controller = Get.find<LiveController>();
   }
 
   @override
@@ -43,6 +43,7 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
     DateTime? selectedDateTime = session?.scheduledAt;
     String selectedDateText = session != null ? DateFormat('dd MMM yyyy').format(session.scheduledAt) : 'Select Date';
     String selectedTimeText = session != null ? DateFormat('hh:mm a').format(session.scheduledAt) : 'Select Time';
+    bool isInstant = false;
 
     showModalBottomSheet(
       context: context,
@@ -91,6 +92,33 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
                   _buildTextField(descriptionController, 'Enter session description...', maxLines: 3),
                   const SizedBox(height: 16),
 
+                  // Instant toggle (Only for new sessions)
+                  if (session == null) ...[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildLabel('Go Live Instantly'),
+                            const SizedBox(height: 4),
+                            AppText('Start streaming immediately', fontSize: 11, color: Colors.grey.shade500),
+                          ],
+                        ),
+                        Switch(
+                          value: isInstant,
+                          activeColor: AppColors.primaryColor,
+                          onChanged: (val) {
+                            setSheetState(() {
+                              isInstant = val;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+
                   // Duration & Participants Row
                   Row(
                     children: [
@@ -119,86 +147,91 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
                   ),
                   const SizedBox(height: 16),
 
-                  // Date & Time Row
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildLabel('Date'),
-                            const SizedBox(height: 8),
-                            _buildPickerTrigger(
-                              text: selectedDateText,
-                              icon: Iconsax.calendar_copy,
-                              onTap: () async {
-                                final date = await showDatePicker(
-                                  context: context,
-                                  initialDate: DateTime.now(),
-                                  firstDate: DateTime.now(),
-                                  lastDate: DateTime.now().add(const Duration(days: 90)),
-                                );
-                                if (date != null) {
-                                  setSheetState(() {
-                                    selectedDateText = DateFormat('dd MMM yyyy').format(date);
+                  // Date & Time Row (Only if not instant)
+                  if (!isInstant) ...[
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildLabel('Date'),
+                              const SizedBox(height: 8),
+                              _buildPickerTrigger(
+                                text: selectedDateText,
+                                icon: Iconsax.calendar_copy,
+                                onTap: () async {
+                                  final date = await showDatePicker(
+                                    context: context,
+                                    initialDate: DateTime.now(),
+                                    firstDate: DateTime.now(),
+                                    lastDate: DateTime.now().add(const Duration(days: 90)),
+                                  );
+                                  if (date != null) {
+                                    setSheetState(() {
+                                      selectedDateText = DateFormat('dd MMM yyyy').format(date);
+                                      if (selectedDateTime != null) {
+                                        selectedDateTime = DateTime(date.year, date.month, date.day, selectedDateTime!.hour, selectedDateTime!.minute);
+                                      } else {
+                                        selectedDateTime = DateTime(date.year, date.month, date.day);
+                                      }
+                                    });
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildLabel('Time'),
+                              const SizedBox(height: 8),
+                              _buildPickerTrigger(
+                                text: selectedTimeText,
+                                icon: Iconsax.clock_copy,
+                                onTap: () async {
+                                  final time = await showTimePicker(
+                                    context: context,
+                                    initialTime: TimeOfDay.now(),
+                                  );
+                                  if (time != null) {
+                                    final now = DateTime.now();
+                                    DateTime tempDateTime;
                                     if (selectedDateTime != null) {
-                                      selectedDateTime = DateTime(date.year, date.month, date.day, selectedDateTime!.hour, selectedDateTime!.minute);
+                                      tempDateTime = DateTime(selectedDateTime!.year, selectedDateTime!.month, selectedDateTime!.day, time.hour, time.minute);
                                     } else {
-                                      selectedDateTime = DateTime(date.year, date.month, date.day);
+                                      tempDateTime = DateTime(now.year, now.month, now.day, time.hour, time.minute);
                                     }
-                                  });
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildLabel('Time'),
-                            const SizedBox(height: 8),
-                            _buildPickerTrigger(
-                              text: selectedTimeText,
-                              icon: Iconsax.clock_copy,
-                              onTap: () async {
-                                final time = await showTimePicker(
-                                  context: context,
-                                  initialTime: TimeOfDay.now(),
-                                );
-                                if (time != null) {
-                                  final now = DateTime.now();
-                                  DateTime tempDateTime;
-                                  if (selectedDateTime != null) {
-                                    tempDateTime = DateTime(selectedDateTime!.year, selectedDateTime!.month, selectedDateTime!.day, time.hour, time.minute);
-                                  } else {
-                                    tempDateTime = DateTime(now.year, now.month, now.day, time.hour, time.minute);
-                                  }
 
-                                  // Check if at least 10 minutes in future
-                                  if (tempDateTime.isBefore(now.add(const Duration(minutes: 10)))) {
-                                    CustomSnackBar.showError('Please select a time at least 10 minutes from now');
-                                    return;
-                                  }
+                                    if (tempDateTime.isBefore(now.add(const Duration(minutes: 10)))) {
+                                      CustomSnackBar.showError('Please select a time at least 10 minutes from now');
+                                      return;
+                                    }
 
-                                  setSheetState(() {
-                                    selectedTimeText = time.format(context);
-                                    selectedDateTime = tempDateTime;
-                                  });
-                                }
-                              },
-                            ),
-                          ],
+                                    setSheetState(() {
+                                      selectedTimeText = time.format(context);
+                                      selectedDateTime = tempDateTime;
+                                    });
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 32),
+                      ],
+                    ),
+                    const SizedBox(height: 32),
+                  ] else ...[
+                    const SizedBox(height: 16),
+                  ],
                   
                   Obx(() => CustomButton(
-                    text: session != null ? 'Update Now' : 'Schedule Now',
+                    text: session != null 
+                        ? 'Update Now' 
+                        : (isInstant ? 'Go Live Now' : 'Schedule Now'),
                     isLoading: _controller.isCreating.value,
                     onPressed: () {
                       if (titleController.text.trim().isEmpty) {
@@ -211,26 +244,27 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
                         return;
                       }
 
-                      if (selectedDateText == 'Select Date') {
-                        CustomSnackBar.showError('Please select a date for the session');
-                        return;
-                      }
+                      if (!isInstant) {
+                        if (selectedDateText == 'Select Date') {
+                          CustomSnackBar.showError('Please select a date for the session');
+                          return;
+                        }
 
-                      if (selectedTimeText == 'Select Time') {
-                        CustomSnackBar.showError('Please select a time for the session');
-                        return;
-                      }
+                        if (selectedTimeText == 'Select Time') {
+                          CustomSnackBar.showError('Please select a time for the session');
+                          return;
+                        }
 
-                      if (selectedDateTime == null) {
-                        CustomSnackBar.showError('Invalid date and time selected');
-                        return;
-                      }
+                        if (selectedDateTime == null) {
+                          CustomSnackBar.showError('Invalid date and time selected');
+                          return;
+                        }
 
-                      // Check if at least 5 minutes in future at submission time for new sessions
-                      final now = DateTime.now();
-                      if (session == null && selectedDateTime!.isBefore(now.add(const Duration(minutes: 5)))) {
-                        CustomSnackBar.showError('Session must be scheduled at least 5 minutes in advance');
-                        return;
+                        final now = DateTime.now();
+                        if (session == null && selectedDateTime!.isBefore(now.add(const Duration(minutes: 5)))) {
+                          CustomSnackBar.showError('Session must be scheduled at least 5 minutes in advance');
+                          return;
+                        }
                       }
 
                       final duration = int.tryParse(durationController.text) ?? 60;
@@ -259,14 +293,15 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
                         _controller.createSession(
                           title: titleController.text,
                           description: descriptionController.text,
-                          scheduledAt: selectedDateTime!,
+                          scheduledAt: isInstant ? DateTime.now() : selectedDateTime,
                           sessionType: 'public',
                           duration: duration,
                           maxParticipants: participants,
+                          isInstant: isInstant,
                         );
                       }
                     },
-                    backgroundColor: AppColors.primaryColor,
+                    backgroundColor: isInstant ? Colors.red : AppColors.primaryColor,
                     borderRadius: 100,
                   )),
                   const SizedBox(height: 20),

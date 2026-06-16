@@ -11,7 +11,6 @@ import '../../training/training_videos_list_screen.dart';
 import 'help_support_screen.dart';
 import 'faq_screen.dart';
 import 'availability_screen.dart';
-import 'live_schedule_screen.dart';
 import 'price_setting_screen.dart';
 import 'download_form_screen.dart';
 import 'pay_slip_screen.dart';

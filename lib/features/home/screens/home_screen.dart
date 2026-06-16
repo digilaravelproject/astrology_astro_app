@@ -18,7 +18,7 @@ import '../../astromall/astromall_orders_screen.dart';
 import '../../waitlist/waitlist_screen.dart';
 import '../../chat/presentation/pages/assistant_chat_screen.dart';
 import '../../orders/presentation/pages/orders_screen.dart';
-import '../../profile/screens/live_schedule_screen.dart';
+import '../../live/presentation/pages/live_schedule_screen.dart';
 import '../../profile/screens/settings_screen.dart';
 import '../../profile/screens/my_reviews_screen.dart';
 import '../../orders/presentation/pages/history_screen.dart';

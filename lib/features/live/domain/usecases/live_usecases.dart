@@ -1,8 +1,8 @@
 import '../../../../core/services/network/response_model.dart';
-import '../repositories/live_session_repository_interface.dart';
+import '../repositories/live_repository.dart';
 
 class GetLiveSessionsUseCase {
-  final LiveSessionRepositoryInterface repository;
+  final LiveRepository repository;
   GetLiveSessionsUseCase(this.repository);
 
   Future<ResponseModel> call({String filter = 'all', int perPage = 15}) async {
@@ -10,8 +10,17 @@ class GetLiveSessionsUseCase {
   }
 }
 
+class GetCurrentLiveSessionUseCase {
+  final LiveRepository repository;
+  GetCurrentLiveSessionUseCase(this.repository);
+
+  Future<ResponseModel> call() async {
+    return await repository.getCurrentLiveSession();
+  }
+}
+
 class CreateLiveSessionUseCase {
-  final LiveSessionRepositoryInterface repository;
+  final LiveRepository repository;
   CreateLiveSessionUseCase(this.repository);
 
   Future<ResponseModel> call(Map<String, dynamic> data) async {
@@ -20,7 +29,7 @@ class CreateLiveSessionUseCase {
 }
 
 class DeleteLiveSessionUseCase {
-  final LiveSessionRepositoryInterface repository;
+  final LiveRepository repository;
   DeleteLiveSessionUseCase(this.repository);
 
   Future<ResponseModel> call(int id) async {
@@ -29,7 +38,7 @@ class DeleteLiveSessionUseCase {
 }
 
 class StartLiveSessionUseCase {
-  final LiveSessionRepositoryInterface repository;
+  final LiveRepository repository;
   StartLiveSessionUseCase(this.repository);
 
   Future<ResponseModel> call(int id) async {
@@ -38,7 +47,7 @@ class StartLiveSessionUseCase {
 }
 
 class StopLiveSessionUseCase {
-  final LiveSessionRepositoryInterface repository;
+  final LiveRepository repository;
   StopLiveSessionUseCase(this.repository);
 
   Future<ResponseModel> call(int id) async {
@@ -47,7 +56,7 @@ class StopLiveSessionUseCase {
 }
 
 class UpdateLiveSessionUseCase {
-  final LiveSessionRepositoryInterface repository;
+  final LiveRepository repository;
   UpdateLiveSessionUseCase(this.repository);
 
   Future<ResponseModel> call(int id, Map<String, dynamic> data) async {

@@ -8,7 +8,8 @@ import '../../profile/screens/profile_screen.dart';
 import '../controllers/dashboard_controller.dart';
 import '../../../core/widgets/custom_bottom_nav_bar.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import '../../profile/screens/live_schedule_screen.dart';
+import '../../live/presentation/pages/live_schedule_screen.dart';
+import '../../live/presentation/controllers/live_controller.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../notification/notice_screen.dart';
 import '../../orders/presentation/pages/orders_screen.dart';
@@ -64,7 +65,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
         final callController = Get.isRegistered<CallController>()
             ? Get.find<CallController>()
             : null;
-        if (callController != null && callController.sessionId != null) {
+        final liveController = Get.isRegistered<LiveController>()
+            ? Get.find<LiveController>()
+            : null;
+            
+        if ((callController != null && callController.sessionId != null) ||
+            (liveController != null && liveController.currentActiveSession.value != null)) {
           try {
             const channel = MethodChannel('com.suryapath.astrologer/app_retain');
             await channel.invokeMethod('sendToBackground');
