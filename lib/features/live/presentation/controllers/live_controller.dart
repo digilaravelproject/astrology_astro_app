@@ -78,8 +78,18 @@ class LiveController extends GetxController {
       final result = await _getCurrentSessionUseCase.call();
       if (result.isSuccess && result.body != null) {
         final bodyMap = result.body as Map<String, dynamic>;
-        if (bodyMap['data'] != null) {
-          final session = LiveSessionModel.fromJson(bodyMap['data']);
+        Map<String, dynamic>? sessionData;
+        
+        if (bodyMap.containsKey('id') && bodyMap['id'] != null) {
+          sessionData = bodyMap;
+        } else if (bodyMap['data'] is Map<String, dynamic>) {
+          sessionData = bodyMap['data'];
+        } else if (bodyMap['message'] is Map<String, dynamic>) {
+          sessionData = bodyMap['message'];
+        }
+
+        if (sessionData != null && sessionData['status'] == 'ongoing') {
+          final session = LiveSessionModel.fromJson(sessionData);
           currentActiveSession.value = session;
           print('[LIVE] Active ongoing session found: ${session.title}');
           showLiveBubbleAndNotification(session);
