@@ -395,6 +395,17 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                           });
                         },
                       ),
+
+                      // Flip Camera
+                      _buildControlButton(
+                        icon: Icons.switch_camera_rounded,
+                        color: Colors.white24,
+                        onPressed: () {
+                          _localStream?.getVideoTracks().forEach((track) {
+                            Helper.switchCamera(track);
+                          });
+                        },
+                      ),
                       
                       // Filter Selection
                       _buildControlButton(
