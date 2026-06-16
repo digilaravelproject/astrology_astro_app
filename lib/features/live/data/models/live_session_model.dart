@@ -11,6 +11,8 @@ class LiveSessionModel {
   final DateTime? startedAt;
   final DateTime? endedAt;
   final String? streamKey;
+  final int viewerCount;
+  final int currentParticipants;
 
   LiveSessionModel({
     required this.id,
@@ -25,6 +27,8 @@ class LiveSessionModel {
     this.startedAt,
     this.endedAt,
     this.streamKey,
+    this.viewerCount = 0,
+    this.currentParticipants = 0,
   });
 
   factory LiveSessionModel.fromJson(Map<String, dynamic> json) {
@@ -41,6 +45,8 @@ class LiveSessionModel {
       startedAt: json['started_at'] != null ? DateTime.parse(json['started_at']) : null,
       endedAt: json['ended_at'] != null ? DateTime.parse(json['ended_at']) : null,
       streamKey: json['stream_key'],
+      viewerCount: json['viewer_count'] ?? 0,
+      currentParticipants: json['current_participants'] ?? 0,
     );
   }
 
@@ -57,6 +63,8 @@ class LiveSessionModel {
       'started_at': startedAt?.toIso8601String(),
       'ended_at': endedAt?.toIso8601String(),
       'stream_key': streamKey,
+      'viewer_count': viewerCount,
+      'current_participants': currentParticipants,
     };
   }
 }

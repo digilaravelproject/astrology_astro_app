@@ -30,7 +30,8 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
   final List<LiveComment> _comments = [];
   final ScrollController _scrollController = ScrollController();
   Timer? _simulatedCommentTimer;
-  int _viewerCount = 12;
+  Timer? _activeSessionPollTimer;
+  late int _viewerCount;
 
   final RTCVideoRenderer _localRenderer = RTCVideoRenderer();
   MediaStream? _localStream;
@@ -39,6 +40,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
   void initState() {
     super.initState();
     _controller = Get.find<LiveController>();
+    _viewerCount = widget.session.viewerCount;
     
     // Add initial comments
     _comments.addAll([
@@ -49,6 +51,13 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
 
     // Initialize camera stream
     _initCamera();
+
+    // Poll active session details for viewer count
+    _activeSessionPollTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (mounted) {
+        _controller.checkCurrentActiveSession();
+      }
+    });
 
     // Simulate incoming viewer comments
     _startSimulatedComments();
@@ -91,6 +100,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
   @override
   void dispose() {
     _simulatedCommentTimer?.cancel();
+    _activeSessionPollTimer?.cancel();
     _scrollController.dispose();
     _localStream?.getTracks().forEach((track) {
       track.stop();
@@ -117,8 +127,6 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
 
         setState(() {
           _comments.add(LiveComment(user: randomUser, message: randomMessage));
-          _viewerCount += (DateTime.now().second % 3) - 1;
-          if (_viewerCount < 5) _viewerCount = 5;
         });
 
         // Scroll to bottom
@@ -245,7 +253,10 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                         children: [
                           const Icon(Icons.visibility, color: Colors.white, size: 14),
                           const SizedBox(width: 4),
-                          AppText('$_viewerCount', color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                          Obx(() {
+                            final currentCount = _controller.currentActiveSession.value?.viewerCount ?? _viewerCount;
+                            return AppText('$currentCount', color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold);
+                          }),
                         ],
                       ),
                     ),
