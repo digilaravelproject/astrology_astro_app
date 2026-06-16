@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text.dart';
 import '../../data/models/live_session_model.dart';
@@ -30,6 +32,9 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
   Timer? _simulatedCommentTimer;
   int _viewerCount = 12;
 
+  final RTCVideoRenderer _localRenderer = RTCVideoRenderer();
+  MediaStream? _localStream;
+
   @override
   void initState() {
     super.initState();
@@ -42,14 +47,56 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
       LiveComment(user: 'Rajesh P.', message: 'Very helpful prediction!'),
     ]);
 
+    // Initialize camera stream
+    _initCamera();
+
     // Simulate incoming viewer comments
     _startSimulatedComments();
+  }
+
+  Future<void> _initCamera() async {
+    try {
+      final cameraStatus = await Permission.camera.request();
+      final micStatus = await Permission.microphone.request();
+      
+      if (cameraStatus.isGranted) {
+        await _localRenderer.initialize();
+        final Map<String, dynamic> mediaConstraints = {
+          'audio': micStatus.isGranted,
+          'video': {
+            'facingMode': 'user',
+          },
+        };
+        final stream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
+        _localStream = stream;
+        _localRenderer.srcObject = stream;
+        
+        // Ensure initial mute/camera states are respected
+        _localStream?.getVideoTracks().forEach((track) {
+          track.enabled = _isCameraOn;
+        });
+        _localStream?.getAudioTracks().forEach((track) {
+          track.enabled = !_isMuted;
+        });
+
+        if (mounted) {
+          setState(() {});
+        }
+      }
+    } catch (e) {
+      debugPrint('Error initializing camera stream: $e');
+    }
   }
 
   @override
   void dispose() {
     _simulatedCommentTimer?.cancel();
     _scrollController.dispose();
+    _localStream?.getTracks().forEach((track) {
+      track.stop();
+    });
+    _localStream?.dispose();
+    _localRenderer.dispose();
     super.dispose();
   }
 
@@ -109,28 +156,34 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // 1. Camera View Area (Mocked with beautiful gradient and states)
+          // 1. Camera View Area (Renders RTCVideoView or fallback)
           Positioned.fill(
             child: _isCameraOn
-                ? Container(
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Color(0xFF2E1A47), Color(0xFF0F081D)],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                    ),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.videocam, size: 80, color: Colors.white.withOpacity(0.3)),
-                          const SizedBox(height: 12),
-                          AppText('Camera Stream Preview Active', color: Colors.white.withOpacity(0.5), fontSize: 13),
-                        ],
-                      ),
-                    ),
-                  )
+                ? (_localRenderer.srcObject != null
+                    ? RTCVideoView(
+                        _localRenderer,
+                        objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+                        mirror: true,
+                      )
+                    : Container(
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Color(0xFF2E1A47), Color(0xFF0F081D)],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                        ),
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.videocam, size: 80, color: Colors.white.withOpacity(0.3)),
+                              const SizedBox(height: 12),
+                              AppText('Camera Stream Preview Active', color: Colors.white.withOpacity(0.5), fontSize: 13),
+                            ],
+                          ),
+                        ),
+                      ))
                 : Container(
                     color: Colors.grey.shade900,
                     child: Center(
@@ -325,6 +378,9 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                         onPressed: () {
                           setState(() {
                             _isCameraOn = !_isCameraOn;
+                            _localStream?.getVideoTracks().forEach((track) {
+                              track.enabled = _isCameraOn;
+                            });
                           });
                         },
                       ),
@@ -345,6 +401,9 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                         onPressed: () {
                           setState(() {
                             _isMuted = !_isMuted;
+                            _localStream?.getAudioTracks().forEach((track) {
+                              track.enabled = !_isMuted;
+                            });
                           });
                         },
                       ),
