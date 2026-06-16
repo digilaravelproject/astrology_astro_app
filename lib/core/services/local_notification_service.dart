@@ -7,6 +7,7 @@ import 'package:astro_astrologer/features/call/presentation/pages/call_screen.da
 import 'package:astro_astrologer/features/live/presentation/widgets/floating_live_bubble.dart';
 import 'package:astro_astrologer/features/live/presentation/controllers/live_controller.dart';
 import 'package:astro_astrologer/features/live/presentation/pages/live_schedule_screen.dart';
+import 'package:astro_astrologer/features/live/presentation/pages/live_room_screen.dart';
 
 class LocalNotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
@@ -49,8 +50,14 @@ class LocalNotificationService {
               }
             }
           } else if (response.payload!.startsWith('live_')) {
-            if (FloatingLiveBubble.onTapCallback != null) {
-              FloatingLiveBubble.onTapCallback?.call();
+            if (Get.isRegistered<LiveController>()) {
+              final liveController = Get.find<LiveController>();
+              final ongoingSession = liveController.currentActiveSession.value;
+              if (ongoingSession != null) {
+                Get.to(() => LiveRoomScreen(session: ongoingSession));
+              } else {
+                Get.to(() => const LiveScheduleScreen());
+              }
             } else {
               Get.to(() => const LiveScheduleScreen());
             }
