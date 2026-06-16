@@ -9,11 +9,17 @@ class LiveSessionController extends GetxController {
   final GetLiveSessionsUseCase _getSessionsUseCase;
   final CreateLiveSessionUseCase _createSessionUseCase;
   final DeleteLiveSessionUseCase _deleteSessionUseCase;
+  final StartLiveSessionUseCase _startSessionUseCase;
+  final StopLiveSessionUseCase _stopSessionUseCase;
+  final UpdateLiveSessionUseCase _updateSessionUseCase;
 
   LiveSessionController(
     this._getSessionsUseCase,
     this._createSessionUseCase,
     this._deleteSessionUseCase,
+    this._startSessionUseCase,
+    this._stopSessionUseCase,
+    this._updateSessionUseCase,
   );
 
   final RxList<LiveSessionModel> upcomingSessions = <LiveSessionModel>[].obs;
@@ -69,7 +75,11 @@ class LiveSessionController extends GetxController {
         completedSessions.value = allCompleted;
         
         // Sort sessions
-        upcomingSessions.sort((a, b) => a.scheduledAt.compareTo(b.scheduledAt));
+        upcomingSessions.sort((a, b) {
+          if (a.status == 'ongoing' && b.status != 'ongoing') return -1;
+          if (b.status == 'ongoing' && a.status != 'ongoing') return 1;
+          return a.scheduledAt.compareTo(b.scheduledAt);
+        });
         completedSessions.sort((a, b) => b.scheduledAt.compareTo(a.scheduledAt));
         
         print('[LIVE] Loaded ${upcomingSessions.length} upcoming and ${completedSessions.length} completed sessions');
@@ -142,13 +152,85 @@ class LiveSessionController extends GetxController {
       isLoading.value = false;
     }
   }
-  void _splitSessions(List<LiveSessionModel> all, List<LiveSessionModel> upcoming, List<LiveSessionModel> completed) {
-    final now = DateTime.now();
-    for (var session in all) {
-      if (session.scheduledAt.isAfter(now)) {
-        upcoming.add(session);
+
+  Future<void> startSession(int id) async {
+    try {
+      isLoading.value = true;
+      final result = await _startSessionUseCase.call(id);
+      if (result.isSuccess) {
+        ApiChecker.handleResponse(result, showSuccess: true);
+        await getSessions();
       } else {
+        ApiChecker.handleResponse(result);
+      }
+    } catch (e) {
+      print('[LIVE] Exception in startSession: $e');
+      CustomSnackBar.showError('Something went wrong: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> stopSession(int id) async {
+    try {
+      isLoading.value = true;
+      final result = await _stopSessionUseCase.call(id);
+      if (result.isSuccess) {
+        ApiChecker.handleResponse(result, showSuccess: true);
+        await getSessions();
+      } else {
+        ApiChecker.handleResponse(result);
+      }
+    } catch (e) {
+      print('[LIVE] Exception in stopSession: $e');
+      CustomSnackBar.showError('Something went wrong: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> updateSession({
+    required int id,
+    required String title,
+    required String description,
+    required DateTime scheduledAt,
+    required String sessionType,
+    required int duration,
+    required int maxParticipants,
+  }) async {
+    try {
+      isCreating.value = true;
+      final formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(scheduledAt);
+      final data = {
+        'title': title,
+        'description': description,
+        'scheduled_at': formattedDate,
+        'session_type': sessionType,
+        'duration_minutes': duration,
+        'max_participants': maxParticipants,
+      };
+      final result = await _updateSessionUseCase.call(id, data);
+      if (result.isSuccess) {
+        ApiChecker.handleResponse(result, showSuccess: true);
+        await getSessions();
+        Get.back(); // Close bottom sheet
+      } else {
+        ApiChecker.handleResponse(result);
+      }
+    } catch (e) {
+      print('[LIVE] Exception in updateSession: $e');
+      CustomSnackBar.showError('Something went wrong: $e');
+    } finally {
+      isCreating.value = false;
+    }
+  }
+
+  void _splitSessions(List<LiveSessionModel> all, List<LiveSessionModel> upcoming, List<LiveSessionModel> completed) {
+    for (var session in all) {
+      if (session.status == 'completed') {
         completed.add(session);
+      } else {
+        upcoming.add(session);
       }
     }
   }

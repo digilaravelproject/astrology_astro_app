@@ -27,3 +27,30 @@ class DeleteLiveSessionUseCase {
     return await repository.deleteLiveSession(id);
   }
 }
+
+class StartLiveSessionUseCase {
+  final LiveSessionRepositoryInterface repository;
+  StartLiveSessionUseCase(this.repository);
+
+  Future<ResponseModel> call(int id) async {
+    return await repository.startLiveSession(id);
+  }
+}
+
+class StopLiveSessionUseCase {
+  final LiveSessionRepositoryInterface repository;
+  StopLiveSessionUseCase(this.repository);
+
+  Future<ResponseModel> call(int id) async {
+    return await repository.stopLiveSession(id);
+  }
+}
+
+class UpdateLiveSessionUseCase {
+  final LiveSessionRepositoryInterface repository;
+  UpdateLiveSessionUseCase(this.repository);
+
+  Future<ResponseModel> call(int id, Map<String, dynamic> data) async {
+    return await repository.updateLiveSession(id, data);
+  }
+}

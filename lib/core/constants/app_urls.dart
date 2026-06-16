@@ -58,6 +58,9 @@ class AppUrls {
   // Live Sessions
   static const String liveSessions = "/astrologer/live";
   static String deleteLiveSession(int id) => "/astrologer/live/$id";
+  static String startLiveSession(int id) => "/astrologer/live/$id/start";
+  static String stopLiveSession(int id) => "/astrologer/live/$id/stop";
+  static String updateLiveSession(int id) => "/astrologer/live/$id";
 
   // Billing Address
   static const String billingAddress = "/astrologer/billing-address";

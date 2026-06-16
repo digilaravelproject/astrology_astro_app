@@ -29,6 +29,15 @@ class LiveScheduleBinding extends Bindings {
     Get.lazyPut<DeleteLiveSessionUseCase>(
       () => DeleteLiveSessionUseCase(Get.find<LiveSessionRepositoryInterface>()),
     );
+    Get.lazyPut<StartLiveSessionUseCase>(
+      () => StartLiveSessionUseCase(Get.find<LiveSessionRepositoryInterface>()),
+    );
+    Get.lazyPut<StopLiveSessionUseCase>(
+      () => StopLiveSessionUseCase(Get.find<LiveSessionRepositoryInterface>()),
+    );
+    Get.lazyPut<UpdateLiveSessionUseCase>(
+      () => UpdateLiveSessionUseCase(Get.find<LiveSessionRepositoryInterface>()),
+    );
 
     // Controller
     Get.lazyPut<LiveSessionController>(
@@ -36,6 +45,9 @@ class LiveScheduleBinding extends Bindings {
         Get.find<GetLiveSessionsUseCase>(),
         Get.find<CreateLiveSessionUseCase>(),
         Get.find<DeleteLiveSessionUseCase>(),
+        Get.find<StartLiveSessionUseCase>(),
+        Get.find<StopLiveSessionUseCase>(),
+        Get.find<UpdateLiveSessionUseCase>(),
       ),
     );
   }

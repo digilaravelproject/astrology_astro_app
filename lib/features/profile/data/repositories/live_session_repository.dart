@@ -21,4 +21,19 @@ class LiveSessionRepository implements LiveSessionRepositoryInterface {
   Future<ResponseModel> deleteLiveSession(int id) async {
     return await dataSource.deleteLiveSession(id);
   }
+
+  @override
+  Future<ResponseModel> startLiveSession(int id) async {
+    return await dataSource.startLiveSession(id);
+  }
+
+  @override
+  Future<ResponseModel> stopLiveSession(int id) async {
+    return await dataSource.stopLiveSession(id);
+  }
+
+  @override
+  Future<ResponseModel> updateLiveSession(int id, Map<String, dynamic> data) async {
+    return await dataSource.updateLiveSession(id, data);
+  }
 }

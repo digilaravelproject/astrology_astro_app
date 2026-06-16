@@ -8,6 +8,9 @@ class LiveSessionModel {
   final int maxParticipants;
   final String? status;
   final DateTime? createdAt;
+  final DateTime? startedAt;
+  final DateTime? endedAt;
+  final String? streamKey;
 
   LiveSessionModel({
     required this.id,
@@ -19,6 +22,9 @@ class LiveSessionModel {
     required this.maxParticipants,
     this.status,
     this.createdAt,
+    this.startedAt,
+    this.endedAt,
+    this.streamKey,
   });
 
   factory LiveSessionModel.fromJson(Map<String, dynamic> json) {
@@ -32,6 +38,9 @@ class LiveSessionModel {
       maxParticipants: json['max_participants'] ?? 0,
       status: json['status'],
       createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
+      startedAt: json['started_at'] != null ? DateTime.parse(json['started_at']) : null,
+      endedAt: json['ended_at'] != null ? DateTime.parse(json['ended_at']) : null,
+      streamKey: json['stream_key'],
     );
   }
 
@@ -45,6 +54,9 @@ class LiveSessionModel {
       'duration_minutes': durationMinutes,
       'max_participants': maxParticipants,
       'status': status,
+      'started_at': startedAt?.toIso8601String(),
+      'ended_at': endedAt?.toIso8601String(),
+      'stream_key': streamKey,
     };
   }
 }
