@@ -5,7 +5,6 @@ import '../../../../core/services/network/api_checker.dart';
 import '../../../../core/services/local_notification_service.dart';
 import '../../data/models/live_session_model.dart';
 import '../../domain/usecases/live_usecases.dart';
-import '../widgets/floating_live_bubble.dart';
 import '../pages/live_room_screen.dart';
 
 class LiveController extends GetxController {
@@ -44,21 +43,6 @@ class LiveController extends GetxController {
 
   void showLiveBubbleAndNotification(LiveSessionModel session) {
     if (Get.context != null) {
-      FloatingLiveBubble.show(
-        context: Get.context!,
-        sessionId: session.id,
-        title: session.title,
-        status: 'ongoing',
-        startedAt: session.startedAt?.toIso8601String(),
-        onTap: () {
-          if (!_isRoomOpen) {
-            _isRoomOpen = true;
-            Get.to(() => LiveRoomScreen(session: session))?.then((_) {
-              _isRoomOpen = false;
-            });
-          }
-        },
-      );
       LocalNotificationService.showOngoingLiveNotification(
         sessionId: session.id,
         title: 'Live Session in Progress',
@@ -69,7 +53,6 @@ class LiveController extends GetxController {
   }
 
   void stopLiveBubbleAndNotification(int sessionId) {
-    FloatingLiveBubble.dismiss();
     LocalNotificationService.cancelOngoingLiveNotification(sessionId);
   }
 
