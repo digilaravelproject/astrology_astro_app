@@ -33,6 +33,8 @@ class LiveController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxBool isCreating = false.obs;
 
+  bool _isRoomOpen = false;
+
   @override
   void onInit() {
     super.onInit();
@@ -49,7 +51,12 @@ class LiveController extends GetxController {
         status: 'ongoing',
         startedAt: session.startedAt?.toIso8601String(),
         onTap: () {
-          Get.to(() => LiveRoomScreen(session: session));
+          if (!_isRoomOpen) {
+            _isRoomOpen = true;
+            Get.to(() => LiveRoomScreen(session: session))?.then((_) {
+              _isRoomOpen = false;
+            });
+          }
         },
       );
       LocalNotificationService.showOngoingLiveNotification(
@@ -76,6 +83,13 @@ class LiveController extends GetxController {
           currentActiveSession.value = session;
           print('[LIVE] Active ongoing session found: ${session.title}');
           showLiveBubbleAndNotification(session);
+          
+          if (!_isRoomOpen) {
+            _isRoomOpen = true;
+            Get.to(() => LiveRoomScreen(session: session))?.then((_) {
+              _isRoomOpen = false;
+            });
+          }
         } else {
           if (currentActiveSession.value != null) {
             stopLiveBubbleAndNotification(currentActiveSession.value!.id);
@@ -177,7 +191,10 @@ class LiveController extends GetxController {
         await checkCurrentActiveSession();
         Get.back();
         if (isInstant && currentActiveSession.value != null) {
-          Get.to(() => LiveRoomScreen(session: currentActiveSession.value!));
+          _isRoomOpen = true;
+          Get.to(() => LiveRoomScreen(session: currentActiveSession.value!))?.then((_) {
+            _isRoomOpen = false;
+          });
         }
       } else {
         ApiChecker.handleResponse(result);
@@ -220,7 +237,10 @@ class LiveController extends GetxController {
         await checkCurrentActiveSession();
         if (currentActiveSession.value != null) {
           showLiveBubbleAndNotification(currentActiveSession.value!);
-          Get.to(() => LiveRoomScreen(session: currentActiveSession.value!));
+          _isRoomOpen = true;
+          Get.to(() => LiveRoomScreen(session: currentActiveSession.value!))?.then((_) {
+            _isRoomOpen = false;
+          });
         }
       } else {
         ApiChecker.handleResponse(result);
