@@ -80,6 +80,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
       final broadcastData = await _controller.startBroadcast(widget.session.id);
       if (broadcastData == null) {
         debugPrint('[LIVE] Failed to get broadcast credentials');
+        CustomSnackBar.showError('Failed to get broadcast credentials');
         return;
       }
   
@@ -88,6 +89,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
   
       if (wsUrl.isEmpty || token.isEmpty) {
         debugPrint('[LIVE] Empty wsUrl or token');
+        CustomSnackBar.showError('Empty wsUrl or token from server');
         return;
       }
   
@@ -130,6 +132,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
   
     } catch (e) {
       debugPrint('[LIVE] Error connecting to LiveKit / publishing: $e');
+      CustomSnackBar.showError('LiveKit Connection Error: $e');
       _disconnectLiveKit();
     }
   }
