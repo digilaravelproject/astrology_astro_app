@@ -47,6 +47,11 @@ import '../../wallet/domain/usecases/get_wallet_withdrawals_usecase.dart';
 import '../../wallet/domain/usecases/request_withdrawal_usecase.dart';
 import '../../wallet/data/repositories/wallet_repository_impl.dart';
 import '../../../core/services/network/api_client.dart';
+import 'package:intl/intl.dart';
+import '../../live/screens/astrologer_live_screen.dart';
+import '../../live/screens/live_sessions_list_screen.dart';
+import '../../../core/services/network/api_checker.dart';
+import '../../../core/utils/custom_snackbar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -597,8 +602,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return time24;
   }
 
-  }
-
   Widget _buildToggleTile({required IconData icon, required String title, required String subtitle, required bool value, required ValueChanged<bool> onChanged, bool showInfo = false}) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -852,6 +855,14 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: () => _showGoLiveBottomSheet(Get.context!),
       ),
       _MenuData(
+        title: 'Live Streams',
+        icon: Iconsax.video_tick_copy,
+        bgColor: const Color(0xFFFFF0F5),
+        iconBgColor: const Color(0xFFFFD1DC),
+        textColor: const Color(0xFFD81B60),
+        onTap: () => Get.to(() => const LiveSessionsListScreen()),
+      ),
+      _MenuData(
         title: 'Chat',
         icon: Iconsax.messages_2_copy,
         bgColor: const Color(0xFFEAF8F1),
@@ -979,6 +990,64 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Future<void> _startInstantLive(BuildContext context) async {
+    final astrologerName = authController.currentUser.value?.name ?? 'Astrologer';
+    final title = 'Live with $astrologerName';
+    final description = 'Welcome to my live session! Feel free to ask questions and send Super Chats.';
+
+    Get.dialog(
+      const Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
+      barrierDismissible: false,
+    );
+
+    try {
+      final apiClient = Get.find<ApiClient>();
+      
+      final formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
+      final result = await apiClient.post(AppUrls.liveSessions, data: {
+        'title': title,
+        'description': description,
+        'scheduled_at': formattedDate,
+        'session_type': 'public',
+        'duration_minutes': 60,
+        'max_participants': 500,
+      });
+
+      Get.back(); // Dismiss loading
+
+      if (result.isSuccess) {
+        final sessionData = result.body['data'];
+        final int sessionId = sessionData['id'];
+
+        // Start session on backend
+        Get.dialog(
+          const Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
+          barrierDismissible: false,
+        );
+        final startResult = await apiClient.post('${AppUrls.liveSessions}/$sessionId/start');
+        Get.back(); // Dismiss loading
+
+        if (startResult.isSuccess) {
+          final updatedSessionData = startResult.body['data'] ?? sessionData;
+          final String? streamKey = updatedSessionData['stream_key']?.toString();
+
+          Get.to(() => AstrologerLiveScreen(
+            sessionId: sessionId,
+            title: title,
+            streamKey: streamKey,
+          ));
+        } else {
+          CustomSnackBar.showError('Could not start live stream on server');
+        }
+      } else {
+        ApiChecker.handleResponse(result);
+      }
+    } catch (e) {
+      Get.back(); // Dismiss loading
+      CustomSnackBar.showError('Error starting live session: $e');
+    }
+  }
+
   void _showGoLiveBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -1024,7 +1093,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: ElevatedButton(
                 onPressed: () {
                   Get.back();
-                  // For actual implementation, replace this with direct navigation
+                  _startInstantLive(context);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF4CAF50), // Green for Go Live
@@ -1125,6 +1194,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
 
 
 

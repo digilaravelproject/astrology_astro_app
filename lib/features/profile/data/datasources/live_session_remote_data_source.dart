@@ -27,4 +27,18 @@ class LiveSessionRemoteDataSource {
     print('[LIVE_DS] Delete response: ${result.toString()}');
     return result;
   }
+
+  Future<ResponseModel> startLiveSession(int id) async {
+    print('[LIVE_DS] Starting live session: $id');
+    final result = await _apiClient.post('${AppUrls.liveSessions}/$id/start');
+    print('[LIVE_DS] Start response: ${result.toString()}');
+    return result;
+  }
+
+  Future<ResponseModel> stopLiveSession(int id) async {
+    print('[LIVE_DS] Stopping live session: $id');
+    final result = await _apiClient.post('${AppUrls.liveSessions}/$id/stop');
+    print('[LIVE_DS] Stop response: ${result.toString()}');
+    return result;
+  }
 }

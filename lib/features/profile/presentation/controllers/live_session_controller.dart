@@ -9,11 +9,15 @@ class LiveSessionController extends GetxController {
   final GetLiveSessionsUseCase _getSessionsUseCase;
   final CreateLiveSessionUseCase _createSessionUseCase;
   final DeleteLiveSessionUseCase _deleteSessionUseCase;
+  final StartLiveSessionUseCase _startSessionUseCase;
+  final StopLiveSessionUseCase _stopSessionUseCase;
 
   LiveSessionController(
     this._getSessionsUseCase,
     this._createSessionUseCase,
     this._deleteSessionUseCase,
+    this._startSessionUseCase,
+    this._stopSessionUseCase,
   );
 
   final RxList<LiveSessionModel> upcomingSessions = <LiveSessionModel>[].obs;
@@ -142,6 +146,46 @@ class LiveSessionController extends GetxController {
       isLoading.value = false;
     }
   }
+  Future<LiveSessionModel?> startSession(int id) async {
+    try {
+      isLoading.value = true;
+      final result = await _startSessionUseCase.call(id);
+      if (result.isSuccess) {
+        final session = LiveSessionModel.fromJson(result.body['data']);
+        CustomSnackBar.showSuccess('Live session started successfully');
+        return session;
+      } else {
+        ApiChecker.handleResponse(result);
+      }
+    } catch (e) {
+      print('[LIVE] Exception in startSession: $e');
+      CustomSnackBar.showError('Could not start session: $e');
+    } finally {
+      isLoading.value = false;
+    }
+    return null;
+  }
+
+  Future<bool> stopSession(int id) async {
+    try {
+      isLoading.value = true;
+      final result = await _stopSessionUseCase.call(id);
+      if (result.isSuccess) {
+        CustomSnackBar.showSuccess('Live session ended');
+        await getSessions();
+        return true;
+      } else {
+        ApiChecker.handleResponse(result);
+      }
+    } catch (e) {
+      print('[LIVE] Exception in stopSession: $e');
+      CustomSnackBar.showError('Could not stop session: $e');
+    } finally {
+      isLoading.value = false;
+    }
+    return false;
+  }
+
   void _splitSessions(List<LiveSessionModel> all, List<LiveSessionModel> upcoming, List<LiveSessionModel> completed) {
     final now = DateTime.now();
     for (var session in all) {

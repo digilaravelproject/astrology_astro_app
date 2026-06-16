@@ -16,6 +16,13 @@ import '../../../routes/app_routes.dart';
 
 import 'package:permission_handler/permission_handler.dart';
 import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
+import 'package:intl/intl.dart';
+import '../../auth/controllers/auth_controller.dart';
+import '../../../core/services/network/api_client.dart';
+import '../../../core/services/network/api_checker.dart';
+import '../../live/screens/astrologer_live_screen.dart';
+import '../../../core/utils/custom_snackbar.dart';
+import '../../../core/constants/app_urls.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -144,6 +151,65 @@ class _DashboardScreenState extends State<DashboardScreen> {
     ) ?? false;
   }
 
+  Future<void> _startInstantLive(BuildContext context) async {
+    final authController = Get.find<AuthController>();
+    final astrologerName = authController.currentUser.value?.name ?? 'Astrologer';
+    final title = 'Live with $astrologerName';
+    final description = 'Welcome to my live session! Feel free to ask questions and send Super Chats.';
+
+    Get.dialog(
+      const Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
+      barrierDismissible: false,
+    );
+
+    try {
+      final apiClient = Get.find<ApiClient>();
+      
+      final formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
+      final result = await apiClient.post(AppUrls.liveSessions, data: {
+        'title': title,
+        'description': description,
+        'scheduled_at': formattedDate,
+        'session_type': 'public',
+        'duration_minutes': 60,
+        'max_participants': 500,
+      });
+
+      Get.back(); // Dismiss loading
+
+      if (result.isSuccess) {
+        final sessionData = result.body['data'];
+        final int sessionId = sessionData['id'];
+
+        // Start session on backend
+        Get.dialog(
+          const Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
+          barrierDismissible: false,
+        );
+        final startResult = await apiClient.post('${AppUrls.liveSessions}/$sessionId/start');
+        Get.back(); // Dismiss loading
+
+        if (startResult.isSuccess) {
+          final updatedSessionData = startResult.body['data'] ?? sessionData;
+          final String? streamKey = updatedSessionData['stream_key']?.toString();
+
+          Get.to(() => AstrologerLiveScreen(
+            sessionId: sessionId,
+            title: title,
+            streamKey: streamKey,
+          ));
+        } else {
+          CustomSnackBar.showError('Could not start live stream on server');
+        }
+      } else {
+        ApiChecker.handleResponse(result);
+      }
+    } catch (e) {
+      Get.back(); // Dismiss loading
+      CustomSnackBar.showError('Error starting live session: $e');
+    }
+  }
+
   void _showGoLiveBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -189,7 +255,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: ElevatedButton(
                 onPressed: () {
                   Get.back();
-                  // For actual implementation, replace this with direct navigation
+                  _startInstantLive(context);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF4CAF50), // Green for Go Live

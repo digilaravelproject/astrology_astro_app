@@ -49,6 +49,7 @@ class WebSocketService extends GetxService {
   static final RxMap<String, dynamic> callAcceptedData = <String, dynamic>{}.obs;
   static final RxMap<String, dynamic> callEndedData = <String, dynamic>{}.obs;
   static final RxMap<String, dynamic> iceCandidateData = <String, dynamic>{}.obs;
+  static final StreamController<Map<String, dynamic>> liveSessionEvent = StreamController.broadcast();
 
   final String _wsUrl = AppUrls.webSocketUrl;
   
@@ -230,7 +231,19 @@ class WebSocketService extends GetxService {
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleIceCandidateSent(data['data']);
-        } else if (event == AppUrls.pusherPing) {
+        }
+        
+        final String? channel = data['channel'];
+        if (channel != null && (channel.startsWith('presence-live-session.') || channel.startsWith('presence-live-session'))) {
+          final rawEventData = data['data'];
+          liveSessionEvent.add({
+            'channel': channel,
+            'event': event,
+            'data': rawEventData is String ? jsonDecode(rawEventData) : rawEventData,
+          });
+        }
+        
+        if (event == AppUrls.pusherPing) {
            _send(AppUrls.pusherPong);
         }
       } catch (e) {
@@ -296,6 +309,52 @@ class WebSocketService extends GetxService {
         Logger.e('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       }
     }
+  }
+
+  Future<void> subscribeToLiveSession(int sessionId) async {
+    if (_socketId == null) return;
+    final String channelName = 'presence-live-session.$sessionId';
+    try {
+      final apiClient = Get.find<ApiClient>();
+      final response = await apiClient.post(
+        AppUrls.broadcastingAuth,
+        data: {
+          'channel_name': channelName,
+          'socket_id': _socketId,
+        },
+        options: Options(
+          contentType: Headers.formUrlEncodedContentType,
+        ),
+        handleError: false,
+        showErrorScreen: false,
+      );
+      final authString = response.body?['auth']?.toString();
+      final channelData = response.body?['channel_data']?.toString();
+      if (authString != null && authString.isNotEmpty) {
+        _send(jsonEncode({
+          "event": AppUrls.pusherSubscribe,
+          "data": {
+            "channel": channelName,
+            "auth": authString,
+            if (channelData != null) "channel_data": channelData,
+          }
+        }));
+        Logger.d('[WS] Subscribed to live session channel: $channelName');
+      }
+    } catch (e) {
+      Logger.e('[WS] Auth exception for live session channel: $e');
+    }
+  }
+
+  void unsubscribeFromLiveSession(int sessionId) {
+    final String channelName = 'presence-live-session.$sessionId';
+    _send(jsonEncode({
+      "event": "pusher:unsubscribe",
+      "data": {
+        "channel": channelName
+      }
+    }));
+    Logger.d('[WS] Unsubscribed from live session channel: $channelName');
   }
 
   void _send(String data) {
