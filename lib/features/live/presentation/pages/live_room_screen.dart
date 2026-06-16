@@ -9,6 +9,7 @@ import '../../../../core/widgets/app_text.dart';
 import '../../data/models/live_session_model.dart';
 import '../controllers/live_controller.dart';
 import '../../../../core/utils/custom_snackbar.dart';
+import '../../../../core/services/network/websocket_service.dart';
 
 
 class LiveRoomScreen extends StatefulWidget {
@@ -34,6 +35,8 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
   final ScrollController _scrollController = ScrollController();
   Timer? _simulatedCommentTimer;
   Timer? _activeSessionPollTimer;
+  StreamSubscription? _commentsSubscription;
+  StreamSubscription? _superChatSubscription;
   late int _viewerCount;
 
   Room? _room;
@@ -46,13 +49,36 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
     super.initState();
     _controller = Get.find<LiveController>();
     _viewerCount = widget.session.viewerCount;
-    
-    // Add initial comments
-    _comments.addAll([
-      LiveComment(user: 'Amit K.', message: 'Namaste Guruji! 🙏'),
-      LiveComment(user: 'Pooja Sharma', message: 'When will I get a job change?'),
-      LiveComment(user: 'Rajesh P.', message: 'Very helpful prediction!'),
-    ]);
+
+    // Subscribe to dynamic websocket channel
+    try {
+      final ws = Get.find<WebSocketService>();
+      ws.subscribeToChannel('live-session.${widget.session.id}');
+      
+      _commentsSubscription = WebSocketService.liveCommentsEvent.stream.listen((event) {
+        if (mounted) {
+          final String userName = event['user_name'] ?? 'User';
+          final String message = event['message'] ?? '';
+          setState(() {
+            _comments.add(LiveComment(user: userName, message: message));
+          });
+          _scrollToBottom();
+        }
+      });
+
+      _superChatSubscription = WebSocketService.superChatEvent.stream.listen((event) {
+        if (mounted) {
+          final String userName = event['user_name'] ?? 'User';
+          final String message = event['message'] ?? '';
+          setState(() {
+            _comments.add(LiveComment(user: userName, message: '🎁 Gift Tip: $message'));
+          });
+          _scrollToBottom();
+        }
+      });
+    } catch (e) {
+      debugPrint('[LIVE] WebSocket subscription error: $e');
+    }
 
     // Initialize camera stream
     _initCamera();
@@ -63,11 +89,20 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
         _controller.checkCurrentActiveSession();
       }
     });
-  
-    // Simulate incoming viewer comments
-    _startSimulatedComments();
   }
   
+  void _scrollToBottom() {
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
   Future<void> _initCamera() async {
     try {
       final cameraStatus = await Permission.camera.request();
@@ -97,7 +132,14 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
   
       // 2. Connect to LiveKit room
       final room = Room();
-      await room.connect(wsUrl, token);
+      await room.connect(
+        wsUrl,
+        token,
+        roomOptions: const RoomOptions(
+          adaptiveStream: true,
+          dynacast: true,
+        ),
+      );
       _room = room;
   
       // 3. Create local video track
@@ -115,8 +157,6 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
         await room.localParticipant?.publishAudioTrack(audioTrack);
         _localAudioTrack = audioTrack;
       }
-
-
   
       if (mounted) {
         setState(() {
@@ -157,44 +197,21 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
   void dispose() {
     _simulatedCommentTimer?.cancel();
     _activeSessionPollTimer?.cancel();
+    _commentsSubscription?.cancel();
+    _superChatSubscription?.cancel();
     _scrollController.dispose();
     _controller.stopBroadcast(widget.session.id);
     _disconnectLiveKit();
+    try {
+      final ws = Get.find<WebSocketService>();
+      ws.unsubscribeFromChannel('live-session.${widget.session.id}');
+    } catch (e) {
+      debugPrint('[LIVE] WebSocket unsubscribe error: $e');
+    }
     super.dispose();
   }
 
-  void _startSimulatedComments() {
-    _simulatedCommentTimer = Timer.periodic(const Duration(seconds: 4), (timer) {
-      if (mounted) {
-        final users = ['Rahul S.', 'Sita Devi', 'Karan Johar', 'Neha M.', 'Vikram R.'];
-        final messages = [
-          'Excellent reading, thank you! 🌟',
-          'Is my marriage delayed?',
-          'Which gemstone should I wear?',
-          'Thank you for the guidance.',
-          'Super Chat sent! Check it out! 🎉',
-        ];
-        
-        final randomUser = (users..shuffle()).first;
-        final randomMessage = (messages..shuffle()).first;
 
-        setState(() {
-          _comments.add(LiveComment(user: randomUser, message: randomMessage));
-        });
-
-        // Scroll to bottom
-        Future.delayed(const Duration(milliseconds: 100), () {
-          if (_scrollController.hasClients) {
-            _scrollController.animateTo(
-              _scrollController.position.maxScrollExtent,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOut,
-            );
-          }
-        });
-      }
-    });
-  }
 
   Color _getFilterColor() {
     switch (_selectedFilter) {

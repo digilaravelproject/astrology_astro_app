@@ -18,6 +18,8 @@ import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.da
 import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
 import 'package:astro_astrologer/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:astro_astrologer/features/chat/domain/usecases/sync_message_status_usecase.dart';
+import 'package:astro_astrologer/features/live/presentation/controllers/live_controller.dart';
+import 'package:astro_astrologer/features/live/data/models/live_session_model.dart';
 
 class WebSocketService extends GetxService {
   WebSocketChannel? _channel;
@@ -49,6 +51,10 @@ class WebSocketService extends GetxService {
   static final RxMap<String, dynamic> callAcceptedData = <String, dynamic>{}.obs;
   static final RxMap<String, dynamic> callEndedData = <String, dynamic>{}.obs;
   static final RxMap<String, dynamic> iceCandidateData = <String, dynamic>{}.obs;
+  
+  static final StreamController<Map<String, dynamic>> liveCommentsEvent = StreamController.broadcast();
+  static final StreamController<Map<String, dynamic>> superChatEvent = StreamController.broadcast();
+  static final RxMap<int, int> liveViewerCounts = <int, int>{}.obs;
 
   final String _wsUrl = AppUrls.webSocketUrl;
   
@@ -232,10 +238,138 @@ class WebSocketService extends GetxService {
           _handleIceCandidateSent(data['data']);
         } else if (event == AppUrls.pusherPing) {
            _send(AppUrls.pusherPong);
+        } else if (event == 'ViewerCountUpdated' || event == 'App\\Events\\ViewerCountUpdated' || event == '.ViewerCountUpdated') {
+          _handleViewerCountUpdated(data['data']);
+        } else if (event == 'NewLiveComment' || event == 'App\\Events\\NewLiveComment' || event == '.NewLiveComment') {
+          _handleNewLiveComment(data['data']);
+        } else if (event == 'SuperChatReceived' || event == 'App\\Events\\SuperChatReceived' || event == '.SuperChatReceived') {
+          _handleSuperChatReceived(data['data']);
         }
       } catch (e) {
         debugPrint('WebSocketService: Error parsing message -> $e');
       }
+    }
+  }
+
+  Future<void> subscribeToChannel(String channelName) async {
+    if (!_isConnected || _socketId == null) {
+      Logger.d('Cannot subscribe to channel $channelName, not connected yet.');
+      return;
+    }
+    try {
+      final apiClient = Get.find<ApiClient>();
+      final response = await apiClient.post(
+        AppUrls.broadcastingAuth,
+        data: {
+          'channel_name': channelName,
+          'socket_id': _socketId,
+        },
+        options: Options(
+          contentType: Headers.formUrlEncodedContentType,
+        ),
+        handleError: false,
+        showErrorScreen: false,
+      );
+
+      final authString = response.body?['auth']?.toString();
+      if (authString != null && authString.isNotEmpty) {
+        Logger.d('Subscribing to dynamic channel: $channelName');
+        _send(jsonEncode({
+          "event": AppUrls.pusherSubscribe,
+          "data": {
+            "channel": channelName,
+            "auth": authString
+          }
+        }));
+      }
+    } catch (e) {
+      Logger.e('Error subscribing to dynamic channel $channelName: $e');
+    }
+  }
+
+  void unsubscribeFromChannel(String channelName) {
+    if (_isConnected) {
+      Logger.d('Unsubscribing from channel: $channelName');
+      _send(jsonEncode({
+        "event": "pusher:unsubscribe",
+        "data": {
+          "channel": channelName
+        }
+      }));
+    }
+  }
+
+  void _handleViewerCountUpdated(dynamic rawData) {
+    try {
+      Map<String, dynamic> eventData = {};
+      if (rawData is String) {
+        eventData = jsonDecode(rawData);
+      } else if (rawData is Map) {
+        eventData = Map<String, dynamic>.from(rawData);
+      }
+      final int sessionId = eventData['live_session_id'] is int 
+          ? eventData['live_session_id'] 
+          : (int.tryParse(eventData['live_session_id']?.toString() ?? '') ?? 0);
+      final int count = eventData['viewer_count'] is int 
+          ? eventData['viewer_count'] 
+          : (int.tryParse(eventData['viewer_count']?.toString() ?? '') ?? 0);
+      
+      liveViewerCounts[sessionId] = count;
+      liveViewerCounts.refresh();
+
+      if (Get.isRegistered<LiveController>()) {
+        final controller = Get.find<LiveController>();
+        if (controller.currentActiveSession.value?.id == sessionId) {
+          controller.currentActiveSession.value = LiveSessionModel(
+            id: controller.currentActiveSession.value!.id,
+            title: controller.currentActiveSession.value!.title,
+            description: controller.currentActiveSession.value!.description,
+            scheduledAt: controller.currentActiveSession.value!.scheduledAt,
+            sessionType: controller.currentActiveSession.value!.sessionType,
+            durationMinutes: controller.currentActiveSession.value!.durationMinutes,
+            maxParticipants: controller.currentActiveSession.value!.maxParticipants,
+            status: controller.currentActiveSession.value!.status,
+            createdAt: controller.currentActiveSession.value!.createdAt,
+            startedAt: controller.currentActiveSession.value!.startedAt,
+            endedAt: controller.currentActiveSession.value!.endedAt,
+            streamKey: controller.currentActiveSession.value!.streamKey,
+            viewerCount: count,
+            currentParticipants: controller.currentActiveSession.value!.currentParticipants,
+            isBroadcasting: controller.currentActiveSession.value!.isBroadcasting,
+          );
+          controller.currentActiveSession.refresh();
+        }
+      }
+    } catch (e) {
+      Logger.e('WebSocketService: error handling ViewerCountUpdated -> $e');
+    }
+  }
+
+  void _handleNewLiveComment(dynamic rawData) {
+    try {
+      Map<String, dynamic> eventData = {};
+      if (rawData is String) {
+        eventData = jsonDecode(rawData);
+      } else if (rawData is Map) {
+        eventData = Map<String, dynamic>.from(rawData);
+      }
+      liveCommentsEvent.add(eventData);
+    } catch (e) {
+      Logger.e('WebSocketService: error handling NewLiveComment -> $e');
+    }
+  }
+
+  void _handleSuperChatReceived(dynamic rawData) {
+    try {
+      Map<String, dynamic> eventData = {};
+      if (rawData is String) {
+        eventData = jsonDecode(rawData);
+      } else if (rawData is Map) {
+        eventData = Map<String, dynamic>.from(rawData);
+      }
+      superChatEvent.add(eventData);
+    } catch (e) {
+      Logger.e('WebSocketService: error handling SuperChatReceived -> $e');
     }
   }
 
