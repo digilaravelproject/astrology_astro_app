@@ -41,4 +41,15 @@ class LiveRepositoryImpl implements LiveRepository {
   Future<ResponseModel> updateLiveSession(int id, Map<String, dynamic> data) async {
     return await dataSource.updateLiveSession(id, data);
   }
+
+  @override
+  Future<ResponseModel> startBroadcast(int id) async {
+    return await dataSource.startBroadcast(id);
+  }
+
+  @override
+  Future<ResponseModel> stopBroadcast(int id) async {
+    return await dataSource.stopBroadcast(id);
+  }
 }
+

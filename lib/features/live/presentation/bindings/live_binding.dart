@@ -41,6 +41,12 @@ class LiveBinding extends Bindings {
     Get.lazyPut<UpdateLiveSessionUseCase>(
       () => UpdateLiveSessionUseCase(Get.find<LiveRepository>()),
     );
+    Get.lazyPut<StartBroadcastUseCase>(
+      () => StartBroadcastUseCase(Get.find<LiveRepository>()),
+    );
+    Get.lazyPut<StopBroadcastUseCase>(
+      () => StopBroadcastUseCase(Get.find<LiveRepository>()),
+    );
 
     // Controller
     Get.lazyPut<LiveController>(
@@ -52,7 +58,10 @@ class LiveBinding extends Bindings {
         Get.find<StartLiveSessionUseCase>(),
         Get.find<StopLiveSessionUseCase>(),
         Get.find<UpdateLiveSessionUseCase>(),
+        Get.find<StartBroadcastUseCase>(),
+        Get.find<StopBroadcastUseCase>(),
       ),
     );
   }
 }
+

@@ -15,6 +15,8 @@ class LiveController extends GetxController {
   final StartLiveSessionUseCase _startSessionUseCase;
   final StopLiveSessionUseCase _stopSessionUseCase;
   final UpdateLiveSessionUseCase _updateSessionUseCase;
+  final StartBroadcastUseCase _startBroadcastUseCase;
+  final StopBroadcastUseCase _stopBroadcastUseCase;
 
   LiveController(
     this._getSessionsUseCase,
@@ -24,7 +26,10 @@ class LiveController extends GetxController {
     this._startSessionUseCase,
     this._stopSessionUseCase,
     this._updateSessionUseCase,
+    this._startBroadcastUseCase,
+    this._stopBroadcastUseCase,
   );
+
 
   final RxList<LiveSessionModel> upcomingSessions = <LiveSessionModel>[].obs;
   final RxList<LiveSessionModel> completedSessions = <LiveSessionModel>[].obs;
@@ -312,4 +317,39 @@ class LiveController extends GetxController {
       }
     }
   }
+
+  Future<Map<String, dynamic>?> startBroadcast(int id) async {
+    try {
+      final result = await _startBroadcastUseCase.call(id);
+      if (result.isSuccess && result.body != null) {
+        final dynamic body = result.body;
+        if (body is Map<String, dynamic>) {
+          if (body['data'] is Map<String, dynamic>) {
+            return body['data'];
+          }
+          return body;
+        }
+      } else {
+        ApiChecker.handleResponse(result);
+      }
+    } catch (e) {
+      print('[LIVE] Exception in startBroadcast: $e');
+    }
+    return null;
+  }
+
+  Future<bool> stopBroadcast(int id) async {
+    try {
+      final result = await _stopBroadcastUseCase.call(id);
+      if (result.isSuccess) {
+        return true;
+      } else {
+        ApiChecker.handleResponse(result);
+      }
+    } catch (e) {
+      print('[LIVE] Exception in stopBroadcast: $e');
+    }
+    return false;
+  }
 }
+

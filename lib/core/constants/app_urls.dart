@@ -61,6 +61,9 @@ class AppUrls {
   static String deleteLiveSession(int id) => "/astrologer/live/$id";
   static String startLiveSession(int id) => "/astrologer/live/$id/start";
   static String stopLiveSession(int id) => "/astrologer/live/$id/stop";
+  static String startBroadcast(int id) => "/astrologer/live/$id/broadcast";
+  static String stopBroadcast(int id) => "/astrologer/live/$id/stop-broadcast";
+
   static String updateLiveSession(int id) => "/astrologer/live/$id";
 
   // Billing Address

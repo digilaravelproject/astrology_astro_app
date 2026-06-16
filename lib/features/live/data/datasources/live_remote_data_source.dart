@@ -55,4 +55,19 @@ class LiveRemoteDataSource {
     print('[LIVE_DS] Update response: ${result.toString()}');
     return result;
   }
+
+  Future<ResponseModel> startBroadcast(int id) async {
+    print('[LIVE_DS] Starting LiveKit broadcast: $id');
+    final result = await _apiClient.post(AppUrls.startBroadcast(id), data: {});
+    print('[LIVE_DS] Start broadcast response: ${result.toString()}');
+    return result;
+  }
+
+  Future<ResponseModel> stopBroadcast(int id) async {
+    print('[LIVE_DS] Stopping LiveKit broadcast: $id');
+    final result = await _apiClient.post(AppUrls.stopBroadcast(id), data: {});
+    print('[LIVE_DS] Stop broadcast response: ${result.toString()}');
+    return result;
+  }
 }
+

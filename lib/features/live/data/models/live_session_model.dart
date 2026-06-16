@@ -13,6 +13,7 @@ class LiveSessionModel {
   final String? streamKey;
   final int viewerCount;
   final int currentParticipants;
+  final bool isBroadcasting;
 
   LiveSessionModel({
     required this.id,
@@ -29,6 +30,7 @@ class LiveSessionModel {
     this.streamKey,
     this.viewerCount = 0,
     this.currentParticipants = 0,
+    this.isBroadcasting = false,
   });
 
   factory LiveSessionModel.fromJson(Map<String, dynamic> json) {
@@ -47,6 +49,7 @@ class LiveSessionModel {
       streamKey: json['stream_key'],
       viewerCount: json['viewer_count'] ?? 0,
       currentParticipants: json['current_participants'] ?? 0,
+      isBroadcasting: json['is_broadcasting'] ?? false,
     );
   }
 
@@ -65,6 +68,8 @@ class LiveSessionModel {
       'stream_key': streamKey,
       'viewer_count': viewerCount,
       'current_participants': currentParticipants,
+      'is_broadcasting': isBroadcasting,
     };
   }
+
 }

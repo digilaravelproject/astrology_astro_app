@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide navigator;
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:livekit_client/livekit_client.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text.dart';
 import '../../data/models/live_session_model.dart';
@@ -33,8 +34,10 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
   Timer? _activeSessionPollTimer;
   late int _viewerCount;
 
-  final RTCVideoRenderer _localRenderer = RTCVideoRenderer();
-  MediaStream? _localStream;
+  Room? _room;
+  LocalVideoTrack? _localVideoTrack;
+  LocalAudioTrack? _localAudioTrack;
+  bool _isLiveKitConnected = false;
 
   @override
   void initState() {
@@ -51,62 +54,107 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
 
     // Initialize camera stream
     _initCamera();
-
+  
     // Poll active session details for viewer count
     _activeSessionPollTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
       if (mounted) {
         _controller.checkCurrentActiveSession();
       }
     });
-
+  
     // Simulate incoming viewer comments
     _startSimulatedComments();
   }
-
+  
   Future<void> _initCamera() async {
     try {
       final cameraStatus = await Permission.camera.request();
       final micStatus = await Permission.microphone.request();
       
-      if (cameraStatus.isGranted) {
-        await _localRenderer.initialize();
-        final Map<String, dynamic> mediaConstraints = {
-          'audio': micStatus.isGranted,
-          'video': {
-            'facingMode': 'user',
-          },
-        };
-        final stream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
-        _localStream = stream;
-        _localRenderer.srcObject = stream;
-        
-        // Ensure initial mute/camera states are respected
-        _localStream?.getVideoTracks().forEach((track) {
-          track.enabled = _isCameraOn;
-        });
-        _localStream?.getAudioTracks().forEach((track) {
-          track.enabled = !_isMuted;
-        });
-
-        if (mounted) {
-          setState(() {});
-        }
+      if (!cameraStatus.isGranted) {
+        debugPrint('[LIVE] Camera permission not granted');
+        return;
       }
+  
+      // 1. Get LiveKit credentials from backend
+      final broadcastData = await _controller.startBroadcast(widget.session.id);
+      if (broadcastData == null) {
+        debugPrint('[LIVE] Failed to get broadcast credentials');
+        return;
+      }
+  
+      final String wsUrl = broadcastData['livekit_ws_url'] ?? '';
+      final String token = broadcastData['token'] ?? '';
+  
+      if (wsUrl.isEmpty || token.isEmpty) {
+        debugPrint('[LIVE] Empty wsUrl or token');
+        return;
+      }
+  
+      // 2. Connect to LiveKit room
+      final room = Room();
+      await room.connect(wsUrl, token);
+      _room = room;
+  
+      // 3. Create local video track
+      final videoTrack = await LocalVideoTrack.createCameraTrack(
+        const CameraCaptureOptions(
+          cameraPosition: CameraPosition.front,
+        ),
+      );
+      await room.localParticipant?.publishVideoTrack(videoTrack);
+      _localVideoTrack = videoTrack;
+  
+      // 4. Create local audio track
+      if (micStatus.isGranted) {
+        final audioTrack = await LocalAudioTrack.create();
+        await room.localParticipant?.publishAudioTrack(audioTrack);
+        _localAudioTrack = audioTrack;
+      }
+
+
+  
+      if (mounted) {
+        setState(() {
+          _isLiveKitConnected = true;
+        });
+      }
+  
+      // Apply initial mute/enable settings
+      if (!_isCameraOn) {
+        await _localVideoTrack?.mute();
+      }
+      if (_isMuted) {
+        await _localAudioTrack?.mute();
+      }
+  
     } catch (e) {
-      debugPrint('Error initializing camera stream: $e');
+      debugPrint('[LIVE] Error connecting to LiveKit / publishing: $e');
+      _disconnectLiveKit();
     }
   }
-
+  
+  void _disconnectLiveKit() {
+    _localVideoTrack?.stop();
+    _localVideoTrack = null;
+    _localAudioTrack?.stop();
+    _localAudioTrack = null;
+    _room?.disconnect();
+    _room = null;
+    if (mounted) {
+      setState(() {
+        _isLiveKitConnected = false;
+      });
+    }
+  }
+  
   @override
   void dispose() {
     _simulatedCommentTimer?.cancel();
     _activeSessionPollTimer?.cancel();
     _scrollController.dispose();
-    _localStream?.getTracks().forEach((track) {
-      track.stop();
-    });
-    _localStream?.dispose();
-    _localRenderer.dispose();
+    _controller.stopBroadcast(widget.session.id);
+    _disconnectLiveKit();
     super.dispose();
   }
 
@@ -164,43 +212,31 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // 1. Camera View Area (Renders RTCVideoView or fallback)
+          // 1. Camera View Area (Renders LiveKit VideoRenderer or fallback)
           Positioned.fill(
-            child: _isCameraOn
-                ? (_localRenderer.srcObject != null
-                    ? RTCVideoView(
-                        _localRenderer,
-                        objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
-                        mirror: true,
-                      )
-                    : Container(
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Color(0xFF2E1A47), Color(0xFF0F081D)],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          ),
-                        ),
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.videocam, size: 80, color: Colors.white.withOpacity(0.3)),
-                              const SizedBox(height: 12),
-                              AppText('Camera Stream Preview Active', color: Colors.white.withOpacity(0.5), fontSize: 13),
-                            ],
-                          ),
-                        ),
-                      ))
+            child: _isCameraOn && _localVideoTrack != null
+                ? VideoTrackRenderer(
+                    _localVideoTrack!,
+                    fit: VideoViewFit.cover,
+                  )
                 : Container(
                     color: Colors.grey.shade900,
                     child: Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.videocam_off, size: 80, color: Colors.white.withOpacity(0.3)),
+                          Icon(
+                            _isCameraOn ? Icons.videocam : Icons.videocam_off,
+                            size: 80,
+                            color: Colors.white.withOpacity(0.3),
+                          ),
                           const SizedBox(height: 12),
-                          const AppText('Camera is Stopped', color: Colors.white70, fontSize: 15, fontWeight: FontWeight.bold),
+                          AppText(
+                            _isCameraOn ? 'Initializing camera...' : 'Camera is Stopped',
+                            color: Colors.white70,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ],
                       ),
                     ),
@@ -389,9 +425,11 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                         onPressed: () {
                           setState(() {
                             _isCameraOn = !_isCameraOn;
-                            _localStream?.getVideoTracks().forEach((track) {
-                              track.enabled = _isCameraOn;
-                            });
+                            if (_isCameraOn) {
+                              _localVideoTrack?.unmute();
+                            } else {
+                              _localVideoTrack?.mute();
+                            }
                           });
                         },
                       ),
@@ -401,9 +439,10 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                         icon: Icons.switch_camera_rounded,
                         color: Colors.white24,
                         onPressed: () {
-                          _localStream?.getVideoTracks().forEach((track) {
-                            Helper.switchCamera(track);
-                          });
+                          final track = _localVideoTrack;
+                          if (track != null) {
+                            Helper.switchCamera(track.mediaStreamTrack);
+                          }
                         },
                       ),
                       
@@ -423,12 +462,15 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                         onPressed: () {
                           setState(() {
                             _isMuted = !_isMuted;
-                            _localStream?.getAudioTracks().forEach((track) {
-                              track.enabled = !_isMuted;
-                            });
+                            if (_isMuted) {
+                              _localAudioTrack?.mute();
+                            } else {
+                              _localAudioTrack?.unmute();
+                            }
                           });
                         },
                       ),
+
                     ],
                   ),
                 ],

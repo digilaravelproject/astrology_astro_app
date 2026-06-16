@@ -63,3 +63,22 @@ class UpdateLiveSessionUseCase {
     return await repository.updateLiveSession(id, data);
   }
 }
+
+class StartBroadcastUseCase {
+  final LiveRepository repository;
+  StartBroadcastUseCase(this.repository);
+
+  Future<ResponseModel> call(int id) async {
+    return await repository.startBroadcast(id);
+  }
+}
+
+class StopBroadcastUseCase {
+  final LiveRepository repository;
+  StopBroadcastUseCase(this.repository);
+
+  Future<ResponseModel> call(int id) async {
+    return await repository.stopBroadcast(id);
+  }
+}
+
