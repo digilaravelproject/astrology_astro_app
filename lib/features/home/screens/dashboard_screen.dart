@@ -195,7 +195,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: ElevatedButton(
                 onPressed: () {
                   Get.back();
-                  // For actual implementation, replace this with direct navigation
+                  final liveController = Get.find<LiveController>();
+                  liveController.createSession(
+                    title: "Instant Live Session",
+                    description: "Broadcasting Live",
+                    sessionType: "public",
+                    duration: 60,
+                    maxParticipants: 100,
+                    isInstant: true,
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF4CAF50), // Green for Go Live
