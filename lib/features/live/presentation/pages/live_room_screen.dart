@@ -8,6 +8,8 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text.dart';
 import '../../data/models/live_session_model.dart';
 import '../controllers/live_controller.dart';
+import '../../../../core/utils/custom_snackbar.dart';
+
 
 class LiveRoomScreen extends StatefulWidget {
   final LiveSessionModel session;
