@@ -237,14 +237,14 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
     }
   }
   
-  void _disconnectLiveKit() {
+  void _disconnectLiveKit({bool updateState = true}) {
     _localVideoTrack?.stop();
     _localVideoTrack = null;
     _localAudioTrack?.stop();
     _localAudioTrack = null;
     _room?.disconnect();
     _room = null;
-    if (mounted) {
+    if (updateState && mounted) {
       setState(() {
         _isLiveKitConnected = false;
       });
@@ -286,7 +286,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
     _userLeftSubscription?.cancel();
     _scrollController.dispose();
     _controller.stopBroadcast(widget.session.id);
-    _disconnectLiveKit();
+    _disconnectLiveKit(updateState: false);
     try {
       final ws = Get.find<WebSocketService>();
       ws.unsubscribeFromChannel('live-session.${widget.session.id}');
