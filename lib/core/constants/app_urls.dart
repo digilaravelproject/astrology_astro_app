@@ -63,6 +63,7 @@ class AppUrls {
   static String stopLiveSession(int id) => "/astrologer/live/$id/stop";
   static String startBroadcast(int id) => "/astrologer/live/$id/broadcast";
   static String stopBroadcast(int id) => "/astrologer/live/$id/stop-broadcast";
+  static String reportMediaStatus(int id) => "/astrologer/live/$id/media-status";
   static String getLiveComments(int id) => "/astrologer/live/$id/comments";
 
   static String updateLiveSession(int id) => "/astrologer/live/$id";
@@ -153,6 +154,8 @@ class AppUrls {
   // Live Session System Events
   static const String eventUserJoinedLiveSession = 'UserJoinedLiveSession';
   static const String eventUserLeftLiveSession = 'UserLeftLiveSession';
+  static const String eventLiveSessionEnded = 'LiveSessionEnded';
+  static const String eventAstrologerMediaStatusChanged = 'AstrologerMediaStatusChanged';
 
   // Price Increase Request
   static const String priceIncreaseStatus = "/astrologer/price-increase/status";

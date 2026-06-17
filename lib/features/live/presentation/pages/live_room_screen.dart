@@ -251,16 +251,18 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
     }
   }
 
-  Future<void> _reportTrackStatus(LocalTrackPublication publication) async {
-    final type = publication.kind == TrackType.VIDEO ? 'camera' : 'audio';
-    final status = publication.muted ? 'off' : 'on';
-    await _reportMediaStatus(type, status);
+  Future<void> _reportTrackStatus(LocalTrackPublication? publication) async {
+    if (publication == null) return;
+    await _reportMediaStatus(publication);
   }
 
-  Future<void> _reportMediaStatus(String type, String status) async {
+  Future<void> _reportMediaStatus(LocalTrackPublication? publication) async {
+    if (publication == null) return;
     try {
+      final type = publication.kind == TrackType.VIDEO ? 'camera' : 'audio';
+      final status = publication.muted ? 'off' : 'on';
       final apiClient = Get.find<ApiClient>();
-      final url = '/astrologer/live/${widget.session.id}/media-status';
+      final url = AppUrls.reportMediaStatus(widget.session.id);
       debugPrint('[LIVE] Reporting media status: $type -> $status');
       await apiClient.post(
         url,
@@ -420,9 +422,16 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                             child: const AppText('Cancel', color: Colors.grey),
                           ),
                           TextButton(
-                            onPressed: () {
+                            onPressed: () async {
                               Get.back();
-                              _controller.stopSession(widget.session.id);
+                              await _controller.stopBroadcast(widget.session.id);
+                              await _controller.stopSession(widget.session.id);
+                              if (mounted) {
+                                setState(() {
+                                  _isCameraOn = false;
+                                  _isMuted = true;
+                                });
+                              }
                               Get.back();
                             },
                             child: const AppText('End Live', color: Colors.red, fontWeight: FontWeight.w700),
@@ -569,7 +578,10 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                           } else {
                             await _localVideoTrack?.mute();
                           }
-                          await _reportMediaStatus('camera', isNewStateOn ? 'on' : 'off');
+                          final publication = _room?.localParticipant?.videoTrackPublications.isNotEmpty == true 
+                              ? _room!.localParticipant!.videoTrackPublications.first 
+                              : null;
+                          await _reportMediaStatus(publication);
                         },
                       ),
 
@@ -608,7 +620,10 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                           } else {
                             await _localAudioTrack?.unmute();
                           }
-                          await _reportMediaStatus('audio', isNewStateMuted ? 'off' : 'on');
+                          final publication = _room?.localParticipant?.audioTrackPublications.isNotEmpty == true 
+                              ? _room!.localParticipant!.audioTrackPublications.first 
+                              : null;
+                          await _reportMediaStatus(publication);
                         },
                       ),
 
