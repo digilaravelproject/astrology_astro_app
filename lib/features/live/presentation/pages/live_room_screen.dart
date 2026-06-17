@@ -10,6 +10,7 @@ import '../../data/models/live_session_model.dart';
 import '../controllers/live_controller.dart';
 import '../../../../core/utils/custom_snackbar.dart';
 import '../../../../core/services/network/websocket_service.dart';
+import '../../../../core/services/network/api_client.dart';
 
 
 class LiveRoomScreen extends StatefulWidget {
@@ -155,6 +156,14 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
         ),
       );
       _room = room;
+      
+      final listener = room.createListener();
+      listener.on<LocalTrackPublishedEvent>((event) {
+        _reportTrackStatus(event.publication);
+      });
+      listener.on<LocalTrackUnpublishedEvent>((event) {
+        _reportTrackStatus(event.publication);
+      });
   
       // 3. Create local video track
       final videoTrack = await LocalVideoTrack.createCameraTrack(
@@ -204,6 +213,31 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
       setState(() {
         _isLiveKitConnected = false;
       });
+    }
+  }
+
+  Future<void> _reportTrackStatus(LocalTrackPublication publication) async {
+    final type = publication.kind == TrackType.Video ? 'camera' : 'audio';
+    final status = publication.muted ? 'off' : 'on';
+    await _reportMediaStatus(type, status);
+  }
+
+  Future<void> _reportMediaStatus(String type, String status) async {
+    try {
+      final apiClient = Get.find<ApiClient>();
+      final url = '/astrologer/live/${widget.session.id}/media-status';
+      debugPrint('[LIVE] Reporting media status: $type -> $status');
+      await apiClient.post(
+        url,
+        data: {
+          'type': type,
+          'status': status,
+        },
+        handleError: false,
+        showErrorScreen: false,
+      );
+    } catch (e) {
+      debugPrint('[LIVE] Media status report failed: $e');
     }
   }
   
@@ -458,15 +492,17 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                       _buildControlButton(
                         icon: _isCameraOn ? Icons.videocam : Icons.videocam_off,
                         color: _isCameraOn ? Colors.white24 : Colors.red,
-                        onPressed: () {
+                        onPressed: () async {
+                          final isNewStateOn = !_isCameraOn;
                           setState(() {
-                            _isCameraOn = !_isCameraOn;
-                            if (_isCameraOn) {
-                              _localVideoTrack?.unmute();
-                            } else {
-                              _localVideoTrack?.mute();
-                            }
+                            _isCameraOn = isNewStateOn;
                           });
+                          if (isNewStateOn) {
+                            await _localVideoTrack?.unmute();
+                          } else {
+                            await _localVideoTrack?.mute();
+                          }
+                          await _reportMediaStatus('camera', isNewStateOn ? 'on' : 'off');
                         },
                       ),
 
@@ -495,15 +531,17 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                       _buildControlButton(
                         icon: _isMuted ? Icons.mic_off : Icons.mic,
                         color: _isMuted ? Colors.red : Colors.white24,
-                        onPressed: () {
+                        onPressed: () async {
+                          final isNewStateMuted = !_isMuted;
                           setState(() {
-                            _isMuted = !_isMuted;
-                            if (_isMuted) {
-                              _localAudioTrack?.mute();
-                            } else {
-                              _localAudioTrack?.unmute();
-                            }
+                            _isMuted = isNewStateMuted;
                           });
+                          if (isNewStateMuted) {
+                            await _localAudioTrack?.mute();
+                          } else {
+                            await _localAudioTrack?.unmute();
+                          }
+                          await _reportMediaStatus('audio', isNewStateMuted ? 'off' : 'on');
                         },
                       ),
 
