@@ -30,6 +30,8 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
   late LiveController _controller;
   bool _isCameraOn = true;
   bool _isMuted = false;
+  bool _isTogglingCamera = false;
+  bool _isTogglingMic = false;
   String _selectedFilter = 'Normal';
   final List<String> _filters = ['Normal', 'Warm', 'Cool', 'Vintage', 'Glow'];
   
@@ -205,10 +207,20 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
       
       final listener = room.createListener();
       listener.on<LocalTrackPublishedEvent>((event) {
-        _reportTrackStatus(event.publication);
+        _reportMediaStatus(event.publication, 'on');
       });
       listener.on<LocalTrackUnpublishedEvent>((event) {
-        _reportTrackStatus(event.publication);
+        _reportMediaStatus(event.publication, 'off');
+      });
+      listener.on<TrackMutedEvent>((event) {
+        if (event.participant == room.localParticipant) {
+          _reportMediaStatus(event.publication, 'off');
+        }
+      });
+      listener.on<TrackUnmutedEvent>((event) {
+        if (event.participant == room.localParticipant) {
+          _reportMediaStatus(event.publication, 'on');
+        }
       });
   
       // 3. Create local video track
@@ -264,28 +276,75 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
 
   Future<void> _reportTrackStatus(LocalTrackPublication? publication) async {
     if (publication == null) return;
-    await _reportMediaStatus(publication);
+    await _reportMediaStatus(publication, publication.muted ? 'off' : 'on');
   }
 
-  Future<void> _reportMediaStatus(LocalTrackPublication? publication) async {
+  Future<void> _reportMediaStatus(LocalTrackPublication? publication, String explicitStatus) async {
     if (publication == null) return;
     try {
       final type = publication.kind == TrackType.VIDEO ? 'camera' : 'audio';
-      final status = publication.muted ? 'off' : 'on';
       final apiClient = Get.find<ApiClient>();
       final url = AppUrls.reportMediaStatus(widget.session.id);
-      debugPrint('[LIVE] Reporting media status: $type -> $status');
+      debugPrint('[LIVE] Reporting media status: $type -> $explicitStatus');
       await apiClient.post(
         url,
         data: {
           'type': type,
-          'status': status,
+          'status': explicitStatus,
         },
         handleError: false,
         showErrorScreen: false,
       );
     } catch (e) {
       debugPrint('[LIVE] Media status report failed: $e');
+    }
+  }
+
+  Future<void> _toggleCamera() async {
+    if (_isTogglingCamera) return;
+    _isTogglingCamera = true;
+    try {
+      final publication = _room?.localParticipant?.videoTrackPublications.isNotEmpty == true 
+          ? _room!.localParticipant!.videoTrackPublications.first 
+          : null;
+      if (publication != null) {
+        final newMuted = !publication.muted;
+        setState(() {
+          _isCameraOn = !newMuted;
+        });
+        if (newMuted) {
+          await publication.mute();
+        } else {
+          await publication.unmute();
+        }
+        await _reportMediaStatus(publication, newMuted ? 'off' : 'on');
+      }
+    } finally {
+      _isTogglingCamera = false;
+    }
+  }
+
+  Future<void> _toggleMic() async {
+    if (_isTogglingMic) return;
+    _isTogglingMic = true;
+    try {
+      final publication = _room?.localParticipant?.audioTrackPublications.isNotEmpty == true 
+          ? _room!.localParticipant!.audioTrackPublications.first 
+          : null;
+      if (publication != null) {
+        final newMuted = !publication.muted;
+        setState(() {
+          _isMuted = newMuted;
+        });
+        if (newMuted) {
+          await publication.mute();
+        } else {
+          await publication.unmute();
+        }
+        await _reportMediaStatus(publication, newMuted ? 'off' : 'on');
+      }
+    } finally {
+      _isTogglingMic = false;
     }
   }
   
@@ -580,23 +639,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                       _buildControlButton(
                         icon: _isCameraOn ? Icons.videocam : Icons.videocam_off,
                         color: _isCameraOn ? Colors.white24 : Colors.red,
-                        onPressed: () async {
-                          final isNewStateOn = !_isCameraOn;
-                          setState(() {
-                            _isCameraOn = isNewStateOn;
-                          });
-                          final publication = _room?.localParticipant?.videoTrackPublications.isNotEmpty == true 
-                              ? _room!.localParticipant!.videoTrackPublications.first 
-                              : null;
-                          if (publication != null) {
-                            if (isNewStateOn) {
-                              await publication.unmute();
-                            } else {
-                              await publication.mute();
-                            }
-                          }
-                          await _reportMediaStatus(publication);
-                        },
+                        onPressed: _toggleCamera,
                       ),
 
                       // Flip Camera
@@ -624,23 +667,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                       _buildControlButton(
                         icon: _isMuted ? Icons.mic_off : Icons.mic,
                         color: _isMuted ? Colors.red : Colors.white24,
-                        onPressed: () async {
-                          final isNewStateMuted = !_isMuted;
-                          setState(() {
-                            _isMuted = isNewStateMuted;
-                          });
-                          final publication = _room?.localParticipant?.audioTrackPublications.isNotEmpty == true 
-                              ? _room!.localParticipant!.audioTrackPublications.first 
-                              : null;
-                          if (publication != null) {
-                            if (isNewStateMuted) {
-                              await publication.mute();
-                            } else {
-                              await publication.unmute();
-                            }
-                          }
-                          await _reportMediaStatus(publication);
-                        },
+                        onPressed: _toggleMic,
                       ),
 
                     ],
