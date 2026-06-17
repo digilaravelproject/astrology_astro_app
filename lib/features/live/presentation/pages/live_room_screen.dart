@@ -274,12 +274,12 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
     }
   }
 
-  Future<void> _reportTrackStatus(LocalTrackPublication? publication) async {
+  Future<void> _reportTrackStatus(TrackPublication? publication) async {
     if (publication == null) return;
     await _reportMediaStatus(publication, publication.muted ? 'off' : 'on');
   }
 
-  Future<void> _reportMediaStatus(LocalTrackPublication? publication, String explicitStatus) async {
+  Future<void> _reportMediaStatus(TrackPublication? publication, String explicitStatus) async {
     if (publication == null) return;
     try {
       final type = publication.kind == TrackType.VIDEO ? 'camera' : 'audio';
