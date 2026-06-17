@@ -14,6 +14,8 @@ class LiveSessionModel {
   final int viewerCount;
   final int currentParticipants;
   final bool isBroadcasting;
+  final bool isCameraOn;
+  final bool isAudioOn;
 
   LiveSessionModel({
     required this.id,
@@ -31,6 +33,8 @@ class LiveSessionModel {
     this.viewerCount = 0,
     this.currentParticipants = 0,
     this.isBroadcasting = false,
+    this.isCameraOn = true,
+    this.isAudioOn = true,
   });
 
   factory LiveSessionModel.fromJson(Map<String, dynamic> json) {
@@ -50,6 +54,8 @@ class LiveSessionModel {
       viewerCount: json['viewer_count'] ?? 0,
       currentParticipants: json['current_participants'] ?? 0,
       isBroadcasting: json['is_broadcasting'] ?? false,
+      isCameraOn: json['is_camera_on'] ?? true,
+      isAudioOn: json['is_audio_on'] ?? true,
     );
   }
 
@@ -69,6 +75,8 @@ class LiveSessionModel {
       'viewer_count': viewerCount,
       'current_participants': currentParticipants,
       'is_broadcasting': isBroadcasting,
+      'is_camera_on': isCameraOn,
+      'is_audio_on': isAudioOn,
     };
   }
 

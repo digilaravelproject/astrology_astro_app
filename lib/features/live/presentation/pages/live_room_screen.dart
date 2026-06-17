@@ -41,6 +41,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
   StreamSubscription? _superChatSubscription;
   StreamSubscription? _userJoinedSubscription;
   StreamSubscription? _userLeftSubscription;
+  StreamSubscription? _viewerCountSubscription;
   late int _viewerCount;
 
   Room? _room;
@@ -53,11 +54,13 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
     super.initState();
     _controller = Get.find<LiveController>();
     _viewerCount = widget.session.viewerCount;
+    _isCameraOn = widget.session.isCameraOn;
+    _isMuted = !widget.session.isAudioOn;
 
     // Subscribe to dynamic websocket channel
     try {
       final ws = Get.find<WebSocketService>();
-      ws.subscribeToChannel('live-session.${widget.session.id}');
+      ws.subscribeToChannel('presence-live-session.${widget.session.id}');
       
       _commentsSubscription = WebSocketService.liveCommentsEvent.stream.listen((event) {
         if (mounted) {
@@ -110,6 +113,14 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
             ));
           });
           _scrollToBottom();
+        }
+      });
+
+      _viewerCountSubscription = WebSocketService.liveViewerCounts.listen((map) {
+        if (mounted && map.containsKey(widget.session.id)) {
+          setState(() {
+            _viewerCount = map[widget.session.id]!;
+          });
         }
       });
     } catch (e) {
@@ -286,12 +297,13 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
     _superChatSubscription?.cancel();
     _userJoinedSubscription?.cancel();
     _userLeftSubscription?.cancel();
+    _viewerCountSubscription?.cancel();
     _scrollController.dispose();
     _controller.stopBroadcast(widget.session.id);
     _disconnectLiveKit(updateState: false);
     try {
       final ws = Get.find<WebSocketService>();
-      ws.unsubscribeFromChannel('live-session.${widget.session.id}');
+      ws.unsubscribeFromChannel('presence-live-session.${widget.session.id}');
     } catch (e) {
       debugPrint('[LIVE] WebSocket unsubscribe error: $e');
     }
