@@ -82,3 +82,12 @@ class StopBroadcastUseCase {
   }
 }
 
+class GetLiveCommentsUseCase {
+  final LiveRepository repository;
+  GetLiveCommentsUseCase(this.repository);
+
+  Future<ResponseModel> call(int id) async {
+    return await repository.getLiveComments(id);
+  }
+}
+

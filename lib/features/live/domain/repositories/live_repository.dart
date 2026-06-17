@@ -10,5 +10,6 @@ abstract class LiveRepository {
   Future<ResponseModel> updateLiveSession(int id, Map<String, dynamic> data);
   Future<ResponseModel> startBroadcast(int id);
   Future<ResponseModel> stopBroadcast(int id);
+  Future<ResponseModel> getLiveComments(int id);
 }
 

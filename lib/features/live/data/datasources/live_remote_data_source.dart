@@ -69,5 +69,12 @@ class LiveRemoteDataSource {
     print('[LIVE_DS] Stop broadcast response: ${result.toString()}');
     return result;
   }
+
+  Future<ResponseModel> getLiveComments(int id) async {
+    print('[LIVE_DS] Getting live comments for session: $id');
+    final result = await _apiClient.get(AppUrls.getLiveComments(id));
+    print('[LIVE_DS] Get live comments response: ${result.toString()}');
+    return result;
+  }
 }
 

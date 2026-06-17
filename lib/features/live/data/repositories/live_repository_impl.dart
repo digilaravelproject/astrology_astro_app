@@ -51,5 +51,10 @@ class LiveRepositoryImpl implements LiveRepository {
   Future<ResponseModel> stopBroadcast(int id) async {
     return await dataSource.stopBroadcast(id);
   }
+
+  @override
+  Future<ResponseModel> getLiveComments(int id) async {
+    return await dataSource.getLiveComments(id);
+  }
 }
 

@@ -17,6 +17,7 @@ class LiveController extends GetxController {
   final UpdateLiveSessionUseCase _updateSessionUseCase;
   final StartBroadcastUseCase _startBroadcastUseCase;
   final StopBroadcastUseCase _stopBroadcastUseCase;
+  final GetLiveCommentsUseCase _getCommentsUseCase;
 
   LiveController(
     this._getSessionsUseCase,
@@ -28,14 +29,17 @@ class LiveController extends GetxController {
     this._updateSessionUseCase,
     this._startBroadcastUseCase,
     this._stopBroadcastUseCase,
+    this._getCommentsUseCase,
   );
 
 
   final RxList<LiveSessionModel> upcomingSessions = <LiveSessionModel>[].obs;
   final RxList<LiveSessionModel> completedSessions = <LiveSessionModel>[].obs;
   final Rx<LiveSessionModel?> currentActiveSession = Rx<LiveSessionModel?>(null);
+  final RxList<Map<String, dynamic>> comments = <Map<String, dynamic>>[].obs;
   final RxBool isLoading = false.obs;
   final RxBool isCreating = false.obs;
+  final RxBool isLoadingComments = false.obs;
 
   bool _isRoomOpen = false;
 
@@ -350,6 +354,35 @@ class LiveController extends GetxController {
       print('[LIVE] Exception in stopBroadcast: $e');
     }
     return false;
+  }
+
+  Future<void> fetchComments(int sessionId) async {
+    try {
+      isLoadingComments.value = true;
+      final result = await _getCommentsUseCase.call(sessionId);
+      if (result.isSuccess && result.body != null) {
+        final List<dynamic> data;
+        if (result.body is List) {
+          data = result.body;
+        } else if (result.body is Map) {
+          final dynamic rawData = result.body['data'];
+          if (rawData is List) {
+            data = rawData;
+          } else if (rawData is Map && rawData['data'] is List) {
+            data = rawData['data'];
+          } else {
+            data = [];
+          }
+        } else {
+          data = [];
+        }
+        comments.value = List<Map<String, dynamic>>.from(data);
+      }
+    } catch (e) {
+      print('[LIVE] Error fetching comments: $e');
+    } finally {
+      isLoadingComments.value = false;
+    }
   }
 }
 

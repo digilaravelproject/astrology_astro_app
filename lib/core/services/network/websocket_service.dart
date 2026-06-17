@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket_channel/io.dart';
 import '../storage/token_manger.dart';
 import '../storage/shared_prefs.dart';
 import '../../../core/constants/app_constants.dart';
@@ -96,7 +97,10 @@ class WebSocketService extends GetxService {
       Logger.d('|📍 URL: $_wsUrl');
       Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       
-      _channel = WebSocketChannel.connect(Uri.parse(_wsUrl));
+      _channel = IOWebSocketChannel.connect(
+        Uri.parse(_wsUrl),
+        headers: {'Origin': 'https://suryapathkundli.com'},
+      );
       
       _channel?.stream.listen(
         (message) {

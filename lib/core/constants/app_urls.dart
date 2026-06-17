@@ -63,6 +63,7 @@ class AppUrls {
   static String stopLiveSession(int id) => "/astrologer/live/$id/stop";
   static String startBroadcast(int id) => "/astrologer/live/$id/broadcast";
   static String stopBroadcast(int id) => "/astrologer/live/$id/stop-broadcast";
+  static String getLiveComments(int id) => "/astrologer/live/$id/comments";
 
   static String updateLiveSession(int id) => "/astrologer/live/$id";
 

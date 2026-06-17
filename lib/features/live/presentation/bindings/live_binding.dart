@@ -47,6 +47,9 @@ class LiveBinding extends Bindings {
     Get.lazyPut<StopBroadcastUseCase>(
       () => StopBroadcastUseCase(Get.find<LiveRepository>()),
     );
+    Get.lazyPut<GetLiveCommentsUseCase>(
+      () => GetLiveCommentsUseCase(Get.find<LiveRepository>()),
+    );
 
     // Controller
     Get.lazyPut<LiveController>(
@@ -60,6 +63,7 @@ class LiveBinding extends Bindings {
         Get.find<UpdateLiveSessionUseCase>(),
         Get.find<StartBroadcastUseCase>(),
         Get.find<StopBroadcastUseCase>(),
+        Get.find<GetLiveCommentsUseCase>(),
       ),
     );
   }

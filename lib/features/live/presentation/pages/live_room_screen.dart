@@ -80,6 +80,20 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
       debugPrint('[LIVE] WebSocket subscription error: $e');
     }
 
+    // Fetch historical comments
+    _controller.fetchComments(widget.session.id).then((_) {
+      if (mounted) {
+        setState(() {
+          _comments.addAll(_controller.comments.map((json) {
+            final String userName = json['user_name'] ?? 'User';
+            final String message = json['message'] ?? '';
+            return LiveComment(user: userName, message: message);
+          }));
+        });
+        _scrollToBottom();
+      }
+    });
+
     // Initialize camera stream
     _initCamera();
   
