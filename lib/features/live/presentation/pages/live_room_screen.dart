@@ -585,14 +585,16 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                           setState(() {
                             _isCameraOn = isNewStateOn;
                           });
-                          if (isNewStateOn) {
-                            await _localVideoTrack?.unmute();
-                          } else {
-                            await _localVideoTrack?.mute();
-                          }
                           final publication = _room?.localParticipant?.videoTrackPublications.isNotEmpty == true 
                               ? _room!.localParticipant!.videoTrackPublications.first 
                               : null;
+                          if (publication != null) {
+                            if (isNewStateOn) {
+                              await publication.unmute();
+                            } else {
+                              await publication.mute();
+                            }
+                          }
                           await _reportMediaStatus(publication);
                         },
                       ),
@@ -627,14 +629,16 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                           setState(() {
                             _isMuted = isNewStateMuted;
                           });
-                          if (isNewStateMuted) {
-                            await _localAudioTrack?.mute();
-                          } else {
-                            await _localAudioTrack?.unmute();
-                          }
                           final publication = _room?.localParticipant?.audioTrackPublications.isNotEmpty == true 
                               ? _room!.localParticipant!.audioTrackPublications.first 
                               : null;
+                          if (publication != null) {
+                            if (isNewStateMuted) {
+                              await publication.mute();
+                            } else {
+                              await publication.unmute();
+                            }
+                          }
                           await _reportMediaStatus(publication);
                         },
                       ),
