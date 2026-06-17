@@ -52,9 +52,15 @@ class LocalNotificationService {
           } else if (response.payload!.startsWith('live_')) {
             if (Get.isRegistered<LiveController>()) {
               final liveController = Get.find<LiveController>();
+              if (liveController.isRoomOpen) {
+                return;
+              }
               final ongoingSession = liveController.currentActiveSession.value;
               if (ongoingSession != null) {
-                Get.to(() => LiveRoomScreen(session: ongoingSession));
+                liveController.isRoomOpen = true;
+                Get.to(() => LiveRoomScreen(session: ongoingSession))?.then((_) {
+                  liveController.isRoomOpen = false;
+                });
               } else {
                 Get.to(() => const LiveScheduleScreen());
               }

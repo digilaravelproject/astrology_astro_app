@@ -41,7 +41,7 @@ class LiveController extends GetxController {
   final RxBool isCreating = false.obs;
   final RxBool isLoadingComments = false.obs;
 
-  bool _isRoomOpen = false;
+  bool isRoomOpen = false;
 
   @override
   void onInit() {
@@ -86,10 +86,10 @@ class LiveController extends GetxController {
           print('[LIVE] Active ongoing session found: ${session.title}');
           showLiveBubbleAndNotification(session);
           
-          if (!_isRoomOpen) {
-            _isRoomOpen = true;
+          if (!isRoomOpen) {
+            isRoomOpen = true;
             Get.to(() => LiveRoomScreen(session: session))?.then((_) {
-              _isRoomOpen = false;
+              isRoomOpen = false;
             });
           }
         } else {
@@ -193,9 +193,9 @@ class LiveController extends GetxController {
         await checkCurrentActiveSession();
         Get.back();
         if (isInstant && currentActiveSession.value != null) {
-          _isRoomOpen = true;
+          isRoomOpen = true;
           Get.to(() => LiveRoomScreen(session: currentActiveSession.value!))?.then((_) {
-            _isRoomOpen = false;
+            isRoomOpen = false;
           });
         }
       } else {
@@ -239,9 +239,9 @@ class LiveController extends GetxController {
         await checkCurrentActiveSession();
         if (currentActiveSession.value != null) {
           showLiveBubbleAndNotification(currentActiveSession.value!);
-          _isRoomOpen = true;
+          isRoomOpen = true;
           Get.to(() => LiveRoomScreen(session: currentActiveSession.value!))?.then((_) {
-            _isRoomOpen = false;
+            isRoomOpen = false;
           });
         }
       } else {

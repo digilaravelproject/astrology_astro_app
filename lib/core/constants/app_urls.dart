@@ -156,6 +156,11 @@ class AppUrls {
   static const String eventUserLeftLiveSession = 'UserLeftLiveSession';
   static const String eventLiveSessionEnded = 'LiveSessionEnded';
   static const String eventAstrologerMediaStatusChanged = 'AstrologerMediaStatusChanged';
+  static const String eventLiveSessionStarted = 'LiveSessionStarted';
+  static const String eventViewerCountUpdated = 'ViewerCountUpdated';
+  static const String eventNewLiveComment = 'NewLiveComment';
+  static const String eventSuperChatReceived = 'SuperChatReceived';
+  static const String eventAstrologerBroadcastStarted = 'AstrologerBroadcastStarted';
 
   // Price Increase Request
   static const String priceIncreaseStatus = "/astrologer/price-increase/status";
