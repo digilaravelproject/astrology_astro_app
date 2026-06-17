@@ -150,6 +150,10 @@ class AppUrls {
   static const String eventCallEnded = 'CallEnded';
   static const String eventIceCandidateSent = 'IceCandidateSent';
 
+  // Live Session System Events
+  static const String eventUserJoinedLiveSession = 'UserJoinedLiveSession';
+  static const String eventUserLeftLiveSession = 'UserLeftLiveSession';
+
   // Price Increase Request
   static const String priceIncreaseStatus = "/astrologer/price-increase/status";
   static const String priceIncreaseRequest = "/astrologer/price-increase/request";

@@ -55,6 +55,8 @@ class WebSocketService extends GetxService {
   
   static final StreamController<Map<String, dynamic>> liveCommentsEvent = StreamController.broadcast();
   static final StreamController<Map<String, dynamic>> superChatEvent = StreamController.broadcast();
+  static final StreamController<Map<String, dynamic>> userJoinedEvent = StreamController.broadcast();
+  static final StreamController<Map<String, dynamic>> userLeftEvent = StreamController.broadcast();
   static final RxMap<int, int> liveViewerCounts = <int, int>{}.obs;
 
   final String _wsUrl = AppUrls.webSocketUrl;
@@ -248,6 +250,10 @@ class WebSocketService extends GetxService {
           _handleNewLiveComment(data['data']);
         } else if (event == 'SuperChatReceived' || event == 'App\\Events\\SuperChatReceived' || event == '.SuperChatReceived') {
           _handleSuperChatReceived(data['data']);
+        } else if (event == AppUrls.eventUserJoinedLiveSession || event == 'App\\Events\\UserJoinedLiveSession' || event == '.UserJoinedLiveSession') {
+          _handleUserJoinedLiveSession(data['data']);
+        } else if (event == AppUrls.eventUserLeftLiveSession || event == 'App\\Events\\UserLeftLiveSession' || event == '.UserLeftLiveSession') {
+          _handleUserLeftLiveSession(data['data']);
         }
       } catch (e) {
         debugPrint('WebSocketService: Error parsing message -> $e');
@@ -374,6 +380,34 @@ class WebSocketService extends GetxService {
       superChatEvent.add(eventData);
     } catch (e) {
       Logger.e('WebSocketService: error handling SuperChatReceived -> $e');
+    }
+  }
+
+  void _handleUserJoinedLiveSession(dynamic rawData) {
+    try {
+      Map<String, dynamic> eventData = {};
+      if (rawData is String) {
+        eventData = jsonDecode(rawData);
+      } else if (rawData is Map) {
+        eventData = Map<String, dynamic>.from(rawData);
+      }
+      userJoinedEvent.add(eventData);
+    } catch (e) {
+      Logger.e('WebSocketService: error handling UserJoinedLiveSession -> $e');
+    }
+  }
+
+  void _handleUserLeftLiveSession(dynamic rawData) {
+    try {
+      Map<String, dynamic> eventData = {};
+      if (rawData is String) {
+        eventData = jsonDecode(rawData);
+      } else if (rawData is Map) {
+        eventData = Map<String, dynamic>.from(rawData);
+      }
+      userLeftEvent.add(eventData);
+    } catch (e) {
+      Logger.e('WebSocketService: error handling UserLeftLiveSession -> $e');
     }
   }
 

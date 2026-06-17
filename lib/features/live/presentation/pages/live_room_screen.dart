@@ -11,6 +11,7 @@ import '../controllers/live_controller.dart';
 import '../../../../core/utils/custom_snackbar.dart';
 import '../../../../core/services/network/websocket_service.dart';
 import '../../../../core/services/network/api_client.dart';
+import '../../../../core/constants/app_urls.dart';
 
 
 class LiveRoomScreen extends StatefulWidget {
@@ -38,6 +39,8 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
   Timer? _activeSessionPollTimer;
   StreamSubscription? _commentsSubscription;
   StreamSubscription? _superChatSubscription;
+  StreamSubscription? _userJoinedSubscription;
+  StreamSubscription? _userLeftSubscription;
   late int _viewerCount;
 
   Room? _room;
@@ -73,6 +76,38 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
           final String message = event['message'] ?? '';
           setState(() {
             _comments.add(LiveComment(user: userName, message: '🎁 Gift Tip: $message'));
+          });
+          _scrollToBottom();
+        }
+      });
+
+      _userJoinedSubscription = WebSocketService.userJoinedEvent.stream.listen((event) {
+        if (mounted) {
+          final String userName = event['user_name'] ?? 'User';
+          final String? userAvatar = event['user_avatar'];
+          setState(() {
+            _comments.add(LiveComment(
+              user: userName,
+              message: '$userName joined',
+              userAvatar: userAvatar,
+              isSystem: true,
+            ));
+          });
+          _scrollToBottom();
+        }
+      });
+
+      _userLeftSubscription = WebSocketService.userLeftEvent.stream.listen((event) {
+        if (mounted) {
+          final String userName = event['user_name'] ?? 'User';
+          final String? userAvatar = event['user_avatar'];
+          setState(() {
+            _comments.add(LiveComment(
+              user: userName,
+              message: '$userName left',
+              userAvatar: userAvatar,
+              isSystem: true,
+            ));
           });
           _scrollToBottom();
         }
@@ -247,6 +282,8 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
     _activeSessionPollTimer?.cancel();
     _commentsSubscription?.cancel();
     _superChatSubscription?.cancel();
+    _userJoinedSubscription?.cancel();
+    _userLeftSubscription?.cancel();
     _scrollController.dispose();
     _controller.stopBroadcast(widget.session.id);
     _disconnectLiveKit();
@@ -454,6 +491,36 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                         itemCount: _comments.length,
                         itemBuilder: (context, index) {
                           final c = _comments[index];
+                          
+                          if (c.isSystem) {
+                            final avatarUrl = (c.userAvatar != null && c.userAvatar!.isNotEmpty)
+                                ? (c.userAvatar!.startsWith('http')
+                                    ? c.userAvatar!
+                                    : '${AppUrls.baseImageUrl}${c.userAvatar}')
+                                : null;
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 12),
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 10,
+                                    backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
+                                    child: avatarUrl == null
+                                        ? const Icon(Icons.person, size: 10, color: Colors.white)
+                                        : null,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: Text(
+                                      c.message,
+                                      style: const TextStyle(color: Colors.grey, fontSize: 11, fontStyle: FontStyle.italic),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 8),
                             child: RichText(
@@ -646,6 +713,13 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
 class LiveComment {
   final String user;
   final String message;
+  final String? userAvatar;
+  final bool isSystem;
 
-  LiveComment({required this.user, required this.message});
+  LiveComment({
+    required this.user,
+    required this.message,
+    this.userAvatar,
+    this.isSystem = false,
+  });
 }
