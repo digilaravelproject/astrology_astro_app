@@ -39,7 +39,6 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
   final List<LiveComment> _comments = [];
   final ScrollController _scrollController = ScrollController();
   Timer? _simulatedCommentTimer;
-  Timer? _activeSessionPollTimer;
   StreamSubscription? _commentsSubscription;
   StreamSubscription? _superChatSubscription;
   StreamSubscription? _userJoinedSubscription;
@@ -153,13 +152,6 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
 
     // Initialize camera stream
     _initCamera();
-  
-    // Poll active session details for viewer count
-    _activeSessionPollTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      if (mounted) {
-        _controller.checkCurrentActiveSession();
-      }
-    });
   }
   
   void _scrollToBottom() {
@@ -359,7 +351,6 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
   @override
   void dispose() {
     _simulatedCommentTimer?.cancel();
-    _activeSessionPollTimer?.cancel();
     _commentsSubscription?.cancel();
     _superChatSubscription?.cancel();
     _userJoinedSubscription?.cancel();
