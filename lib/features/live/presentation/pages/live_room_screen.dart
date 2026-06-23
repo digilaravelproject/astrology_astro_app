@@ -33,8 +33,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
   bool _isMuted = false;
   bool _isTogglingCamera = false;
   bool _isTogglingMic = false;
-  String _selectedFilter = 'Normal';
-  final List<String> _filters = ['Normal', 'Warm', 'Cool', 'Vintage', 'Glow'];
+  bool _isTogglingMic = false;
   
   final List<LiveComment> _comments = [];
   final ScrollController _scrollController = ScrollController();
@@ -369,23 +368,6 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
     super.dispose();
   }
 
-
-
-  Color _getFilterColor() {
-    switch (_selectedFilter) {
-      case 'Warm':
-        return Colors.orange.withOpacity(0.15);
-      case 'Cool':
-        return Colors.blue.withOpacity(0.12);
-      case 'Vintage':
-        return Colors.brown.withOpacity(0.18);
-      case 'Glow':
-        return Colors.yellow.withOpacity(0.1);
-      default:
-        return Colors.transparent;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -421,16 +403,6 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                       ),
                     ),
                   ),
-          ),
-
-          // 2. Filter Color overlay
-          Positioned.fill(
-            child: IgnorePointer(
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                color: _getFilterColor(),
-              ),
-            ),
           ),
 
           // 3. Top Header Bar
@@ -554,8 +526,8 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                   const SizedBox(height: 16),
 
                   // Real-time Comments List
-                  SizedBox(
-                    height: 180,
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxHeight: 180),
                     child: ShaderMask(
                       shaderCallback: (Rect bounds) {
                         return const LinearGradient(
@@ -567,6 +539,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                       },
                       blendMode: BlendMode.dstIn,
                       child: ListView.builder(
+                        shrinkWrap: true,
                         controller: _scrollController,
                         itemCount: _comments.length,
                         itemBuilder: (context, index) {
@@ -670,15 +643,6 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                         },
                       ),
                       
-                      // Filter Selection
-                      _buildControlButton(
-                        icon: Icons.filter_vintage,
-                        color: Colors.white24,
-                        onPressed: () {
-                          _showFilterBottomSheet();
-                        },
-                      ),
-
                       // Mute microphone
                       _buildControlButton(
                         icon: _isMuted ? Icons.mic_off : Icons.mic,
@@ -715,73 +679,6 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
     );
   }
 
-  void _showFilterBottomSheet() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF0F0F12),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setSheetState) => Container(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const AppText(
-                  'Select Camera Filter',
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  height: 80,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: _filters.length,
-                    itemBuilder: (context, index) {
-                      final f = _filters[index];
-                      final isSelected = _selectedFilter == f;
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _selectedFilter = f;
-                          });
-                          setSheetState(() {});
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.only(right: 12),
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                          decoration: BoxDecoration(
-                            color: isSelected ? AppColors.primaryColor : Colors.white12,
-                            borderRadius: BorderRadius.circular(15),
-                            border: Border.all(
-                              color: isSelected ? Colors.amber : Colors.transparent,
-                              width: 1.5,
-                            ),
-                          ),
-                          child: Center(
-                            child: AppText(
-                              f,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
 }
 
 class LiveComment {
