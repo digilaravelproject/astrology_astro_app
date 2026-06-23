@@ -68,8 +68,9 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
         if (mounted) {
           final String userName = event['user_name'] ?? 'User';
           final String message = event['message'] ?? '';
+          final String? userAvatar = event['user_avatar'];
           setState(() {
-            _comments.add(LiveComment(user: userName, message: message));
+            _comments.add(LiveComment(user: userName, message: message, userAvatar: userAvatar));
           });
           _scrollToBottom();
         }
@@ -136,7 +137,8 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
           _comments.addAll(_controller.comments.map((json) {
             final String userName = json['user_name'] ?? 'User';
             final String message = json['message'] ?? '';
-            return LiveComment(user: userName, message: message);
+            final String? userAvatar = json['user_avatar'];
+            return LiveComment(user: userName, message: message, userAvatar: userAvatar);
           }));
         });
         _scrollToBottom();
@@ -601,28 +603,49 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                             );
                           }
 
+                          final avatarUrl = (c.userAvatar != null && c.userAvatar!.isNotEmpty)
+                              ? (c.userAvatar!.startsWith('http')
+                                  ? c.userAvatar!
+                                  : '${AppUrls.baseImageUrl}${c.userAvatar}')
+                              : null;
+
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 8),
-                            child: RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: '${c.user}: ',
-                                    style: const TextStyle(
-                                      color: Colors.amber,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 13,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CircleAvatar(
+                                  radius: 12,
+                                  backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
+                                  child: avatarUrl == null
+                                      ? const Icon(Icons.person, size: 12, color: Colors.white)
+                                      : null,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: RichText(
+                                    text: TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text: '${c.user}: ',
+                                          style: const TextStyle(
+                                            color: Colors.amber,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: c.message,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  TextSpan(
-                                    text: c.message,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           );
                         },
