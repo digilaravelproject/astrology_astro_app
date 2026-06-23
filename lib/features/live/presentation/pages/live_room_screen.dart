@@ -100,7 +100,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
           setState(() {
             _comments.add(LiveComment(
               user: userName,
-              message: '$userName joined',
+              message: 'joined',
               userAvatar: userAvatar,
               isSystem: true,
             ));
@@ -116,7 +116,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
           setState(() {
             _comments.add(LiveComment(
               user: userName,
-              message: '$userName left',
+              message: 'left',
               userAvatar: userAvatar,
               isSystem: true,
             ));
@@ -579,43 +579,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                         itemCount: _comments.length,
                         itemBuilder: (context, index) {
                           final c = _comments[index];
-                          
-                          if (c.isSystem) {
-                            final avatarUrl = (c.userAvatar != null && c.userAvatar!.isNotEmpty)
-                                ? (c.userAvatar!.startsWith('http')
-                                    ? c.userAvatar!
-                                    : '${AppUrls.baseImageUrl}${c.userAvatar}')
-                                : null;
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 12),
-                              child: Row(
-                                children: [
-                                  ClipOval(
-                                    child: Container(
-                                      width: 20,
-                                      height: 20,
-                                      color: Colors.grey.shade800,
-                                      child: avatarUrl != null
-                                          ? CachedNetworkImage(
-                                              imageUrl: avatarUrl,
-                                              fit: BoxFit.cover,
-                                              placeholder: (context, url) => const Icon(Icons.person, size: 10, color: Colors.white),
-                                              errorWidget: (context, url, error) => const Icon(Icons.person, size: 10, color: Colors.white),
-                                            )
-                                          : const Icon(Icons.person, size: 10, color: Colors.white),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Expanded(
-                                    child: Text(
-                                      c.message,
-                                      style: const TextStyle(color: Colors.grey, fontSize: 11, fontStyle: FontStyle.italic),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
+
 
                           final avatarUrl = (c.userAvatar != null && c.userAvatar!.isNotEmpty)
                               ? (c.userAvatar!.startsWith('http')
@@ -649,7 +613,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                                     text: TextSpan(
                                       children: [
                                         TextSpan(
-                                          text: '${c.user}: ',
+                                          text: c.isSystem ? '${c.user} ' : '${c.user}: ',
                                           style: const TextStyle(
                                             color: Colors.amber,
                                             fontWeight: FontWeight.bold,
@@ -658,9 +622,10 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                                         ),
                                         TextSpan(
                                           text: c.message,
-                                          style: const TextStyle(
-                                            color: Colors.white,
+                                          style: TextStyle(
+                                            color: c.isSystem ? Colors.white70 : Colors.white,
                                             fontSize: 13,
+                                            fontStyle: c.isSystem ? FontStyle.italic : FontStyle.normal,
                                           ),
                                         ),
                                       ],
