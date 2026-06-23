@@ -79,7 +79,7 @@ class _AstromallEarningsScreenState extends State<AstromallEarningsScreen> {
 
   Widget _buildWeeklyRankCard() {
     return GestureDetector(
-      onTap: () => Get.to(() => const WeeklyRankingScreen()),
+      onTap: () => Get.to(() =>  WeeklyRankingScreen()),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
