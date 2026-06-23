@@ -33,7 +33,6 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
   bool _isMuted = false;
   bool _isTogglingCamera = false;
   bool _isTogglingMic = false;
-  bool _isTogglingMic = false;
   
   final List<LiveComment> _comments = [];
   final ScrollController _scrollController = ScrollController();
