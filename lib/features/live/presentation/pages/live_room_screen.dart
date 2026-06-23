@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide navigator;
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:livekit_client/livekit_client.dart';
@@ -80,8 +81,13 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
         if (mounted) {
           final String userName = event['user_name'] ?? 'User';
           final String message = event['message'] ?? '';
+          final String? userAvatar = event['user_avatar'];
           setState(() {
-            _comments.add(LiveComment(user: userName, message: '🎁 Gift Tip: $message'));
+            _comments.add(LiveComment(
+              user: userName, 
+              message: '🎁 Gift Tip: $message',
+              userAvatar: userAvatar,
+            ));
           });
           _scrollToBottom();
         }
@@ -584,12 +590,20 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                               padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 12),
                               child: Row(
                                 children: [
-                                  CircleAvatar(
-                                    radius: 10,
-                                    backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
-                                    child: avatarUrl == null
-                                        ? const Icon(Icons.person, size: 10, color: Colors.white)
-                                        : null,
+                                  ClipOval(
+                                    child: Container(
+                                      width: 20,
+                                      height: 20,
+                                      color: Colors.grey.shade800,
+                                      child: avatarUrl != null
+                                          ? CachedNetworkImage(
+                                              imageUrl: avatarUrl,
+                                              fit: BoxFit.cover,
+                                              placeholder: (context, url) => const Icon(Icons.person, size: 10, color: Colors.white),
+                                              errorWidget: (context, url, error) => const Icon(Icons.person, size: 10, color: Colors.white),
+                                            )
+                                          : const Icon(Icons.person, size: 10, color: Colors.white),
+                                    ),
                                   ),
                                   const SizedBox(width: 6),
                                   Expanded(
@@ -614,12 +628,20 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                CircleAvatar(
-                                  radius: 12,
-                                  backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
-                                  child: avatarUrl == null
-                                      ? const Icon(Icons.person, size: 12, color: Colors.white)
-                                      : null,
+                                ClipOval(
+                                  child: Container(
+                                    width: 24,
+                                    height: 24,
+                                    color: Colors.grey.shade800,
+                                    child: avatarUrl != null
+                                        ? CachedNetworkImage(
+                                            imageUrl: avatarUrl,
+                                            fit: BoxFit.cover,
+                                            placeholder: (context, url) => const Icon(Icons.person, size: 12, color: Colors.white),
+                                            errorWidget: (context, url, error) => const Icon(Icons.person, size: 12, color: Colors.white),
+                                          )
+                                        : const Icon(Icons.person, size: 12, color: Colors.white),
+                                  ),
                                 ),
                                 const SizedBox(width: 8),
                                 Expanded(
