@@ -79,12 +79,12 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
       _superChatSubscription = WebSocketService.superChatEvent.stream.listen((event) {
         if (mounted) {
           final String userName = event['user_name'] ?? 'User';
-          final String message = event['message'] ?? '';
+          final String giftTitle = event['gift'] != null ? event['gift']['title'] ?? 'Gift' : 'Gift';
           final String? userAvatar = event['user_avatar'];
           setState(() {
             _comments.add(LiveComment(
               user: userName, 
-              message: '🎁 Gift Tip: $message',
+              message: 'Sent a $giftTitle',
               userAvatar: userAvatar,
               giftIconUrl: event['gift'] != null ? event['gift']['icon_url'] : null,
             ));
