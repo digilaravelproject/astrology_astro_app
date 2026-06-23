@@ -302,14 +302,19 @@ class WebSocketService extends GetxService {
       );
 
       final authString = response.body?['auth']?.toString();
+      final channelData = response.body?['channel_data'];
       if (authString != null && authString.isNotEmpty) {
         Logger.d('Subscribing to dynamic channel: $channelName');
+        final Map<String, dynamic> subscribeData = {
+          "channel": channelName,
+          "auth": authString
+        };
+        if (channelName.startsWith('presence-') && channelData != null) {
+          subscribeData["channel_data"] = channelData is String ? channelData : jsonEncode(channelData);
+        }
         _send(jsonEncode({
           "event": AppUrls.pusherSubscribe,
-          "data": {
-            "channel": channelName,
-            "auth": authString
-          }
+          "data": subscribeData
         }));
       }
     } catch (e) {
@@ -464,19 +469,25 @@ class WebSocketService extends GetxService {
         // broadcasting/auth returns {"auth": "..."} not standard format
         // so check body['auth'] directly, not response.isSuccess
         final authString = response.body?['auth']?.toString();
+        final channelData = response.body?['channel_data'];
         
         if (authString != null && authString.isNotEmpty) {
-          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|✅ WEBSOCKET AUTH SUCCESS');
           Logger.d('|🔑 Channel: $channelName');
-          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
+          final Map<String, dynamic> subscribeData = {
+            "channel": channelName,
+            "auth": authString
+          };
+          if (channelName.startsWith('presence-') && channelData != null) {
+            subscribeData["channel_data"] = channelData is String ? channelData : jsonEncode(channelData);
+          }
+          
           _send(jsonEncode({
             "event": AppUrls.pusherSubscribe,
-            "data": {
-              "channel": channelName,
-              "auth": authString
-            }
+            "data": subscribeData
           }));
         } else {
           Logger.e('|❌ WEBSOCKET AUTH FAILED for $channelName, body=${response.body}');
