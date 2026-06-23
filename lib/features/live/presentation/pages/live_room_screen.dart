@@ -86,6 +86,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
               user: userName, 
               message: '🎁 Gift Tip: $message',
               userAvatar: userAvatar,
+              giftIconUrl: event['gift'] != null ? event['gift']['icon_url'] : null,
             ));
           });
           _scrollToBottom();
@@ -619,6 +620,20 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                                             fontStyle: c.isSystem ? FontStyle.italic : FontStyle.normal,
                                           ),
                                         ),
+                                        if (c.giftIconUrl != null)
+                                          WidgetSpan(
+                                            alignment: PlaceholderAlignment.middle,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(left: 4),
+                                              child: CachedNetworkImage(
+                                                imageUrl: c.giftIconUrl!,
+                                                width: 24,
+                                                height: 24,
+                                                placeholder: (context, url) => const SizedBox(width: 24, height: 24),
+                                                errorWidget: (context, url, error) => const Icon(Icons.card_giftcard, size: 20, color: Colors.orange),
+                                              ),
+                                            ),
+                                          ),
                                       ],
                                     ),
                                   ),
@@ -773,12 +788,14 @@ class LiveComment {
   final String user;
   final String message;
   final String? userAvatar;
+  final String? giftIconUrl;
   final bool isSystem;
 
   LiveComment({
     required this.user,
     required this.message,
     this.userAvatar,
+    this.giftIconUrl,
     this.isSystem = false,
   });
 }
