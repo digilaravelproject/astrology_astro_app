@@ -6,6 +6,7 @@ import '../../../../core/widgets/app_text.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 import '../controllers/remedy_controller.dart';
 import '../../domain/models/remedy_model.dart';
+import '../../../../core/constants/app_urls.dart';
 
 class RemedyDetailScreen extends StatefulWidget {
   final int remedyId;
@@ -97,7 +98,9 @@ class _RemedyDetailScreenState extends State<RemedyDetailScreen> {
           child: Hero(
             tag: 'remedy_image_${remedy.id}',
             child: Image.network(
-              remedy.image ?? 'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=1000',
+              remedy.image != null 
+                  ? (remedy.image!.startsWith('http') ? remedy.image! : '${AppUrls.baseImageUrl}${remedy.image}')
+                  : 'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=1000',
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) => const Icon(Icons.image, size: 100, color: Colors.grey),
             ),

@@ -14,12 +14,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/widgets/loyal_badge.dart';
 
 import 'package:astro_astrologer/core/services/network/api_client.dart';
+import '../../../core/constants/app_urls.dart';
 import 'package:astro_astrologer/features/orders/presentation/controllers/history_controller.dart';
 import 'package:astro_astrologer/features/orders/domain/usecases/get_astrologer_call_sessions_usecase.dart';
 import 'package:astro_astrologer/features/orders/data/repositories/history_repository.dart';
 
 class CallHistoryScreen extends StatelessWidget {
-  const CallHistoryScreen({super.key});
+  final bool isFromTab;
+  const CallHistoryScreen({super.key, this.isFromTab = false});
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +32,8 @@ class CallHistoryScreen extends StatelessWidget {
       ),
     ));
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F9),
-      appBar: const CustomAppBar(
-        title: 'Call History',
-      ),
-      body: Column(
-        children: [
+    Widget content = Column(
+      children: [
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value && controller.callSessions.isEmpty) {
@@ -109,7 +106,16 @@ class CallHistoryScreen extends StatelessWidget {
           ),
           _buildFooterNote(),
         ],
+      );
+
+    if (isFromTab) return content;
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFF9F9F9),
+      appBar: const CustomAppBar(
+        title: 'Call History',
       ),
+      body: content,
     );
   }
 
@@ -220,7 +226,7 @@ class CallHistoryScreen extends StatelessWidget {
                               ? CachedNetworkImage(
                                   imageUrl: imageUrl.startsWith('http')
                                       ? imageUrl
-                                      : 'https://suryapathkundli.com/storage/app/public/$imageUrl',
+                                      : '${AppUrls.baseImageUrl}$imageUrl',
                                   fit: BoxFit.cover,
                                   placeholder: (context, url) => const CircularProgressIndicator(strokeWidth: 2),
                                   errorWidget: (context, url, error) => Container(
@@ -251,7 +257,7 @@ class CallHistoryScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const AppText("Astrotalk", fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+                            AppText(details["Name"]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "User", fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
                             const SizedBox(height: 2),
                             AppText(
                               "ID: $id",
