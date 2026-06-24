@@ -103,6 +103,8 @@ class AppUrls {
   static const String walletWithdrawals = "/astrologer/wallet/withdrawals";
   static const String walletWithdraw = "/astrologer/wallet/withdraw";
   static const String walletWeeklyRankings = "/astrologer/wallet/weekly-rankings";
+  static const String walletInvoices = "/astrologer/wallet/invoices";
+  static String downloadInvoice(int year, int month) => "/astrologer/wallet/invoices/$year/${month.toString().padLeft(2, '0')}/download";
   
   static const String getCurrentSession = "/chat/sessions/current";
   static String markChatRead(int sessionId) => "/chat/$sessionId/read";

@@ -3,6 +3,7 @@ import 'package:astro_astrologer/core/constants/app_urls.dart';
 import '../../domain/models/wallet_summary_model.dart';
 import '../../domain/models/wallet_transaction_model.dart';
 import '../../domain/models/weekly_ranking_model.dart';
+import '../../domain/models/invoice_model.dart';
 import '../../domain/repositories/i_wallet_repository.dart';
 
 class WalletRepositoryImpl implements IWalletRepository {
@@ -16,6 +17,20 @@ class WalletRepositoryImpl implements IWalletRepository {
 
     if (response.isSuccess) {
       return WalletSummaryModel.fromJson(response.body ?? {});
+    } else {
+      throw Exception(response.message);
+    }
+  }
+
+  @override
+  Future<InvoiceSummaryModel> getInvoicesSummary() async {
+    final response = await _apiClient.get(AppUrls.walletInvoices);
+
+    if (response.isSuccess) {
+      final body = response.body;
+      // ResponseModel extracts json['data'] as body, so it may be a Map or List
+      final dataMap = (body is Map<String, dynamic>) ? body : <String, dynamic>{};
+      return InvoiceSummaryModel.fromJson(dataMap);
     } else {
       throw Exception(response.message);
     }
