@@ -48,6 +48,13 @@ import '../../wallet/domain/usecases/request_withdrawal_usecase.dart';
 import '../../wallet/data/repositories/wallet_repository_impl.dart';
 import '../../../core/services/network/api_client.dart';
 
+import '../../offers/presentation/controllers/offer_controller.dart';
+import '../../offers/domain/usecases/get_offers_usecase.dart';
+import '../../offers/domain/usecases/toggle_offer_usecase.dart';
+import '../../offers/domain/usecases/get_offer_history_usecase.dart';
+import '../../offers/data/repositories/offer_repository.dart';
+import '../../offers/domain/models/offer_model.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -58,6 +65,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final AuthController authController = Get.find<AuthController>();
   late WalletController _walletController;
+  late OfferController _offerController;
 
   @override
   void initState() {
@@ -72,6 +80,15 @@ class _HomeScreenState extends State<HomeScreen> {
       ));
     }
     _walletController = Get.find<WalletController>();
+
+    if (!Get.isRegistered<OfferController>()) {
+      Get.put(OfferController(
+        getOffersUseCase: GetOffersUseCase(OfferRepositoryImpl(apiClient: Get.find<ApiClient>())),
+        toggleOfferUseCase: ToggleOfferUseCase(OfferRepositoryImpl(apiClient: Get.find<ApiClient>())),
+        getOfferHistoryUseCase: GetOfferHistoryUseCase(OfferRepositoryImpl(apiClient: Get.find<ApiClient>())),
+      ));
+    }
+    _offerController = Get.find<OfferController>();
   }
 
   Future<void> _onRefresh() async {
@@ -158,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
               final user = authController.currentUser.value;
               final photo = user?.astrologer?.profilePhoto ?? user?.profilePhoto;
               final String? imageUrl = (photo != null && photo.isNotEmpty)
-                  ? (photo.startsWith('http') ? photo : '\${AppUrls.baseImageUrl}$photo')
+                  ? (photo.startsWith('http') ? photo : '${AppUrls.baseImageUrl}$photo')
                   : null;
 
               return Container(
@@ -358,11 +375,19 @@ class _HomeScreenState extends State<HomeScreen> {
         final astro = authController.currentUser.value?.astrologer;
         if (astro == null) return const SizedBox.shrink();
 
+        OfferModel? activeOffer;
+        if (_offerController.offers.isNotEmpty) {
+          try {
+            activeOffer = _offerController.offers.firstWhere((o) => o.isCurrentlyActiveForMe);
+          } catch (_) {}
+        }
+
         return Column(
           children: [
             _buildServiceRow(
               'Chat', 
               '₹${astro.chatRate}/min', 
+              activeOffer?.calculatedPricing?.chat != null ? '₹${activeOffer!.calculatedPricing!.chat!.discountedRatePerMinute}/min' : null,
               astro.isChatEnabled ? 'Online' : 'Offline', 
               'chat',
               astro.isChatEnabled, 
@@ -372,6 +397,7 @@ class _HomeScreenState extends State<HomeScreen> {
             _buildServiceRow(
               'Call', 
               '₹${astro.callRate}/min', 
+              activeOffer?.calculatedPricing?.call != null ? '₹${activeOffer!.calculatedPricing!.call!.discountedRatePerMinute}/min' : null,
               astro.isCallEnabled ? 'Online' : 'Offline', 
               'call',
               astro.isCallEnabled, 
@@ -381,6 +407,7 @@ class _HomeScreenState extends State<HomeScreen> {
             // _buildServiceRow(
             //   'Video Call', 
             //   '₹${astro.videoCallRate}/min', 
+            //   null,
             //   astro.isVideoCallEnabled ? 'Online' : 'Offline', 
             //   'video_call',
             //   astro.isVideoCallEnabled, 
@@ -394,7 +421,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _divider() => Divider(height: 32, color: Colors.grey.withOpacity(0.1));
 
-  Widget _buildServiceRow(String title, String price, String status, String type, bool value, ValueChanged<bool> onChanged) {
+  Widget _buildServiceRow(String title, String originalPrice, String? discountedPrice, String status, String type, bool value, ValueChanged<bool> onChanged) {
+    String displayOriginalPrice = originalPrice;
+    if (discountedPrice != null && discountedPrice.isNotEmpty) {
+      displayOriginalPrice = originalPrice.replaceAll('/min', '');
+    }
+
     return Row(
       children: [
         Expanded(
@@ -403,7 +435,24 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               AppText(title, fontSize: 16, fontWeight: FontWeight.w600),
               const SizedBox(height: 2),
-              AppText(price, fontSize: 13, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
+              if (discountedPrice != null && discountedPrice.isNotEmpty)
+                Row(
+                  children: [
+                    Text(
+                      displayOriginalPrice, 
+                      style: TextStyle(
+                        fontSize: 12, 
+                        color: Colors.grey.shade500, 
+                        fontWeight: FontWeight.w500,
+                        decoration: TextDecoration.lineThrough,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    AppText(discountedPrice, fontSize: 13, color: Colors.green.shade600, fontWeight: FontWeight.w600),
+                  ],
+                )
+              else
+                AppText(originalPrice, fontSize: 13, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
             ],
           ),
         ),

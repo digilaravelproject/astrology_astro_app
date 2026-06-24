@@ -3,6 +3,14 @@ import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
+import 'package:astro_astrologer/core/services/network/api_client.dart';
+import 'package:astro_astrologer/features/offers/presentation/controllers/offer_controller.dart';
+import 'package:astro_astrologer/features/offers/domain/usecases/get_offers_usecase.dart';
+import 'package:astro_astrologer/features/offers/domain/usecases/toggle_offer_usecase.dart';
+import 'package:astro_astrologer/features/offers/domain/usecases/get_offer_history_usecase.dart';
+import 'package:astro_astrologer/features/offers/data/repositories/offer_repository.dart';
+import 'package:astro_astrologer/features/offers/domain/models/offer_model.dart';
+import 'package:astro_astrologer/features/offers/domain/models/offer_history_model.dart';
 
 class OffersScreen extends StatefulWidget {
   const OffersScreen({super.key});
@@ -13,19 +21,18 @@ class OffersScreen extends StatefulWidget {
 
 class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  
-  final List<Map<String, dynamic>> _offers = [
-    {'discount': '75%', 'isActive': false},
-    {'discount': '20%', 'isActive': true},
-    {'discount': '50%', 'isActive': false, 'isHappyHours': true},
-  ];
-
+  late final OfferController _controller;
   String _selectedHistoryFilter = 'All';
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _controller = Get.put(OfferController(
+      getOffersUseCase: GetOffersUseCase(OfferRepositoryImpl(apiClient: Get.find<ApiClient>())),
+      toggleOfferUseCase: ToggleOfferUseCase(OfferRepositoryImpl(apiClient: Get.find<ApiClient>())),
+      getOfferHistoryUseCase: GetOfferHistoryUseCase(OfferRepositoryImpl(apiClient: Get.find<ApiClient>())),
+    ));
   }
 
   @override
@@ -92,16 +99,27 @@ class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderSt
   }
 
   Widget _buildAllOffersTab() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: _offers.length,
-      itemBuilder: (context, index) {
-        return _buildOfferCard(_offers[index], index);
-      },
-    );
+    return Obx(() {
+      if (_controller.isLoadingOffers.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      if (_controller.offers.isEmpty) {
+        return const Center(child: AppText('No offers available.'));
+      }
+      return RefreshIndicator(
+        onRefresh: () => _controller.fetchOffers(),
+        child: ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: _controller.offers.length,
+          itemBuilder: (context, index) {
+            return _buildOfferCard(_controller.offers[index]);
+          },
+        ),
+      );
+    });
   }
 
-  Widget _buildOfferCard(Map<String, dynamic> offer, int index) {
+  Widget _buildOfferCard(OfferModel offer) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -127,7 +145,7 @@ class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderSt
                   children: [
                     Expanded(
                       child: Text(
-                        '${offer['discount']} off${offer['isHappyHours'] == true ? ' (Happy Hours)' : ''}',
+                        '${offer.discountPercentage}% off - ${offer.name}',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -137,34 +155,61 @@ class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderSt
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Transform.scale(
-                          scale: 0.8,
-                          child: Switch(
-                            value: offer['isActive'] as bool,
-                            onChanged: (v) {
-                              setState(() {
-                                _offers[index]['isActive'] = v;
-                              });
-                            },
-                            activeColor: AppColors.primaryColor,
+                    Obx(() {
+                      final isToggling = _controller.togglingOfferIds.contains(offer.id);
+                      return Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          isToggling
+                              ? const SizedBox(
+                                  width: 40,
+                                  height: 20,
+                                  child: Center(child: SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))),
+                                )
+                              : Transform.scale(
+                                  scale: 0.8,
+                                  child: Switch(
+                                    value: offer.isCurrentlyActiveForMe,
+                                    onChanged: (v) {
+                                      _controller.toggleOffer(offer.id);
+                                    },
+                                    activeColor: AppColors.primaryColor,
+                                  ),
+                                ),
+                          AppText(
+                            offer.isCurrentlyActiveForMe ? 'Active' : 'Inactive',
+                            fontSize: 12,
+                            color: Colors.grey,
                           ),
-                        ),
-                        AppText(
-                          offer['isActive'] == true ? 'Active' : 'Inactive',
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
-                      ],
-                    ),
+                        ],
+                      );
+                    }),
                   ],
                 ),
                 const SizedBox(height: 16),
-                _buildUserTypeSection('New Users', '₹30.0', '₹8.0', '₹3.9', '₹3.9', '₹8.0', Colors.blue.shade50, Colors.blue),
-                const SizedBox(height: 16),
-                _buildUserTypeSection('Loyal Users', '₹30.0', '₹19.0', '₹9.5', '₹9.5', '₹19.0', Colors.orange.shade50, Colors.orange),
+                if (offer.calculatedPricing?.chat != null)
+                  _buildUserTypeSection(
+                    'Chat Pricing',
+                    '₹${offer.calculatedPricing!.chat!.baseRatePerMinute}',
+                    '₹${offer.calculatedPricing!.chat!.discountedRatePerMinute}',
+                    '₹${offer.calculatedPricing!.chat!.estimatedAstrologerEarningPerMinute}',
+                    '₹${offer.calculatedPricing!.chat!.estimatedAdminEarningPerMinute}',
+                    '₹${offer.calculatedPricing!.chat!.discountedRatePerMinute}',
+                    Colors.blue.shade50,
+                    Colors.blue,
+                  ),
+                if (offer.calculatedPricing?.chat != null) const SizedBox(height: 16),
+                if (offer.calculatedPricing?.call != null)
+                  _buildUserTypeSection(
+                    'Call Pricing',
+                    '₹${offer.calculatedPricing!.call!.baseRatePerMinute}',
+                    '₹${offer.calculatedPricing!.call!.discountedRatePerMinute}',
+                    '₹${offer.calculatedPricing!.call!.estimatedAstrologerEarningPerMinute}',
+                    '₹${offer.calculatedPricing!.call!.estimatedAdminEarningPerMinute}',
+                    '₹${offer.calculatedPricing!.call!.discountedRatePerMinute}',
+                    Colors.orange.shade50,
+                    Colors.orange,
+                  ),
               ],
             ),
           ),
@@ -244,13 +289,31 @@ class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderSt
       children: [
         _buildHistoryFilters(),
         Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: 5,
-            itemBuilder: (context, index) {
-              return _buildHistoryCard();
-            },
-          ),
+          child: Obx(() {
+            if (_controller.isLoadingHistory.value) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            
+            final filteredHistory = _controller.history.where((item) {
+              if (_selectedHistoryFilter == 'All') return true;
+              return item.offerName.contains(_selectedHistoryFilter) || '${item.discountPercentage}% off' == _selectedHistoryFilter;
+            }).toList();
+
+            if (filteredHistory.isEmpty) {
+              return const Center(child: AppText('No history available.'));
+            }
+
+            return RefreshIndicator(
+              onRefresh: () => _controller.fetchHistory(),
+              child: ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: filteredHistory.length,
+                itemBuilder: (context, index) {
+                  return _buildHistoryCard(filteredHistory[index]);
+                },
+              ),
+            );
+          }),
         ),
       ],
     );
@@ -297,7 +360,7 @@ class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderSt
     );
   }
 
-  Widget _buildHistoryCard() {
+  Widget _buildHistoryCard(OfferHistoryModel historyItem) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -312,14 +375,30 @@ class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderSt
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const AppText('50% off', fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primaryColor),
+              Expanded(
+                child: AppText(
+                  historyItem.discountPercentage > 0 
+                    ? '${historyItem.discountPercentage}% off - ${historyItem.offerName}' 
+                    : historyItem.offerName, 
+                  fontSize: 16, 
+                  fontWeight: FontWeight.bold, 
+                  color: AppColors.primaryColor, 
+                  overflow: TextOverflow.ellipsis
+                ),
+              ),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.green.shade50,
+                  color: historyItem.status == 'active' ? Colors.green.shade50 : Colors.red.shade50,
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: AppText('Completed', color: Colors.green.shade700, fontSize: 10, fontWeight: FontWeight.bold),
+                child: AppText(
+                  historyItem.status.capitalizeFirst ?? historyItem.status,
+                  color: historyItem.status == 'active' ? Colors.green.shade700 : Colors.red.shade700,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),
@@ -327,11 +406,11 @@ class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderSt
           Row(
             children: [
               Expanded(
-                child: _buildTimeDetail('Start Time *', '16 Feb 2026 , 11:10 AM'),
+                child: _buildTimeDetail('Start Time *', _formatDate(historyItem.activatedAt)),
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: _buildTimeDetail('End Time *', '16 Feb 2026 , 02:36 PM'),
+                child: _buildTimeDetail('End Time *', historyItem.deactivatedAt != null ? _formatDate(historyItem.deactivatedAt!) : 'N/A'),
               ),
             ],
           ),
@@ -339,6 +418,16 @@ class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderSt
       ),
     );
   }
+
+  String _formatDate(String dateStr) {
+    try {
+      final date = DateTime.parse(dateStr).toLocal();
+      return "${date.day.toString().padLeft(2, '0')}-${date.month.toString().padLeft(2, '0')}-${date.year} ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}";
+    } catch (_) {
+      return dateStr.split('.').first;
+    }
+  }
+
 
   Widget _buildTimeDetail(String label, String value) {
     return Container(

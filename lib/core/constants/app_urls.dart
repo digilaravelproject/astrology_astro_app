@@ -166,4 +166,9 @@ class AppUrls {
   static const String priceIncreaseStatus = "/astrologer/price-increase/status";
   static const String priceIncreaseRequest = "/astrologer/price-increase/request";
   static const String priceIncreaseHistory = "/astrologer/price-increase/history";
+
+  // Offers & Commissions
+  static const String astrologerOffers = "/astrologer/offers";
+  static String activateOffer(int id) => "/astrologer/offers/$id/activate";
+  static const String offerHistory = "/astrologer/offers/history";
 }
