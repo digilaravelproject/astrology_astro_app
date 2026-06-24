@@ -19,7 +19,7 @@ class CallForegroundTaskHandler extends TaskHandler {
   }
 
   @override
-  Future<void> onDestroy(DateTime timestamp) async {
+  Future<void> onDestroy(DateTime timestamp, bool isTimeout) async {
     Logger.d('Foreground Task Destroyed');
   }
 }
@@ -39,7 +39,6 @@ class ForegroundTaskService {
         playSound: false,
       ),
       foregroundTaskOptions: const ForegroundTaskOptions(
-        interval: 5000,
         isOnceEvent: false,
         autoRunOnBoot: false,
         allowWakeLock: true,
