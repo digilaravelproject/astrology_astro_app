@@ -38,8 +38,8 @@ class ForegroundTaskService {
         showNotification: true,
         playSound: false,
       ),
-      foregroundTaskOptions: const ForegroundTaskOptions(
-        isOnceEvent: false,
+      foregroundTaskOptions: ForegroundTaskOptions(
+        eventAction: ForegroundTaskEventAction.nothing(),
         autoRunOnBoot: false,
         allowWakeLock: true,
         allowWifiLock: true,
