@@ -8,13 +8,20 @@ import 'package:astro_astrologer/features/call/presentation/controllers/call_con
 import 'package:astro_astrologer/features/call/presentation/pages/call_screen.dart';
 import 'package:astro_astrologer/core/utils/logger.dart';
 
-class IncomingCallDialog extends StatelessWidget {
+class IncomingCallDialog extends StatefulWidget {
   final String offerSdp;
 
   const IncomingCallDialog({
     super.key,
     required this.offerSdp,
   });
+
+  @override
+  State<IncomingCallDialog> createState() => _IncomingCallDialogState();
+}
+
+class _IncomingCallDialogState extends State<IncomingCallDialog> {
+  bool _isAccepting = false;
 
   @override
   Widget build(BuildContext context) {
@@ -145,13 +152,14 @@ class IncomingCallDialog extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           GestureDetector(
-                            onTap: () async {
-                              Logger.d('IncomingCallDialog: Accept button clicked. Closing dialog.');
-                              Get.back(); // Pop incoming dialog
+                            onTap: _isAccepting ? null : () async {
+                              setState(() {
+                                _isAccepting = true;
+                              });
+                              Logger.d('IncomingCallDialog: Accept button clicked. Processing...');
                               
-                              String sdpToUse = offerSdp;
+                              String sdpToUse = widget.offerSdp;
                               
-                              // If no SDP was provided (pending call flow), fetch it from current-session
                               if (sdpToUse.isEmpty && controller.sessionId != null) {
                                 Logger.d('IncomingCallDialog: No SDP — fetching from current-session...');
                                 sdpToUse = await controller.fetchOfferSdpFromCurrentSession() ?? '';
@@ -159,6 +167,11 @@ class IncomingCallDialog extends StatelessWidget {
                               
                               if (sdpToUse.isEmpty) {
                                 Logger.e('IncomingCallDialog: Could not obtain SDP. Cannot accept call.');
+                                if (mounted) {
+                                  setState(() {
+                                    _isAccepting = false;
+                                  });
+                                }
                                 return;
                               }
                               
@@ -167,9 +180,10 @@ class IncomingCallDialog extends StatelessWidget {
                               Logger.d('IncomingCallDialog: acceptCall finished. success = $success');
                               if (success) {
                                 Logger.d('IncomingCallDialog: Navigating to CallScreen.');
-                                Get.to(() => const CallScreen()); // Go to active CallScreen
+                                Get.off(() => const CallScreen()); // Replace dialog with CallScreen
                               } else {
-                                Logger.e('IncomingCallDialog: acceptCall failed. Will not navigate.');
+                                Logger.e('IncomingCallDialog: acceptCall failed. Will close dialog.');
+                                Get.back();
                               }
                             },
                             child: Container(
@@ -177,20 +191,26 @@ class IncomingCallDialog extends StatelessWidget {
                               height: 68,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: Colors.green,
+                                color: _isAccepting ? Colors.grey : Colors.green,
                                 boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.green.withValues(alpha: 0.4),
-                                    blurRadius: 15,
-                                    spreadRadius: 2,
-                                  ),
+                                  if (!_isAccepting)
+                                    BoxShadow(
+                                      color: Colors.green.withValues(alpha: 0.4),
+                                      blurRadius: 15,
+                                      spreadRadius: 2,
+                                    ),
                                 ],
                               ),
-                              child: const Icon(
-                                Icons.call,
-                                color: Colors.white,
-                                size: 30,
-                              ),
+                              child: _isAccepting
+                                  ? const Padding(
+                                      padding: EdgeInsets.all(20.0),
+                                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                    )
+                                  : const Icon(
+                                      Icons.call,
+                                      color: Colors.white,
+                                      size: 30,
+                                    ),
                             ),
                           ),
                           const SizedBox(height: 12),

@@ -165,8 +165,23 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
     });
   }
 
+  bool _isConnectingLiveKit = false;
+
   Future<void> _initCamera() async {
+    if (_isConnectingLiveKit) return;
+    _isConnectingLiveKit = true;
+    
     try {
+      if (_room != null) {
+        try {
+          await _room!.disconnect();
+          await _room!.dispose();
+        } catch (e) {
+          debugPrint("Error disposing previous room: $e");
+        }
+        _room = null;
+      }
+
       final cameraStatus = await Permission.camera.request();
       final micStatus = await Permission.microphone.request();
       
@@ -256,16 +271,28 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
       debugPrint('[LIVE] Error connecting to LiveKit / publishing: $e');
       CustomSnackBar.showError('LiveKit Connection Error: $e');
       _disconnectLiveKit();
+    } finally {
+      _isConnectingLiveKit = false;
     }
   }
   
-  void _disconnectLiveKit({bool updateState = true}) {
+  void _disconnectLiveKit({bool updateState = true}) async {
     _localVideoTrack?.stop();
     _localVideoTrack = null;
     _localAudioTrack?.stop();
     _localAudioTrack = null;
-    _room?.disconnect();
+    
+    final roomToDispose = _room;
     _room = null;
+    if (roomToDispose != null) {
+      try {
+        await roomToDispose.disconnect();
+        await roomToDispose.dispose();
+      } catch (e) {
+        debugPrint('[LIVE] Error disconnecting room: $e');
+      }
+    }
+    
     if (updateState && mounted) {
       setState(() {
         _isLiveKitConnected = false;
