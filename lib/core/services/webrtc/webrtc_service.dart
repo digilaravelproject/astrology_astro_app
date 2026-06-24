@@ -236,11 +236,18 @@ class WebRTCService {
   }
 
   void toggleSpeaker(bool isSpeakerOn) {
+    try {
+      Helper.setSpeakerphoneOn(isSpeakerOn);
+      Logger.d('WebRTCService: Helper.setSpeakerphoneOn($isSpeakerOn) called');
+    } catch (e) {
+      Logger.e('WebRTCService: Helper.setSpeakerphoneOn error -> $e');
+    }
+    
     if (localStream != null) {
       localStream!.getAudioTracks().forEach((track) {
         track.enableSpeakerphone(isSpeakerOn);
       });
-      Logger.d('WebRTCService: Speakerphone enabled = $isSpeakerOn');
+      Logger.d('WebRTCService: Track Speakerphone enabled = $isSpeakerOn');
     }
   }
 
