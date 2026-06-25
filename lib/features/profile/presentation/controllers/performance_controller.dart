@@ -23,9 +23,7 @@ class PerformanceController extends GetxController {
     try {
       ResponseModel response = await repository.getPerformanceData();
       if (response.isSuccess && response.body != null) {
-        if (response.body['status'] == 'success' && response.body['data'] != null) {
-          performanceData.value = PerformanceModel.fromJson(response.body['data']);
-        }
+        performanceData.value = PerformanceModel.fromJson(response.body);
       } else {
         CustomSnackBar.showError(response.message);
       }
