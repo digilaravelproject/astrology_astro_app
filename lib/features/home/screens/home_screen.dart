@@ -55,6 +55,8 @@ import '../../offers/domain/usecases/toggle_offer_usecase.dart';
 import '../../offers/domain/usecases/get_offer_history_usecase.dart';
 import '../../offers/data/repositories/offer_repository.dart';
 import '../../offers/domain/models/offer_model.dart';
+import '../../profile/presentation/controllers/performance_controller.dart';
+import '../../profile/data/repositories/performance_repository.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -67,6 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final AuthController authController = Get.find<AuthController>();
   late WalletController _walletController;
   late OfferController _offerController;
+  late PerformanceController _performanceController;
 
   @override
   void initState() {
@@ -90,11 +93,20 @@ class _HomeScreenState extends State<HomeScreen> {
       ));
     }
     _offerController = Get.find<OfferController>();
+
+    if (!Get.isRegistered<PerformanceController>()) {
+      if (!Get.isRegistered<PerformanceRepository>()) {
+        Get.put(PerformanceRepository(apiClient: Get.find<ApiClient>()));
+      }
+      Get.put(PerformanceController(repository: Get.find<PerformanceRepository>()));
+    }
+    _performanceController = Get.find<PerformanceController>();
   }
 
   Future<void> _onRefresh() async {
     // Refresh wallet summary
     await _walletController.fetchWalletSummary();
+    await _performanceController.getPerformanceData();
     // Force UI refresh for anything else if needed
     setState(() {});
   }
@@ -790,109 +802,120 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
   Widget _buildTodayProgressCard() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFEEEEEE)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppText(
-                  "Today's Progress",
-                  fontSize: 15,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.black.withOpacity(0.8),
-                ),
-                const SizedBox(height: 10),
-                RichText(
-                  text: TextSpan(
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Colors.grey.shade500,
-                      height: 1.4,
-                    ),
-                    children: [
-                      const TextSpan(text: 'Only '),
-                      TextSpan(
-                        text: '8 hours',
-                        style: const TextStyle(fontWeight: FontWeight.w700, color: Colors.black87),
-                      ),
-                      const TextSpan(text: ' left to complete your 8 hours online target.'),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    Get.to(() => const PerformanceScreen());
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryColor,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  ),
-                  child: AppText(
-                    'Performance',
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
+    return Obx(() {
+      final data = _performanceController.performanceData.value?.todayProgress;
+      
+      final targetHours = data?.targetHours ?? 8.0;
+      final completedMinutes = data?.completedMinutes ?? 0;
+      final remainingHours = data?.remainingHours ?? targetHours;
+      
+      final targetMinutes = targetHours * 60;
+      final progress = targetMinutes > 0 ? completedMinutes / targetMinutes : 0.0;
+      
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: const Color(0xFFEEEEEE)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
-          ),
-          const SizedBox(width: 20),
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              SizedBox(
-                width: 85,
-                height: 85,
-                child: CircularProgressIndicator(
-                  value: 0.1,
-                  strokeWidth: 8,
-                  backgroundColor: Colors.grey.shade100,
-                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFEEEEEE)),
-                  strokeCap: StrokeCap.round,
-                ),
-              ),
-              Column(
-                mainAxisSize: MainAxisSize.min,
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AppText(
-                    '0m',
-                    fontSize: 16,
+                    "Today's Progress",
+                    fontSize: 15,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.primaryColor,
+                    color: Colors.black.withOpacity(0.8),
                   ),
-                  AppText(
-                    "Let's Start",
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey.shade600,
+                  const SizedBox(height: 10),
+                  RichText(
+                    text: TextSpan(
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey.shade500,
+                        height: 1.4,
+                      ),
+                      children: [
+                        const TextSpan(text: 'Only '),
+                        TextSpan(
+                          text: '${remainingHours.toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '')} hours',
+                          style: const TextStyle(fontWeight: FontWeight.w700, color: Colors.black87),
+                        ),
+                        TextSpan(text: ' left to complete your ${targetHours.toStringAsFixed(0)} hours online target.'),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      Get.to(() => const PerformanceScreen());
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryColor,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    ),
+                    child: AppText(
+                      'Performance',
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ],
               ),
-            ],
-          ),
-        ],
-      ),
-    );
+            ),
+            const SizedBox(width: 20),
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                SizedBox(
+                  width: 85,
+                  height: 85,
+                  child: CircularProgressIndicator(
+                    value: progress.clamp(0.0, 1.0),
+                    strokeWidth: 8,
+                    backgroundColor: Colors.grey.shade100,
+                    valueColor: AlwaysStoppedAnimation<Color>(progress > 0 ? AppColors.primaryColor : const Color(0xFFEEEEEE)),
+                    strokeCap: StrokeCap.round,
+                  ),
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AppText(
+                      '${completedMinutes}m',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.primaryColor,
+                    ),
+                    AppText(
+                      "Let's Start",
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey.shade600,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildMenuGrid() {

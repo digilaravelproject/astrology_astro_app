@@ -3,12 +3,14 @@ class PerformanceModel {
   final ProfileHealth? profileHealth;
   final AvailabilityData? availability;
   final LoyalUserConversion? loyalUserConversion;
+  final TodayProgress? todayProgress;
 
   PerformanceModel({
     this.badgeType,
     this.profileHealth,
     this.availability,
     this.loyalUserConversion,
+    this.todayProgress,
   });
 
   factory PerformanceModel.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,29 @@ class PerformanceModel {
       loyalUserConversion: json['loyal_user_conversion'] != null
           ? LoyalUserConversion.fromJson(json['loyal_user_conversion'])
           : null,
+      todayProgress: json['today_progress'] != null
+          ? TodayProgress.fromJson(json['today_progress'])
+          : null,
+    );
+  }
+}
+
+class TodayProgress {
+  final double? targetHours;
+  final int? completedMinutes;
+  final double? remainingHours;
+
+  TodayProgress({
+    this.targetHours,
+    this.completedMinutes,
+    this.remainingHours,
+  });
+
+  factory TodayProgress.fromJson(Map<String, dynamic> json) {
+    return TodayProgress(
+      targetHours: (json['target_hours'] != null) ? (json['target_hours'] as num).toDouble() : null,
+      completedMinutes: json['completed_minutes'],
+      remainingHours: (json['remaining_hours'] != null) ? (json['remaining_hours'] as num).toDouble() : null,
     );
   }
 }
