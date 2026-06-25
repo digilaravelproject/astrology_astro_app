@@ -745,7 +745,8 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Obx(() {
             final month = DateFormat('MMMM').format(DateTime.now()).toUpperCase();
-            final earning = _walletController.summary.value?.monthlyEarning ?? 0.0;
+            final walletController = Get.find<WalletController>();
+            final earning = walletController.summary.value?.monthlyEarning ?? 0.0;
             return AppText('$month Earning - ₹${earning.toStringAsFixed(2)}', fontSize: 13, fontWeight: FontWeight.w700, color: Colors.black87);
           }),
           const SizedBox(height: 16),
