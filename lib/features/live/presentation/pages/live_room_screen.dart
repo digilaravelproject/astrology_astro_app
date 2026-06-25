@@ -789,18 +789,19 @@ class _FloatingGiftAnimationState extends State<_FloatingGiftAnimation> with Sin
   late Animation<double> _scaleAnimation;
   late Animation<double> _opacityAnimation;
   late Animation<Offset> _slideAnimation;
+  late Animation<double> _rotationAnimation;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3500),
+      duration: const Duration(milliseconds: 3000),
     );
 
     _scaleAnimation = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 0.0, end: 1.2).chain(CurveTween(curve: Curves.easeOutBack)), weight: 15),
-      TweenSequenceItem(tween: Tween(begin: 1.2, end: 1.0).chain(CurveTween(curve: Curves.easeInOut)), weight: 10),
+      TweenSequenceItem(tween: Tween(begin: 0.0, end: 1.1).chain(CurveTween(curve: Curves.easeOutBack)), weight: 15),
+      TweenSequenceItem(tween: Tween(begin: 1.1, end: 1.0).chain(CurveTween(curve: Curves.easeInOut)), weight: 10),
       TweenSequenceItem(tween: ConstantTween(1.0), weight: 60),
       TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.0).chain(CurveTween(curve: Curves.easeInBack)), weight: 15),
     ]).animate(_controller);
@@ -812,12 +813,21 @@ class _FloatingGiftAnimationState extends State<_FloatingGiftAnimation> with Sin
     ]).animate(_controller);
 
     _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.5),
-      end: const Offset(0, -0.5),
+      begin: const Offset(0, 0.4),
+      end: const Offset(0, -0.6),
     ).animate(CurvedAnimation(
       parent: _controller,
       curve: Curves.easeOut,
     ));
+
+    _rotationAnimation = TweenSequence<double>([
+      TweenSequenceItem(tween: ConstantTween(0.0), weight: 20),
+      TweenSequenceItem(tween: Tween(begin: 0.0, end: 0.08).chain(CurveTween(curve: Curves.easeInOut)), weight: 10),
+      TweenSequenceItem(tween: Tween(begin: 0.08, end: -0.08).chain(CurveTween(curve: Curves.easeInOut)), weight: 20),
+      TweenSequenceItem(tween: Tween(begin: -0.08, end: 0.05).chain(CurveTween(curve: Curves.easeInOut)), weight: 20),
+      TweenSequenceItem(tween: Tween(begin: 0.05, end: 0.0).chain(CurveTween(curve: Curves.easeInOut)), weight: 10),
+      TweenSequenceItem(tween: ConstantTween(0.0), weight: 20),
+    ]).animate(_controller);
 
     _controller.forward().then((_) {
       widget.onComplete();
@@ -843,27 +853,53 @@ class _FloatingGiftAnimationState extends State<_FloatingGiftAnimation> with Sin
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  CachedNetworkImage(
-                    imageUrl: widget.giftIconUrl,
-                    width: 120,
-                    height: 120,
-                    errorWidget: (context, url, error) => const Icon(Icons.card_giftcard, size: 80, color: Colors.orange),
-                  ),
-                  const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.7),
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Colors.orange.withOpacity(0.5), width: 1.5),
+                  RotationTransition(
+                    turns: _rotationAnimation,
+                    child: CachedNetworkImage(
+                      imageUrl: widget.giftIconUrl,
+                      width: 90,
+                      height: 90,
+                      errorWidget: (context, url, error) => const Icon(Icons.card_giftcard, size: 60, color: Colors.orange),
                     ),
-                    child: Text(
-                      '${widget.senderName} sent ${widget.giftName}!',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.orange.shade700.withOpacity(0.8),
+                          Colors.red.shade600.withOpacity(0.8),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.star, color: Colors.yellow, size: 14),
+                        const SizedBox(width: 6),
+                        Text(
+                          '${widget.senderName} sent ${widget.giftName}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        const Icon(Icons.star, color: Colors.yellow, size: 14),
+                      ],
                     ),
                   ),
                 ],
