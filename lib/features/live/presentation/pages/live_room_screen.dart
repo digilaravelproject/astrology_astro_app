@@ -13,6 +13,7 @@ import '../../../../core/utils/custom_snackbar.dart';
 import '../../../../core/services/network/websocket_service.dart';
 import '../../../../core/services/network/api_client.dart';
 import '../../../../core/constants/app_urls.dart';
+import '../../../../core/constants/app_constants.dart';
 
 
 class LiveRoomScreen extends StatefulWidget {
@@ -209,9 +210,21 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
   
       // 2. Connect to LiveKit room
       final room = Room();
+      
+      final turnServer = RTCIceServer(
+        urls: [AppConstants.liveKitTurnServerUrl],
+        username: AppConstants.liveKitTurnUsername,
+        credential: AppConstants.liveKitTurnCredential,
+      );
+
       await room.connect(
         wsUrl,
         token,
+        connectOptions: ConnectOptions(
+          rtcConfiguration: RTCConfiguration(
+            iceServers: [turnServer],
+          ),
+        ),
         roomOptions: const RoomOptions(
           adaptiveStream: true,
           dynacast: true,
