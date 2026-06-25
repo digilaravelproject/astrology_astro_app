@@ -27,10 +27,10 @@ class PerformanceController extends GetxController {
           performanceData.value = PerformanceModel.fromJson(response.body['data']);
         }
       } else {
-        showCustomSnackBar(response.message);
+        CustomSnackBar.showError(response.message);
       }
     } catch (e) {
-      showCustomSnackBar('Error loading performance data');
+      CustomSnackBar.showError('Error loading performance data');
     } finally {
       isLoading.value = false;
     }
