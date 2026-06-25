@@ -13,24 +13,6 @@ class PerformanceScreen extends StatefulWidget {
 }
 
 class _PerformanceScreenState extends State<PerformanceScreen> {
-  final List<Map<String, dynamic>> _reviews = [
-    {
-      'id': '1',
-      'user': 'Rohan Sharma',
-      'rating': 5,
-      'date': '18 Feb 2026',
-      'comment': 'He is very accurate and his remedies are really helpful. Must consult!',
-      'reply': null,
-    },
-    {
-      'id': '2',
-      'user': 'Priya Patel',
-      'rating': 4,
-      'date': '17 Feb 2026',
-      'comment': 'Good experience, very polite and explained everything clearly.',
-      'reply': 'Thank you Priya! Glad I could help.',
-    },
-  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -134,26 +116,6 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
           _buildAvailabilityLink(),
           const SizedBox(height: 32),
           _buildLoyalUserSection(),
-          const SizedBox(height: 32),
-          _buildRatingSection(
-            'Average Chat Rating',
-            4.78,
-            'Excellent',
-            'Average Chat Rating is the average of ratings given by users on paid (non-PO) chat orders over the last 90 days. It may increase or decrease daily as the 90-day window keeps shifting. If a user rates multiple times, only one rating is counted.',
-            [1.0, 4.5, 4.75, 5.0],
-            Colors.green,
-          ),
-          const SizedBox(height: 32),
-          _buildRatingSection(
-            'Average Call Rating',
-            4.76,
-            'Excellent',
-            'Average Call Rating is the average of ratings given by users on paid (non-PO) call orders over the last 90 days. It may increase or decrease daily as the 90-day window keeps shifting. If a user rates multiple times, only one rating is counted.',
-            [1.0, 4.5, 4.75, 5.0],
-            Colors.green,
-          ),
-          const SizedBox(height: 32),
-          _buildRecentReviewsSection(),
           const SizedBox(height: 40),
         ],
       ),
