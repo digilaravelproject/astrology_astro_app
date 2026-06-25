@@ -803,7 +803,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildTodayProgressCard() {
     return Obx(() {
-      final data = _performanceController.performanceData.value?.todayProgress;
+      final data = Get.find<PerformanceController>().performanceData.value?.todayProgress;
       
       final targetHours = data?.targetHours ?? 8.0;
       final completedMinutes = data?.completedMinutes ?? 0;
