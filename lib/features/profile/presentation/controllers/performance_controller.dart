@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import '../../domain/repositories/performance_repository_interface.dart';
 import '../../domain/models/performance_model.dart';
 import '../../../../core/services/network/response_model.dart';
-import '../../../../core/widgets/custom_snackbar.dart';
+import '../../../../core/utils/custom_snackbar.dart';
 
 class PerformanceController extends GetxController {
   final PerformanceRepositoryInterface repository;
@@ -22,12 +22,12 @@ class PerformanceController extends GetxController {
     isLoading.value = true;
     try {
       ResponseModel response = await repository.getPerformanceData();
-      if (response.isSuccess && response.data != null) {
-        if (response.data['status'] == 'success' && response.data['data'] != null) {
-          performanceData.value = PerformanceModel.fromJson(response.data['data']);
+      if (response.isSuccess && response.body != null) {
+        if (response.body['status'] == 'success' && response.body['data'] != null) {
+          performanceData.value = PerformanceModel.fromJson(response.body['data']);
         }
       } else {
-        showCustomSnackBar(response.message ?? 'Failed to fetch performance data');
+        showCustomSnackBar(response.message);
       }
     } catch (e) {
       showCustomSnackBar('Error loading performance data');
