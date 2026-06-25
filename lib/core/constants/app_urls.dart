@@ -12,6 +12,7 @@ class AppUrls {
   static const String updateProfilePhoto = "/astrologer/profile/photo";
   static const String updateProfile = "/astrologer/profile";
   static const String logout = "/astrologer/logout";
+  static const String performance = "/astrologer/performance";
   static const String deleteAccount = "/astrologer/delete-account";
   static const String sleepHours = "/astrologer/sleep-hours";
   static const String trainingVideos = "/astrologer/training-videos";

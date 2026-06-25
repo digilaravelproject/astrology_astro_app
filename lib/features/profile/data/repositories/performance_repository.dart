@@ -1,5 +1,6 @@
 import '../../../../core/services/network/api_client.dart';
 import '../../../../core/services/network/response_model.dart';
+import '../../../../core/constants/app_urls.dart';
 import '../../domain/repositories/performance_repository_interface.dart';
 
 class PerformanceRepository implements PerformanceRepositoryInterface {
@@ -7,8 +8,7 @@ class PerformanceRepository implements PerformanceRepositoryInterface {
 
   PerformanceRepository({required this.apiClient});
 
-  @override
   Future<ResponseModel> getPerformanceData() async {
-    return await apiClient.get('/api/v1/astrologer/performance');
+    return await apiClient.get(AppUrls.performance);
   }
 }
