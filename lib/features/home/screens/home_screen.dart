@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:astro_astrologer/features/wallet/presentation/pages/my_earnings_screen.dart';
@@ -742,7 +743,11 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppText('JANUARY Earning - ₹45403.76', fontSize: 13, fontWeight: FontWeight.w700, color: Colors.black87),
+          Obx(() {
+            final month = DateFormat('MMMM').format(DateTime.now()).toUpperCase();
+            final earning = _walletController.summary.value?.monthlyEarning ?? 0.0;
+            return AppText('$month Earning - ₹${earning.toStringAsFixed(2)}', fontSize: 13, fontWeight: FontWeight.w700, color: Colors.black87);
+          }),
           const SizedBox(height: 16),
           Row(
             children: [
