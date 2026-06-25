@@ -13,6 +13,8 @@ class PerformanceScreen extends StatefulWidget {
 }
 
 class _PerformanceScreenState extends State<PerformanceScreen> {
+  final List<Map<String, dynamic>> _reviews = [];
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
