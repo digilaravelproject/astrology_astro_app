@@ -36,6 +36,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
   bool _isTogglingMic = false;
   
   final List<LiveComment> _comments = [];
+  final List<Widget> _giftAnimations = [];
   final ScrollController _scrollController = ScrollController();
   Timer? _simulatedCommentTimer;
   StreamSubscription? _commentsSubscription;
@@ -80,15 +81,21 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
           final String userName = event['user_name'] ?? 'User';
           final String giftTitle = event['gift'] != null ? event['gift']['title'] ?? 'Gift' : 'Gift';
           final String? userAvatar = event['user_avatar'];
+          final String? giftIcon = event['gift'] != null ? event['gift']['icon_url'] : null;
+          
           setState(() {
             _comments.add(LiveComment(
               user: userName, 
               message: 'Sent a $giftTitle',
               userAvatar: userAvatar,
-              giftIconUrl: event['gift'] != null ? event['gift']['icon_url'] : null,
+              giftIconUrl: giftIcon,
             ));
           });
           _scrollToBottom();
+          
+          if (giftIcon != null) {
+            _showGiftAnimation(giftIcon, userName, giftTitle);
+          }
         }
       });
 
@@ -163,6 +170,27 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
           curve: Curves.easeOut,
         );
       }
+    });
+  }
+
+  void _showGiftAnimation(String giftIconUrl, String senderName, String giftName) {
+    final key = UniqueKey();
+    setState(() {
+      _giftAnimations.add(
+        _FloatingGiftAnimation(
+          key: key,
+          giftIconUrl: giftIconUrl,
+          senderName: senderName,
+          giftName: giftName,
+          onComplete: () {
+            if (mounted) {
+              setState(() {
+                _giftAnimations.removeWhere((element) => element.key == key);
+              });
+            }
+          },
+        ),
+      );
     });
   }
 
@@ -695,6 +723,8 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
               ),
             ),
           ),
+          
+          ..._giftAnimations,
         ],
       ),
     );
@@ -735,3 +765,114 @@ class LiveComment {
     this.isSystem = false,
   });
 }
+
+class _FloatingGiftAnimation extends StatefulWidget {
+  final String giftIconUrl;
+  final String senderName;
+  final String giftName;
+  final VoidCallback onComplete;
+
+  const _FloatingGiftAnimation({
+    super.key,
+    required this.giftIconUrl,
+    required this.senderName,
+    required this.giftName,
+    required this.onComplete,
+  });
+
+  @override
+  State<_FloatingGiftAnimation> createState() => _FloatingGiftAnimationState();
+}
+
+class _FloatingGiftAnimationState extends State<_FloatingGiftAnimation> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _opacityAnimation;
+  late Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 3500),
+    );
+
+    _scaleAnimation = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 0.0, end: 1.2).chain(CurveTween(curve: Curves.easeOutBack)), weight: 15),
+      TweenSequenceItem(tween: Tween(begin: 1.2, end: 1.0).chain(CurveTween(curve: Curves.easeInOut)), weight: 10),
+      TweenSequenceItem(tween: ConstantTween(1.0), weight: 60),
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.0).chain(CurveTween(curve: Curves.easeInBack)), weight: 15),
+    ]).animate(_controller);
+
+    _opacityAnimation = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 0.0, end: 1.0), weight: 10),
+      TweenSequenceItem(tween: ConstantTween(1.0), weight: 75),
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.0), weight: 15),
+    ]).animate(_controller);
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.5),
+      end: const Offset(0, -0.5),
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOut,
+    ));
+
+    _controller.forward().then((_) {
+      widget.onComplete();
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned.fill(
+      child: Center(
+        child: SlideTransition(
+          position: _slideAnimation,
+          child: FadeTransition(
+            opacity: _opacityAnimation,
+            child: ScaleTransition(
+              scale: _scaleAnimation,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CachedNetworkImage(
+                    imageUrl: widget.giftIconUrl,
+                    width: 120,
+                    height: 120,
+                    errorWidget: (context, url, error) => const Icon(Icons.card_giftcard, size: 80, color: Colors.orange),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.7),
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: Colors.orange.withOpacity(0.5), width: 1.5),
+                    ),
+                    child: Text(
+                      '${widget.senderName} sent ${widget.giftName}!',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
