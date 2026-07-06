@@ -14,7 +14,6 @@ import 'skill_details_screen.dart';
 import 'other_details_screen.dart';
 import 'price_setting_screen.dart';
 import 'availability_screen.dart';
-import 'live_schedule_screen.dart';
 import 'my_reviews_screen.dart';
 import 'performance_screen.dart';
 import 'package:astro_astrologer/features/wallet/presentation/pages/my_earnings_screen.dart';

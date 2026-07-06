@@ -22,6 +22,8 @@ import '../../features/profile/controllers/skill_controller.dart';
 import '../../features/profile/dataSource/skill_data_source.dart';
 import '../../features/profile/repository/skill_repository.dart';
 import '../../features/profile/usecase/skill_usecase.dart';
+import '../../features/live/presentation/bindings/live_binding.dart';
+import '../../features/live/presentation/controllers/live_controller.dart';
 
 import '../../features/auth/domain/repositories/auth_repository.dart';
 import '../../features/auth/domain/services/auth_service.dart';
@@ -163,5 +165,9 @@ class InitialBindings extends Bindings {
 
     // Call dependencies
     Get.put(CallController(), permanent: true);
+
+    // Live dependencies
+    LiveBinding().dependencies();
+    Get.find<LiveController>();
   }
 }

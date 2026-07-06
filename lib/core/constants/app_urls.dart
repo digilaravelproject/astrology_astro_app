@@ -12,6 +12,7 @@ class AppUrls {
   static const String updateProfilePhoto = "/astrologer/profile/photo";
   static const String updateProfile = "/astrologer/profile";
   static const String logout = "/astrologer/logout";
+  static const String performance = "/astrologer/performance";
   static const String deleteAccount = "/astrologer/delete-account";
   static const String sleepHours = "/astrologer/sleep-hours";
   static const String trainingVideos = "/astrologer/training-videos";
@@ -57,7 +58,16 @@ class AppUrls {
 
   // Live Sessions
   static const String liveSessions = "/astrologer/live";
+  static const String currentLiveSession = "/astrologer/live/current";
   static String deleteLiveSession(int id) => "/astrologer/live/$id";
+  static String startLiveSession(int id) => "/astrologer/live/$id/start";
+  static String stopLiveSession(int id) => "/astrologer/live/$id/stop";
+  static String startBroadcast(int id) => "/astrologer/live/$id/broadcast";
+  static String stopBroadcast(int id) => "/astrologer/live/$id/stop-broadcast";
+  static String reportMediaStatus(int id) => "/astrologer/live/$id/media-status";
+  static String getLiveComments(int id) => "/astrologer/live/$id/comments";
+
+  static String updateLiveSession(int id) => "/astrologer/live/$id";
 
   // Billing Address
   static const String billingAddress = "/astrologer/billing-address";
@@ -94,6 +104,8 @@ class AppUrls {
   static const String walletWithdrawals = "/astrologer/wallet/withdrawals";
   static const String walletWithdraw = "/astrologer/wallet/withdraw";
   static const String walletWeeklyRankings = "/astrologer/wallet/weekly-rankings";
+  static const String walletInvoices = "/astrologer/wallet/invoices";
+  static String downloadInvoice(int year, int month) => "/astrologer/wallet/invoices/$year/${month.toString().padLeft(2, '0')}/download";
   
   static const String getCurrentSession = "/chat/sessions/current";
   static String markChatRead(int sessionId) => "/chat/$sessionId/read";
@@ -142,8 +154,24 @@ class AppUrls {
   static const String eventCallEnded = 'CallEnded';
   static const String eventIceCandidateSent = 'IceCandidateSent';
 
+  // Live Session System Events
+  static const String eventUserJoinedLiveSession = 'UserJoinedLiveSession';
+  static const String eventUserLeftLiveSession = 'UserLeftLiveSession';
+  static const String eventLiveSessionEnded = 'LiveSessionEnded';
+  static const String eventAstrologerMediaStatusChanged = 'AstrologerMediaStatusChanged';
+  static const String eventLiveSessionStarted = 'LiveSessionStarted';
+  static const String eventViewerCountUpdated = 'ViewerCountUpdated';
+  static const String eventNewLiveComment = 'NewLiveComment';
+  static const String eventSuperChatReceived = 'SuperChatReceived';
+  static const String eventAstrologerBroadcastStarted = 'AstrologerBroadcastStarted';
+
   // Price Increase Request
   static const String priceIncreaseStatus = "/astrologer/price-increase/status";
   static const String priceIncreaseRequest = "/astrologer/price-increase/request";
   static const String priceIncreaseHistory = "/astrologer/price-increase/history";
+
+  // Offers & Commissions
+  static const String astrologerOffers = "/astrologer/offers";
+  static String activateOffer(int id) => "/astrologer/offers/$id/activate";
+  static const String offerHistory = "/astrologer/offers/history";
 }

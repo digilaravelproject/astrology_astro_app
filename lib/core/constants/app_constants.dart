@@ -29,4 +29,9 @@ class AppConstants {
     static const String outgoingRingPath = 'audio/outgoing_ring.mp3';
     static const String incomingRingPath = 'audio/incoming_ring.mp3';
     static const String webrtcStunServer = 'stun:stun.l.google.com:19302';
+    
+    // LiveKit TURN Server Config
+    static const String liveKitTurnServerUrl = 'turn:187.127.173.87:3478';
+    static const String liveKitTurnUsername = 'livekit';
+    static const String liveKitTurnCredential = 'livekit_secret_2024';
 }

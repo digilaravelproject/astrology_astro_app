@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket_channel/io.dart';
 import '../storage/token_manger.dart';
 import '../storage/shared_prefs.dart';
 import '../../../core/constants/app_constants.dart';
@@ -18,11 +19,15 @@ import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.da
 import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
 import 'package:astro_astrologer/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:astro_astrologer/features/chat/domain/usecases/sync_message_status_usecase.dart';
+import 'package:astro_astrologer/features/live/presentation/controllers/live_controller.dart';
+import 'package:astro_astrologer/features/live/data/models/live_session_model.dart';
 
 class WebSocketService extends GetxService {
   WebSocketChannel? _channel;
   bool _isConnected = false;
+  bool _isConnecting = false;
   String? _socketId;
+  final Set<String> _subscribedChannels = {};
   int? _userId;
   String? _token;
   
@@ -49,6 +54,12 @@ class WebSocketService extends GetxService {
   static final RxMap<String, dynamic> callAcceptedData = <String, dynamic>{}.obs;
   static final RxMap<String, dynamic> callEndedData = <String, dynamic>{}.obs;
   static final RxMap<String, dynamic> iceCandidateData = <String, dynamic>{}.obs;
+  
+  static final StreamController<Map<String, dynamic>> liveCommentsEvent = StreamController.broadcast();
+  static final StreamController<Map<String, dynamic>> superChatEvent = StreamController.broadcast();
+  static final StreamController<Map<String, dynamic>> userJoinedEvent = StreamController.broadcast();
+  static final StreamController<Map<String, dynamic>> userLeftEvent = StreamController.broadcast();
+  static final RxMap<int, int> liveViewerCounts = <int, int>{}.obs;
 
   final String _wsUrl = AppUrls.webSocketUrl;
   
@@ -65,7 +76,8 @@ class WebSocketService extends GetxService {
 
   /// Connects the websocket if user is logged in
   Future<void> connect() async {
-    if (_isConnected) return;
+    if (_isConnected || _isConnecting) return;
+    _isConnecting = true;
 
     try {
       _token = await TokenManager.getToken();
@@ -90,7 +102,10 @@ class WebSocketService extends GetxService {
       Logger.d('|📍 URL: $_wsUrl');
       Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       
-      _channel = WebSocketChannel.connect(Uri.parse(_wsUrl));
+      _channel = IOWebSocketChannel.connect(
+        Uri.parse(_wsUrl),
+        headers: {'Origin': 'https://suryapathkundli.com'},
+      );
       
       _channel?.stream.listen(
         (message) {
@@ -105,7 +120,9 @@ class WebSocketService extends GetxService {
           Logger.d('|🔌 WEBSOCKET DISCONNECTED');
           Logger.d('|⚠️ Connection closed (onDone)');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          _isConnecting = false;
           _isConnected = false;
+          _socketId = null;
           _reconnect();
         },
         onError: (error) {
@@ -113,7 +130,9 @@ class WebSocketService extends GetxService {
           Logger.e('|🔌 WEBSOCKET ERROR');
           Logger.e('|⚠️ Exception: $error');
           Logger.e('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          _isConnecting = false;
           _isConnected = false;
+          _socketId = null;
           _reconnect();
         },
       );
@@ -122,6 +141,7 @@ class WebSocketService extends GetxService {
       Logger.e('|🔌 WEBSOCKET EXCEPTION');
       Logger.e('|⚠️ Exception: $e');
       Logger.e('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      _isConnecting = false;
       _reconnect();
     }
   }
@@ -140,6 +160,7 @@ class WebSocketService extends GetxService {
           Logger.d('|✅ WEBSOCKET ESTABLISHED');
           Logger.d('|🔗 Socket ID: $_socketId');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          _isConnecting = false;
           _isConnected = true;
           _authenticateAndSubscribe();
         } else if (event == AppUrls.pusherSubscriptionSucceeded) {
@@ -232,20 +253,208 @@ class WebSocketService extends GetxService {
           _handleIceCandidateSent(data['data']);
         } else if (event == AppUrls.pusherPing) {
            _send(AppUrls.pusherPong);
+        } else if (event == AppUrls.eventViewerCountUpdated || event == 'App\\Events\\${AppUrls.eventViewerCountUpdated}' || event == '.${AppUrls.eventViewerCountUpdated}') {
+          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          Logger.d('|📺 WEBSOCKET EVENT: $event');
+          Logger.d('|📦 Data: ${data['data']}');
+          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          _handleViewerCountUpdated(data['data']);
+        } else if (event == AppUrls.eventNewLiveComment || event == 'App\\Events\\${AppUrls.eventNewLiveComment}' || event == '.${AppUrls.eventNewLiveComment}') {
+          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          Logger.d('|📺 WEBSOCKET EVENT: $event');
+          Logger.d('|📦 Data: ${data['data']}');
+          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          _handleNewLiveComment(data['data']);
+        } else if (event == AppUrls.eventSuperChatReceived || event == 'App\\Events\\${AppUrls.eventSuperChatReceived}' || event == '.${AppUrls.eventSuperChatReceived}') {
+          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          Logger.d('|📺 WEBSOCKET EVENT: $event');
+          Logger.d('|📦 Data: ${data['data']}');
+          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          _handleSuperChatReceived(data['data']);
+        } else if (event == AppUrls.eventUserJoinedLiveSession || event == 'App\\Events\\${AppUrls.eventUserJoinedLiveSession}' || event == '.${AppUrls.eventUserJoinedLiveSession}') {
+          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          Logger.d('|📺 WEBSOCKET EVENT: $event');
+          Logger.d('|📦 Data: ${data['data']}');
+          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          _handleUserJoinedLiveSession(data['data']);
+        } else if (event == AppUrls.eventUserLeftLiveSession || event == 'App\\Events\\${AppUrls.eventUserLeftLiveSession}' || event == '.${AppUrls.eventUserLeftLiveSession}') {
+          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          Logger.d('|📺 WEBSOCKET EVENT: $event');
+          Logger.d('|📦 Data: ${data['data']}');
+          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          _handleUserLeftLiveSession(data['data']);
         }
       } catch (e) {
-        debugPrint('WebSocketService: Error parsing message -> $e');
+        Logger.e('WebSocketService: Error parsing message -> $e');
       }
+    }
+  }
+
+  Future<void> subscribeToChannel(String channelName) async {
+    _subscribedChannels.add(channelName);
+    if (!_isConnected || _socketId == null) {
+      Logger.d('Cannot subscribe to channel $channelName, not connected yet. Queued for later.');
+      return;
+    }
+    try {
+      final apiClient = Get.find<ApiClient>();
+      final response = await apiClient.post(
+        AppUrls.broadcastingAuth,
+        data: {
+          'channel_name': channelName,
+          'socket_id': _socketId,
+        },
+        options: Options(
+          contentType: Headers.formUrlEncodedContentType,
+        ),
+        handleError: false,
+        showErrorScreen: false,
+      );
+
+      final authString = response.body?['auth']?.toString();
+      final channelData = response.body?['channel_data'];
+      if (authString != null && authString.isNotEmpty) {
+        Logger.d('Subscribing to dynamic channel: $channelName');
+        final Map<String, dynamic> subscribeData = {
+          "channel": channelName,
+          "auth": authString
+        };
+        if (channelName.startsWith('presence-') && channelData != null) {
+          subscribeData["channel_data"] = channelData is String ? channelData : jsonEncode(channelData);
+        }
+        _send(jsonEncode({
+          "event": AppUrls.pusherSubscribe,
+          "data": subscribeData
+        }));
+      }
+    } catch (e) {
+      Logger.e('Error subscribing to dynamic channel $channelName: $e');
+    }
+  }
+
+  void unsubscribeFromChannel(String channelName) {
+    _subscribedChannels.remove(channelName);
+    if (_isConnected) {
+      Logger.d('Unsubscribing from channel: $channelName');
+      _send(jsonEncode({
+        "event": "pusher:unsubscribe",
+        "data": {
+          "channel": channelName
+        }
+      }));
+    }
+  }
+
+  void _handleViewerCountUpdated(dynamic rawData) {
+    try {
+      Map<String, dynamic> eventData = {};
+      if (rawData is String) {
+        eventData = jsonDecode(rawData);
+      } else if (rawData is Map) {
+        eventData = Map<String, dynamic>.from(rawData);
+      }
+      final int sessionId = eventData['live_session_id'] is int 
+          ? eventData['live_session_id'] 
+          : (int.tryParse(eventData['live_session_id']?.toString() ?? '') ?? 0);
+      final int count = eventData['viewer_count'] is int 
+          ? eventData['viewer_count'] 
+          : (int.tryParse(eventData['viewer_count']?.toString() ?? '') ?? 0);
+      
+      liveViewerCounts[sessionId] = count;
+      liveViewerCounts.refresh();
+
+      if (Get.isRegistered<LiveController>()) {
+        final controller = Get.find<LiveController>();
+        if (controller.currentActiveSession.value?.id == sessionId) {
+          controller.currentActiveSession.value = LiveSessionModel(
+            id: controller.currentActiveSession.value!.id,
+            title: controller.currentActiveSession.value!.title,
+            description: controller.currentActiveSession.value!.description,
+            scheduledAt: controller.currentActiveSession.value!.scheduledAt,
+            sessionType: controller.currentActiveSession.value!.sessionType,
+            durationMinutes: controller.currentActiveSession.value!.durationMinutes,
+            maxParticipants: controller.currentActiveSession.value!.maxParticipants,
+            status: controller.currentActiveSession.value!.status,
+            createdAt: controller.currentActiveSession.value!.createdAt,
+            startedAt: controller.currentActiveSession.value!.startedAt,
+            endedAt: controller.currentActiveSession.value!.endedAt,
+            streamKey: controller.currentActiveSession.value!.streamKey,
+            viewerCount: count,
+            currentParticipants: controller.currentActiveSession.value!.currentParticipants,
+            isBroadcasting: controller.currentActiveSession.value!.isBroadcasting,
+          );
+          controller.currentActiveSession.refresh();
+        }
+      }
+    } catch (e) {
+      Logger.e('WebSocketService: error handling ViewerCountUpdated -> $e');
+    }
+  }
+
+  void _handleNewLiveComment(dynamic rawData) {
+    try {
+      Map<String, dynamic> eventData = {};
+      if (rawData is String) {
+        eventData = jsonDecode(rawData);
+      } else if (rawData is Map) {
+        eventData = Map<String, dynamic>.from(rawData);
+      }
+      liveCommentsEvent.add(eventData);
+    } catch (e) {
+      Logger.e('WebSocketService: error handling NewLiveComment -> $e');
+    }
+  }
+
+  void _handleSuperChatReceived(dynamic rawData) {
+    try {
+      Map<String, dynamic> eventData = {};
+      if (rawData is String) {
+        eventData = jsonDecode(rawData);
+      } else if (rawData is Map) {
+        eventData = Map<String, dynamic>.from(rawData);
+      }
+      superChatEvent.add(eventData);
+    } catch (e) {
+      Logger.e('WebSocketService: error handling SuperChatReceived -> $e');
+    }
+  }
+
+  void _handleUserJoinedLiveSession(dynamic rawData) {
+    try {
+      Map<String, dynamic> eventData = {};
+      if (rawData is String) {
+        eventData = jsonDecode(rawData);
+      } else if (rawData is Map) {
+        eventData = Map<String, dynamic>.from(rawData);
+      }
+      userJoinedEvent.add(eventData);
+    } catch (e) {
+      Logger.e('WebSocketService: error handling UserJoinedLiveSession -> $e');
+    }
+  }
+
+  void _handleUserLeftLiveSession(dynamic rawData) {
+    try {
+      Map<String, dynamic> eventData = {};
+      if (rawData is String) {
+        eventData = jsonDecode(rawData);
+      } else if (rawData is Map) {
+        eventData = Map<String, dynamic>.from(rawData);
+      }
+      userLeftEvent.add(eventData);
+    } catch (e) {
+      Logger.e('WebSocketService: error handling UserLeftLiveSession -> $e');
     }
   }
 
   Future<void> _authenticateAndSubscribe() async {
     if (_socketId == null || _userId == null) return;
 
-    final List<String> channelsToSubscribe = [
+    final Set<String> channelsToSubscribe = {
       AppUrls.privateUserChannel(_userId!),
       AppUrls.presenceRoomChannel,
-    ];
+      ..._subscribedChannels,
+    };
 
     for (String channelName in channelsToSubscribe) {
       Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
@@ -272,19 +481,25 @@ class WebSocketService extends GetxService {
         // broadcasting/auth returns {"auth": "..."} not standard format
         // so check body['auth'] directly, not response.isSuccess
         final authString = response.body?['auth']?.toString();
+        final channelData = response.body?['channel_data'];
         
         if (authString != null && authString.isNotEmpty) {
-          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|✅ WEBSOCKET AUTH SUCCESS');
           Logger.d('|🔑 Channel: $channelName');
-          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
+          final Map<String, dynamic> subscribeData = {
+            "channel": channelName,
+            "auth": authString
+          };
+          if (channelName.startsWith('presence-') && channelData != null) {
+            subscribeData["channel_data"] = channelData is String ? channelData : jsonEncode(channelData);
+          }
+          
           _send(jsonEncode({
             "event": AppUrls.pusherSubscribe,
-            "data": {
-              "channel": channelName,
-              "auth": authString
-            }
+            "data": subscribeData
           }));
         } else {
           Logger.e('|❌ WEBSOCKET AUTH FAILED for $channelName, body=${response.body}');
@@ -324,6 +539,8 @@ class WebSocketService extends GetxService {
     Logger.d('|⚠️ Client manually closing connection.');
     Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     _isConnected = false;
+    _socketId = null;
+    _subscribedChannels.clear();
     _channel?.sink.close();
     _channel = null;
   }

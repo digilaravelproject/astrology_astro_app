@@ -29,7 +29,7 @@ class ChatSessionModel {
   final int consumerId;
   final int providerId;
   final String status;
-  final int ratePerMinute;
+  final num ratePerMinute;
   final int durationSeconds;
   final num totalCost;
   final String createdAt;
@@ -82,7 +82,7 @@ class ChatSessionUserModel {
   final String? dateOfBirth;
   final String? timeOfBirth;
   final String? placeOfBirth;
-  final int chatRatePerMinute;
+  final num chatRatePerMinute;
 
   ChatSessionUserModel({
     required this.id,
@@ -96,7 +96,7 @@ class ChatSessionUserModel {
   });
 
   factory ChatSessionUserModel.fromJson(Map<String, dynamic> json) {
-    int chatRate = 0;
+    num chatRate = 0;
     if (json['astrologer'] != null && json['astrologer']['chat_rate_per_minute'] != null) {
       chatRate = json['astrologer']['chat_rate_per_minute'];
     }

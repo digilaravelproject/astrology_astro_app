@@ -10,67 +10,87 @@ import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
 import 'package:astro_astrologer/features/call/call_details_screen.dart';
 import 'package:astro_astrologer/features/home/widgets/add_note_bottom_sheet.dart';
 import 'package:astro_astrologer/features/home/widgets/animated_favorite_button.dart';
-import '../../../../../../../../../core/widgets/loyal_badge.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import '../../../../core/widgets/loyal_badge.dart';
+import '../../../../core/constants/app_urls.dart';
+import 'package:astro_astrologer/core/services/network/api_client.dart';
+import 'controllers/astrologer_sessions_controller.dart';
 import '../bindings/chat_binding.dart';
 
 class ChatHistoryScreen extends StatelessWidget {
   final bool showDefaultMessageButton;
-  const ChatHistoryScreen({super.key, this.showDefaultMessageButton = true});
+  final bool isFromTab;
+  const ChatHistoryScreen({super.key, this.showDefaultMessageButton = true, this.isFromTab = false});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F9),
-      appBar: const CustomAppBar(
-        title: 'Chat History',
-      ),
-      body: Stack(
-        children: [
+    final AstrologerSessionsController controller = Get.put(AstrologerSessionsController(Get.find<ApiClient>()));
+
+    Widget content = Stack(
+      children: [
           Column(
             children: [
               Expanded(
-                child: ListView(
-                  padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: showDefaultMessageButton ? 140 : 20),
-                  children: [
-                    _buildHistoryCard(
-                      context,
-                      type: "Repeat (indian)",
-                      status: "Completed",
-                      id: "#1770639436868",
-                      price: "322.0",
-                      date: "09 Feb 26, 05:47 PM",
-                      isLoyal: true,
-                      details: {
-                        "Name": "Utkarsha (AT-L78KMZN)",
-                        "DOB": "05-July-1994, 08:13 PM",
-                        "Duration": "29 minutes (05:47 PM-06:16 PM)",
-                        "Rate": "₹ 11.5/min",
-                        "offer": "Loyal User Offer (25.0%)",
-                        "POB": "New Delhi, Delhi, India",
+                child: Obx(() {
+                  if (controller.isLoading.value && controller.sessions.isEmpty) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (controller.sessions.isEmpty) {
+                    return const Center(child: AppText("No chat history available.", fontSize: 16));
+                  }
+                  return RefreshIndicator(
+                    onRefresh: () => controller.refresh(),
+                    child: ListView.builder(
+                      controller: controller.scrollController,
+                      padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: showDefaultMessageButton ? 140 : 20),
+                      itemCount: controller.sessions.length,
+                      itemBuilder: (context, index) {
+                        final session = controller.sessions[index];
+                        final durationMinutes = (session.durationSeconds / 60).ceil();
+                        
+                        // Format DOB
+                        String dobStr = "N/A";
+                        if (session.consumer?.dateOfBirth != null) {
+                          try {
+                            final dobDate = DateTime.tryParse(session.consumer!.dateOfBirth!)?.toLocal();
+                            if (dobDate != null) {
+                              final months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                              final monthName = months[dobDate.month - 1];
+                              final day = dobDate.day.toString().padLeft(2, '0');
+                              final year = dobDate.year.toString();
+                              
+                              String timeStr = "";
+                              if (session.consumer?.timeOfBirth != null && session.consumer!.timeOfBirth!.isNotEmpty) {
+                                timeStr = ",${session.consumer!.timeOfBirth!}";
+                              }
+                              dobStr = "$day-$monthName-$year$timeStr";
+                            }
+                          } catch (_) {}
+                        }
+
+                        final Map<String, String> details = {
+                          "Name": session.consumer?.name ?? "User (AT-${session.consumerId})",
+                          "Gender": session.consumer?.gender?.capitalizeFirst ?? "N/A",
+                          "DOB": dobStr,
+                          "Duration": "$durationMinutes minutes",
+                          "Rate": "₹ ${session.ratePerMinute}/min",
+                          "POB": session.consumer?.placeOfBirth ?? "N/A",
+                        };
+
+                        return _buildHistoryCard(
+                          context,
+                          type: "Regular",
+                          status: session.status.capitalizeFirst ?? "Completed",
+                          id: "#${session.id}",
+                          price: session.totalCost.toString(),
+                          date: session.createdAt.toString().split('.')[0],
+                          details: details,
+                          imageUrl: session.consumer?.profilePhoto,
+                        );
                       },
-                      showRefund: true,
                     ),
-                    const SizedBox(height: 12),
-                    _buildHistoryCard(
-                      context,
-                      type: "New (indian)",
-                      status: "Completed",
-                      id: "#1770639059091",
-                      price: "22.5",
-                      showDropdown: true,
-                      date: "09 Feb 26, 05:40 PM",
-                      details: {
-                        "Name": "Alisha (AT-4X65D5M)",
-                        "DOB": "19-July-1999, 03:00 PM",
-                        "Duration": "6 minutes (05:41 PM-05:47 PM)",
-                        "Rate": "₹ 4.5/min",
-                        "offer": "50% off (50.0%)",
-                        "POB": "Nagpur, Maharashtra, India",
-                      },
-                      showSuggestRemedy: true,
-                    ),
-                  ],
-                ),
+                  );
+                }),
               ),
               _buildFooterNote(),
             ],
@@ -85,7 +105,16 @@ class ChatHistoryScreen extends StatelessWidget {
               ),
             ),
         ],
+    );
+
+    if (isFromTab) return content;
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFF9F9F9),
+      appBar: const CustomAppBar(
+        title: 'Chat History',
       ),
+      body: content,
     );
   }
 
@@ -101,6 +130,7 @@ class ChatHistoryScreen extends StatelessWidget {
     bool showRefund = false,
     bool showSuggestRemedy = false,
     bool showDropdown = false,
+    String? imageUrl,
   }) {
     return Container(
       margin: const EdgeInsets.only(top: 14, bottom: 8),
@@ -188,22 +218,46 @@ class ChatHistoryScreen extends StatelessWidget {
                     Container(
                       width: 44,
                       height: 44,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.orange.shade300, Colors.deepOrange.shade400],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
+                      decoration: const BoxDecoration(
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.wb_sunny_rounded, color: Colors.white, size: 24),
+                      child: ClipOval(
+                        child: imageUrl != null && imageUrl.isNotEmpty
+                            ? CachedNetworkImage(
+                                imageUrl: imageUrl.startsWith('http')
+                                    ? imageUrl
+                                    : '${AppUrls.baseImageUrl}$imageUrl',
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) => const CircularProgressIndicator(strokeWidth: 2),
+                                errorWidget: (context, url, error) => Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [Colors.orange.shade300, Colors.deepOrange.shade400],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                  ),
+                                  child: const Icon(Icons.wb_sunny_rounded, color: Colors.white, size: 20),
+                                ),
+                              )
+                            : Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [Colors.orange.shade300, Colors.deepOrange.shade400],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                ),
+                                child: const Icon(Icons.wb_sunny_rounded, color: Colors.white, size: 20),
+                              ),
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const AppText("Astrotalk", fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+                          AppText(details["Name"]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "User", fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
                           const SizedBox(height: 2),
                           AppText(
                             "ID: $id",

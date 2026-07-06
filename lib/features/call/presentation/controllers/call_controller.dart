@@ -12,6 +12,7 @@ import 'package:astro_astrologer/core/utils/logger.dart';
 import 'package:astro_astrologer/features/call/presentation/widgets/incoming_call_dialog.dart';
 import 'package:astro_astrologer/features/call/presentation/widgets/call_summary_dialog.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
+import 'package:astro_astrologer/core/services/foreground_task_service.dart';
 
 import 'package:flutter/material.dart';
 import 'package:astro_astrologer/features/call/presentation/widgets/floating_call_bubble.dart';
@@ -384,11 +385,21 @@ class CallController extends GetxController with WidgetsBindingObserver {
     if (sessionId != null) {
       final minutes = (durationSeconds.value ~/ 60).toString().padLeft(2, '0');
       final seconds = (durationSeconds.value % 60).toString().padLeft(2, '0');
+      final title = 'Active Call in Progress';
+      final body = 'Talking with $consumerName - $minutes:$seconds';
+
       LocalNotificationService.showOngoingCallNotification(
         sessionId: sessionId!,
-        title: 'Active Call in Progress',
-        body: 'Talking with $consumerName - $minutes:$seconds',
+        title: title,
+        body: body,
       );
+
+      ForegroundTaskService.requestPermissions().then((_) {
+        ForegroundTaskService.startService(
+          title: title,
+          text: body,
+        );
+      });
     }
   }
 
@@ -422,6 +433,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
       LocalNotificationService.cancelOngoingCallNotification(sessionId!);
       LocalNotificationService.cancelIncomingCallNotification(sessionId!);
     }
+    ForegroundTaskService.stopService();
     FloatingCallBubble.dismiss();
     webrtcService.dispose();
     status.value = 'idle';

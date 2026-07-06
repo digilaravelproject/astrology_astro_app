@@ -32,6 +32,7 @@ class _OverlayChatBubbleWidgetState extends State<OverlayChatBubbleWidget> {
   Timer? _timer;
   DateTime? _startedAt;
   bool _isCall = false;
+  bool _isLive = false;
 
   @override
   void initState() {
@@ -48,6 +49,7 @@ class _OverlayChatBubbleWidgetState extends State<OverlayChatBubbleWidget> {
           _imageUrl = event['imageUrl'] ?? _imageUrl;
           _unreadCount = event['unreadCount'] ?? _unreadCount;
           _isCall = event['isCall'] ?? _isCall;
+          _isLive = event['isLive'] ?? _isLive;
 
           if (event['type'] == 'init' || event['type'] == 'update') {
              final startedAtStr = event['startedAt'];
@@ -92,10 +94,11 @@ class _OverlayChatBubbleWidgetState extends State<OverlayChatBubbleWidget> {
       child: GestureDetector(
         onTap: () {
            debugPrint("==== GESTURE DETECTOR TAPPED ====");
-           // Try both methods just in case
            FlutterOverlayWindow.shareData({'action': 'tap'});
            
-           final String portName = _isCall ? 'overlay_call_port' : 'overlay_chat_port';
+           final String portName = _isLive 
+               ? 'overlay_live_port' 
+               : (_isCall ? 'overlay_call_port' : 'overlay_chat_port');
            final SendPort? sendPort = IsolateNameServer.lookupPortByName(portName);
            sendPort?.send('tap');
         },
@@ -117,7 +120,9 @@ class _OverlayChatBubbleWidgetState extends State<OverlayChatBubbleWidget> {
                     ),
                   ],
                   border: Border.all(
-                    color: _isCall ? Colors.green.shade600 : const Color(0xFFFF6F00), // Green for call, Saffron for chat
+                    color: _isLive 
+                        ? Colors.red.shade600 
+                        : (_isCall ? Colors.green.shade600 : const Color(0xFFFF6F00)), // Red for Live
                     width: 2.5,
                   ),
                 ),
@@ -136,7 +141,7 @@ class _OverlayChatBubbleWidgetState extends State<OverlayChatBubbleWidget> {
               
               // Timing overlay
               Positioned(
-                bottom: -12, // adjust position slightly more downwards so it is clearly at the bottom center
+                bottom: -12,
                 left: 0,
                 right: 0,
                 child: Center(
@@ -205,6 +210,18 @@ class _OverlayChatBubbleWidgetState extends State<OverlayChatBubbleWidget> {
   }
 
   Widget _buildInitials() {
+    if (_isLive) {
+      return Container(
+        color: const Color(0xFF2E1A47),
+        child: const Center(
+          child: Icon(
+            Icons.live_tv_rounded,
+            color: Colors.white,
+            size: 28,
+          ),
+        ),
+      );
+    }
     if (_isCall) {
       return Container(
         color: const Color(0xFF2E1A47),

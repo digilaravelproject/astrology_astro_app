@@ -36,8 +36,9 @@ class ApiChecker {
           return response;
         }
         final res = (response.data['res'] ?? response.data['status'])?.toString().toLowerCase();
-        Logger.d('ApiChecker: checkResponse 200, res/status: $res');
-        if (res == 'success') {
+        final isSuccessBool = response.data['success'] == true;
+        Logger.d('ApiChecker: checkResponse 200, res/status: $res, success: $isSuccessBool');
+        if (res == 'success' || isSuccessBool) {
           return response;
         } else {
           Logger.d('ApiChecker: 200 case but not success, throwing exception');
@@ -313,7 +314,8 @@ class ApiChecker {
       }
     }
 
-    final result = response.data is Map && ((response.data['res'] ?? response.data['status'])?.toString().toLowerCase() == 'success' || response.data.containsKey('auth'))
+    final isSuccessBool = response.data is Map && response.data['success'] == true;
+    final result = response.data is Map && ((response.data['res'] ?? response.data['status'])?.toString().toLowerCase() == 'success' || isSuccessBool || response.data.containsKey('auth'))
         ? ResponseModel.fromJson(response.data, statusCode: statusCode)
         : ResponseModel(
             isSuccess: false,
