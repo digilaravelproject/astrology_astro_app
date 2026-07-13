@@ -6,6 +6,7 @@ class VedikaConstants {
   static const String ashtakavargaEndpoint = '/v2/astrology/ashtakavarga';
   static const String planetPositionsEndpoint = '/v2/astrology/planet-positions';
   static const String shadbalaEndpoint = '/v2/astrology/shadbala-strength';
+  static const String remediesGemstoneEndpoint = '/v2/astrology/remedies/gemstone';
   static const String apiKey = 'vk_live_a0c629820cd0a5fc864029759bcc2377';
 }
 

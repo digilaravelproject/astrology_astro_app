@@ -19,6 +19,7 @@ import 'controllers/dasha_controller.dart';
 import 'controllers/ashtakvarga_controller.dart';
 import 'controllers/planet_positions_controller.dart';
 import 'controllers/shadbala_controller.dart';
+import 'controllers/remedies_controller.dart';
 import 'package:collection/collection.dart';
 
 class KundliScreen extends StatefulWidget {
@@ -35,6 +36,7 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
   final AshtakvargaController _ashtakvargaController = Get.put(AshtakvargaController());
   final PlanetPositionsController _planetPositionsController = Get.put(PlanetPositionsController());
   final ShadbalaController _shadbalaController = Get.put(ShadbalaController());
+  final RemediesController _remediesController = Get.put(RemediesController());
   final List<String> _tabs = [
     "Basic",
     "Lagna",
@@ -66,6 +68,7 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
     _ashtakvargaController.fetchAshtakvargaDetails();
     _planetPositionsController.fetchPlanetPositions();
     _shadbalaController.fetchShadbalaDetails();
+    _remediesController.fetchGemstoneRemedies();
   }
 
   final Map<int, List<String>> _samplePlanetData = {
@@ -881,16 +884,69 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
   }
 
   Widget _buildRemediesTab() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          _buildRemedyCard("Gemstone", "Emerald for Career & Communication", Icons.diamond_outlined),
-          _buildRemedyCard("Mantra", "Om Budhaya Namah (108 times)", Icons.spatial_audio_off_outlined),
-          _buildRemedyCard("Donation", "Green clothes on Wednesday", Icons.volunteer_activism_outlined),
-        ],
-      ),
-    );
+    return Obx(() {
+      if (_remediesController.isLoading.value) {
+        return const Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
+        );
+      }
+
+      final crystalsList = _remediesController.remediesModel.value?.data?.crystals;
+      if (crystalsList == null || crystalsList.isEmpty) {
+        return const Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Center(child: AppText("Failed to load Remedies details.")),
+        );
+      }
+
+      return SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: crystalsList.map((crystal) {
+            return Container(
+              margin: const EdgeInsets.only(bottom: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AppText(
+                    "Remedies for ${crystal.planet ?? 'Unknown'} (${crystal.planetStrength ?? ''})",
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                  const SizedBox(height: 12),
+                  if (crystal.gemstone != null)
+                    _buildRemedyCard(
+                      "Gemstone",
+                      "${crystal.gemstone!.gemstone} (${crystal.gemstone!.weight}). Wear on ${crystal.gemstone!.finger} on ${crystal.gemstone!.dayToWear}. Metal: ${crystal.gemstone!.metal}.",
+                      Icons.diamond_outlined,
+                    ),
+                  if (crystal.mantra != null)
+                    _buildRemedyCard(
+                      "Mantra",
+                      "${crystal.mantra!.mantra}\nJapa Count: ${crystal.mantra!.japaCount}",
+                      Icons.spatial_audio_off_outlined,
+                    ),
+                  if (crystal.charity != null)
+                    _buildRemedyCard(
+                      "Charity",
+                      "Donate ${crystal.charity!.items?.join(', ')} to ${crystal.charity!.donateTo} on ${crystal.charity!.bestDay}.",
+                      Icons.volunteer_activism_outlined,
+                    ),
+                  if (crystal.fasting != null)
+                    _buildRemedyCard(
+                      "Fasting",
+                      "${crystal.fasting!.fastingType} on ${crystal.fasting!.day}s. Duration: ${crystal.fasting!.duration}.",
+                      Icons.restaurant_menu_outlined,
+                    ),
+                ],
+              ),
+            );
+          }).toList(),
+        ),
+      );
+    });
   }
 
   Widget _buildRemedyCard(String title, String desc, IconData icon) {
