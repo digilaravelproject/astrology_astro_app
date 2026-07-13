@@ -3,10 +3,12 @@
 
 // ignore_for_file: constant_identifier_names
 // ignore_for_file: lines_longer_than_80_chars
+import 'dart:core';
+
 class DefaultRes {
   DefaultRes._();
 
-  static const String PROJECT_NAME = 'astro_astrologer';
-  static const String PROJECT_VERSION = '1.0.0+1';
+  static const  PROJECT_NAME = 'astro_astrologer';
+  static const  PROJECT_VERSION = '1.0.0+1';
   static const String = '.env';
 }

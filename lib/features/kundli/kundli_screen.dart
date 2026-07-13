@@ -14,6 +14,12 @@ import 'kundli_tabs/divisional_chart_tab.dart';
 import 'kundli_tabs/kp_tab.dart';
 import 'kundli_tabs/sade_sati_tab.dart';
 import 'create_kundli_screen.dart';
+import 'controllers/panchang_controller.dart';
+import 'controllers/dasha_controller.dart';
+import 'controllers/ashtakvarga_controller.dart';
+import 'controllers/planet_positions_controller.dart';
+import 'controllers/shadbala_controller.dart';
+import 'package:collection/collection.dart';
 
 class KundliScreen extends StatefulWidget {
   const KundliScreen({super.key});
@@ -24,6 +30,11 @@ class KundliScreen extends StatefulWidget {
 
 class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final PanchangController _panchangController = Get.put(PanchangController());
+  final DashaController _dashaController = Get.put(DashaController());
+  final AshtakvargaController _ashtakvargaController = Get.put(AshtakvargaController());
+  final PlanetPositionsController _planetPositionsController = Get.put(PlanetPositionsController());
+  final ShadbalaController _shadbalaController = Get.put(ShadbalaController());
   final List<String> _tabs = [
     "Basic",
     "Lagna",
@@ -49,6 +60,12 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
   void initState() {
     super.initState();
     _tabController = TabController(length: _tabs.length, vsync: this);
+    _panchangController.fetchPanchangDetails();
+    _dashaController.fetchDashaDetails();
+    _dashaController.fetchYoginiDashaDetails();
+    _ashtakvargaController.fetchAshtakvargaDetails();
+    _planetPositionsController.fetchPlanetPositions();
+    _shadbalaController.fetchShadbalaDetails();
   }
 
   final Map<int, List<String>> _samplePlanetData = {
@@ -185,16 +202,34 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
           BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
         ],
       ),
-      child: Column(
-        children: [
-          _buildInfoRow("Tithi", "Shukla-Ekadashi", false),
-          _buildInfoRow("Karan", "Vishti", false),
-          _buildInfoRow("Yog", "Sadhya", false),
-          _buildInfoRow("Nakshatra", "Rohini", false),
-          _buildInfoRow("Sunrise", "05:28:30 AM", false),
-          _buildInfoRow("Sunset", "07:23:12 PM", false),
-        ],
-      ),
+      child: Obx(() {
+        if (_panchangController.isLoading.value) {
+          return const Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
+          );
+        }
+
+        final data = _panchangController.panchangModel.value?.data;
+        if (data == null) {
+          return const Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Center(child: AppText("Failed to load Panchang details.")),
+          );
+        }
+
+        return Column(
+          children: [
+            _buildInfoRow("Tithi", data.tithi?.name ?? "N/A", false),
+            _buildInfoRow("Karan", data.karana?.name ?? "N/A", false),
+            _buildInfoRow("Yog", data.yoga?.name ?? "N/A", false),
+            _buildInfoRow("Nakshatra", data.nakshatra?.name ?? "N/A", false),
+            _buildInfoRow("Masa", data.masa?.name ?? "N/A", false),
+            _buildInfoRow("Ritu", data.ritu?.name ?? "N/A", false),
+            _buildInfoRow("Vaara", data.vaara?.name ?? "N/A", false),
+          ],
+        );
+      }),
     );
   }
 
@@ -302,23 +337,140 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
   }
 
   Widget _buildDashaTab(String title) {
-    final dashaData = title == "Mahadasha" 
-      ? [
-          ["MO", "Birth", "12-Jan-2003"],
-          ["MA", "12-Jan-2003", "12-Jan-2010"],
-          ["RA", "12-Jan-2010", "13-Jan-2028"],
-          ["JU", "13-Jan-2028", "13-Jan-2044"],
-          ["SA", "13-Jan-2044", "12-Jan-2063"],
-          ["ME", "12-Jan-2063", "13-Jan-2080"],
-        ]
-      : [
-          ["ID", "12-Sep-2023", "12-Sep-2024"],
-          ["PI", "12-Sep-2024", "12-Sep-2026"],
-          ["DH", "12-Sep-2026", "12-Sep-2029"],
-          ["BR", "12-Sep-2029", "12-Sep-2033"],
-          ["BH", "12-Sep-2033", "12-Sep-2038"],
-          ["UL", "12-Sep-2038", "12-Sep-2044"],
-        ];
+    if (title == "Mahadasha") {
+      return Obx(() {
+        if (_dashaController.isLoading.value) {
+          return const Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
+          );
+        }
+
+        final dashaDataList = _dashaController.dashaModel.value?.data?.mahaDasha;
+        if (dashaDataList == null || dashaDataList.isEmpty) {
+          return const Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Center(child: AppText("Failed to load Dasha details.")),
+          );
+        }
+
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              AppText(title, fontSize: 16, fontWeight: FontWeight.w700, textAlign: TextAlign.center),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: AppColors.primaryColor.withOpacity(0.05)),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 15, offset: const Offset(0, 6)),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        children: [
+                          Expanded(child: AppText("Planet", fontWeight: FontWeight.bold, fontSize: 12)),
+                          Expanded(child: AppText("Start Date", fontWeight: FontWeight.bold, fontSize: 12)),
+                          Expanded(child: AppText("End Date", fontWeight: FontWeight.bold, fontSize: 12)),
+                          SizedBox(width: 20),
+                        ],
+                      ),
+                    ),
+                    ...dashaDataList.map((data) {
+                      return _buildDashaRow(
+                        data.planet ?? "N/A",
+                        data.startDate ?? "N/A",
+                        data.endDate ?? "N/A",
+                      );
+                    }),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      });
+    }
+
+    if (title == "Yogini Dasha") {
+      return Obx(() {
+        if (_dashaController.isYoginiLoading.value) {
+          return const Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
+          );
+        }
+
+        final dashaDataList = _dashaController.yoginiDashaModel.value?.data?.mahadashas;
+        if (dashaDataList == null || dashaDataList.isEmpty) {
+          return const Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Center(child: AppText("Failed to load Yogini Dasha details.")),
+          );
+        }
+
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              AppText(title, fontSize: 16, fontWeight: FontWeight.w700, textAlign: TextAlign.center),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: AppColors.primaryColor.withOpacity(0.05)),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 15, offset: const Offset(0, 6)),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        children: [
+                          Expanded(child: AppText("Yogini", fontWeight: FontWeight.bold, fontSize: 12)),
+                          Expanded(child: AppText("Start Date", fontWeight: FontWeight.bold, fontSize: 12)),
+                          Expanded(child: AppText("End Date", fontWeight: FontWeight.bold, fontSize: 12)),
+                          SizedBox(width: 20),
+                        ],
+                      ),
+                    ),
+                    ...dashaDataList.map((data) {
+                      String start = (data.startDate ?? "N/A").split('T')[0];
+                      String end = (data.endDate ?? "N/A").split('T')[0];
+                      return _buildDashaRow(
+                        data.yogini ?? "N/A",
+                        start,
+                        end,
+                      );
+                    }),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      });
+    }
+
+    final dashaData = [
+      ["ID", "12-Sep-2023", "12-Sep-2024"],
+      ["PI", "12-Sep-2024", "12-Sep-2026"],
+      ["DH", "12-Sep-2026", "12-Sep-2029"],
+      ["BR", "12-Sep-2029", "12-Sep-2033"],
+      ["BH", "12-Sep-2033", "12-Sep-2038"],
+      ["UL", "12-Sep-2038", "12-Sep-2044"],
+    ];
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -372,69 +524,35 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
     );
   }
 
-  Widget _buildPlanetsTab() {
-    final planetData = [
-      ["Ascendant", "Virgo", "09° 42' 13\"", "U-Phalguni"],
-      ["Sun", "Gemini", "19° 22' 45\"", "Ardra"],
-      ["Moon", "Aries", "07° 15' 32\"", "Ashwini"],
-      ["Mars", "Leo", "23° 05' 11\"", "P-Phalguni"],
-      ["Mercury", "Cancer", "02° 48' 56\"", "Punarvasu"],
-      ["Jupiter", "Scorpio", "11° 19' 04\"", "Anuradha"],
-      ["Venus", "Taurus", "28° 37' 19\"", "Mrigashira"],
-      ["Saturn", "Aquarius", "16° 54' 28\"", "Shatabhisha"],
-    ];
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
-          ],
-        ),
-        child: Column(
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(bottom: 10),
-              child: Row(
-                children: [
-                  Expanded(flex: 2, child: AppText("Planet", fontWeight: FontWeight.bold, fontSize: 12)),
-                  Expanded(flex: 2, child: AppText("Sign", fontWeight: FontWeight.bold, fontSize: 12)),
-                  Expanded(flex: 3, child: AppText("Degree", fontWeight: FontWeight.bold, fontSize: 12)),
-                  Expanded(flex: 3, child: AppText("Nakshatra", fontWeight: FontWeight.bold, fontSize: 12)),
-                ],
-              ),
-            ),
-            ...planetData.map((data) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Row(
-                children: [
-                  Expanded(flex: 2, child: AppText(data[0], fontSize: 11)),
-                  Expanded(flex: 2, child: AppText(data[1], fontSize: 11)),
-                  Expanded(flex: 3, child: AppText(data[2], fontSize: 11)),
-                  Expanded(flex: 3, child: AppText(data[3], fontSize: 11)),
-                ],
-              ),
-            )),
-          ],
-        ),
-      ),
-    );
+  String _formatDegree(double degree) {
+    int d = degree.floor();
+    double minDouble = (degree - d) * 60;
+    int m = minDouble.floor();
+    int s = ((minDouble - m) * 60).round();
+    return "${d.toString().padLeft(2, '0')}° ${m.toString().padLeft(2, '0')}' ${s.toString().padLeft(2, '0')}\"";
   }
 
-  Widget _buildAshtakvargaTab() {
-    final signs = ["Ari", "Tau", "Gem", "Can", "Leo", "Vir", "Lib", "Sco", "Sag", "Cap", "Aqu", "Pis"];
-    final planets = ["Sun", "Moon", "Mars", "Merc", "Jup", "Ven", "Sat"];
+  Widget _buildPlanetsTab() {
+    return Obx(() {
+      if (_planetPositionsController.isLoading.value) {
+        return const Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
+        );
+      }
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: SingleChildScrollView(
+      final planetsList = _planetPositionsController.planetPositionsModel.value?.data?.planets;
+      if (planetsList == null || planetsList.isEmpty) {
+        return const Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Center(child: AppText("Failed to load Planet Positions.")),
+        );
+      }
+
+      return SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Container(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(18),
@@ -442,26 +560,104 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
               BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
             ],
           ),
-          child: DataTable(
-            columnSpacing: 15,
-            horizontalMargin: 0,
-            headingRowHeight: 35,
-            dataRowMinHeight: 30,
-            dataRowMaxHeight: 40,
-            columns: [
-              const DataColumn(label: AppText("Planet", fontWeight: FontWeight.bold, fontSize: 12)),
-              ...signs.map((s) => DataColumn(label: AppText(s, fontWeight: FontWeight.bold, fontSize: 12))),
+          child: Column(
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(bottom: 10),
+                child: Row(
+                  children: [
+                    Expanded(flex: 2, child: AppText("Planet", fontWeight: FontWeight.bold, fontSize: 12)),
+                    Expanded(flex: 2, child: AppText("Sign", fontWeight: FontWeight.bold, fontSize: 12)),
+                    Expanded(flex: 3, child: AppText("Degree", fontWeight: FontWeight.bold, fontSize: 12)),
+                    Expanded(flex: 3, child: AppText("Nakshatra", fontWeight: FontWeight.bold, fontSize: 12)),
+                  ],
+                ),
+              ),
+              ...planetsList.map((data) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  children: [
+                    Expanded(flex: 2, child: AppText(data.name ?? "N/A", fontSize: 11)),
+                    Expanded(flex: 2, child: AppText(data.sign ?? "N/A", fontSize: 11)),
+                    Expanded(flex: 3, child: AppText(data.normDegree != null ? _formatDegree(data.normDegree!) : "N/A", fontSize: 11)),
+                    Expanded(flex: 3, child: AppText(data.nakshatra?.name ?? "N/A", fontSize: 11)),
+                  ],
+                ),
+              )),
             ],
-            rows: planets.map((p) => DataRow(
-              cells: [
-                DataCell(AppText(p, fontSize: 11)),
-                ...List.generate(12, (i) => DataCell(AppText("${(i + 3) % 7 + 1}", fontSize: 11))),
-              ],
-            )).toList(),
           ),
         ),
-      ),
-    );
+      );
+    });
+  }
+
+  Widget _buildAshtakvargaTab() {
+    return Obx(() {
+      if (_ashtakvargaController.isLoading.value) {
+        return const Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
+        );
+      }
+
+      final bhinnashtakavarga = _ashtakvargaController.ashtakvargaModel.value?.data?.bhinnashtakavarga;
+      if (bhinnashtakavarga == null || bhinnashtakavarga.isEmpty) {
+        return const Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Center(child: AppText("Failed to load Ashtakvarga details.")),
+        );
+      }
+
+      final signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
+      final signShorts = ["Ari", "Tau", "Gem", "Can", "Leo", "Vir", "Lib", "Sco", "Sag", "Cap", "Aqu", "Pis"];
+      final planets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"];
+
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
+              ],
+            ),
+            child: DataTable(
+              columnSpacing: 15,
+              horizontalMargin: 0,
+              headingRowHeight: 35,
+              dataRowMinHeight: 30,
+              dataRowMaxHeight: 40,
+              columns: [
+                const DataColumn(label: AppText("Planet", fontWeight: FontWeight.bold, fontSize: 12)),
+                ...signShorts.map((s) => DataColumn(label: AppText(s, fontWeight: FontWeight.bold, fontSize: 12))),
+              ],
+              rows: planets.map((p) {
+                final planetData = bhinnashtakavarga[p];
+                return DataRow(
+                  cells: [
+                    DataCell(AppText(p, fontSize: 11)),
+                    ...signs.map((signName) {
+                      String pointsStr = "0";
+                      if (planetData != null && planetData.strongSigns != null) {
+                        final signMatch = planetData.strongSigns!.firstWhereOrNull((s) => s.sign == signName);
+                        if (signMatch != null) {
+                          pointsStr = signMatch.points?.toString() ?? "0";
+                        }
+                      }
+                      return DataCell(AppText(pointsStr, fontSize: 11));
+                    }),
+                  ],
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+      );
+    });
   }
 
   Widget _buildKPSystemTab() {
