@@ -9,7 +9,7 @@ class PlanetPositionsController extends GetxController {
   var planetPositionsModel = Rxn<PlanetPositionsModel>();
 
   Future<void> fetchPlanetPositions({
-    String datetime = "1994-07-05T20:13:00",
+    required String datetime,
     double latitude = 28.65,
     double longitude = 77.23,
     String timezone = "+05:30",

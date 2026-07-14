@@ -164,6 +164,22 @@ class AstrologerSessionsScreen extends StatelessWidget {
       'POB': pob,
     };
 
+    String? rawDatetime;
+    if (consumer?.dateOfBirth != null) {
+      try {
+        final dobDate = DateTime.tryParse(consumer!.dateOfBirth!)?.toLocal();
+        if (dobDate != null) {
+          String d = "${dobDate.year}-${dobDate.month.toString().padLeft(2, '0')}-${dobDate.day.toString().padLeft(2, '0')}";
+          String t = "00:00:00";
+          if (consumer?.timeOfBirth != null && consumer!.timeOfBirth!.isNotEmpty) {
+            t = consumer.timeOfBirth!;
+            if (t.length == 5) t += ":00";
+          }
+          rawDatetime = "${d}T$t";
+        }
+      } catch (_) {}
+    }
+
     return Container(
       margin: const EdgeInsets.only(top: 14, bottom: 8),
       child: Stack(
@@ -352,7 +368,11 @@ class AstrologerSessionsScreen extends StatelessWidget {
                       Expanded(
                         child: CustomButton(
                           text: 'Open Kundli',
-                          onPressed: () => Get.to(() => const KundliScreen()),
+                          onPressed: () => Get.to(() => KundliScreen(
+                            name: name,
+                            datetime: rawDatetime,
+                            place: pob,
+                          )),
                           height: 42,
                           padding: EdgeInsets.zero,
                           buttonType: ButtonStyleType.outlined,

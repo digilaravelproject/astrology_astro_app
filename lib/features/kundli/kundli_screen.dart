@@ -23,7 +23,22 @@ import 'controllers/remedies_controller.dart';
 import 'package:collection/collection.dart';
 
 class KundliScreen extends StatefulWidget {
-  const KundliScreen({super.key});
+  final String? name;
+  final String? datetime; // expected format: YYYY-MM-DDTHH:mm:ss
+  final double? latitude;
+  final double? longitude;
+  final String? timezone;
+  final String? place;
+
+  const KundliScreen({
+    super.key,
+    this.name,
+    this.datetime,
+    this.latitude,
+    this.longitude,
+    this.timezone,
+    this.place,
+  });
 
   @override
   State<KundliScreen> createState() => _KundliScreenState();
@@ -58,17 +73,42 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
 
   String _selectedBasicSubTab = "Birth Details";
 
+  String _name = "User";
+  String _place = "New Delhi, Delhi, India";
+  String _dobStr = "N/A";
+  String _timeStr = "N/A";
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: _tabs.length, vsync: this);
-    _panchangController.fetchPanchangDetails();
-    _dashaController.fetchDashaDetails();
-    _dashaController.fetchYoginiDashaDetails();
-    _ashtakvargaController.fetchAshtakvargaDetails();
-    _planetPositionsController.fetchPlanetPositions();
-    _shadbalaController.fetchShadbalaDetails();
-    _remediesController.fetchGemstoneRemedies();
+
+    final dt = widget.datetime ?? DateTime.now().toIso8601String().split('.')[0];
+    final lat = widget.latitude ?? 28.65;
+    final lng = widget.longitude ?? 77.23;
+    final tz = widget.timezone ?? "+05:30";
+
+    _name = widget.name ?? "User";
+    _place = widget.place ?? "New Delhi, Delhi, India";
+    try {
+      final parsedDt = DateTime.parse(dt);
+      final months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      _dobStr = "${parsedDt.day.toString().padLeft(2, '0')} ${months[parsedDt.month - 1]} ${parsedDt.year}";
+      
+      int hour = parsedDt.hour;
+      String ampm = hour >= 12 ? "PM" : "AM";
+      if (hour > 12) hour -= 12;
+      if (hour == 0) hour = 12;
+      _timeStr = "${hour.toString().padLeft(2, '0')}:${parsedDt.minute.toString().padLeft(2, '0')} $ampm";
+    } catch (_) {}
+
+    _panchangController.fetchPanchangDetails(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+    _dashaController.fetchDashaDetails(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+    _dashaController.fetchYoginiDashaDetails(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+    _ashtakvargaController.fetchAshtakvargaDetails(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+    _planetPositionsController.fetchPlanetPositions(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+    _shadbalaController.fetchShadbalaDetails(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+    _remediesController.fetchGemstoneRemedies(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
   }
 
   final Map<int, List<String>> _samplePlanetData = {
@@ -180,13 +220,13 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
       ),
       child: Column(
         children: [
-          _buildInfoRow("Name", "Utkarsha", true),
-          _buildInfoRow("Date of Birth", "05 July 1994", true),
-          _buildInfoRow("Time", "08:13 PM", true),
-          _buildInfoRow("Place", "New Delhi, Delhi, India", true),
-          _buildInfoRow("Latitude", "28.65", false),
-          _buildInfoRow("Longitude", "77.23", false),
-          _buildInfoRow("Timezone", "GMT+5.5", false),
+          _buildInfoRow("Name", _name, true),
+          _buildInfoRow("Date of Birth", _dobStr, true),
+          _buildInfoRow("Time", _timeStr, true),
+          _buildInfoRow("Place", _place, true),
+          _buildInfoRow("Latitude", widget.latitude?.toString() ?? "28.65", false),
+          _buildInfoRow("Longitude", widget.longitude?.toString() ?? "77.23", false),
+          _buildInfoRow("Timezone", widget.timezone ?? "GMT+5.5", false),
           _buildInfoRow("Sunrise", "5:28:30 AM", false),
           _buildInfoRow("Sunset", "7:23:12 PM", false),
           _buildInfoRow("Ayanamsha", "23.78038", false),
@@ -318,13 +358,13 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
           if (showEdit) 
             GestureDetector(
               onTap: () {
-                Get.to(() => const CreateKundliScreen(
+                Get.to(() => CreateKundliScreen(
                   hideMatchingTab: true,
                   initialKundliData: {
-                    'name': 'Utkarsha',
-                    'dob': '05 July 1994',
-                    'time': '08:13 PM',
-                    'place': 'New Delhi, Delhi, India',
+                    'name': _name,
+                    'dob': _dobStr,
+                    'time': _timeStr,
+                    'place': _place,
                     'gender': 'Male',
                   }
                 ));

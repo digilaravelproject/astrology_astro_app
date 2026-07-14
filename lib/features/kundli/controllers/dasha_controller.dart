@@ -12,7 +12,7 @@ class DashaController extends GetxController {
   var yoginiDashaModel = Rxn<YoginiDashaModel>();
 
   Future<void> fetchDashaDetails({
-    String datetime = "1994-07-05T20:13:00",
+    required String datetime,
     double latitude = 28.65,
     double longitude = 77.23,
     String timezone = "+05:30",
@@ -32,7 +32,7 @@ class DashaController extends GetxController {
   }
 
   Future<void> fetchYoginiDashaDetails({
-    String datetime = "1994-07-05T20:13:00",
+    required String datetime,
     double latitude = 28.65,
     double longitude = 77.23,
     String timezone = "+05:30",

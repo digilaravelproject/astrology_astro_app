@@ -68,7 +68,23 @@ class ChatHistoryScreen extends StatelessWidget {
                           } catch (_) {}
                         }
 
-                        final Map<String, String> details = {
+                      String? rawDatetime;
+                      if (session.consumer?.dateOfBirth != null) {
+                        try {
+                          final dobDate = DateTime.tryParse(session.consumer!.dateOfBirth!)?.toLocal();
+                          if (dobDate != null) {
+                            String d = "${dobDate.year}-${dobDate.month.toString().padLeft(2, '0')}-${dobDate.day.toString().padLeft(2, '0')}";
+                            String t = "00:00:00";
+                            if (session.consumer?.timeOfBirth != null && session.consumer!.timeOfBirth!.isNotEmpty) {
+                              t = session.consumer!.timeOfBirth!;
+                              if (t.length == 5) t += ":00";
+                            }
+                            rawDatetime = "${d}T$t";
+                          }
+                        } catch (_) {}
+                      }
+
+                      final Map<String, String> details = {
                           "Name": session.consumer?.name ?? "User (AT-${session.consumerId})",
                           "Gender": session.consumer?.gender?.capitalizeFirst ?? "N/A",
                           "DOB": dobStr,
@@ -86,6 +102,7 @@ class ChatHistoryScreen extends StatelessWidget {
                           date: session.createdAt.toString().split('.')[0],
                           details: details,
                           imageUrl: session.consumer?.profilePhoto,
+                          rawDatetime: rawDatetime,
                         );
                       },
                     ),
@@ -131,6 +148,7 @@ class ChatHistoryScreen extends StatelessWidget {
     bool showSuggestRemedy = false,
     bool showDropdown = false,
     String? imageUrl,
+    String? rawDatetime,
   }) {
     return Container(
       margin: const EdgeInsets.only(top: 14, bottom: 8),
@@ -442,10 +460,14 @@ class ChatHistoryScreen extends StatelessWidget {
                             const SizedBox(width: 8),
                           ],
                           Expanded(
-                            child: CustomButton(
-                              text: "Open Kundli",
-                              onPressed: () => Get.to(() => const KundliScreen()),
-                              height: 42,
+                              child: CustomButton(
+                                text: "Open Kundli",
+                                onPressed: () => Get.to(() => KundliScreen(
+                                  name: details["Name"],
+                                  datetime: rawDatetime,
+                                  place: details["POB"],
+                                )),
+                                height: 42,
                               padding: EdgeInsets.zero,
                               buttonType: ButtonStyleType.outlined,
                               borderRadius: 8,

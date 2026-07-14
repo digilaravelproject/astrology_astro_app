@@ -183,7 +183,30 @@ class _KundliListScreenState extends State<KundliListScreen> {
             _toggleSelection(id);
           }
         } else {
-          Get.to(() => const KundliScreen());
+          String? rawDatetime;
+          if (data['dob'] != null && data['dob']!.isNotEmpty) {
+            try {
+              // dob is like 05-July-1994, try to parse it
+              final parts = data['dob']!.split('-');
+              if (parts.length == 3) {
+                final months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                int monthIndex = months.indexWhere((m) => m.toLowerCase() == parts[1].toLowerCase());
+                if (monthIndex != -1) {
+                  String y = parts[2];
+                  String m = (monthIndex + 1).toString().padLeft(2, '0');
+                  String d = parts[0].padLeft(2, '0');
+                  String t = data['time'] ?? "00:00:00";
+                  if (t.length == 5) t += ":00";
+                  rawDatetime = "${y}-${m}-${d}T$t";
+                }
+              }
+            } catch (_) {}
+          }
+          Get.to(() => KundliScreen(
+            name: data['name'],
+            datetime: rawDatetime,
+            place: data['place'],
+          ));
         }
       },
       child: Container(
@@ -273,7 +296,31 @@ class _KundliListScreenState extends State<KundliListScreen> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: GestureDetector(
-                      onTap: () => Get.to(() => const KundliScreen()),
+                      onTap: () {
+                        String? rawDatetime;
+                        if (data['dob'] != null && data['dob']!.isNotEmpty) {
+                          try {
+                            final parts = data['dob']!.split('-');
+                            if (parts.length == 3) {
+                              final months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                              int monthIndex = months.indexWhere((m) => m.toLowerCase() == parts[1].toLowerCase());
+                              if (monthIndex != -1) {
+                                String y = parts[2];
+                                String m = (monthIndex + 1).toString().padLeft(2, '0');
+                                String d = parts[0].padLeft(2, '0');
+                                String t = data['time'] ?? "00:00:00";
+                                if (t.length == 5) t += ":00";
+                                rawDatetime = "${y}-${m}-${d}T$t";
+                              }
+                            }
+                          } catch (_) {}
+                        }
+                        Get.to(() => KundliScreen(
+                          name: data['name'],
+                          datetime: rawDatetime,
+                          place: data['place'],
+                        ));
+                      },
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                         decoration: BoxDecoration(
