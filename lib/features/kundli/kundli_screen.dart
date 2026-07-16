@@ -16,6 +16,14 @@ import 'kundli_tabs/sade_sati_tab.dart';
 import 'create_kundli_screen.dart';
 import 'controllers/panchang_controller.dart';
 import 'controllers/dasha_controller.dart';
+import 'controllers/birth_chart_controller.dart';
+import 'controllers/navamsha_controller.dart';
+import 'controllers/transit_controller.dart';
+import 'controllers/divisional_chart_controller.dart';
+import 'controllers/house_cusps_controller.dart';
+import 'controllers/kp_controller.dart';
+import 'controllers/sade_sati_controller.dart';
+import 'models/dasha_model.dart';
 import 'controllers/ashtakvarga_controller.dart';
 import 'controllers/planet_positions_controller.dart';
 import 'controllers/shadbala_controller.dart';
@@ -51,7 +59,16 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
   final AshtakvargaController _ashtakvargaController = Get.put(AshtakvargaController());
   final PlanetPositionsController _planetPositionsController = Get.put(PlanetPositionsController());
   final ShadbalaController _shadbalaController = Get.put(ShadbalaController());
+  final BirthChartController _birthChartController = Get.put(BirthChartController());
+  final NavamshaController _navamshaController = Get.put(NavamshaController());
+  final TransitController _transitController = Get.put(TransitController());
+  final DivisionalChartController _divisionalChartController = Get.put(DivisionalChartController());
+  final HouseCuspsController _houseCuspsController = Get.put(HouseCuspsController());
+  final KPController _kpController = Get.put(KPController());
+  final SadeSatiController _sadeSatiController = Get.put(SadeSatiController());
   final RemediesController _remediesController = Get.put(RemediesController());
+
+  int _selectedTabIndex = 0;
   final List<String> _tabs = [
     "Basic",
     "Lagna",
@@ -108,6 +125,16 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
     _ashtakvargaController.fetchAshtakvargaDetails(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
     _planetPositionsController.fetchPlanetPositions(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
     _shadbalaController.fetchShadbalaDetails(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+    _birthChartController.fetchBirthChart(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+    _navamshaController.fetchNavamsha(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+    _transitController.fetchTransit(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+    
+    // Fetch D2 (Hora) by default for divisional chart tab
+    _divisionalChartController.fetchDivisionalChart(division: 2, datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+    _houseCuspsController.fetchHouseCusps(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+    _kpController.fetchKPData(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+    _sadeSatiController.fetchSadeSati(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+
     _remediesController.fetchGemstoneRemedies(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
   }
 
@@ -151,9 +178,67 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
               controller: _tabController,
               children: [
                 _buildBasicTab(),
-                KundliChartWidget(title: "Lagna / Ascendant / D1 Chart", planetData: _samplePlanetData),
-                KundliChartWidget(title: "Navamsa Chart", planetData: _samplePlanetData),
-                KundliChartWidget(title: "Transit Chart", planetData: _samplePlanetData),
+                Obx(() {
+                  final chartData = _birthChartController.birthChartModel.value?.data?.chart;
+                  return KundliChartWidget(
+                    title: "Lagna / Ascendant / D1 Chart", 
+                    northIndianSvg: chartData?.northIndian,
+                    southIndianSvg: chartData?.southIndian,
+                    isLoading: _birthChartController.isLoading.value,
+                  );
+                }),
+                Obx(() {
+                  final planets = _navamshaController.navamshaModel.value?.data?.planets ?? [];
+                  
+                  // Map data for North Indian chart (key = house)
+                  final northPlanetData = <int, List<String>>{};
+                  for (var planet in planets) {
+                    if (planet.house != null && planet.name != null) {
+                      northPlanetData.putIfAbsent(planet.house!, () => []).add(planet.name!.substring(0, 2));
+                    }
+                  }
+
+                  // Map data for South Indian chart (key = signNumber)
+                  final southPlanetData = <int, List<String>>{};
+                  for (var planet in planets) {
+                    if (planet.signNumber != null && planet.name != null) {
+                      southPlanetData.putIfAbsent(planet.signNumber!, () => []).add(planet.name!.substring(0, 2));
+                    }
+                  }
+
+                  return KundliChartWidget(
+                    title: "Navamsa Chart",
+                    northIndianPlanetData: northPlanetData,
+                    southIndianPlanetData: southPlanetData,
+                    isLoading: _navamshaController.isLoading.value,
+                  );
+                }),
+                Obx(() {
+                  final planets = _transitController.transitModel.value?.data?.planets ?? [];
+                  
+                  // Map data for North Indian chart (key = houseFromLagna)
+                  final northPlanetData = <int, List<String>>{};
+                  for (var planet in planets) {
+                    if (planet.houseFromLagna != null && planet.name != null) {
+                      northPlanetData.putIfAbsent(planet.houseFromLagna!, () => []).add(planet.name!.substring(0, 2));
+                    }
+                  }
+
+                  // Map data for South Indian chart (key = signNumber)
+                  final southPlanetData = <int, List<String>>{};
+                  for (var planet in planets) {
+                    if (planet.signNumber != null && planet.name != null) {
+                      southPlanetData.putIfAbsent(planet.signNumber!, () => []).add(planet.name!.substring(0, 2));
+                    }
+                  }
+
+                  return KundliChartWidget(
+                    title: "Transit Chart",
+                    northIndianPlanetData: northPlanetData,
+                    southIndianPlanetData: southPlanetData,
+                    isLoading: _transitController.isLoading.value,
+                  );
+                }),
                 _buildDashaTab("Mahadasha"),
                 _buildDashaTab("Yogini Dasha"),
                 _buildAshtakvargaTab(),
@@ -896,7 +981,17 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
   }
 
   Widget _buildDivisionalChartTab() {
-    return const DivisionalChartTab();
+    final dt = widget.datetime ?? DateTime.now().toIso8601String().split('.')[0];
+    final lat = widget.latitude ?? 28.65;
+    final lng = widget.longitude ?? 77.23;
+    final tz = widget.timezone ?? "+05:30";
+
+    return DivisionalChartTab(
+      datetime: dt,
+      latitude: lat,
+      longitude: lng,
+      timezone: tz,
+    );
   }
 
   Widget _buildKPTab() {

@@ -31,12 +31,18 @@ class PlanetPosition {
   final String? sign;
   final double? normDegree;
   final Nakshatra? nakshatra;
+  final int? house;
+  final int? signNumber;
+  final double? fullDegree;
 
   PlanetPosition({
     this.name,
     this.sign,
     this.normDegree,
     this.nakshatra,
+    this.house,
+    this.signNumber,
+    this.fullDegree,
   });
 
   factory PlanetPosition.fromJson(Map<String, dynamic> json) {
@@ -45,6 +51,9 @@ class PlanetPosition {
       sign: json['sign'],
       normDegree: json['normDegree'] != null ? (json['normDegree'] as num).toDouble() : null,
       nakshatra: json['nakshatra'] != null ? Nakshatra.fromJson(json['nakshatra']) : null,
+      house: json['house'],
+      signNumber: json['signNumber'],
+      fullDegree: json['fullDegree'] != null ? (json['fullDegree'] as num).toDouble() : null,
     );
   }
 }

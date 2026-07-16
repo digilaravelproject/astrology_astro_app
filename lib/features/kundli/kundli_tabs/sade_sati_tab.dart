@@ -1,25 +1,55 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text.dart';
+import '../controllers/sade_sati_controller.dart';
+import '../models/sade_sati_model.dart';
 
 class SadeSatiTab extends StatelessWidget {
   const SadeSatiTab({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          _buildSadesatiStatusCard(),
-          const SizedBox(height: 16),
-          _buildSadesatiTimelineTable(),
-        ],
-      ),
-    );
+    final SadeSatiController controller = Get.find<SadeSatiController>();
+
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      if (controller.error.value.isNotEmpty) {
+        return Center(
+          child: AppText("Error: ${controller.error.value}", color: Colors.red),
+        );
+      }
+
+      final data = controller.sadeSatiModel.value?.data;
+      if (data == null) {
+        return const Center(child: AppText("No Sade Sati data available"));
+      }
+
+      return SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSadesatiStatusCard(data),
+            const SizedBox(height: 16),
+            if (data.guidance != null) _buildGuidanceSection(data.guidance!),
+            const SizedBox(height: 16),
+            if (data.effects != null && data.effects!.isNotEmpty) _buildEffectsSection(data.effects!),
+          ],
+        ),
+      );
+    });
   }
 
-  Widget _buildSadesatiStatusCard() {
+  Widget _buildSadesatiStatusCard(SadeSatiData data) {
+    final bool isUndergoing = data.isInSadeSati ?? false;
+    final String phaseName = data.phaseName ?? "No Phase";
+    final String summary = data.guidance?.summary ?? data.description ?? "";
+    final String title = isUndergoing ? "Currently in Sade Sati" : "Sade Sati";
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -34,11 +64,11 @@ class SadeSatiTab extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 12),
             decoration: const BoxDecoration(
-              color: AppColors.primaryColor, // header
+              color: AppColors.primaryColor,
               borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
             ),
-            child: const Center(
-              child: AppText("Sadesati", fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+            child: Center(
+              child: AppText(title, fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
             ),
           ),
           Padding(
@@ -48,23 +78,23 @@ class SadeSatiTab extends StatelessWidget {
                 Container(
                   width: 50,
                   height: 50,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFEA4335), // Red color for Yes
+                  decoration: BoxDecoration(
+                    color: isUndergoing ? const Color(0xFFEA4335) : const Color(0xFF34A853), // Red if Yes, Green if No
                     shape: BoxShape.circle,
                   ),
-                  child: const Center(
-                    child: AppText("Yes", fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                  child: Center(
+                    child: AppText(isUndergoing ? "Yes" : "No", fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                 ),
                 const SizedBox(width: 16),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AppText("Rahul", fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
-                      SizedBox(height: 4),
+                      AppText(phaseName, fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+                      const SizedBox(height: 4),
                       AppText(
-                        "You are currently running into Peak phase of Sadesati from 29-Mar-2025 to 03-Jun-2027",
+                        summary,
                         fontSize: 13,
                         height: 1.4,
                         color: Colors.black87,
@@ -80,8 +110,30 @@ class SadeSatiTab extends StatelessWidget {
     );
   }
 
-  Widget _buildSadesatiTimelineTable() {
+  Widget _buildGuidanceSection(SadeSatiGuidance guidance) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (guidance.mantra != null && guidance.mantra!.isNotEmpty)
+          _buildInfoCard("Mantra", guidance.mantra!, Icons.self_improvement, Colors.orange),
+        const SizedBox(height: 16),
+        if (guidance.doList != null && guidance.doList!.isNotEmpty)
+          _buildListCard("Do's", guidance.doList!, Icons.check_circle, Colors.green),
+        const SizedBox(height: 16),
+        if (guidance.avoid != null && guidance.avoid!.isNotEmpty)
+          _buildListCard("Avoid", guidance.avoid!, Icons.cancel, Colors.red),
+      ],
+    );
+  }
+
+  Widget _buildEffectsSection(List<String> effects) {
+    return _buildListCard("Effects & Predictions", effects, Icons.insights, Colors.blue);
+  }
+
+  Widget _buildInfoCard(String title, String content, IconData icon, Color iconColor) {
     return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -90,54 +142,58 @@ class SadeSatiTab extends StatelessWidget {
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            decoration: const BoxDecoration(
-              color: AppColors.primaryColor, // table header
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
-            ),
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: const Row(
-              children: [
-                Expanded(child: Center(child: AppText("Start", fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87))),
-                Expanded(child: Center(child: AppText("End", fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87))),
-                Expanded(child: Center(child: AppText("Sign Name", fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87))),
-                Expanded(child: Center(child: AppText("Type", fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87))),
-              ],
-            ),
+          Row(
+            children: [
+              Icon(icon, color: iconColor, size: 20),
+              const SizedBox(width: 8),
+              AppText(title, fontSize: 16, fontWeight: FontWeight.bold),
+            ],
           ),
-          _buildTimelineRow("5-Mar-1993", "15-Oct-1993", "Aquarius", "Rising", isEven: true),
-          _buildTimelineRow("10-Nov-1993", "2-Jun-1995", "Aquarius", "Rising", isEven: false),
-          _buildTimelineRow("2-Jun-1995", "9-Aug-1995", "Pisces", "Peak", isEven: true, isHighlight: true),
-          _buildTimelineRow("9-Aug-1995", "16-Feb-1996", "Aquarius", "Rising", isEven: false),
-          _buildTimelineRow("16-Feb-1996", "17-Apr-1998", "Pisces", "Peak", isEven: true, isHighlight: true),
-          _buildTimelineRow("17-Apr-1998", "6-Jun-2000", "Aries", "Setting", isEven: false),
-          _buildTimelineRow("29-Apr-2022", "12-Jul-2022", "Aquarius", "Rising", isEven: true),
-          _buildTimelineRow("17-Jan-2023", "29-Mar-2025", "Aquarius", "Rising", isEven: false),
-          _buildTimelineRow("29-Mar-2025", "3-Jun-2027", "Pisces", "Peak", isEven: true, isHighlight: true),
-          _buildTimelineRow("3-Jun-2027", "20-Oct-2027", "Aries", "Setting", isEven: false),
-          _buildTimelineRow("20-Oct-2027", "23-Feb-2028", "Pisces", "Peak", isEven: true, isHighlight: true),
-          _buildTimelineRow("23-Feb-2028", "8-Aug-2029", "Aries", "Setting", isEven: false),
-          _buildTimelineRow("5-Oct-2029", "17-Apr-2030", "Aries", "Setting", isEven: true),
-          // Additional rows can go here
+          const SizedBox(height: 12),
+          AppText(content, fontSize: 14, height: 1.4, color: Colors.black87),
         ],
       ),
     );
   }
 
-  Widget _buildTimelineRow(String start, String end, String sign, String type, {required bool isEven, bool isHighlight = false}) {
+  Widget _buildListCard(String title, List<String> items, IconData icon, Color iconColor) {
     return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isEven ? Colors.transparent : const Color(0xFFF6F8F9),
-        border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+        ],
       ),
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(child: Center(child: AppText(start, fontSize: 12, color: isHighlight ? const Color(0xFF3285B8) : Colors.black87))),
-          Expanded(child: Center(child: AppText(end, fontSize: 12, color: isHighlight ? const Color(0xFF3285B8) : Colors.black87))),
-          Expanded(child: Center(child: AppText(sign, fontSize: 12, color: Colors.black87))),
-          Expanded(child: Center(child: AppText(type, fontSize: 12, color: isHighlight ? const Color(0xFFA05F67) : Colors.black87))),
+          Row(
+            children: [
+              Icon(icon, color: iconColor, size: 20),
+              const SizedBox(width: 8),
+              AppText(title, fontSize: 16, fontWeight: FontWeight.bold),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ...items.map((item) => Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(top: 4.0),
+                      child: Icon(Icons.circle, size: 6, color: Colors.black54),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(child: AppText(item, fontSize: 14, height: 1.4, color: Colors.black87)),
+                  ],
+                ),
+              )),
         ],
       ),
     );

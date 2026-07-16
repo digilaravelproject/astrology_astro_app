@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
-import '../../../core/widgets/custom_button.dart';
 
 class KundliChartWidget extends StatefulWidget {
   final String title;
-  final Map<int, List<String>>? planetData; // House number (1-12) -> List of planets
+  final String? northIndianSvg;
+  final String? southIndianSvg;
+  final Map<int, List<String>>? northIndianPlanetData;
+  final Map<int, List<String>>? southIndianPlanetData;
+  final bool isLoading;
   
   const KundliChartWidget({
     super.key, 
     required this.title, 
-    this.planetData,
+    this.northIndianSvg,
+    this.southIndianSvg,
+    this.northIndianPlanetData,
+    this.southIndianPlanetData,
+    this.isLoading = false,
   });
 
   @override
@@ -58,12 +65,7 @@ class _KundliChartWidgetState extends State<KundliChartWidget> {
               ),
               child: AspectRatio(
                 aspectRatio: 1,
-                child: CustomPaint(
-                  painter: KundliPainter(
-                    isNorthIndian: isNorthIndian,
-                    planetData: widget.planetData ?? {},
-                  ),
-                ),
+                child: _buildChartContent(),
               ),
             ),
           ),
@@ -79,6 +81,34 @@ class _KundliChartWidgetState extends State<KundliChartWidget> {
         ),
       ],
     );
+  }
+  
+  Widget _buildChartContent() {
+    if (widget.isLoading) {
+      return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
+    }
+    
+    final svgString = isNorthIndian ? widget.northIndianSvg : widget.southIndianSvg;
+    
+    if (svgString != null && svgString.isNotEmpty) {
+      return SvgPicture.string(
+        svgString,
+        fit: BoxFit.contain,
+      );
+    }
+    
+    // Fallback to manual CustomPainter if no SVG exists
+    final fallbackData = isNorthIndian ? widget.northIndianPlanetData : widget.southIndianPlanetData;
+    if (fallbackData != null) {
+      return CustomPaint(
+        painter: KundliPainter(
+          isNorthIndian: isNorthIndian,
+          planetData: fallbackData,
+        ),
+      );
+    }
+    
+    return const Center(child: AppText("No chart available", color: Colors.grey));
   }
 
   Widget _buildToggleItem(String label, bool isActive, VoidCallback onTap) {
@@ -172,7 +202,6 @@ class KundliPainter extends CustomPainter {
     final cellW = size.width / 4;
     final cellH = size.height / 4;
     
-    // South Indian sign positions
     final signPositions = {
       12: Offset(0 * cellW + cellW/2, 0 * cellH + cellH/2),
       1: Offset(1 * cellW + cellW/2, 0 * cellH + cellH/2),
@@ -223,3 +252,4 @@ class KundliPainter extends CustomPainter {
   bool shouldRepaint(covariant KundliPainter oldDelegate) => 
       oldDelegate.isNorthIndian != isNorthIndian || oldDelegate.planetData != planetData;
 }
+
