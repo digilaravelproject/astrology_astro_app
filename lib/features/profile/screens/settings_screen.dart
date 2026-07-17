@@ -11,7 +11,6 @@ import '../../training/training_videos_list_screen.dart';
 import 'help_support_screen.dart';
 import 'faq_screen.dart';
 import 'availability_screen.dart';
-import 'live_schedule_screen.dart';
 import 'price_setting_screen.dart';
 import 'download_form_screen.dart';
 import 'pay_slip_screen.dart';
@@ -53,13 +52,13 @@ class SettingsScreen extends StatelessWidget {
               onTap: () => Get.toNamed(AppRoutes.bankAccounts)
               //onTap: () => Get.to(() => const BankDetailsScreen()),
             ),
-            _item(
-              icon: Iconsax.user_tick_copy,
-              color: const Color(0xFF7C3AED),
-              title: 'My Membership',
-              subtitle: 'View your membership plan and status',
-              onTap: () => Get.to(() => const MyMembershipScreen()),
-            ),
+            // _item(
+            //   icon: Iconsax.user_tick_copy,
+            //   color: const Color(0xFF7C3AED),
+            //   title: 'My Membership',
+            //   subtitle: 'View your membership plan and status',
+            //   onTap: () => Get.to(() => const MyMembershipScreen()),
+            // ),
           ]),
 
           const SizedBox(height: 24),
@@ -79,7 +78,7 @@ class SettingsScreen extends StatelessWidget {
               color: const Color(0xFF0D9D57),
               title: 'Live Schedule',
               subtitle: 'Manage your upcoming live sessions',
-              onTap: () => Get.to(() => const LiveScheduleScreen()),
+              onTap: () => Get.toNamed(AppRoutes.liveSchedule),
               isLast: true,
             ),
           ]),

@@ -1,65 +1,78 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text.dart';
+import '../controllers/shadbala_controller.dart';
+import '../models/shadbala_model.dart';
 
 class ShadBalaTab extends StatelessWidget {
   const ShadBalaTab({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, int> shadBalaData = {
-      "Sun": 404,
-      "Moon": 423,
-      "Mars": 388,
-      "Mercury": 481,
-      "Jupiter": 466,
-      "Venus": 366,
-      "Saturn": 322,
-    };
+    final ShadbalaController controller = Get.find<ShadbalaController>();
 
-    int maxScore = 500; // Choose a max value for scaling the bars
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return const Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
+        );
+      }
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
-          ],
+      final shadbalaList = controller.shadbalaModel.value?.data?.shadbala;
+      if (shadbalaList == null || shadbalaList.isEmpty) {
+        return const Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Center(child: AppText("Failed to load Shad Bala details.")),
+        );
+      }
+
+      return SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+            ],
+          ),
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: const BoxDecoration(
+                  color: AppColors.primaryColor, // color from screenshot
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+                ),
+                child: const Center(
+                  child: AppText("Shad Bala", fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: shadbalaList.map((item) {
+                    return _buildBarRow(item);
+                  }).toList(),
+                ),
+              ),
+            ],
+          ),
         ),
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              decoration: const BoxDecoration(
-                color: AppColors.primaryColor, // color from screenshot
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
-              ),
-              child: const Center(
-                child: AppText("Shad Bala", fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: shadBalaData.entries.map((entry) {
-                  return _buildBarRow(entry.key, entry.value, maxScore);
-                }).toList(),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+      );
+    });
   }
 
-  Widget _buildBarRow(String label, int score, int maxScore) {
-    // Calculate width percentage
-    double percentage = score / maxScore;
+  Widget _buildBarRow(ShadbalaItem item) {
+    // Calculate width percentage based on required minimum
+    double percentage = item.strengthRatio ?? 0.0;
     if (percentage > 1.0) percentage = 1.0;
+
+    String label = item.planet ?? "N/A";
+    String scoreText = "${item.totalStrength?.round() ?? 0} / ${item.requiredMinimum?.round() ?? 0}";
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -75,7 +88,7 @@ class ShadBalaTab extends StatelessWidget {
                 Container(
                   height: 30,
                   decoration: BoxDecoration(
-                    color: Colors.transparent,
+                    color: Colors.grey.withOpacity(0.2), // background for the required minimum
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -85,7 +98,7 @@ class ShadBalaTab extends StatelessWidget {
                     height: 30,
                     decoration: BoxDecoration(
                       color: AppColors.primaryColor, // bar fill
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: BorderRadius.circular(4),
                     ),
                   ),
                 ),
@@ -94,7 +107,7 @@ class ShadBalaTab extends StatelessWidget {
                   top: 0,
                   bottom: 0,
                   child: Center(
-                    child: AppText(score.toString(), fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black87),
+                    child: AppText(scoreText, fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black87),
                   ),
                 ),
               ],

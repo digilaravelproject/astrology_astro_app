@@ -8,10 +8,15 @@ import '../../profile/screens/profile_screen.dart';
 import '../controllers/dashboard_controller.dart';
 import '../../../core/widgets/custom_bottom_nav_bar.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import '../../profile/screens/live_schedule_screen.dart';
+import '../../live/presentation/pages/live_schedule_screen.dart';
+import '../../live/presentation/controllers/live_controller.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../notification/notice_screen.dart';
-import '../../orders/orders_screen.dart';
+import '../../orders/presentation/pages/orders_screen.dart';
+import '../../../routes/app_routes.dart';
+
+import 'package:permission_handler/permission_handler.dart';
+import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -22,6 +27,17 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   final DashboardController controller = Get.find<DashboardController>();
+
+  @override
+  void initState() {
+    super.initState();
+    _requestPermissions();
+  }
+
+  Future<void> _requestPermissions() async {
+    // Request microphone permission on launch
+    await Permission.microphone.request();
+  }
 
   final List<Widget> _screens = [
     const HomeScreen(),
@@ -46,6 +62,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
         
+        final callController = Get.isRegistered<CallController>()
+            ? Get.find<CallController>()
+            : null;
+        final liveController = Get.isRegistered<LiveController>()
+            ? Get.find<LiveController>()
+            : null;
+            
+        if ((callController != null && callController.sessionId != null) ||
+            (liveController != null && liveController.currentActiveSession.value != null)) {
+          try {
+            const channel = MethodChannel('com.suryapath.astrologer/app_retain');
+            await channel.invokeMethod('sendToBackground');
+          } catch (e) {
+            debugPrint("Error sending to background: $e");
+          }
+          return;
+        }
+
         if (controller.selectedIndex.value != 0) {
           // If not on Home tab, go to Home tab
           controller.changeIndex(0);
@@ -161,7 +195,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: ElevatedButton(
                 onPressed: () {
                   Get.back();
-                  // For actual implementation, replace this with direct navigation
+                  final liveController = Get.find<LiveController>();
+                  liveController.createSession(
+                    title: "Instant Live Session",
+                    description: "Broadcasting Live",
+                    sessionType: "public",
+                    duration: 60,
+                    maxParticipants: 100,
+                    isInstant: true,
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF4CAF50), // Green for Go Live
@@ -189,7 +231,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: OutlinedButton(
                 onPressed: () {
                   Get.back();
-                  Get.to(() => const LiveScheduleScreen());
+                  Get.toNamed(AppRoutes.liveSchedule);
                 },
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: Color(0xFF2196F3), width: 1.5), // Blue for Schedule

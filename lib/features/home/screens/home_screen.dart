@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import '../../profile/screens/my_earnings_screen.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:astro_astrologer/features/wallet/presentation/pages/my_earnings_screen.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/constants/app_strings.dart';
@@ -10,16 +12,17 @@ import '../../profile/screens/profile_screen.dart';
 import '../widgets/home_greeting.dart';
 import '../controllers/dashboard_controller.dart';
 import '../../call/call_history_screen.dart';
-import '../../chat/chat_history_screen.dart';
+import '../../chat/presentation/pages/chat_history_screen.dart';
+import '../../chat/presentation/pages/astrologer_sessions_screen.dart';
 import '../../kundli/kundli_list_screen.dart';
 import '../../astromall/astromall_orders_screen.dart';
 import '../../waitlist/waitlist_screen.dart';
-import '../../chat/assistant_chat_screen.dart';
-import '../../orders/orders_screen.dart';
-import '../../profile/screens/live_schedule_screen.dart';
+import '../../chat/presentation/pages/assistant_chat_screen.dart';
+import '../../orders/presentation/pages/orders_screen.dart';
+import '../../live/presentation/pages/live_schedule_screen.dart';
 import '../../profile/screens/settings_screen.dart';
 import '../../profile/screens/my_reviews_screen.dart';
-import '../../orders/history_screen.dart';
+import '../../orders/presentation/pages/history_screen.dart';
 import '../../followers/my_followers_screen.dart';
 import '../../remedies/suggested_remedies_screen.dart';
 import '../../offers/offers_screen.dart';
@@ -35,7 +38,25 @@ import '../../notification/controllers/notification_controller.dart';
 import '../../profile/screens/invoice_screen.dart';
 import '../../profile/screens/performance_screen.dart';
 import '../../profile/screens/settings_screen.dart';
+import '../../../routes/app_routes.dart';
+import '../../../core/widgets/custom_image_widget.dart';
+import '../../../core/constants/app_urls.dart';
+import '../../wallet/presentation/controllers/wallet_controller.dart';
+import '../../wallet/domain/usecases/get_wallet_summary_usecase.dart';
+import '../../wallet/domain/usecases/get_wallet_earnings_usecase.dart';
+import '../../wallet/domain/usecases/get_wallet_withdrawals_usecase.dart';
+import '../../wallet/domain/usecases/request_withdrawal_usecase.dart';
+import '../../wallet/data/repositories/wallet_repository_impl.dart';
+import '../../../core/services/network/api_client.dart';
 
+import '../../offers/presentation/controllers/offer_controller.dart';
+import '../../offers/domain/usecases/get_offers_usecase.dart';
+import '../../offers/domain/usecases/toggle_offer_usecase.dart';
+import '../../offers/domain/usecases/get_offer_history_usecase.dart';
+import '../../offers/data/repositories/offer_repository.dart';
+import '../../offers/domain/models/offer_model.dart';
+import '../../profile/presentation/controllers/performance_controller.dart';
+import '../../profile/data/repositories/performance_repository.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -46,51 +67,97 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final AuthController authController = Get.find<AuthController>();
+  late WalletController _walletController;
+  late OfferController _offerController;
+  late PerformanceController _performanceController;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!Get.isRegistered<WalletController>()) {
+      final repository = WalletRepositoryImpl(apiClient: Get.find<ApiClient>());
+      Get.put(WalletController(
+        GetWalletSummaryUseCase(repository),
+        GetWalletEarningsUseCase(repository),
+        GetWalletWithdrawalsUseCase(repository),
+        RequestWithdrawalUseCase(repository),
+      ));
+    }
+    _walletController = Get.find<WalletController>();
+
+    if (!Get.isRegistered<OfferController>()) {
+      Get.put(OfferController(
+        getOffersUseCase: GetOffersUseCase(OfferRepositoryImpl(apiClient: Get.find<ApiClient>())),
+        toggleOfferUseCase: ToggleOfferUseCase(OfferRepositoryImpl(apiClient: Get.find<ApiClient>())),
+        getOfferHistoryUseCase: GetOfferHistoryUseCase(OfferRepositoryImpl(apiClient: Get.find<ApiClient>())),
+      ));
+    }
+    _offerController = Get.find<OfferController>();
+
+    if (!Get.isRegistered<PerformanceController>()) {
+      if (!Get.isRegistered<PerformanceRepository>()) {
+        Get.put(PerformanceRepository(apiClient: Get.find<ApiClient>()));
+      }
+      Get.put(PerformanceController(repository: Get.find<PerformanceRepository>()));
+    }
+    _performanceController = Get.find<PerformanceController>();
+  }
+
+  Future<void> _onRefresh() async {
+    // Refresh wallet summary
+    await _walletController.fetchWalletSummary();
+    await _performanceController.getPerformanceData();
+    // Force UI refresh for anything else if needed
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            pinned: true,
-            floating: false,
-            elevation: 0,
-            backgroundColor: Colors.white,
-            automaticallyImplyLeading: false,
-            titleSpacing: 0,
-            title: _buildStickyTopBar(authController),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.all(16),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                _buildGreeting(authController),
-                const SizedBox(height: 12),
-                _buildServiceCard(),
-                const SizedBox(height: 12),
-                const SpecialOfferBanner(),
-                const SizedBox(height: 12),
-                const StartPaidSessionSection(),
-                const SizedBox(height: 12),
-                _buildEarningsCard(),
-                const SizedBox(height: 12),
-                _buildTodayProgressCard(),
-                const SizedBox(height: 8),
-                _buildMenuGrid(),
-                const SizedBox(height: 20),
-                _buildSleepTimeCard(),
-                const SizedBox(height: 20),
-                // _buildDNDBanner(),
-                // const SizedBox(height: 16),
-                const TrainingVideosSection(),
-                const SizedBox(height: 80), // Space for bottom bar
-              ]),
+      body: RefreshIndicator(
+        onRefresh: _onRefresh,
+        color: AppColors.primaryColor,
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverAppBar(
+              pinned: true,
+              floating: false,
+              elevation: 0,
+              backgroundColor: Colors.white,
+              automaticallyImplyLeading: false,
+              titleSpacing: 0,
+              title: _buildStickyTopBar(authController),
             ),
-          ),
-        ],
+            SliverPadding(
+              padding: const EdgeInsets.all(16),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  _buildGreeting(authController),
+                  const SizedBox(height: 12),
+                  _buildServiceCard(),
+                  const SizedBox(height: 12),
+                  const SpecialOfferBanner(),
+                  const SizedBox(height: 12),
+                  // const StartPaidSessionSection(),
+                  const SizedBox(height: 12),
+                  _buildEarningsCard(),
+                  const SizedBox(height: 12),
+                  _buildTodayProgressCard(),
+                  const SizedBox(height: 8),
+                  _buildMenuGrid(),
+                  const SizedBox(height: 20),
+                  _buildSleepTimeCard(),
+                  const SizedBox(height: 20),
+                  const TrainingVideosSection(),
+                  const SizedBox(height: 80), // Space for bottom bar
+                ]),
+              ),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 20),
@@ -117,43 +184,69 @@ class _HomeScreenState extends State<HomeScreen> {
               debugPrint('Profile icon tapped - shifting to index 4');
               Get.find<DashboardController>().changeIndex(4);
             },
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppColors.primaryColor,
-                  width: 2,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primaryColor.withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: ClipOval(
-                child: Container(
-                  decoration: const BoxDecoration(
-                    gradient: AppColors.primaryGradient,
-                  ),
-                  child: Center(
-                    child: Text(
-                      authController.currentUser.value?.name.isNotEmpty == true
-                          ? authController.currentUser.value!.name[0].toUpperCase()
-                          : 'A',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
+            child: Obx(() {
+              final user = authController.currentUser.value;
+              final photo = user?.astrologer?.profilePhoto ?? user?.profilePhoto;
+              final String? imageUrl = (photo != null && photo.isNotEmpty)
+                  ? (photo.startsWith('http') ? photo : '${AppUrls.baseImageUrl}$photo')
+                  : null;
+
+              return Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: AppColors.primaryColor,
+                    width: 2.5,
                   ),
                 ),
-              ),
-            ),
+                child: ClipOval(
+                  child: imageUrl != null
+                      ? CachedNetworkImage(
+                          imageUrl: imageUrl,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => const Center(
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Container(
+                            decoration: const BoxDecoration(
+                              gradient: AppColors.primaryGradient,
+                            ),
+                            child: Center(
+                              child: Text(
+                                user?.name.isNotEmpty == true ? user!.name[0].toUpperCase() : 'A',
+                                style: const TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      : Container(
+                          decoration: const BoxDecoration(
+                            gradient: AppColors.primaryGradient,
+                          ),
+                          child: Center(
+                            child: Text(
+                              user?.name.isNotEmpty == true ? user!.name[0].toUpperCase() : 'A',
+                              style: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                ),
+              );
+            }),
           ),
           Row(
             children: [
@@ -257,13 +350,16 @@ class _HomeScreenState extends State<HomeScreen> {
               child: const Icon(Icons.account_balance_wallet_rounded, color: Colors.white, size: 10),
             ),
             const SizedBox(width: 6),
-            AppText(
-              "100",
-              fontSize: 13,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF2E1A47),
-              letterSpacing: 0.5,
-            ),
+            Obx(() {
+              final balance = _walletController.summary.value?.totalBalance ?? 0.0;
+              return AppText(
+                balance.toStringAsFixed(0),
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                color: const Color(0xFF2E1A47),
+                letterSpacing: 0.5,
+              );
+            }),
           ],
         ),
       ),
@@ -292,11 +388,19 @@ class _HomeScreenState extends State<HomeScreen> {
         final astro = authController.currentUser.value?.astrologer;
         if (astro == null) return const SizedBox.shrink();
 
+        OfferModel? activeOffer;
+        if (_offerController.offers.isNotEmpty) {
+          try {
+            activeOffer = _offerController.offers.firstWhere((o) => o.isCurrentlyActiveForMe);
+          } catch (_) {}
+        }
+
         return Column(
           children: [
             _buildServiceRow(
               'Chat', 
               '₹${astro.chatRate}/min', 
+              activeOffer?.calculatedPricing?.chat != null ? '₹${activeOffer!.calculatedPricing!.chat!.discountedRatePerMinute}/min' : null,
               astro.isChatEnabled ? 'Online' : 'Offline', 
               'chat',
               astro.isChatEnabled, 
@@ -306,20 +410,22 @@ class _HomeScreenState extends State<HomeScreen> {
             _buildServiceRow(
               'Call', 
               '₹${astro.callRate}/min', 
+              activeOffer?.calculatedPricing?.call != null ? '₹${activeOffer!.calculatedPricing!.call!.discountedRatePerMinute}/min' : null,
               astro.isCallEnabled ? 'Online' : 'Offline', 
               'call',
               astro.isCallEnabled, 
               (v) => authController.toggleOnline(v, 'call'),
             ),
-            _divider(),
-            _buildServiceRow(
-              'Video Call', 
-              '₹${astro.videoCallRate}/min', 
-              astro.isVideoCallEnabled ? 'Online' : 'Offline', 
-              'video_call',
-              astro.isVideoCallEnabled, 
-              (v) => authController.toggleOnline(v, 'video_call'),
-            ),
+            // _divider(),
+            // _buildServiceRow(
+            //   'Video Call', 
+            //   '₹${astro.videoCallRate}/min', 
+            //   null,
+            //   astro.isVideoCallEnabled ? 'Online' : 'Offline', 
+            //   'video_call',
+            //   astro.isVideoCallEnabled, 
+            //   (v) => authController.toggleOnline(v, 'video_call'),
+            // ),
           ],
         );
       }),
@@ -328,7 +434,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _divider() => Divider(height: 32, color: Colors.grey.withOpacity(0.1));
 
-  Widget _buildServiceRow(String title, String price, String status, String type, bool value, ValueChanged<bool> onChanged) {
+  Widget _buildServiceRow(String title, String originalPrice, String? discountedPrice, String status, String type, bool value, ValueChanged<bool> onChanged) {
+    String displayOriginalPrice = originalPrice;
+    if (discountedPrice != null && discountedPrice.isNotEmpty) {
+      displayOriginalPrice = originalPrice.replaceAll('/min', '');
+    }
+
     return Row(
       children: [
         Expanded(
@@ -337,7 +448,24 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               AppText(title, fontSize: 16, fontWeight: FontWeight.w600),
               const SizedBox(height: 2),
-              AppText(price, fontSize: 13, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
+              if (discountedPrice != null && discountedPrice.isNotEmpty)
+                Row(
+                  children: [
+                    Text(
+                      displayOriginalPrice, 
+                      style: TextStyle(
+                        fontSize: 12, 
+                        color: Colors.grey.shade500, 
+                        fontWeight: FontWeight.w500,
+                        decoration: TextDecoration.lineThrough,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    AppText(discountedPrice, fontSize: 13, color: Colors.green.shade600, fontWeight: FontWeight.w600),
+                  ],
+                )
+              else
+                AppText(originalPrice, fontSize: 13, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
             ],
           ),
         ),
@@ -528,19 +656,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String _formatDisplayTime(String time24) {
-    try {
-      final parts = time24.split(':');
-      final hour = int.parse(parts[0]);
-      final minute = int.parse(parts[1]);
-      
-      final displayHour = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
-      final period = hour >= 12 ? 'PM' : 'AM';
-      final displayMinute = minute.toString().padLeft(2, '0');
-      
-      return '${displayHour.toString().padLeft(2, '0')}:$displayMinute $period';
-    } catch (e) {
-      return time24; // Return original if parsing fails
-    }
+    return time24;
   }
 
   }
@@ -639,7 +755,12 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppText('JANUARY Earning - ₹45403.76', fontSize: 13, fontWeight: FontWeight.w700, color: Colors.black87),
+          Obx(() {
+            final month = DateFormat('MMMM').format(DateTime.now()).toUpperCase();
+            final walletController = Get.find<WalletController>();
+            final earning = walletController.summary.value?.monthlyEarning ?? 0.0;
+            return AppText('$month Earning - ₹${earning.toStringAsFixed(2)}', fontSize: 13, fontWeight: FontWeight.w700, color: Colors.black87);
+          }),
           const SizedBox(height: 16),
           Row(
             children: [
@@ -681,109 +802,120 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
   Widget _buildTodayProgressCard() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFEEEEEE)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppText(
-                  "Today's Progress",
-                  fontSize: 15,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.black.withOpacity(0.8),
-                ),
-                const SizedBox(height: 10),
-                RichText(
-                  text: TextSpan(
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Colors.grey.shade500,
-                      height: 1.4,
-                    ),
-                    children: [
-                      const TextSpan(text: 'Only '),
-                      TextSpan(
-                        text: '8 hours',
-                        style: const TextStyle(fontWeight: FontWeight.w700, color: Colors.black87),
-                      ),
-                      const TextSpan(text: ' left to complete your 8 hours online target.'),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    Get.to(() => const PerformanceScreen());
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryColor,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  ),
-                  child: AppText(
-                    'Performance',
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
+    return Obx(() {
+      final data = Get.find<PerformanceController>().performanceData.value?.todayProgress;
+      
+      final targetHours = data?.targetHours ?? 8.0;
+      final completedMinutes = data?.completedMinutes ?? 0;
+      final remainingHours = data?.remainingHours ?? targetHours;
+      
+      final targetMinutes = targetHours * 60;
+      final progress = targetMinutes > 0 ? completedMinutes / targetMinutes : 0.0;
+      
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: const Color(0xFFEEEEEE)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
-          ),
-          const SizedBox(width: 20),
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              SizedBox(
-                width: 85,
-                height: 85,
-                child: CircularProgressIndicator(
-                  value: 0.1,
-                  strokeWidth: 8,
-                  backgroundColor: Colors.grey.shade100,
-                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFEEEEEE)),
-                  strokeCap: StrokeCap.round,
-                ),
-              ),
-              Column(
-                mainAxisSize: MainAxisSize.min,
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AppText(
-                    '0m',
-                    fontSize: 16,
+                    "Today's Progress",
+                    fontSize: 15,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.primaryColor,
+                    color: Colors.black.withOpacity(0.8),
                   ),
-                  AppText(
-                    "Let's Start",
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey.shade600,
+                  const SizedBox(height: 10),
+                  RichText(
+                    text: TextSpan(
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey.shade500,
+                        height: 1.4,
+                      ),
+                      children: [
+                        const TextSpan(text: 'Only '),
+                        TextSpan(
+                          text: '${remainingHours.toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '')} hours',
+                          style: const TextStyle(fontWeight: FontWeight.w700, color: Colors.black87),
+                        ),
+                        TextSpan(text: ' left to complete your ${targetHours.toStringAsFixed(0)} hours online target.'),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      Get.to(() => const PerformanceScreen());
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryColor,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    ),
+                    child: AppText(
+                      'Performance',
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ],
               ),
-            ],
-          ),
-        ],
-      ),
-    );
+            ),
+            const SizedBox(width: 20),
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                SizedBox(
+                  width: 85,
+                  height: 85,
+                  child: CircularProgressIndicator(
+                    value: progress.clamp(0.0, 1.0),
+                    strokeWidth: 8,
+                    backgroundColor: Colors.grey.shade100,
+                    valueColor: AlwaysStoppedAnimation<Color>(progress > 0 ? AppColors.primaryColor : const Color(0xFFEEEEEE)),
+                    strokeCap: StrokeCap.round,
+                  ),
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AppText(
+                      '${completedMinutes}m',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.primaryColor,
+                    ),
+                    AppText(
+                      "Let's Start",
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey.shade600,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildMenuGrid() {
@@ -803,7 +935,7 @@ class _HomeScreenState extends State<HomeScreen> {
         bgColor: const Color(0xFFEAF8F1),
         iconBgColor: const Color(0xFFD0F0E0),
         textColor: const Color(0xFF0D9D57),
-        onTap: () => Get.to(() => ChatHistoryScreen()),
+        onTap: () => Get.to(() => AstrologerSessionsScreen()),
       ),
       _MenuData(
         title: 'Call',
@@ -845,7 +977,7 @@ class _HomeScreenState extends State<HomeScreen> {
         bgColor: const Color(0xFFFFF8E1),
         iconBgColor: const Color(0xFFFFECB3),
         textColor: const Color(0xFFF9A825),
-        onTap: () => Get.to(() => const MyReviewsScreen()),
+        onTap: () => Get.toNamed(AppRoutes.myReviews),
       ),
       _MenuData(
         title: 'My Community',
@@ -870,7 +1002,7 @@ class _HomeScreenState extends State<HomeScreen> {
         bgColor: const Color(0xFFFFF3E0),
         iconBgColor: const Color(0xFFFFE0B2),
         textColor: const Color(0xFFE65100),
-        onTap: () => Get.to(() => const PanchangScreen()),
+        onTap: () => Get.toNamed(AppRoutes.panchangScreen),
       ),
       _MenuData(
         title: 'Astrology Blog',
@@ -998,7 +1130,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: OutlinedButton(
                 onPressed: () {
                   Get.back();
-                  Get.to(() => const LiveScheduleScreen());
+                  Get.toNamed(AppRoutes.liveSchedule);
                 },
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: Color(0xFF2196F3), width: 1.5), // Blue for Schedule

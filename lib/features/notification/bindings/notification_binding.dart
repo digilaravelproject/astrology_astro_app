@@ -4,6 +4,7 @@ import '../data/repositories/notification_repository.dart';
 import '../domain/usecases/get_notification_count_usecase.dart';
 import '../domain/usecases/get_notifications_usecase.dart';
 import '../domain/usecases/get_notification_detail_usecase.dart';
+import '../domain/usecases/mark_notification_read_usecase.dart';
 import '../controllers/notification_controller.dart';
 
 class NotificationBinding extends Bindings {
@@ -13,10 +14,12 @@ class NotificationBinding extends Bindings {
     Get.lazyPut(() => GetNotificationCountUseCase(Get.find<NotificationRepository>()));
     Get.lazyPut(() => GetNotificationsUseCase(Get.find<NotificationRepository>()));
     Get.lazyPut(() => GetNotificationDetailUseCase(Get.find<NotificationRepository>()));
+    Get.lazyPut(() => MarkNotificationReadUseCase(Get.find<NotificationRepository>()));
     Get.lazyPut(() => NotificationController(
       Get.find<GetNotificationCountUseCase>(),
       Get.find<GetNotificationsUseCase>(),
       Get.find<GetNotificationDetailUseCase>(),
+      Get.find<MarkNotificationReadUseCase>(),
     ));
   }
 }

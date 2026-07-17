@@ -28,14 +28,14 @@ class PhoneNumberRemoteDataSource {
   Future<ResponseModel> verifyPhoneNumber(int id, String otp) async {
     print('[PHONE_DS] Verifying phone number: $id with OTP: $otp');
     final data = {'otp': otp};
-    final result = await _apiClient.post('${AppUrls.phoneNumbers}/$id/verify', data: data);
+    final result = await _apiClient.post(AppUrls.verifyPhoneNumber(id), data: data);
     print('[PHONE_DS] Verify phone number response: ${result.toString()}');
     return result;
   }
 
   Future<ResponseModel> setDefaultPhoneNumber(int id) async {
     print('[PHONE_DS] Setting default phone number: $id');
-    final result = await _apiClient.post('${AppUrls.phoneNumbers}/$id/set-default');
+    final result = await _apiClient.post(AppUrls.setDefaultPhoneNumber(id));
     print('[PHONE_DS] Set default response: ${result.toString()}');
     return result;
   }

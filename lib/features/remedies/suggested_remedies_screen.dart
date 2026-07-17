@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/constants/app_urls.dart';
 import '../../core/widgets/app_text.dart';
 import '../../core/widgets/custom_app_bar.dart';
 import 'presentation/controllers/remedy_controller.dart';
 import 'presentation/bindings/remedy_binding.dart';
+import 'presentation/screens/remedy_detail_screen.dart';
 
 class SuggestedRemediesScreen extends StatefulWidget {
   const SuggestedRemediesScreen({super.key});
@@ -62,11 +64,15 @@ class _SuggestedRemediesScreenState extends State<SuggestedRemediesScreen> {
           separatorBuilder: (context, index) => const SizedBox(height: 16),
           itemBuilder: (context, index) {
             final remedy = _controller.remedies[index];
-            return RemedyCard(
-              title: remedy.title,
-              description: remedy.description,
-              image: remedy.image,
-              isActive: remedy.isActive,
+            return InkWell(
+              onTap: () => Get.to(() => RemedyDetailScreen(remedyId: remedy.id)),
+              borderRadius: BorderRadius.circular(16),
+              child: RemedyCard(
+                title: remedy.title,
+                description: remedy.description,
+                image: remedy.image,
+                isActive: remedy.isActive,
+              ),
             );
           },
         );
@@ -97,7 +103,7 @@ class RemedyCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -114,7 +120,7 @@ class RemedyCard extends StatelessWidget {
                 topRight: Radius.circular(16),
               ),
               child: Image.network(
-                image!,
+                image!.startsWith('http') ? image! : '${AppUrls.baseImageUrl}$image',
                 width: double.infinity,
                 height: 180,
                 fit: BoxFit.cover,
@@ -153,7 +159,7 @@ class RemedyCard extends StatelessWidget {
               width: double.infinity,
               height: 180,
               decoration: BoxDecoration(
-                color: AppColors.primaryColor.withOpacity(0.1),
+                color: AppColors.primaryColor.withValues(alpha: 0.1),
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(16),
                   topRight: Radius.circular(16),
@@ -162,7 +168,7 @@ class RemedyCard extends StatelessWidget {
               child: Icon(
                 Icons.healing_outlined,
                 size: 64,
-                color: AppColors.primaryColor.withOpacity(0.5),
+                color: AppColors.primaryColor.withValues(alpha: 0.5),
               ),
             ),
 
@@ -189,8 +195,8 @@ class RemedyCard extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
                         color: isActive
-                            ? Colors.green.withOpacity(0.1)
-                            : Colors.red.withOpacity(0.1),
+                            ? Colors.green.withValues(alpha: 0.1)
+                            : Colors.red.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: AppText(

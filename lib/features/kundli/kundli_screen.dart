@@ -6,7 +6,7 @@ import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import 'package:astro_astrologer/features/kundli/kundli_chart_widget.dart';
 import 'package:astro_astrologer/features/kundli/kundli_list_screen.dart';
-import 'package:astro_astrologer/features/chat/chat_screen.dart';
+import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
 import 'kundli_tabs/shad_bala_tab.dart';
 import 'kundli_tabs/bhav_bala_tab.dart';
 import 'kundli_tabs/manglik_report_tab.dart';
@@ -14,9 +14,39 @@ import 'kundli_tabs/divisional_chart_tab.dart';
 import 'kundli_tabs/kp_tab.dart';
 import 'kundli_tabs/sade_sati_tab.dart';
 import 'create_kundli_screen.dart';
+import 'controllers/panchang_controller.dart';
+import 'controllers/dasha_controller.dart';
+import 'controllers/birth_chart_controller.dart';
+import 'controllers/navamsha_controller.dart';
+import 'controllers/transit_controller.dart';
+import 'controllers/divisional_chart_controller.dart';
+import 'controllers/house_cusps_controller.dart';
+import 'controllers/kp_controller.dart';
+import 'controllers/sade_sati_controller.dart';
+import 'models/dasha_model.dart';
+import 'controllers/ashtakvarga_controller.dart';
+import 'controllers/planet_positions_controller.dart';
+import 'controllers/shadbala_controller.dart';
+import 'controllers/remedies_controller.dart';
+import 'package:collection/collection.dart';
 
 class KundliScreen extends StatefulWidget {
-  const KundliScreen({super.key});
+  final String? name;
+  final String? datetime; // expected format: YYYY-MM-DDTHH:mm:ss
+  final double? latitude;
+  final double? longitude;
+  final String? timezone;
+  final String? place;
+
+  const KundliScreen({
+    super.key,
+    this.name,
+    this.datetime,
+    this.latitude,
+    this.longitude,
+    this.timezone,
+    this.place,
+  });
 
   @override
   State<KundliScreen> createState() => _KundliScreenState();
@@ -24,6 +54,21 @@ class KundliScreen extends StatefulWidget {
 
 class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final PanchangController _panchangController = Get.put(PanchangController());
+  final DashaController _dashaController = Get.put(DashaController());
+  final AshtakvargaController _ashtakvargaController = Get.put(AshtakvargaController());
+  final PlanetPositionsController _planetPositionsController = Get.put(PlanetPositionsController());
+  final ShadbalaController _shadbalaController = Get.put(ShadbalaController());
+  final BirthChartController _birthChartController = Get.put(BirthChartController());
+  final NavamshaController _navamshaController = Get.put(NavamshaController());
+  final TransitController _transitController = Get.put(TransitController());
+  final DivisionalChartController _divisionalChartController = Get.put(DivisionalChartController());
+  final HouseCuspsController _houseCuspsController = Get.put(HouseCuspsController());
+  final KPController _kpController = Get.put(KPController());
+  final SadeSatiController _sadeSatiController = Get.put(SadeSatiController());
+  final RemediesController _remediesController = Get.put(RemediesController());
+
+  int _selectedTabIndex = 0;
   final List<String> _tabs = [
     "Basic",
     "Lagna",
@@ -45,10 +90,52 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
 
   String _selectedBasicSubTab = "Birth Details";
 
+  String _name = "User";
+  String _place = "New Delhi, Delhi, India";
+  String _dobStr = "N/A";
+  String _timeStr = "N/A";
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: _tabs.length, vsync: this);
+
+    final dt = widget.datetime ?? DateTime.now().toIso8601String().split('.')[0];
+    final lat = widget.latitude ?? 28.65;
+    final lng = widget.longitude ?? 77.23;
+    final tz = widget.timezone ?? "+05:30";
+
+    _name = widget.name ?? "User";
+    _place = widget.place ?? "New Delhi, Delhi, India";
+    try {
+      final parsedDt = DateTime.parse(dt);
+      final months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      _dobStr = "${parsedDt.day.toString().padLeft(2, '0')} ${months[parsedDt.month - 1]} ${parsedDt.year}";
+      
+      int hour = parsedDt.hour;
+      String ampm = hour >= 12 ? "PM" : "AM";
+      if (hour > 12) hour -= 12;
+      if (hour == 0) hour = 12;
+      _timeStr = "${hour.toString().padLeft(2, '0')}:${parsedDt.minute.toString().padLeft(2, '0')} $ampm";
+    } catch (_) {}
+
+    _panchangController.fetchPanchangDetails(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+    _dashaController.fetchDashaDetails(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+    _dashaController.fetchYoginiDashaDetails(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+    _ashtakvargaController.fetchAshtakvargaDetails(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+    _planetPositionsController.fetchPlanetPositions(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+    _shadbalaController.fetchShadbalaDetails(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+    _birthChartController.fetchBirthChart(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+    _navamshaController.fetchNavamsha(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+    _transitController.fetchTransit(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+    
+    // Fetch D2 (Hora) by default for divisional chart tab
+    _divisionalChartController.fetchDivisionalChart(division: 2, datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+    _houseCuspsController.fetchHouseCusps(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+    _kpController.fetchKPData(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+    _sadeSatiController.fetchSadeSati(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
+
+    _remediesController.fetchGemstoneRemedies(datetime: dt, latitude: lat, longitude: lng, timezone: tz);
   }
 
   final Map<int, List<String>> _samplePlanetData = {
@@ -72,12 +159,12 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
           ),
           const SizedBox(width: 16),
           GestureDetector(
-            onTap: () => Get.to(() => const ChatScreen(request: {
-              'id': 'KUNDLI-CHAT',
-              'user': 'Chat with Astrologer',
-              'image': 'https://randomuser.me/api/portraits/men/32.jpg',
-              'type': 'Chat',
-            })),
+            onTap: () => Get.to(() => const ChatScreen(
+              userName: 'Chat with Astrologer',
+              userImage: 'https://randomuser.me/api/portraits/men/32.jpg',
+              sessionId: 888, // dummy
+              initialStatus: 'ongoing',
+            )),
             child: const Icon(Iconsax.message_2_copy, color: AppColors.primaryColor),
           ),
           const SizedBox(width: 16),
@@ -91,9 +178,67 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
               controller: _tabController,
               children: [
                 _buildBasicTab(),
-                KundliChartWidget(title: "Lagna / Ascendant / D1 Chart", planetData: _samplePlanetData),
-                KundliChartWidget(title: "Navamsa Chart", planetData: _samplePlanetData),
-                KundliChartWidget(title: "Transit Chart", planetData: _samplePlanetData),
+                Obx(() {
+                  final chartData = _birthChartController.birthChartModel.value?.data?.chart;
+                  return KundliChartWidget(
+                    title: "Lagna / Ascendant / D1 Chart", 
+                    northIndianSvg: chartData?.northIndian,
+                    southIndianSvg: chartData?.southIndian,
+                    isLoading: _birthChartController.isLoading.value,
+                  );
+                }),
+                Obx(() {
+                  final planets = _navamshaController.navamshaModel.value?.data?.planets ?? [];
+                  
+                  // Map data for North Indian chart (key = house)
+                  final northPlanetData = <int, List<String>>{};
+                  for (var planet in planets) {
+                    if (planet.house != null && planet.name != null) {
+                      northPlanetData.putIfAbsent(planet.house!, () => []).add(planet.name!.substring(0, 2));
+                    }
+                  }
+
+                  // Map data for South Indian chart (key = signNumber)
+                  final southPlanetData = <int, List<String>>{};
+                  for (var planet in planets) {
+                    if (planet.signNumber != null && planet.name != null) {
+                      southPlanetData.putIfAbsent(planet.signNumber!, () => []).add(planet.name!.substring(0, 2));
+                    }
+                  }
+
+                  return KundliChartWidget(
+                    title: "Navamsa Chart",
+                    northIndianPlanetData: northPlanetData,
+                    southIndianPlanetData: southPlanetData,
+                    isLoading: _navamshaController.isLoading.value,
+                  );
+                }),
+                Obx(() {
+                  final planets = _transitController.transitModel.value?.data?.planets ?? [];
+                  
+                  // Map data for North Indian chart (key = houseFromLagna)
+                  final northPlanetData = <int, List<String>>{};
+                  for (var planet in planets) {
+                    if (planet.houseFromLagna != null && planet.name != null) {
+                      northPlanetData.putIfAbsent(planet.houseFromLagna!, () => []).add(planet.name!.substring(0, 2));
+                    }
+                  }
+
+                  // Map data for South Indian chart (key = signNumber)
+                  final southPlanetData = <int, List<String>>{};
+                  for (var planet in planets) {
+                    if (planet.signNumber != null && planet.name != null) {
+                      southPlanetData.putIfAbsent(planet.signNumber!, () => []).add(planet.name!.substring(0, 2));
+                    }
+                  }
+
+                  return KundliChartWidget(
+                    title: "Transit Chart",
+                    northIndianPlanetData: northPlanetData,
+                    southIndianPlanetData: southPlanetData,
+                    isLoading: _transitController.isLoading.value,
+                  );
+                }),
                 _buildDashaTab("Mahadasha"),
                 _buildDashaTab("Yogini Dasha"),
                 _buildAshtakvargaTab(),
@@ -160,13 +305,13 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
       ),
       child: Column(
         children: [
-          _buildInfoRow("Name", "Utkarsha", true),
-          _buildInfoRow("Date of Birth", "05 July 1994", true),
-          _buildInfoRow("Time", "08:13 PM", true),
-          _buildInfoRow("Place", "New Delhi, Delhi, India", true),
-          _buildInfoRow("Latitude", "28.65", false),
-          _buildInfoRow("Longitude", "77.23", false),
-          _buildInfoRow("Timezone", "GMT+5.5", false),
+          _buildInfoRow("Name", _name, true),
+          _buildInfoRow("Date of Birth", _dobStr, true),
+          _buildInfoRow("Time", _timeStr, true),
+          _buildInfoRow("Place", _place, true),
+          _buildInfoRow("Latitude", widget.latitude?.toString() ?? "28.65", false),
+          _buildInfoRow("Longitude", widget.longitude?.toString() ?? "77.23", false),
+          _buildInfoRow("Timezone", widget.timezone ?? "GMT+5.5", false),
           _buildInfoRow("Sunrise", "5:28:30 AM", false),
           _buildInfoRow("Sunset", "7:23:12 PM", false),
           _buildInfoRow("Ayanamsha", "23.78038", false),
@@ -185,16 +330,34 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
           BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
         ],
       ),
-      child: Column(
-        children: [
-          _buildInfoRow("Tithi", "Shukla-Ekadashi", false),
-          _buildInfoRow("Karan", "Vishti", false),
-          _buildInfoRow("Yog", "Sadhya", false),
-          _buildInfoRow("Nakshatra", "Rohini", false),
-          _buildInfoRow("Sunrise", "05:28:30 AM", false),
-          _buildInfoRow("Sunset", "07:23:12 PM", false),
-        ],
-      ),
+      child: Obx(() {
+        if (_panchangController.isLoading.value) {
+          return const Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
+          );
+        }
+
+        final data = _panchangController.panchangModel.value?.data;
+        if (data == null) {
+          return const Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Center(child: AppText("Failed to load Panchang details.")),
+          );
+        }
+
+        return Column(
+          children: [
+            _buildInfoRow("Tithi", data.tithi?.name ?? "N/A", false),
+            _buildInfoRow("Karan", data.karana?.name ?? "N/A", false),
+            _buildInfoRow("Yog", data.yoga?.name ?? "N/A", false),
+            _buildInfoRow("Nakshatra", data.nakshatra?.name ?? "N/A", false),
+            _buildInfoRow("Masa", data.masa?.name ?? "N/A", false),
+            _buildInfoRow("Ritu", data.ritu?.name ?? "N/A", false),
+            _buildInfoRow("Vaara", data.vaara?.name ?? "N/A", false),
+          ],
+        );
+      }),
     );
   }
 
@@ -280,13 +443,13 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
           if (showEdit) 
             GestureDetector(
               onTap: () {
-                Get.to(() => const CreateKundliScreen(
+                Get.to(() => CreateKundliScreen(
                   hideMatchingTab: true,
                   initialKundliData: {
-                    'name': 'Utkarsha',
-                    'dob': '05 July 1994',
-                    'time': '08:13 PM',
-                    'place': 'New Delhi, Delhi, India',
+                    'name': _name,
+                    'dob': _dobStr,
+                    'time': _timeStr,
+                    'place': _place,
                     'gender': 'Male',
                   }
                 ));
@@ -302,23 +465,140 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
   }
 
   Widget _buildDashaTab(String title) {
-    final dashaData = title == "Mahadasha" 
-      ? [
-          ["MO", "Birth", "12-Jan-2003"],
-          ["MA", "12-Jan-2003", "12-Jan-2010"],
-          ["RA", "12-Jan-2010", "13-Jan-2028"],
-          ["JU", "13-Jan-2028", "13-Jan-2044"],
-          ["SA", "13-Jan-2044", "12-Jan-2063"],
-          ["ME", "12-Jan-2063", "13-Jan-2080"],
-        ]
-      : [
-          ["ID", "12-Sep-2023", "12-Sep-2024"],
-          ["PI", "12-Sep-2024", "12-Sep-2026"],
-          ["DH", "12-Sep-2026", "12-Sep-2029"],
-          ["BR", "12-Sep-2029", "12-Sep-2033"],
-          ["BH", "12-Sep-2033", "12-Sep-2038"],
-          ["UL", "12-Sep-2038", "12-Sep-2044"],
-        ];
+    if (title == "Mahadasha") {
+      return Obx(() {
+        if (_dashaController.isLoading.value) {
+          return const Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
+          );
+        }
+
+        final dashaDataList = _dashaController.dashaModel.value?.data?.mahaDasha;
+        if (dashaDataList == null || dashaDataList.isEmpty) {
+          return const Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Center(child: AppText("Failed to load Dasha details.")),
+          );
+        }
+
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              AppText(title, fontSize: 16, fontWeight: FontWeight.w700, textAlign: TextAlign.center),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: AppColors.primaryColor.withOpacity(0.05)),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 15, offset: const Offset(0, 6)),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        children: [
+                          Expanded(child: AppText("Planet", fontWeight: FontWeight.bold, fontSize: 12)),
+                          Expanded(child: AppText("Start Date", fontWeight: FontWeight.bold, fontSize: 12)),
+                          Expanded(child: AppText("End Date", fontWeight: FontWeight.bold, fontSize: 12)),
+                          SizedBox(width: 20),
+                        ],
+                      ),
+                    ),
+                    ...dashaDataList.map((data) {
+                      return _buildDashaRow(
+                        data.planet ?? "N/A",
+                        data.startDate ?? "N/A",
+                        data.endDate ?? "N/A",
+                      );
+                    }),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      });
+    }
+
+    if (title == "Yogini Dasha") {
+      return Obx(() {
+        if (_dashaController.isYoginiLoading.value) {
+          return const Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
+          );
+        }
+
+        final dashaDataList = _dashaController.yoginiDashaModel.value?.data?.mahadashas;
+        if (dashaDataList == null || dashaDataList.isEmpty) {
+          return const Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Center(child: AppText("Failed to load Yogini Dasha details.")),
+          );
+        }
+
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              AppText(title, fontSize: 16, fontWeight: FontWeight.w700, textAlign: TextAlign.center),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: AppColors.primaryColor.withOpacity(0.05)),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 15, offset: const Offset(0, 6)),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        children: [
+                          Expanded(child: AppText("Yogini", fontWeight: FontWeight.bold, fontSize: 12)),
+                          Expanded(child: AppText("Start Date", fontWeight: FontWeight.bold, fontSize: 12)),
+                          Expanded(child: AppText("End Date", fontWeight: FontWeight.bold, fontSize: 12)),
+                          SizedBox(width: 20),
+                        ],
+                      ),
+                    ),
+                    ...dashaDataList.map((data) {
+                      String start = (data.startDate ?? "N/A").split('T')[0];
+                      String end = (data.endDate ?? "N/A").split('T')[0];
+                      return _buildDashaRow(
+                        data.yogini ?? "N/A",
+                        start,
+                        end,
+                      );
+                    }),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      });
+    }
+
+    final dashaData = [
+      ["ID", "12-Sep-2023", "12-Sep-2024"],
+      ["PI", "12-Sep-2024", "12-Sep-2026"],
+      ["DH", "12-Sep-2026", "12-Sep-2029"],
+      ["BR", "12-Sep-2029", "12-Sep-2033"],
+      ["BH", "12-Sep-2033", "12-Sep-2038"],
+      ["UL", "12-Sep-2038", "12-Sep-2044"],
+    ];
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -372,69 +652,35 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
     );
   }
 
-  Widget _buildPlanetsTab() {
-    final planetData = [
-      ["Ascendant", "Virgo", "09° 42' 13\"", "U-Phalguni"],
-      ["Sun", "Gemini", "19° 22' 45\"", "Ardra"],
-      ["Moon", "Aries", "07° 15' 32\"", "Ashwini"],
-      ["Mars", "Leo", "23° 05' 11\"", "P-Phalguni"],
-      ["Mercury", "Cancer", "02° 48' 56\"", "Punarvasu"],
-      ["Jupiter", "Scorpio", "11° 19' 04\"", "Anuradha"],
-      ["Venus", "Taurus", "28° 37' 19\"", "Mrigashira"],
-      ["Saturn", "Aquarius", "16° 54' 28\"", "Shatabhisha"],
-    ];
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
-          ],
-        ),
-        child: Column(
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(bottom: 10),
-              child: Row(
-                children: [
-                  Expanded(flex: 2, child: AppText("Planet", fontWeight: FontWeight.bold, fontSize: 12)),
-                  Expanded(flex: 2, child: AppText("Sign", fontWeight: FontWeight.bold, fontSize: 12)),
-                  Expanded(flex: 3, child: AppText("Degree", fontWeight: FontWeight.bold, fontSize: 12)),
-                  Expanded(flex: 3, child: AppText("Nakshatra", fontWeight: FontWeight.bold, fontSize: 12)),
-                ],
-              ),
-            ),
-            ...planetData.map((data) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Row(
-                children: [
-                  Expanded(flex: 2, child: AppText(data[0], fontSize: 11)),
-                  Expanded(flex: 2, child: AppText(data[1], fontSize: 11)),
-                  Expanded(flex: 3, child: AppText(data[2], fontSize: 11)),
-                  Expanded(flex: 3, child: AppText(data[3], fontSize: 11)),
-                ],
-              ),
-            )),
-          ],
-        ),
-      ),
-    );
+  String _formatDegree(double degree) {
+    int d = degree.floor();
+    double minDouble = (degree - d) * 60;
+    int m = minDouble.floor();
+    int s = ((minDouble - m) * 60).round();
+    return "${d.toString().padLeft(2, '0')}° ${m.toString().padLeft(2, '0')}' ${s.toString().padLeft(2, '0')}\"";
   }
 
-  Widget _buildAshtakvargaTab() {
-    final signs = ["Ari", "Tau", "Gem", "Can", "Leo", "Vir", "Lib", "Sco", "Sag", "Cap", "Aqu", "Pis"];
-    final planets = ["Sun", "Moon", "Mars", "Merc", "Jup", "Ven", "Sat"];
+  Widget _buildPlanetsTab() {
+    return Obx(() {
+      if (_planetPositionsController.isLoading.value) {
+        return const Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
+        );
+      }
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: SingleChildScrollView(
+      final planetsList = _planetPositionsController.planetPositionsModel.value?.data?.planets;
+      if (planetsList == null || planetsList.isEmpty) {
+        return const Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Center(child: AppText("Failed to load Planet Positions.")),
+        );
+      }
+
+      return SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Container(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(18),
@@ -442,26 +688,104 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
               BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
             ],
           ),
-          child: DataTable(
-            columnSpacing: 15,
-            horizontalMargin: 0,
-            headingRowHeight: 35,
-            dataRowMinHeight: 30,
-            dataRowMaxHeight: 40,
-            columns: [
-              const DataColumn(label: AppText("Planet", fontWeight: FontWeight.bold, fontSize: 12)),
-              ...signs.map((s) => DataColumn(label: AppText(s, fontWeight: FontWeight.bold, fontSize: 12))),
+          child: Column(
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(bottom: 10),
+                child: Row(
+                  children: [
+                    Expanded(flex: 2, child: AppText("Planet", fontWeight: FontWeight.bold, fontSize: 12)),
+                    Expanded(flex: 2, child: AppText("Sign", fontWeight: FontWeight.bold, fontSize: 12)),
+                    Expanded(flex: 3, child: AppText("Degree", fontWeight: FontWeight.bold, fontSize: 12)),
+                    Expanded(flex: 3, child: AppText("Nakshatra", fontWeight: FontWeight.bold, fontSize: 12)),
+                  ],
+                ),
+              ),
+              ...planetsList.map((data) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  children: [
+                    Expanded(flex: 2, child: AppText(data.name ?? "N/A", fontSize: 11)),
+                    Expanded(flex: 2, child: AppText(data.sign ?? "N/A", fontSize: 11)),
+                    Expanded(flex: 3, child: AppText(data.normDegree != null ? _formatDegree(data.normDegree!) : "N/A", fontSize: 11)),
+                    Expanded(flex: 3, child: AppText(data.nakshatra?.name ?? "N/A", fontSize: 11)),
+                  ],
+                ),
+              )),
             ],
-            rows: planets.map((p) => DataRow(
-              cells: [
-                DataCell(AppText(p, fontSize: 11)),
-                ...List.generate(12, (i) => DataCell(AppText("${(i + 3) % 7 + 1}", fontSize: 11))),
-              ],
-            )).toList(),
           ),
         ),
-      ),
-    );
+      );
+    });
+  }
+
+  Widget _buildAshtakvargaTab() {
+    return Obx(() {
+      if (_ashtakvargaController.isLoading.value) {
+        return const Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
+        );
+      }
+
+      final bhinnashtakavarga = _ashtakvargaController.ashtakvargaModel.value?.data?.bhinnashtakavarga;
+      if (bhinnashtakavarga == null || bhinnashtakavarga.isEmpty) {
+        return const Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Center(child: AppText("Failed to load Ashtakvarga details.")),
+        );
+      }
+
+      final signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
+      final signShorts = ["Ari", "Tau", "Gem", "Can", "Leo", "Vir", "Lib", "Sco", "Sag", "Cap", "Aqu", "Pis"];
+      final planets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"];
+
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
+              ],
+            ),
+            child: DataTable(
+              columnSpacing: 15,
+              horizontalMargin: 0,
+              headingRowHeight: 35,
+              dataRowMinHeight: 30,
+              dataRowMaxHeight: 40,
+              columns: [
+                const DataColumn(label: AppText("Planet", fontWeight: FontWeight.bold, fontSize: 12)),
+                ...signShorts.map((s) => DataColumn(label: AppText(s, fontWeight: FontWeight.bold, fontSize: 12))),
+              ],
+              rows: planets.map((p) {
+                final planetData = bhinnashtakavarga[p];
+                return DataRow(
+                  cells: [
+                    DataCell(AppText(p, fontSize: 11)),
+                    ...signs.map((signName) {
+                      String pointsStr = "0";
+                      if (planetData != null && planetData.strongSigns != null) {
+                        final signMatch = planetData.strongSigns!.firstWhereOrNull((s) => s.sign == signName);
+                        if (signMatch != null) {
+                          pointsStr = signMatch.points?.toString() ?? "0";
+                        }
+                      }
+                      return DataCell(AppText(pointsStr, fontSize: 11));
+                    }),
+                  ],
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+      );
+    });
   }
 
   Widget _buildKPSystemTab() {
@@ -657,7 +981,17 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
   }
 
   Widget _buildDivisionalChartTab() {
-    return const DivisionalChartTab();
+    final dt = widget.datetime ?? DateTime.now().toIso8601String().split('.')[0];
+    final lat = widget.latitude ?? 28.65;
+    final lng = widget.longitude ?? 77.23;
+    final tz = widget.timezone ?? "+05:30";
+
+    return DivisionalChartTab(
+      datetime: dt,
+      latitude: lat,
+      longitude: lng,
+      timezone: tz,
+    );
   }
 
   Widget _buildKPTab() {
@@ -685,16 +1019,69 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
   }
 
   Widget _buildRemediesTab() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          _buildRemedyCard("Gemstone", "Emerald for Career & Communication", Icons.diamond_outlined),
-          _buildRemedyCard("Mantra", "Om Budhaya Namah (108 times)", Icons.spatial_audio_off_outlined),
-          _buildRemedyCard("Donation", "Green clothes on Wednesday", Icons.volunteer_activism_outlined),
-        ],
-      ),
-    );
+    return Obx(() {
+      if (_remediesController.isLoading.value) {
+        return const Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
+        );
+      }
+
+      final crystalsList = _remediesController.remediesModel.value?.data?.crystals;
+      if (crystalsList == null || crystalsList.isEmpty) {
+        return const Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Center(child: AppText("Failed to load Remedies details.")),
+        );
+      }
+
+      return SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: crystalsList.map((crystal) {
+            return Container(
+              margin: const EdgeInsets.only(bottom: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AppText(
+                    "Remedies for ${crystal.planet ?? 'Unknown'} (${crystal.planetStrength ?? ''})",
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                  const SizedBox(height: 12),
+                  if (crystal.gemstone != null)
+                    _buildRemedyCard(
+                      "Gemstone",
+                      "${crystal.gemstone!.gemstone} (${crystal.gemstone!.weight}). Wear on ${crystal.gemstone!.finger} on ${crystal.gemstone!.dayToWear}. Metal: ${crystal.gemstone!.metal}.",
+                      Icons.diamond_outlined,
+                    ),
+                  if (crystal.mantra != null)
+                    _buildRemedyCard(
+                      "Mantra",
+                      "${crystal.mantra!.mantra}\nJapa Count: ${crystal.mantra!.japaCount}",
+                      Icons.spatial_audio_off_outlined,
+                    ),
+                  if (crystal.charity != null)
+                    _buildRemedyCard(
+                      "Charity",
+                      "Donate ${crystal.charity!.items?.join(', ')} to ${crystal.charity!.donateTo} on ${crystal.charity!.bestDay}.",
+                      Icons.volunteer_activism_outlined,
+                    ),
+                  if (crystal.fasting != null)
+                    _buildRemedyCard(
+                      "Fasting",
+                      "${crystal.fasting!.fastingType} on ${crystal.fasting!.day}s. Duration: ${crystal.fasting!.duration}.",
+                      Icons.restaurant_menu_outlined,
+                    ),
+                ],
+              ),
+            );
+          }).toList(),
+        ),
+      );
+    });
   }
 
   Widget _buildRemedyCard(String title, String desc, IconData icon) {

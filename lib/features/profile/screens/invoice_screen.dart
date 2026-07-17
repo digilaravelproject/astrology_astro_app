@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:get/get.dart';
+import '../../../core/services/network/api_client.dart';
+import '../../wallet/data/repositories/wallet_repository_impl.dart';
+import '../../wallet/domain/usecases/get_invoices_summary_usecase.dart';
+import '../../wallet/presentation/controllers/invoice_controller.dart';
+import '../../wallet/domain/models/invoice_model.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_app_bar.dart';
@@ -13,25 +20,32 @@ class InvoiceScreen extends StatefulWidget {
 
 class _InvoiceScreenState extends State<InvoiceScreen>
     with TickerProviderStateMixin {
-  final List<Map<String, String>> invoices = [
-    {'month': 'January 2026', 'earnings': '₹45,403.76', 'status': 'Paid'},
-    {'month': 'December 2025', 'earnings': '₹32,100.00', 'status': 'Paid'},
-    {'month': 'November 2025', 'earnings': '₹28,500.50', 'status': 'Paid'},
-    {'month': 'October 2025', 'earnings': '₹15,200.00', 'status': 'Paid'},
-    {'month': 'September 2025', 'earnings': '₹41,000.25', 'status': 'Paid'},
-    {'month': 'August 2025', 'earnings': '₹12,050.00', 'status': 'Paid'},
-  ];
-
+  late InvoiceController _invoiceController;
+  
   // Track which tiles are expanded
-  late List<bool> _expandedStates;
+  final RxList<bool> _expandedStates = <bool>[].obs;
 
   @override
   void initState() {
     super.initState();
-    _expandedStates = List.generate(
-      invoices.length,
-      (i) => invoices[i]['month'] == 'January 2026',
-    );
+    if (!Get.isRegistered<InvoiceController>()) {
+      Get.put(InvoiceController(
+        GetInvoicesSummaryUseCase(
+          WalletRepositoryImpl(apiClient: Get.find<ApiClient>()),
+        ),
+      ));
+    }
+    _invoiceController = Get.find<InvoiceController>();
+    
+    // Automatically set expanded states when data changes
+    ever(_invoiceController.summary, (InvoiceSummaryModel? summary) {
+      if (summary != null) {
+        _expandedStates.value = List.generate(
+          summary.invoices.length,
+          (i) => i == 0, // Expand first by default
+        );
+      }
+    });
   }
 
   @override
@@ -39,24 +53,39 @@ class _InvoiceScreenState extends State<InvoiceScreen>
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6FA),
       appBar: const CustomAppBar(title: 'Invoice'),
-      body: Column(
-        children: [
-          _buildSummaryHeader(),
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-              itemCount: invoices.length,
-              itemBuilder: (context, index) {
-                return _buildInvoiceCard(invoices[index], index);
-              },
+      body: Obx(() {
+        if (_invoiceController.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (_invoiceController.error.value.isNotEmpty) {
+          return Center(child: Text(_invoiceController.error.value));
+        }
+        
+        final summary = _invoiceController.summary.value;
+        if (summary == null) {
+          return const Center(child: Text('No invoices found.'));
+        }
+
+        return Column(
+          children: [
+            _buildSummaryHeader(summary),
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                itemCount: summary.invoices.length,
+                itemBuilder: (context, index) {
+                  return _buildInvoiceCard(summary.invoices[index], index);
+                },
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      }),
     );
   }
 
-  Widget _buildSummaryHeader() {
+  Widget _buildSummaryHeader(InvoiceSummaryModel summary) {
+
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       padding: const EdgeInsets.all(20),
@@ -99,9 +128,9 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
-                '₹1,74,254.51',
-                style: TextStyle(
+              Text(
+                '₹${summary.totalEarnings.toStringAsFixed(2)}',
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 24,
                   fontWeight: FontWeight.w800,
@@ -115,7 +144,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                '6 Invoices',
+                '${summary.totalInvoices} Invoices',
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.8),
                   fontSize: 12,
@@ -130,9 +159,9 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                   color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Text(
-                  'All Paid',
-                  style: TextStyle(
+                child: Text(
+                  summary.status.isNotEmpty ? summary.status : 'All Paid',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -146,8 +175,8 @@ class _InvoiceScreenState extends State<InvoiceScreen>
     );
   }
 
-  Widget _buildInvoiceCard(Map<String, String> invoice, int index) {
-    final isExpanded = _expandedStates[index];
+  Widget _buildInvoiceCard(InvoiceItemModel invoice, int index) {
+    final isExpanded = _expandedStates.length > index ? _expandedStates[index] : false;
     final isFirst = index == 0;
 
     return AnimatedContainer(
@@ -198,7 +227,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
               ),
             ),
             title: AppText(
-              invoice['month']!,
+              invoice.monthName,
               fontSize: 15,
               fontWeight: FontWeight.w700,
               color: const Color(0xFF1A1A2E),
@@ -206,7 +235,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
             subtitle: Padding(
               padding: const EdgeInsets.only(top: 3),
               child: AppText(
-                invoice['earnings']!,
+                '₹${invoice.grossEarnings.toStringAsFixed(2)}',
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: AppColors.primaryColor,
@@ -223,9 +252,9 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                     color: AppColors.primaryColor.withOpacity(0.08),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Text(
-                    'Paid',
-                    style: TextStyle(
+                  child: Text(
+                    invoice.status,
+                    style: const TextStyle(
                       color: AppColors.primaryColor,
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
@@ -263,7 +292,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                           Expanded(
                             child: _buildDetailItem(
                               label: 'Gross Earnings',
-                              value: invoice['earnings']!,
+                              value: '₹${invoice.grossEarnings.toStringAsFixed(2)}',
                               icon: Iconsax.money_recive,
                             ),
                           ),
@@ -275,7 +304,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                           Expanded(
                             child: _buildDetailItem(
                               label: 'Net Payable',
-                              value: invoice['earnings']!,
+                              value: '₹${invoice.netPayable.toStringAsFixed(2)}',
                               icon: Iconsax.wallet_check,
                               isRight: true,
                             ),
@@ -289,44 +318,59 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                       color: AppColors.primaryColor.withOpacity(0.2),
                     ),
                     // Download Button
-                    Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: () {},
-                        borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(11),
-                          bottomRight: Radius.circular(11),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 14),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Iconsax.import_copy,
-                                color: AppColors.primaryColor,
-                                size: 18,
-                              ),
-                              const SizedBox(width: 10),
-                              const Text(
-                                'Download Invoice',
-                                style: TextStyle(
+                    if (invoice.downloadUrl != null)
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            _invoiceController.downloadInvoice(invoice.monthName, invoice.downloadUrl!);
+                          },
+                          borderRadius: const BorderRadius.only(
+                            bottomLeft: Radius.circular(11),
+                            bottomRight: Radius.circular(11),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 14),
+                            child: Row(
+                              children: [
+                                Obx(() {
+                                  final isDownloading = _invoiceController.isDownloading[invoice.monthName] == true;
+                                  return isDownloading 
+                                    ? const SizedBox(
+                                        width: 18, 
+                                        height: 18, 
+                                        child: CircularProgressIndicator(strokeWidth: 2)
+                                      )
+                                    : const Icon(
+                                        Iconsax.import_copy,
+                                        color: AppColors.primaryColor,
+                                        size: 18,
+                                      );
+                                }),
+                                const SizedBox(width: 10),
+                                Obx(() {
+                                  final isDownloading = _invoiceController.isDownloading[invoice.monthName] == true;
+                                  return Text(
+                                    isDownloading ? 'Downloading...' : 'Download Invoice',
+                                    style: const TextStyle(
+                                      color: AppColors.primaryColor,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  );
+                                }),
+                                const Spacer(),
+                                const Icon(
+                                  Icons.arrow_forward_ios_rounded,
                                   color: AppColors.primaryColor,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
+                                  size: 13,
                                 ),
-                              ),
-                              const Spacer(),
-                              const Icon(
-                                Icons.arrow_forward_ios_rounded,
-                                color: AppColors.primaryColor,
-                                size: 13,
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
                   ],
                 ),
               ),

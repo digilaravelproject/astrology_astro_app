@@ -16,7 +16,8 @@ class TrainingVideoDetailController extends GetxController {
       isLoading.value = true;
       final response = await _useCase.execute(id);
       if (response.isSuccess && response.body != null) {
-        final videoData = response.body['video'];
+        final dynamic bodyData = response.body['data'] ?? response.body;
+        final videoData = bodyData['video'];
         if (videoData is Map<String, dynamic>) {
           video.value = TrainingVideoModel.fromJson(videoData);
         }
