@@ -85,7 +85,8 @@ class CallSummaryDialog extends StatelessWidget {
             // Session Details
             _buildSummaryRow(Icons.tag, 'Session ID', '#$sessionId'),
             _buildSummaryRow(Icons.timer_outlined, 'Duration', _formatDuration(durationSeconds)),
-            _buildSummaryRow(Icons.monetization_on_outlined, 'Total Earnings', '₹${totalCost.toStringAsFixed(2)}'),
+            if (totalCost > 0)
+              _buildSummaryRow(Icons.monetization_on_outlined, 'Total Earnings', '₹${totalCost.toStringAsFixed(2)}'),
             
             const SizedBox(height: 24),
             

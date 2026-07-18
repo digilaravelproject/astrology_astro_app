@@ -122,14 +122,11 @@ flutter:
   assets:
     - .env
     - assets/animations/
-    - assets/images/app_icon.png
-    - assets/images/app_logo.png
-    - assets/icons/
-    - assets/images/
     - assets/audio/
     - assets/icons/
     - assets/images/
     - assets/images/app_icon.png
+    - assets/images/app_logo.png
     - assets/language/
     - assets/translations/
   # To add assets to your application, add an assets section, like this:

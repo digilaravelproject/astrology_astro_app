@@ -9,4 +9,5 @@ class AssetsRes {
   static const String PROJECT_NAME = 'astro_astrologer';
   static const String PROJECT_VERSION = '1.0.0+1';
   static const String APP_ICON = 'assets/images/app_icon.png';
+  static const String APP_LOGO = 'assets/images/app_logo.png';
 }
