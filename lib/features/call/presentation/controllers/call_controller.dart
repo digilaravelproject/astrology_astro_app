@@ -348,19 +348,22 @@ class CallController extends GetxController with WidgetsBindingObserver {
       cost = double.tryParse(session['total_cost']?.toString() ?? '') ?? 0.0;
     }
     
+    final wasCallScreenVisible = isCallScreenVisible;
+    final wasDialogOpen = Get.isDialogOpen == true;
     cleanUp();
     
-    // Close CallScreen
-    if (isCallScreenVisible || Get.isDialogOpen == true) {
-      Get.back();
-    }
-    
-    Future.delayed(const Duration(milliseconds: 300), () {
-      CallSummaryDialog.show(
-        sessionId: sId,
-        durationSeconds: duration,
-        totalCost: cost,
-      );
+    // Close CallScreen safely on main thread
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (wasCallScreenVisible || wasDialogOpen) {
+        Get.back();
+      }
+      Future.delayed(const Duration(milliseconds: 300), () {
+        CallSummaryDialog.show(
+          sessionId: sId,
+          durationSeconds: duration,
+          totalCost: cost,
+        );
+      });
     });
   }
 
@@ -448,7 +451,6 @@ class CallController extends GetxController with WidgetsBindingObserver {
 
     if (isCallScreenVisible) {
       isCallScreenVisible = false;
-      Get.back();
     }
   }
 
