@@ -954,14 +954,14 @@ class _HomeScreenState extends State<HomeScreen> {
         textColor: const Color(0xFF3B5BDB),
         onTap: () => Get.to(() => const WaitlistScreen()),
       ),
-      /*_MenuData(
+      _MenuData(
         title: 'Assistant Chat',
         icon: Iconsax.cpu_setting_copy,
         bgColor: const Color(0xFFF3EEFF),
         iconBgColor: const Color(0xFFE5D7FF),
         textColor: const Color(0xFF7C3AED),
         onTap: () => Get.to(() => const AssistantChatScreen()),
-      ),*/
+      ),
       _MenuData(
         title: 'Suggested Remedies',
         icon: Iconsax.clipboard_text_copy,
