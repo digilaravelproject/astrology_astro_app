@@ -170,7 +170,7 @@ class _CallScreenState extends State<CallScreen> {
                         // End Call (Red Button)
                         _buildEndCallButton(onPressed: () {
                           controller.endCall();
-                          Get.back();
+                          Get.until((route) => route.isFirst);
                         }),
 
                         // Speaker button
