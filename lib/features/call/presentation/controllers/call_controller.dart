@@ -325,10 +325,18 @@ class CallController extends GetxController with WidgetsBindingObserver {
 
   void _handleCallDismissed(String reason) {
     status.value = reason; // rejected, cancelled, timeout
-    if (isCallScreenVisible || (Get.isDialogOpen ?? false)) {
-      Get.back();
-    }
+    final wasCallScreenVisible = isCallScreenVisible;
+    final wasDialogOpen = Get.isDialogOpen == true;
     cleanUp();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (wasDialogOpen) {
+        Get.back();
+      }
+      if (wasCallScreenVisible) {
+        Get.back();
+      }
+    });
   }
 
   void _handleCallEnded(Map<String, dynamic> data) {
@@ -354,8 +362,11 @@ class CallController extends GetxController with WidgetsBindingObserver {
     
     // Close CallScreen safely on main thread
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (wasCallScreenVisible || wasDialogOpen) {
-        Get.back();
+      if (wasDialogOpen) {
+        Get.back(); // close dialog first
+      }
+      if (wasCallScreenVisible) {
+        Get.back(); // then close call screen
       }
       Future.delayed(const Duration(milliseconds: 300), () {
         CallSummaryDialog.show(
