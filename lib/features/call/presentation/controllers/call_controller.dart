@@ -324,9 +324,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
 
   void _handleCallDismissed(String reason) {
     status.value = reason; // rejected, cancelled, timeout
-    if (isCallScreenVisible) {
-      Get.until((route) => route.isFirst);
-    } else if (Get.isDialogOpen == true) {
+    if (isCallScreenVisible || (Get.isDialogOpen ?? false)) {
       Get.back();
     }
     cleanUp();
@@ -352,9 +350,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
     cleanUp();
     
     // Close CallScreen
-    if (isCallScreenVisible) {
-      Get.until((route) => route.isFirst);
-    } else if (Get.isDialogOpen == true) {
+    if (isCallScreenVisible || Get.isDialogOpen == true) {
       Get.back();
     }
     
@@ -704,25 +700,19 @@ class CallController extends GetxController with WidgetsBindingObserver {
             // }
             Logger.d('CallController: checkCurrentActiveCallSession setup complete');
           } else {
-            if (isCallScreenVisible) {
-              Get.until((route) => route.isFirst);
-            } else if (Get.isDialogOpen == true) {
+            if (isCallScreenVisible || Get.isDialogOpen == true) {
               Get.back();
             }
             cleanUp();
           }
         } else {
-          if (isCallScreenVisible) {
-            Get.until((route) => route.isFirst);
-          } else if (Get.isDialogOpen == true) {
+          if (isCallScreenVisible || Get.isDialogOpen == true) {
             Get.back();
           }
           cleanUp();
         }
       } else {
-        if (isCallScreenVisible) {
-          Get.until((route) => route.isFirst);
-        } else if (Get.isDialogOpen == true) {
+        if (isCallScreenVisible || Get.isDialogOpen == true) {
           Get.back();
         }
         cleanUp();
