@@ -250,6 +250,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
   Future<void> cancelCall() async {
     if (sessionId == null) {
       Logger.e('CallController: Cannot cancel call because sessionId is null.');
+      cleanUp();
       return;
     }
     Logger.d('CallController: cancelCall started for sessionId: $sessionId');
@@ -444,6 +445,11 @@ class CallController extends GetxController with WidgetsBindingObserver {
     consumerName = null;
     consumerImage = null;
     incomingOfferSdp = null;
+
+    if (isCallScreenVisible) {
+      isCallScreenVisible = false;
+      Get.back();
+    }
   }
 
   @override
