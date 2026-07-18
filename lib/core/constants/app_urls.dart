@@ -165,6 +165,19 @@ class AppUrls {
   static const String eventSuperChatReceived = 'SuperChatReceived';
   static const String eventAstrologerBroadcastStarted = 'AstrologerBroadcastStarted';
 
+  // Chat Assistance API Endpoints
+  static const String chatAssistanceSessions = '/chat-assistance/sessions';
+  static String getChatAssistanceMessages(int sessionId) => '/chat-assistance/$sessionId/messages';
+  static String sendChatAssistanceMessage(int sessionId) => '/chat-assistance/$sessionId/message';
+  static String syncChatAssistanceStatus(int sessionId) => '/chat-assistance/$sessionId/sync-status';
+  static const String getAstrologerChatAssistanceStatus = '/chat-assistance/astrologer/status';
+
+  // Chat Assistance System Events
+  static const String eventChatAssistanceInitiated = 'ChatAssistanceInitiated';
+  static const String eventChatAssistanceMessageSent = 'ChatAssistanceMessageSent';
+  static const String eventChatAssistanceMessageStatusUpdated = 'ChatAssistanceMessageStatusUpdated';
+  static const String eventChatAssistanceLimitReached = 'ChatAssistanceLimitReached';
+
   // Price Increase Request
   static const String priceIncreaseStatus = "/astrologer/price-increase/status";
   static const String priceIncreaseRequest = "/astrologer/price-increase/request";
