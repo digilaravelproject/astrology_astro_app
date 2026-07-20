@@ -166,13 +166,13 @@ class AstrologerSessionsScreen extends StatelessWidget {
     };
 
     String? rawDatetime;
-    if (consumer?.dateOfBirth != null) {
+    if (consumer != null && consumer.dateOfBirth != null) {
       try {
-        final dobDate = DateTime.tryParse(consumer!.dateOfBirth!)?.toLocal();
+        final dobDate = DateTime.tryParse(consumer.dateOfBirth!)?.toLocal();
         if (dobDate != null) {
           String d = "${dobDate.year}-${dobDate.month.toString().padLeft(2, '0')}-${dobDate.day.toString().padLeft(2, '0')}";
           String t = "00:00:00";
-          if (consumer?.timeOfBirth != null && consumer!.timeOfBirth!.isNotEmpty) {
+          if (consumer.timeOfBirth != null && consumer.timeOfBirth!.isNotEmpty) {
             t = consumer.timeOfBirth!;
             if (t.length == 5) t += ":00";
           }
