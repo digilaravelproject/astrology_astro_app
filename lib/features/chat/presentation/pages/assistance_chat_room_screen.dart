@@ -60,7 +60,9 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
               radius: 20,
               backgroundColor: AppColors.primaryColor.withOpacity(0.1),
               backgroundImage: (widget.userImage != null && widget.userImage!.isNotEmpty)
-                  ? NetworkImage("${AppUrls.baseImageUrl}${widget.userImage!}")
+                  ? NetworkImage(widget.userImage!.startsWith('http')
+                      ? widget.userImage!
+                      : "${AppUrls.baseImageUrl}${widget.userImage!}")
                   : null,
               child: (widget.userImage == null || widget.userImage!.isEmpty)
                   ? AppText(
