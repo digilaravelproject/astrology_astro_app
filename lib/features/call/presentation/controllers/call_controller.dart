@@ -99,8 +99,9 @@ class CallController extends GetxController with WidgetsBindingObserver {
         final session = data['session'];
         if (session != null) {
           final incomingId = int.tryParse(session['id']?.toString() ?? '');
-          // Match by sessionId OR handle when sessionId is already null (race condition)
-          if (sessionId == null || incomingId == null || incomingId == sessionId) {
+          // Only handle if incomingId matches our current session
+          if (incomingId != null && (sessionId == null || incomingId == sessionId)) {
+            Logger.d('CallController: WebSocket callEndedData received: $data');
             _handleCallEnded(data);
           }
         }
@@ -352,22 +353,22 @@ class CallController extends GetxController with WidgetsBindingObserver {
     }
     
     final wasVisible = isCallScreenVisible;
+    final sIdBeforeCleanup = sessionId ?? sId;
     cleanUp();
     
-    // Close CallScreen — use wasVisible captured before cleanUp clears flags
-    if (wasVisible || (Get.isDialogOpen ?? false)) {
-      Get.back();
-    } else {
-      // Fallback: pop whatever is on top if a call screen route exists
-      final routeStack = Get.currentRoute;
-      if (routeStack.isNotEmpty) {
-        Get.back();
-      }
+    // Close CallScreen — navigate back past it entirely
+    if (wasVisible) {
+      // CallScreen is a full route, pop it
+      if (Get.isDialogOpen ?? false) Get.back(); // close any open dialog first
+      Get.back(); // pop CallScreen
+    } else if (Get.isDialogOpen ?? false) {
+      Get.back(); // close IncomingCallDialog if open
     }
     
+    final resolvedId = sIdBeforeCleanup > 0 ? sIdBeforeCleanup : sId;
     Future.delayed(const Duration(milliseconds: 300), () {
       CallSummaryDialog.show(
-        sessionId: sId,
+        sessionId: resolvedId,
         durationSeconds: duration,
         totalCost: cost,
       );
