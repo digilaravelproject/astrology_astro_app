@@ -50,11 +50,12 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Column(
               children: [
-                // Search Bar
+                // Search Bar matching the app UI
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(24),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(color: AppColors.primaryColor.withOpacity(0.2), width: 1.2),
                   ),
                   child: TextField(
                     controller: _searchController,
@@ -63,11 +64,11 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
                     },
                     decoration: InputDecoration(
                       hintText: 'Search chats...',
-                      hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
-                      prefixIcon: Icon(Icons.search, color: Colors.grey.shade500, size: 20),
+                      hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+                      prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primaryColor, size: 22),
                       suffixIcon: Obx(() => controller.searchQuery.value.isNotEmpty
                           ? IconButton(
-                              icon: const Icon(Icons.clear, size: 20, color: Colors.grey),
+                              icon: const Icon(Icons.close_rounded, size: 20, color: Colors.grey),
                               onPressed: () {
                                 _searchController.clear();
                                 controller.searchQuery.value = '';
@@ -75,12 +76,12 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
                             )
                           : const SizedBox.shrink()),
                       border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 14),
                     ),
                   ),
                 ),
-                const SizedBox(height: 10),
-                // Filter Chips
+                const SizedBox(height: 12),
+                // Filter Chips matching the app UI
                 Obx(() => Row(
                       children: [
                         _buildFilterChip('All'),
@@ -142,8 +143,8 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
                 itemCount: sessions.length,
                 separatorBuilder: (context, index) => Divider(
                   height: 1,
-                  indent: 76,
-                  color: Colors.grey.shade100,
+                  thickness: 1,
+                  color: Colors.grey.shade200,
                 ),
                 itemBuilder: (context, index) {
                   final session = sessions[index];
@@ -192,27 +193,26 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
 
   Widget _buildFilterChip(String filterName) {
     final isSelected = controller.selectedFilter.value == filterName;
-    final activeColor = AppColors.primaryColor;
     return GestureDetector(
       onTap: () {
         controller.selectedFilter.value = filterName;
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? activeColor.withOpacity(0.15) : Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(16),
+          color: isSelected ? AppColors.primaryColor.withOpacity(0.05) : Colors.white,
+          borderRadius: BorderRadius.circular(100),
           border: Border.all(
-            color: isSelected ? activeColor.withOpacity(0.3) : Colors.transparent,
-            width: 1,
+            color: isSelected ? AppColors.primaryColor : Colors.grey.shade300,
+            width: 1.2,
           ),
         ),
         child: AppText(
           filterName,
           fontSize: 13,
-          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-          color: isSelected ? activeColor : Colors.grey.shade600,
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+          color: isSelected ? AppColors.primaryColor : Colors.black87,
         ),
       ),
     );
