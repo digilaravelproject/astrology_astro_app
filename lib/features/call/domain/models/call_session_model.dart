@@ -84,6 +84,7 @@ class CallSessionUserModel {
   final String? dateOfBirth;
   final String? timeOfBirth;
   final String? placeOfBirth;
+  final int? chatAssistanceSessionId;
 
   CallSessionUserModel({
     required this.id,
@@ -94,6 +95,7 @@ class CallSessionUserModel {
     this.dateOfBirth,
     this.timeOfBirth,
     this.placeOfBirth,
+    this.chatAssistanceSessionId,
   });
 
   factory CallSessionUserModel.fromJson(Map<String, dynamic> json) {
@@ -110,6 +112,7 @@ class CallSessionUserModel {
       dateOfBirth: json['date_of_birth']?.toString(),
       timeOfBirth: json['time_of_birth']?.toString(),
       placeOfBirth: json['place_of_birth']?.toString(),
+      chatAssistanceSessionId: int.tryParse(json['chat_assistance_session_id']?.toString() ?? ''),
     );
   }
 }
