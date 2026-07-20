@@ -222,6 +222,14 @@ class ChatController extends GetxController with WidgetsBindingObserver {
         if (Get.isRegistered<AuthController>()) {
           Get.find<AuthController>().checkLoginStatus();
         }
+        // Pop the chat screen so it doesn't stay open
+        Future.delayed(const Duration(milliseconds: 400), () {
+          if (Get.currentRoute.isNotEmpty) {
+            if (Get.isRegistered<ChatController>()) {
+              Get.back();
+            }
+          }
+        });
       }
     });
 
@@ -235,7 +243,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
           LocalNotificationService.cancelOngoingChatNotification(_sessionId!);
         }
         Get.back();
-        Get.snackbar("Chat Cancelled", "The chat request was cancelled or timed out.");
+        // Get.snackbar("Chat Cancelled", "The chat request was cancelled or timed out.");
       }
     });
 
