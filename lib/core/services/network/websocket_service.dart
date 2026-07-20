@@ -20,7 +20,8 @@ import 'package:astro_astrologer/features/chat/presentation/widgets/floating_cha
 import 'package:astro_astrologer/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:astro_astrologer/features/chat/domain/usecases/sync_message_status_usecase.dart';
 import 'package:astro_astrologer/features/live/presentation/controllers/live_controller.dart';
-import 'package:astro_astrologer/features/live/data/models/live_session_model.dart';
+import 'package:astro_astrologer/features/chat/presentation/controllers/assistant_chat_list_controller.dart';
+import 'package:astro_astrologer/features/chat/presentation/controllers/assistance_chat_room_controller.dart';
 
 class WebSocketService extends GetxService {
   WebSocketChannel? _channel;
@@ -283,6 +284,30 @@ class WebSocketService extends GetxService {
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleUserLeftLiveSession(data['data']);
+        } else if (event == AppUrls.eventChatAssistanceMessageSent || event == 'App\\Events\\ChatAssistanceMessageSent') {
+          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          Logger.d('|🔔 WEBSOCKET EVENT: $event');
+          Logger.d('|📦 Data: ${data['data']}');
+          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          _handleMessageSent(data['data']);
+        } else if (event == AppUrls.eventChatAssistanceMessageStatusUpdated || event == 'App\\Events\\ChatAssistanceMessageStatusUpdated') {
+          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          Logger.d('|🔔 WEBSOCKET EVENT: $event');
+          Logger.d('|📦 Data: ${data['data']}');
+          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          _handleMessageStatusUpdated(data['data']);
+        } else if (event == AppUrls.eventChatAssistanceInitiated || event == 'App\\Events\\ChatAssistanceInitiated') {
+          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          Logger.d('|🔔 WEBSOCKET EVENT: $event');
+          Logger.d('|📦 Data: ${data['data']}');
+          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          _handleChatAssistanceInitiated(data['data']);
+        } else if (event == AppUrls.eventChatAssistanceLimitReached || event == 'App\\Events\\ChatAssistanceLimitReached') {
+          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          Logger.d('|🔔 WEBSOCKET EVENT: $event');
+          Logger.d('|📦 Data: ${data['data']}');
+          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          _handleChatAssistanceLimitReached(data['data']);
         }
       } catch (e) {
         Logger.e('WebSocketService: Error parsing message -> $e');
@@ -937,6 +962,26 @@ class WebSocketService extends GetxService {
       iceCandidateData.refresh();
     } catch (e) {
       Logger.e('WebSocketService: error handling IceCandidateSent -> $e');
+    }
+  }
+
+  void _handleChatAssistanceInitiated(dynamic rawData) {
+    try {
+      if (Get.isRegistered<AssistantChatListController>()) {
+        Get.find<AssistantChatListController>().fetchSessions();
+      }
+    } catch (e) {
+      Logger.e('WebSocketService: error handling ChatAssistanceInitiated -> $e');
+    }
+  }
+
+  void _handleChatAssistanceLimitReached(dynamic rawData) {
+    try {
+      if (Get.isRegistered<AssistanceChatRoomController>()) {
+        Get.find<AssistanceChatRoomController>().limitReached.value = true;
+      }
+    } catch (e) {
+      Logger.e('WebSocketService: error handling ChatAssistanceLimitReached -> $e');
     }
   }
 }
