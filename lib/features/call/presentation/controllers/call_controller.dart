@@ -299,17 +299,27 @@ class CallController extends GetxController with WidgetsBindingObserver {
         }
         
         final sId = sessionId ?? 0;
+        final wasVisible = isCallScreenVisible;
         cleanUp();
         
-        Future.delayed(const Duration(milliseconds: 300), () {
-          CallSummaryDialog.show(
-            sessionId: sId,
-            durationSeconds: duration,
-            totalCost: cost,
-          );
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (wasVisible) {
+            Get.back(); // Pop CallScreen
+          }
+          Future.delayed(const Duration(milliseconds: 300), () {
+            CallSummaryDialog.show(
+              sessionId: sId,
+              durationSeconds: duration,
+              totalCost: cost,
+            );
+          });
         });
       } else {
+        final wasVisible = isCallScreenVisible;
         cleanUp();
+        if (wasVisible) {
+          Get.back();
+        }
       }
     } catch (e) {
       Logger.e('CallController: Error ending call -> $e');
