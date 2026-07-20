@@ -23,6 +23,7 @@ import 'package:astro_astrologer/features/chat/domain/usecases/sync_message_stat
 import 'package:astro_astrologer/features/live/presentation/controllers/live_controller.dart';
 import 'package:astro_astrologer/features/chat/presentation/controllers/assistant_chat_list_controller.dart';
 import 'package:astro_astrologer/features/chat/presentation/controllers/assistance_chat_room_controller.dart';
+import 'package:astro_astrologer/features/live/data/models/live_session_model.dart';
 
 class WebSocketService extends GetxService {
   WebSocketChannel? _channel;
