@@ -97,8 +97,12 @@ class CallController extends GetxController with WidgetsBindingObserver {
     _endedSubscription = WebSocketService.callEndedData.listen((data) {
       if (data.isNotEmpty) {
         final session = data['session'];
-        if (session != null && session['id'] == sessionId) {
-          _handleCallEnded(data);
+        if (session != null) {
+          final incomingId = int.tryParse(session['id']?.toString() ?? '');
+          // Match by sessionId OR handle when sessionId is already null (race condition)
+          if (sessionId == null || incomingId == null || incomingId == sessionId) {
+            _handleCallEnded(data);
+          }
         }
       }
     });
@@ -347,11 +351,18 @@ class CallController extends GetxController with WidgetsBindingObserver {
       cost = double.tryParse(session['total_cost']?.toString() ?? '') ?? 0.0;
     }
     
+    final wasVisible = isCallScreenVisible;
     cleanUp();
     
-    // Close CallScreen
-    if (isCallScreenVisible || Get.isDialogOpen == true) {
+    // Close CallScreen — use wasVisible captured before cleanUp clears flags
+    if (wasVisible || (Get.isDialogOpen ?? false)) {
       Get.back();
+    } else {
+      // Fallback: pop whatever is on top if a call screen route exists
+      final routeStack = Get.currentRoute;
+      if (routeStack.isNotEmpty) {
+        Get.back();
+      }
     }
     
     Future.delayed(const Duration(milliseconds: 300), () {
