@@ -370,10 +370,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
 
     // First pop CallScreen, then after animation completes, show summary dialog
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Step 1: Close any open dialog (e.g. IncomingCallDialog)
-      if (Get.isDialogOpen ?? false) Get.back();
-
-      // Step 2: Pop CallScreen if visible
+      // Step 1: Pop CallScreen if visible
       if (wasVisible) {
         Get.back();
       }
