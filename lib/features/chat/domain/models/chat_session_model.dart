@@ -86,6 +86,7 @@ class ChatSessionUserModel {
   final String? timeOfBirth;
   final String? placeOfBirth;
   final num chatRatePerMinute;
+  final int? chatAssistanceSessionId;
 
   ChatSessionUserModel({
     required this.id,
@@ -96,6 +97,7 @@ class ChatSessionUserModel {
     this.timeOfBirth,
     this.placeOfBirth,
     required this.chatRatePerMinute,
+    this.chatAssistanceSessionId,
   });
 
   factory ChatSessionUserModel.fromJson(Map<String, dynamic> json) {
@@ -112,6 +114,9 @@ class ChatSessionUserModel {
       timeOfBirth: json['time_of_birth']?.toString(),
       placeOfBirth: json['place_of_birth']?.toString(),
       chatRatePerMinute: chatRate,
+      chatAssistanceSessionId: json['chat_assistance_session_id'] is int 
+          ? json['chat_assistance_session_id'] 
+          : int.tryParse(json['chat_assistance_session_id']?.toString() ?? ''),
     );
   }
 }
