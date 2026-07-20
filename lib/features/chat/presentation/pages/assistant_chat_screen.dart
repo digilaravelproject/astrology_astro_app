@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
+import '../../../../core/constants/app_urls.dart';
 import '../controllers/assistant_chat_list_controller.dart';
 import 'assistance_chat_room_screen.dart';
 
@@ -128,7 +129,9 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
                   CircleAvatar(
                     radius: 20,
                     backgroundColor: AppColors.primaryColor.withOpacity(0.1),
-                    backgroundImage: (userImage != null && userImage.isNotEmpty) ? NetworkImage(userImage) : null,
+                    backgroundImage: (userImage != null && userImage.isNotEmpty) 
+                      ? NetworkImage(userImage.startsWith('http') ? userImage : '${AppUrls.baseImageUrl}$userImage') 
+                      : null,
                     child: (userImage == null || userImage.isEmpty) 
                       ? AppText(userName.isNotEmpty ? userName.substring(0, 1).toUpperCase() : 'U', color: AppColors.primaryColor, fontWeight: FontWeight.bold)
                       : null,
