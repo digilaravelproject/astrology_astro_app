@@ -154,7 +154,7 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
                 );
               }),
             ),
-            _buildMessageInput(),
+            Obx(() => _buildMessageInput()),
           ],
         ),
       ),
@@ -317,6 +317,9 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
   }
 
   Widget _buildMessageInput() {
+    if (controller.limitReached.value) {
+      return const SizedBox.shrink();
+    }
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: const BoxDecoration(
@@ -354,7 +357,6 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
                 textCapitalization: TextCapitalization.sentences,
                 minLines: 1,
                 maxLines: 4,
-                enabled: !controller.limitReached.value,
               ),
             ),
             const SizedBox(width: 8),
