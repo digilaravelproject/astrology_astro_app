@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/widgets/app_text.dart';
-import '../../../core/widgets/custom_app_bar.dart';
-import '../../../core/widgets/custom_button.dart';
+import 'package:astro_astrologer/core/theme/app_colors.dart';
+import 'package:astro_astrologer/core/widgets/app_text.dart';
+import 'package:astro_astrologer/core/widgets/custom_app_bar.dart';
+import 'package:astro_astrologer/core/widgets/custom_button.dart';
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
 import 'package:astro_astrologer/features/call/call_details_screen.dart';
 import 'package:astro_astrologer/features/home/widgets/add_note_bottom_sheet.dart';
 import 'package:astro_astrologer/features/home/widgets/animated_favorite_button.dart';
 import 'package:astro_astrologer/features/chat/presentation/pages/assistance_chat_room_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../../core/widgets/loyal_badge.dart';
+import 'package:astro_astrologer/core/widgets/loyal_badge.dart';
 
 import 'package:astro_astrologer/core/services/network/api_client.dart';
-import '../../../core/constants/app_urls.dart';
+import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/features/orders/presentation/controllers/history_controller.dart';
 import 'package:astro_astrologer/features/orders/domain/usecases/get_astrologer_call_sessions_usecase.dart';
 import 'package:astro_astrologer/features/orders/data/repositories/history_repository.dart';
@@ -115,7 +115,7 @@ class CallHistoryScreen extends StatelessWidget {
                         showRefund: false,
                         imageUrl: session.consumer?.profilePhoto,
                         rawDatetime: rawDatetime,
-                        chatAssistanceSessionId: session.chatAssistanceSessionId,
+                        chatAssistanceSessionId: session.chatAssistanceSessionId ?? session.consumer?.chatAssistanceSessionId,
                       );
                     },
                   ),
@@ -474,6 +474,7 @@ class CallHistoryScreen extends StatelessWidget {
                             child: CustomButton(
                               text: "Chat Assistant",
                               onPressed: () {
+                                debugPrint("Call History: Chat Assistant clicked! chatAssistanceSessionId: $chatAssistanceSessionId");
                                 if (chatAssistanceSessionId != null) {
                                   Get.to(() => AssistanceChatRoomScreen(
                                     sessionId: chatAssistanceSessionId,
