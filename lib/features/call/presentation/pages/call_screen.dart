@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
+import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/theme/app_colors.dart';
 import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
-
+import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
+import 'package:astro_astrologer/features/chat/presentation/bindings/chat_binding.dart';
+import 'package:astro_astrologer/core/services/network/websocket_service.dart';
 import 'package:astro_astrologer/features/call/presentation/widgets/floating_call_bubble.dart';
 
 class CallScreen extends StatefulWidget {
@@ -77,30 +80,61 @@ class _CallScreenState extends State<CallScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Top Title / Timing
+                  // Top Bar: Status + Switch-to-Chat icon
                   Padding(
-                    padding: const EdgeInsets.only(top: 40.0),
-                    child: Column(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          status == 'ongoing' ? 'Ongoing Call' : status.toUpperCase(),
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        if (status == 'ongoing')
-                          Text(
-                            '$minutes:$seconds',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 36,
-                              fontWeight: FontWeight.bold,
+                        const SizedBox(width: 48), // balance right icon
+                        Column(
+                          children: [
+                            const SizedBox(height: 32),
+                            Text(
+                              status == 'ongoing' ? 'Ongoing Call' : status.toUpperCase(),
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                letterSpacing: 1.5,
+                              ),
                             ),
-                          ),
+                            const SizedBox(height: 10),
+                            if (status == 'ongoing')
+                              Text(
+                                '$minutes:$seconds',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 36,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                          ],
+                        ),
+                        // ── Switch to Chat button ──
+                        if (status == 'ongoing')
+                          Padding(
+                            padding: const EdgeInsets.only(top: 32),
+                            child: GestureDetector(
+                              onTap: () => _showSwitchToChatDialog(context),
+                              child: Container(
+                                width: 48,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.15),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: Colors.white38, width: 1.5),
+                                ),
+                                child: const Icon(
+                                  Icons.chat_bubble_outline_rounded,
+                                  color: Colors.white,
+                                  size: 22,
+                                ),
+                              ),
+                            ),
+                          )
+                        else
+                          const SizedBox(width: 48),
                       ],
                     ),
                   ),
@@ -189,6 +223,103 @@ class _CallScreenState extends State<CallScreen> {
           ],
         );
       }),
+    );
+  }
+
+  // ── Switch-to-Chat confirmation dialog ─────────────────────────────────────
+  void _showSwitchToChatDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: const [
+            Icon(Icons.chat_bubble_rounded, color: AppColors.primaryColor, size: 22),
+            SizedBox(width: 10),
+            Text('Switch to Chat', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+          ],
+        ),
+        content: Text(
+          'End the current call and start a session chat with ${controller.consumerName ?? "User"}?',
+          style: const TextStyle(fontSize: 14, color: Colors.black87),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              _switchToChat();
+            },
+            icon: const Icon(Icons.chat_bubble_rounded, size: 16),
+            label: const Text('Switch'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryColor,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _switchToChat() async {
+    final sessionId = controller.sessionId;
+    final userName  = controller.consumerName ?? 'User';
+    final userImage = controller.consumerImage ?? '';
+    final consumerId = controller.consumerId;
+
+    // 1. End the ongoing call
+    await controller.endCall();
+
+    // 2. Pop call screen + clear any bubble
+    Get.until((route) => route.isFirst);
+
+    // 3. Try to initiate a chat session via API
+    if (consumerId != null) {
+      try {
+        final api = Get.find<ApiClient>();
+        // Try astrologer-side initiate (may not exist on backend)
+        final resp = await api.post(
+          '/chat/initiate-from-call',
+          body: {'consumer_id': consumerId},
+        );
+
+        if (resp.isSuccess) {
+          final data   = resp.body?['data']?['session'];
+          final chatId = data?['id'] as int?;
+          final startedAt = data?['started_at']?.toString() ?? DateTime.now().toUtc().toIso8601String();
+          if (chatId != null) {
+            WebSocketService.sessionStartTimes[chatId] = startedAt;
+            Get.to(
+              () => ChatScreen(
+                userName: userName,
+                userImage: userImage,
+                sessionId: chatId,
+                initialStatus: 'ongoing',
+                startedAtString: startedAt,
+              ),
+              binding: ChatBinding(),
+            );
+            return;
+          }
+        }
+      } catch (_) {}
+    }
+
+    // 4. Fallback: show snackbar — chat initiated by user will auto-open via WebSocket
+    Get.snackbar(
+      'Call Ended',
+      'Chat ke liye user ${userName} ko request karen',
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: AppColors.primaryColor.withValues(alpha: 0.9),
+      colorText: Colors.white,
+      icon: const Icon(Icons.chat_bubble_rounded, color: Colors.white),
+      duration: const Duration(seconds: 5),
     );
   }
 
