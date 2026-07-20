@@ -19,9 +19,25 @@ import 'package:astro_astrologer/features/orders/presentation/controllers/histor
 import 'package:astro_astrologer/features/orders/domain/usecases/get_astrologer_call_sessions_usecase.dart';
 import 'package:astro_astrologer/features/orders/data/repositories/history_repository.dart';
 
+import '../chat/presentation/controllers/assistant_chat_list_controller.dart';
+import '../chat/presentation/pages/assistance_chat_room_screen.dart';
+
 class CallHistoryScreen extends StatelessWidget {
   final bool isFromTab;
-  const CallHistoryScreen({super.key, this.isFromTab = false});
+  CallHistoryScreen({super.key, this.isFromTab = false});
+  final AssistantChatListController controller = Get.put(AssistantChatListController());
+
+
+  void _navigateToChat(int sessionId, String userName, String? userImage) {
+    Get.to(() => AssistanceChatRoomScreen(
+      sessionId: sessionId,
+      userName: userName,
+      userImage: userImage,
+    ))?.then((_) {
+      // Refresh list when coming back from chat room
+      controller.fetchSessions();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -470,7 +486,9 @@ class CallHistoryScreen extends StatelessWidget {
                           Expanded(
                             child: CustomButton(
                               text: "Chat Assistant",
-                              onPressed: () {},
+                              onPressed: () {
+                                // _navigateToChat("", details["Name"] ?? "", imageUrl);
+                              },
                               height: 42,
                               padding: EdgeInsets.zero,
                               backgroundColor: const Color(0xFF2CB772),

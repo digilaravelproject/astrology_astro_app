@@ -5,6 +5,8 @@ import '../../../../../../../../../core/theme/app_colors.dart';
 import '../../../../../../../../../core/widgets/app_text.dart';
 import '../../../../../../../../../core/widgets/custom_app_bar.dart';
 import '../../../../../../../../../core/widgets/custom_button.dart';
+import '../controllers/assistant_chat_list_controller.dart';
+import 'assistance_chat_room_screen.dart';
 import 'create_default_message_screen.dart';
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
 import 'package:astro_astrologer/features/call/call_details_screen.dart';
@@ -20,7 +22,20 @@ import '../bindings/chat_binding.dart';
 class ChatHistoryScreen extends StatelessWidget {
   final bool showDefaultMessageButton;
   final bool isFromTab;
-  const ChatHistoryScreen({super.key, this.showDefaultMessageButton = true, this.isFromTab = false});
+  ChatHistoryScreen({super.key, this.showDefaultMessageButton = true, this.isFromTab = false});
+  final AssistantChatListController controller = Get.put(AssistantChatListController());
+
+
+  void _navigateToChat(int sessionId, String userName, String? userImage) {
+    Get.to(() => AssistanceChatRoomScreen(
+      sessionId: sessionId,
+      userName: userName,
+      userImage: userImage,
+    ))?.then((_) {
+      // Refresh list when coming back from chat room
+      controller.fetchSessions();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -478,7 +493,9 @@ class ChatHistoryScreen extends StatelessWidget {
                           Expanded(
                             child: CustomButton(
                               text: "Chat Assistant",
-                              onPressed: () {},
+                              onPressed: () {
+                               // _navigateToChat("", details["Name"] ?? "", imageUrl);
+                              },
                               height: 42,
                               padding: EdgeInsets.zero,
                               backgroundColor: const Color(0xFF2CB772),

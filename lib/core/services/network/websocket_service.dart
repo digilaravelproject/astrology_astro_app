@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/io.dart';
+import '../../../features/live/data/models/live_session_model.dart';
 import '../storage/token_manger.dart';
 import '../storage/shared_prefs.dart';
 import '../../../core/constants/app_constants.dart';
