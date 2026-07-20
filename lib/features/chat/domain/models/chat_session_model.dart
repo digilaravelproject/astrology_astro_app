@@ -34,6 +34,7 @@ class ChatSessionModel {
   final num totalCost;
   final String createdAt;
   final int unreadCount;
+  final int? chatAssistanceSessionId;
   
   // Either consumer or provider will be populated depending on the API side
   final ChatSessionUserModel? provider;
@@ -51,6 +52,7 @@ class ChatSessionModel {
     required this.totalCost,
     required this.createdAt,
     required this.unreadCount,
+    this.chatAssistanceSessionId,
     this.provider,
     this.consumer,
     this.latestMessage,
@@ -67,6 +69,7 @@ class ChatSessionModel {
       totalCost: json['total_cost'] ?? 0.0,
       createdAt: json['created_at'] ?? '',
       unreadCount: json['unread_count'] ?? 0,
+      chatAssistanceSessionId: json['chat_assistance_session_id'],
       provider: json['provider'] != null ? ChatSessionUserModel.fromJson(json['provider']) : null,
       consumer: json['consumer'] != null ? ChatSessionUserModel.fromJson(json['consumer']) : null,
       latestMessage: json['latest_message'] != null ? ChatSessionLatestMessage.fromJson(json['latest_message']) : null,

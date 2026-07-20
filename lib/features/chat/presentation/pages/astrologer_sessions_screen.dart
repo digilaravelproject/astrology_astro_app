@@ -12,8 +12,9 @@ import 'package:astro_astrologer/features/chat/presentation/bindings/chat_bindin
 import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
 import 'package:astro_astrologer/features/chat/presentation/pages/create_default_message_screen.dart';
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
-import 'package:astro_astrologer/features/home/widgets/add_note_bottom_sheet.dart';
 import 'package:astro_astrologer/features/home/widgets/animated_favorite_button.dart';
+import 'package:astro_astrologer/features/home/widgets/add_note_bottom_sheet.dart';
+import 'package:astro_astrologer/features/chat/presentation/pages/assistance_chat_room_screen.dart';
 
 import 'controllers/astrologer_sessions_controller.dart';
 
@@ -165,13 +166,13 @@ class AstrologerSessionsScreen extends StatelessWidget {
     };
 
     String? rawDatetime;
-    if (consumer?.dateOfBirth != null) {
+    if (consumer != null && consumer.dateOfBirth != null) {
       try {
-        final dobDate = DateTime.tryParse(consumer!.dateOfBirth!)?.toLocal();
+        final dobDate = DateTime.tryParse(consumer.dateOfBirth!)?.toLocal();
         if (dobDate != null) {
           String d = "${dobDate.year}-${dobDate.month.toString().padLeft(2, '0')}-${dobDate.day.toString().padLeft(2, '0')}";
           String t = "00:00:00";
-          if (consumer?.timeOfBirth != null && consumer!.timeOfBirth!.isNotEmpty) {
+          if (consumer.timeOfBirth != null && consumer.timeOfBirth!.isNotEmpty) {
             t = consumer.timeOfBirth!;
             if (t.length == 5) t += ":00";
           }
@@ -384,10 +385,17 @@ class AstrologerSessionsScreen extends StatelessWidget {
                       Expanded(
                         child: CustomButton(
                           text: 'Chat Assistant',
-                          onPressed: () => Get.to(
-                            () => ChatScreen(userName: name, userImage: photoUrl, sessionId: session.id, initialStatus: session.status),
-                            binding: ChatBinding(),
-                          ),
+                          onPressed: () {
+                            if (session.chatAssistanceSessionId != null) {
+                              Get.to(() => AssistanceChatRoomScreen(
+                                sessionId: session.chatAssistanceSessionId!,
+                                userName: name,
+                                userImage: photoUrl,
+                              ));
+                            } else {
+                              Get.snackbar("Error", "No Chat Assistance Session available");
+                            }
+                          },
                           height: 42,
                           padding: EdgeInsets.zero,
                           backgroundColor: const Color(0xFF2CB772),

@@ -34,6 +34,7 @@ class CallSessionModel {
   final String? startedAt;
   final String? endedAt;
   final String? answer;
+  final int? chatAssistanceSessionId;
   final CallSessionUserModel? provider;
   final CallSessionUserModel? consumer;
 
@@ -49,6 +50,7 @@ class CallSessionModel {
     this.startedAt,
     this.endedAt,
     this.answer,
+    this.chatAssistanceSessionId,
     this.provider,
     this.consumer,
   });
@@ -66,6 +68,7 @@ class CallSessionModel {
       startedAt: json['started_at']?.toString(),
       endedAt: json['ended_at']?.toString(),
       answer: json['answer']?.toString(),
+      chatAssistanceSessionId: int.tryParse(json['chat_assistance_session_id']?.toString() ?? ''),
       provider: json['provider'] != null ? CallSessionUserModel.fromJson(json['provider']) : null,
       consumer: json['consumer'] != null ? CallSessionUserModel.fromJson(json['consumer']) : null,
     );
