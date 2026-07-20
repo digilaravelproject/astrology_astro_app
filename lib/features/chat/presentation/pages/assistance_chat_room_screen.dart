@@ -104,7 +104,7 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
                   color: Colors.orange.shade100,
                   padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                   child: AppText(
-                    'You have reached your daily free assistance reply limit.',
+                    'Daily message reply limit reached. You cannot send more replies today.',
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
                     color: Colors.deepOrange.shade800,
