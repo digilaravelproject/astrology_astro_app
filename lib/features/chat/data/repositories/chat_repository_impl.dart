@@ -30,9 +30,20 @@ class ChatRepositoryImpl implements IChatRepository {
     final response = await _remoteDataSource.getChatHistory(sessionId);
     if (response.isSuccess && response.body != null) {
       final body = response.body;
-      final dynamic messagesData = body['messages'] ?? body['data'] ?? [];
-      final List<ChatMessage> messagesList = [];
+      
+      dynamic messagesData;
+      if (body['messages'] != null) {
+        messagesData = body['messages'];
+      } else if (body['data'] != null) {
+        if (body['data'] is Map && body['data']['data'] != null) {
+          messagesData = body['data']['data'];
+        } else {
+          messagesData = body['data'];
+        }
+      }
+      messagesData ??= [];
 
+      final List<ChatMessage> messagesList = [];
       if (messagesData is List) {
         for (var item in messagesData) {
           if (item is Map<String, dynamic>) {
@@ -42,7 +53,9 @@ class ChatRepositoryImpl implements IChatRepository {
       }
 
       int? peerId;
-      final dynamic sessionData = body['session'] ?? body['data']?['session'] ?? body['data'] ?? {};
+      final dynamic sessionData = body['session'] ?? 
+          (body['data'] is Map ? (body['data']['session'] ?? body['data']) : {});
+      
       final int cId = int.tryParse(sessionData['consumer_id']?.toString() ?? '') ?? 0;
       final int pId = int.tryParse(sessionData['provider_id']?.toString() ?? '') ?? 0;
       if (cId != 0 && pId != 0) {
