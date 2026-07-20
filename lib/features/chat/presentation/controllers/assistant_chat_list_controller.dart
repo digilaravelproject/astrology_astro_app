@@ -9,6 +9,10 @@ class AssistantChatListController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxBool hasError = false.obs;
 
+  // Search and Filter variables
+  final RxString searchQuery = ''.obs;
+  final RxString selectedFilter = 'All'.obs; // 'All', 'Unread', 'Read'
+
   @override
   void onInit() {
     super.onInit();
@@ -32,5 +36,28 @@ class AssistantChatListController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  List<dynamic> get filteredSessions {
+    return activeSessions.where((session) {
+      final consumer = session['consumer'] ?? {};
+      final latestMessage = session['latest_message'] ?? {};
+      final name = (consumer['name'] ?? '').toString().toLowerCase();
+      final query = searchQuery.value.toLowerCase();
+      
+      final matchesQuery = name.contains(query);
+      if (!matchesQuery) return false;
+      
+      final consumerId = session['consumer_id'];
+      final isUnread = latestMessage['sender_id'] == consumerId && latestMessage['is_read'] == false;
+      
+      if (selectedFilter.value == 'Unread') {
+        return isUnread;
+      } else if (selectedFilter.value == 'Read') {
+        return !isUnread;
+      }
+      
+      return true;
+    }).toList();
   }
 }
