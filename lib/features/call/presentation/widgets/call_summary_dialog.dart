@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:astro_astrologer/core/theme/app_colors.dart';
 import 'package:astro_astrologer/core/widgets/app_text.dart';
-import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 
 class CallSummaryDialog extends StatelessWidget {
   final int sessionId;
@@ -97,15 +96,9 @@ class CallSummaryDialog extends StatelessWidget {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
-                  // Close dialog then pop CallScreen if it's still in route stack
-                  Get.back(); // close dialog
-                  // If CallScreen is still open behind dialog, pop it too
-                  if (Get.isRegistered<CallController>()) {
-                    final cc = Get.find<CallController>();
-                    if (cc.isCallScreenVisible) {
-                      Get.back();
-                    }
-                  }
+                  // Pop all routes until we reach the first (home/dashboard) screen
+                  // This reliably clears: summary dialog + CallScreen + any other routes
+                  Get.until((route) => route.isFirst);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryColor,
