@@ -38,7 +38,7 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: Colors.grey.shade50,
       appBar: CustomAppBar(
         title: 'Assistant Chat Requests',
       ),
@@ -46,26 +46,34 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
         children: [
           // Search & Filter Panel
           Container(
-            color: Colors.grey.shade100,
+            color: Colors.grey.shade50,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Column(
               children: [
-                // Search Bar matching the app UI
+                // Clean Search Bar with shadow and correct alignment
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(color: AppColors.primaryColor.withOpacity(0.2), width: 1.2),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.shade300, width: 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.02),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: TextField(
                     controller: _searchController,
                     onChanged: (val) {
                       controller.searchQuery.value = val;
                     },
+                    textAlignVertical: TextAlignVertical.center,
                     decoration: InputDecoration(
                       hintText: 'Search chats...',
                       hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
-                      prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primaryColor, size: 22),
+                      prefixIcon: const Icon(Icons.search_rounded, color: Colors.grey, size: 22),
                       suffixIcon: Obx(() => controller.searchQuery.value.isNotEmpty
                           ? IconButton(
                               icon: const Icon(Icons.close_rounded, size: 20, color: Colors.grey),
@@ -76,12 +84,13 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
                             )
                           : const SizedBox.shrink()),
                       border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
                 ),
                 const SizedBox(height: 12),
-                // Filter Chips matching the app UI
+                // Filter Chips
                 Obx(() => Row(
                       children: [
                         _buildFilterChip('All'),
@@ -195,7 +204,7 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primaryColor.withOpacity(0.05) : Colors.white,
+          color: isSelected ? AppColors.primaryColor : Colors.white,
           borderRadius: BorderRadius.circular(100),
           border: Border.all(
             color: isSelected ? AppColors.primaryColor : Colors.grey.shade300,
@@ -206,7 +215,7 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
           filterName,
           fontSize: 13,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-          color: isSelected ? AppColors.primaryColor : Colors.black87,
+          color: isSelected ? Colors.white : Colors.black87,
         ),
       ),
     );
@@ -288,20 +297,38 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
             children: [
               Stack(
                 children: [
-                  CircleAvatar(
-                    radius: 24,
-                    backgroundColor: AppColors.primaryColor.withOpacity(0.1),
-                    backgroundImage: (userImage != null && userImage.isNotEmpty)
-                        ? NetworkImage(userImage.startsWith('http') ? userImage : '${AppUrls.baseImageUrl}$userImage')
-                        : null,
-                    child: (userImage == null || userImage.isEmpty)
-                        ? AppText(
-                            userName.isNotEmpty ? userName.substring(0, 1).toUpperCase() : 'U',
-                            color: AppColors.primaryColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          )
-                        : null,
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.primaryColor.withOpacity(0.1),
+                    ),
+                    child: ClipOval(
+                      child: (userImage != null && userImage.isNotEmpty)
+                          ? Image.network(
+                              userImage.startsWith('http')
+                                  ? userImage
+                                  : '${AppUrls.baseImageUrl}$userImage',
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) => Center(
+                                child: AppText(
+                                  userName.isNotEmpty ? userName.substring(0, 1).toUpperCase() : 'U',
+                                  color: AppColors.primaryColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            )
+                          : Center(
+                              child: AppText(
+                                userName.isNotEmpty ? userName.substring(0, 1).toUpperCase() : 'U',
+                                color: AppColors.primaryColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                    ),
                   ),
                   if (isUnread)
                     Positioned(
