@@ -96,9 +96,9 @@ class CallSummaryDialog extends StatelessWidget {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
-                  // Pop all routes until we reach the first (home/dashboard) screen
-                  // This reliably clears: summary dialog + CallScreen + any other routes
-                  Get.until((route) => route.isFirst);
+                  // Pop only the CallSummaryDialog itself, so we don't accidentally close
+                  // any incoming chat request dialogs that opened in the background.
+                  Get.back();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryColor,
