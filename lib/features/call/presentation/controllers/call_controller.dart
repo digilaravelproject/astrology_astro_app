@@ -356,22 +356,26 @@ class CallController extends GetxController with WidgetsBindingObserver {
     final sIdBeforeCleanup = sessionId ?? sId;
     cleanUp();
     
-    // Close CallScreen — navigate back past it entirely
-    if (wasVisible) {
-      // CallScreen is a full route, pop it
-      if (Get.isDialogOpen ?? false) Get.back(); // close any open dialog first
-      Get.back(); // pop CallScreen
-    } else if (Get.isDialogOpen ?? false) {
-      Get.back(); // close IncomingCallDialog if open
-    }
-    
     final resolvedId = sIdBeforeCleanup > 0 ? sIdBeforeCleanup : sId;
-    Future.delayed(const Duration(milliseconds: 300), () {
-      CallSummaryDialog.show(
-        sessionId: resolvedId,
-        durationSeconds: duration,
-        totalCost: cost,
-      );
+
+    // First pop CallScreen, then after animation completes, show summary dialog
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Step 1: Close any open dialog (e.g. IncomingCallDialog)
+      if (Get.isDialogOpen ?? false) Get.back();
+
+      // Step 2: Pop CallScreen if visible
+      if (wasVisible) {
+        Get.back();
+      }
+
+      // Step 3: After pop animation finishes (~500ms), show summary dialog
+      Future.delayed(const Duration(milliseconds: 500), () {
+        CallSummaryDialog.show(
+          sessionId: resolvedId,
+          durationSeconds: duration,
+          totalCost: cost,
+        );
+      });
     });
   }
 
