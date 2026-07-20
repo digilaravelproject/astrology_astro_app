@@ -38,7 +38,7 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey.shade100,
       appBar: CustomAppBar(
         title: 'Assistant Chat Requests',
       ),
@@ -46,8 +46,8 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
         children: [
           // Search & Filter Panel
           Container(
-            color: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            color: Colors.grey.shade100,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Column(
               children: [
                 // Search Bar matching the app UI
@@ -94,7 +94,6 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
               ],
             ),
           ),
-          const Divider(height: 1, color: Color(0xFFEEEEEE)),
           
           // Sessions List
           Expanded(
@@ -138,14 +137,9 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
                 );
               }
 
-              return ListView.separated(
-                padding: EdgeInsets.zero,
+              return ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemCount: sessions.length,
-                separatorBuilder: (context, index) => Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: Colors.grey.shade200,
-                ),
                 itemBuilder: (context, index) {
                   final session = sessions[index];
                   final consumer = session['consumer'] ?? {};
@@ -169,7 +163,7 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
                      }
                   }
 
-                  return _buildWhatsAppListTile(
+                  return _buildActiveUserCard(
                     sessionId: sessionId,
                     userName: consumerName,
                     userImage: consumerImage,
@@ -218,7 +212,7 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
     );
   }
 
-  Widget _buildWhatsAppListTile({
+  Widget _buildActiveUserCard({
     required int sessionId,
     required String userName,
     required String? userImage,
@@ -272,101 +266,116 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
       );
     }
 
-    return InkWell(
+    return GestureDetector(
       onTap: () => _navigateToChat(sessionId, userName, userImage),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: [
-            Stack(
-              children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundColor: AppColors.primaryColor.withOpacity(0.1),
-                  backgroundImage: (userImage != null && userImage.isNotEmpty)
-                      ? NetworkImage(userImage.startsWith('http') ? userImage : '${AppUrls.baseImageUrl}$userImage')
-                      : null,
-                  child: (userImage == null || userImage.isEmpty)
-                      ? AppText(
-                          userName.isNotEmpty ? userName.substring(0, 1).toUpperCase() : 'U',
-                          color: AppColors.primaryColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        )
-                      : null,
-                ),
-                if (isUnread)
-                  Positioned(
-                    right: 0,
-                    bottom: 0,
-                    child: Container(
-                      width: 14,
-                      height: 14,
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 2),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: AppText(
-                          userName,
-                          fontSize: 15,
-                          fontWeight: isUnread ? FontWeight.bold : FontWeight.w600,
-                          color: Colors.black87,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      AppText(
-                        time,
-                        fontSize: 11,
-                        color: isUnread ? Colors.green : Colors.grey.shade400,
-                        fontWeight: isUnread ? FontWeight.bold : FontWeight.normal,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      if (isMe) ...[
-                        _buildMessageStatusIcon(messageStatus),
-                        const SizedBox(width: 4),
-                      ],
-                      Expanded(child: messagePreview),
-                      if (isUnread) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: const BoxDecoration(
-                            color: Colors.green,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const AppText(
-                            '1',
-                            fontSize: 10,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ],
-              ),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade200),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: 5,
+              offset: const Offset(0, 2),
             ),
           ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              Stack(
+                children: [
+                  CircleAvatar(
+                    radius: 24,
+                    backgroundColor: AppColors.primaryColor.withOpacity(0.1),
+                    backgroundImage: (userImage != null && userImage.isNotEmpty)
+                        ? NetworkImage(userImage.startsWith('http') ? userImage : '${AppUrls.baseImageUrl}$userImage')
+                        : null,
+                    child: (userImage == null || userImage.isEmpty)
+                        ? AppText(
+                            userName.isNotEmpty ? userName.substring(0, 1).toUpperCase() : 'U',
+                            color: AppColors.primaryColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          )
+                        : null,
+                  ),
+                  if (isUnread)
+                    Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: Container(
+                        width: 14,
+                        height: 14,
+                        decoration: BoxDecoration(
+                          color: Colors.green,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: AppText(
+                            userName,
+                            fontSize: 15,
+                            fontWeight: isUnread ? FontWeight.bold : FontWeight.w600,
+                            color: Colors.black87,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        AppText(
+                          time,
+                          fontSize: 11,
+                          color: isUnread ? Colors.green : Colors.grey.shade400,
+                          fontWeight: isUnread ? FontWeight.bold : FontWeight.normal,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        if (isMe) ...[
+                          _buildMessageStatusIcon(messageStatus),
+                          const SizedBox(width: 4),
+                        ],
+                        Expanded(child: messagePreview),
+                        if (isUnread) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: const BoxDecoration(
+                              color: Colors.green,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const AppText(
+                              '1',
+                              fontSize: 10,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
