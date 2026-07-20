@@ -487,7 +487,7 @@ class CallHistoryScreen extends StatelessWidget {
                             child: CustomButton(
                               text: "Chat Assistant",
                               onPressed: () {
-                                // _navigateToChat("", details["Name"] ?? "", imageUrl);
+                               // _navigateToChat(, details["Name"] ?? "", imageUrl);
                               },
                               height: 42,
                               padding: EdgeInsets.zero,
