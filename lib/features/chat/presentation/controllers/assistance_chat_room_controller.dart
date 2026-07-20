@@ -56,8 +56,21 @@ class AssistanceChatRoomController extends GetxController {
     try {
       final response = await _apiClient.get(AppUrls.getChatAssistanceMessages(_sessionId));
       if (response.isSuccess) {
-        final data = response.body['data']['data'] as List;
-        messages.assignAll(data.map((msg) {
+        dynamic rawData = response.body;
+        List<dynamic> dataList = [];
+        if (rawData is List) {
+          dataList = rawData;
+        } else if (rawData is Map) {
+          if (rawData['data'] is List) {
+            dataList = rawData['data'] as List;
+          } else if (rawData['data'] is Map && rawData['data']['data'] is List) {
+            dataList = rawData['data']['data'] as List;
+          } else if (rawData['messages'] is List) {
+            dataList = rawData['messages'] as List;
+          }
+        }
+
+        messages.assignAll(dataList.map((msg) {
           final int senderId = int.tryParse(msg['sender_id']?.toString() ?? '') ?? 0;
           final bool isMe = senderId == _currentUserId;
           return ChatMessage(
