@@ -50,43 +50,41 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Column(
               children: [
-                // Clean Search Bar with shadow and correct alignment
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.shade300, width: 1),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.02),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: TextField(
-                    controller: _searchController,
-                    onChanged: (val) {
-                      controller.searchQuery.value = val;
-                    },
-                    textAlignVertical: TextAlignVertical.center,
-                    decoration: InputDecoration(
-                      hintText: 'Search chats...',
-                      hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
-                      prefixIcon: const Icon(Icons.search_rounded, color: Colors.grey, size: 22),
-                      suffixIcon: Obx(() => controller.searchQuery.value.isNotEmpty
-                          ? IconButton(
-                              icon: const Icon(Icons.close_rounded, size: 20, color: Colors.grey),
-                              onPressed: () {
-                                _searchController.clear();
-                                controller.searchQuery.value = '';
-                              },
-                            )
-                          : const SizedBox.shrink()),
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                // Clean Search Bar matching app UI style
+                TextField(
+                  controller: _searchController,
+                  onChanged: (val) {
+                    controller.searchQuery.value = val;
+                  },
+                  textAlignVertical: TextAlignVertical.center,
+                  decoration: InputDecoration(
+                    hintText: 'Search chats...',
+                    hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+                    prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primaryColor, size: 20),
+                    suffixIcon: Obx(() => controller.searchQuery.value.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.close_rounded, size: 20, color: Colors.grey),
+                            onPressed: () {
+                              _searchController.clear();
+                              controller.searchQuery.value = '';
+                            },
+                          )
+                        : const SizedBox.shrink()),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey.shade200),
                     ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey.shade200),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.primaryColor, width: 1),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 10),
                   ),
                 ),
                 const SizedBox(height: 12),
