@@ -1,5 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:astro_astrologer/core/services/network/multipart.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/services/network/websocket_service.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
@@ -109,6 +113,116 @@ class AssistanceChatRoomController extends GetxController {
           final data = response.body['data']['message'];
           final serverId = int.tryParse(data['id']?.toString() ?? '') ?? 0;
           messages[index] = messages[index].copyWith(id: serverId, status: 'sent');
+          fetchAstrologerStatus();
+        } else {
+          messages[index] = messages[index].copyWith(status: 'failed');
+          if (response.message.toLowerCase().contains('limit')) {
+            limitReached.value = true;
+          }
+          CustomSnackBar.showError(response.message);
+        }
+        messages.refresh();
+      }
+    } catch (e) {
+      final index = messages.indexWhere((m) => m.id == tempId);
+      if (index != -1) {
+        messages[index] = messages[index].copyWith(status: 'failed');
+        messages.refresh();
+      }
+    }
+  }
+
+  Future<void> sendImageAttachment(XFile xFile) async {
+    if (limitReached.value) return;
+
+    final tempId = DateTime.now().millisecondsSinceEpoch;
+    final localMsg = ChatMessage(
+      id: tempId,
+      text: '📷 Sending Image...',
+      isMe: true,
+      time: DateTime.now(),
+      status: 'sending...',
+      image: xFile.path,
+      type: 'image',
+    );
+    messages.insert(0, localMsg);
+    _scrollToBottom();
+
+    try {
+      final response = await _apiClient.postMultipartData(
+        AppUrls.sendChatAssistanceMessage(_sessionId),
+        {'type': 'image', 'message': ''},
+        [MultipartBody('file', xFile)],
+        [],
+      );
+
+      final index = messages.indexWhere((m) => m.id == tempId);
+      if (index != -1) {
+        if (response.isSuccess) {
+          final data = response.body['data']['message'];
+          final serverId = int.tryParse(data['id']?.toString() ?? '') ?? 0;
+          final attachmentUrl = data['attachment_url']?.toString();
+          messages[index] = messages[index].copyWith(
+            id: serverId, 
+            status: 'sent',
+            image: attachmentUrl,
+            attachmentUrl: attachmentUrl,
+            text: '',
+          );
+          fetchAstrologerStatus();
+        } else {
+          messages[index] = messages[index].copyWith(status: 'failed');
+          if (response.message.toLowerCase().contains('limit')) {
+            limitReached.value = true;
+          }
+          CustomSnackBar.showError(response.message);
+        }
+        messages.refresh();
+      }
+    } catch (e) {
+      final index = messages.indexWhere((m) => m.id == tempId);
+      if (index != -1) {
+        messages[index] = messages[index].copyWith(status: 'failed');
+        messages.refresh();
+      }
+    }
+  }
+
+  Future<void> sendDocumentAttachment(PlatformFile platformFile) async {
+    if (limitReached.value) return;
+
+    final tempId = DateTime.now().millisecondsSinceEpoch;
+    final localMsg = ChatMessage(
+      id: tempId,
+      text: '📄 ${platformFile.name}',
+      isMe: true,
+      time: DateTime.now(),
+      status: 'sending...',
+      type: 'document',
+    );
+    messages.insert(0, localMsg);
+    _scrollToBottom();
+
+    try {
+      final pickerResult = FilePickerResult([platformFile]);
+      final response = await _apiClient.postMultipartData(
+        AppUrls.sendChatAssistanceMessage(_sessionId),
+        {'type': 'document', 'message': platformFile.name},
+        [],
+        [MultipartDocument('file', pickerResult)],
+      );
+
+      final index = messages.indexWhere((m) => m.id == tempId);
+      if (index != -1) {
+        if (response.isSuccess) {
+          final data = response.body['data']['message'];
+          final serverId = int.tryParse(data['id']?.toString() ?? '') ?? 0;
+          final attachmentUrl = data['attachment_url']?.toString();
+          messages[index] = messages[index].copyWith(
+            id: serverId, 
+            status: 'sent',
+            attachmentUrl: attachmentUrl,
+          );
           fetchAstrologerStatus();
         } else {
           messages[index] = messages[index].copyWith(status: 'failed');

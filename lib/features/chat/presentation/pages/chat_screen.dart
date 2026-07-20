@@ -119,7 +119,36 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       child: Scaffold(
         backgroundColor: const Color(0xFFF5F5F5),
         appBar: CustomAppBar(
-          title: widget.userName,
+          title: '', // Not used since titleWidget is provided
+          titleWidget: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircleAvatar(
+                radius: 16,
+                backgroundColor: AppColors.deepPink.withOpacity(0.1),
+                backgroundImage: (widget.userImage.isNotEmpty)
+                    ? NetworkImage(widget.userImage.startsWith('http') 
+                        ? widget.userImage 
+                        : '${AppUrls.baseImageUrl}${widget.userImage}')
+                    : null,
+                child: widget.userImage.isEmpty
+                    ? AppText(
+                        widget.userName.isNotEmpty ? widget.userName.substring(0, 1).toUpperCase() : 'U',
+                        color: AppColors.deepPink,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      )
+                    : null,
+              ),
+              const SizedBox(width: 8),
+              AppText(
+                widget.userName,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF2E1A47),
+              ),
+            ],
+          ),
           centerTitle: false,
           showLeading: true,
           onLeadingPressed: () {

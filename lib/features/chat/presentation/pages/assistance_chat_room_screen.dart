@@ -1,9 +1,14 @@
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import '../../../../core/constants/app_urls.dart';
 import '../controllers/assistance_chat_room_controller.dart';
 import 'package:astro_astrologer/core/theme/app_colors.dart';
 import 'package:astro_astrologer/core/widgets/app_text.dart';
 import 'package:astro_astrologer/features/chat/domain/entities/chat_message.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 class AssistanceChatRoomScreen extends StatefulWidget {
   final int sessionId;
@@ -54,12 +59,12 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
             CircleAvatar(
               radius: 20,
               backgroundColor: AppColors.primaryColor.withOpacity(0.1),
-              backgroundImage: widget.userImage != null 
-                  ? NetworkImage(widget.userImage!) 
+              backgroundImage: (widget.userImage != null && widget.userImage!.isNotEmpty)
+                  ? NetworkImage("${AppUrls.baseImageUrl}${widget.userImage!}")
                   : null,
-              child: widget.userImage == null
+              child: (widget.userImage == null || widget.userImage!.isEmpty)
                   ? AppText(
-                      widget.userName.substring(0, 1).toUpperCase(),
+                      widget.userName.isNotEmpty ? widget.userName.substring(0, 1).toUpperCase() : 'U',
                       color: AppColors.primaryColor,
                       fontWeight: FontWeight.bold,
                     )
@@ -180,24 +185,72 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            if (message.type == 'image' && message.image != null)
+            if (message.type == 'image')
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.network(
-                    message.image!,
-                    height: 150,
-                    width: 200,
-                    fit: BoxFit.cover,
-                  ),
+                  child: message.image != null && message.image!.startsWith('http')
+                      ? Image.network(
+                          message.image!,
+                          height: 150,
+                          width: 200,
+                          fit: BoxFit.cover,
+                        )
+                      : (message.image != null
+                          ? Image.file(
+                              File(message.image!),
+                              height: 150,
+                              width: 200,
+                              fit: BoxFit.cover,
+                            )
+                          : Image.network(
+                              message.attachmentUrl != null && message.attachmentUrl!.startsWith('http')
+                                  ? message.attachmentUrl!
+                                  : '${AppUrls.baseImageUrl}${message.attachmentUrl ?? ""}',
+                              height: 150,
+                              width: 200,
+                              fit: BoxFit.cover,
+                              errorBuilder: (c, e, s) => Container(
+                                height: 150,
+                                width: 200,
+                                color: Colors.grey,
+                                child: const Icon(Icons.broken_image, color: Colors.white),
+                              ),
+                            )),
                 ),
+              )
+            else if (message.type == 'document')
+              Container(
+                padding: const EdgeInsets.all(8),
+                margin: const EdgeInsets.only(bottom: 8.0),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Iconsax.document, color: Colors.white, size: 24),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: AppText(
+                        message.text.replaceFirst('📄 ', ''),
+                        fontSize: 14,
+                        color: message.isMe ? Colors.white : Colors.black87,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            else
+              AppText(
+                message.text,
+                fontSize: 14,
+                color: message.isMe ? Colors.white : Colors.black87,
               ),
-            AppText(
-              message.text,
-              fontSize: 14,
-              color: message.isMe ? Colors.white : Colors.black87,
-            ),
             const SizedBox(height: 4),
             Row(
               mainAxisSize: MainAxisSize.min,
@@ -263,55 +316,55 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
 
   Widget _buildMessageInput() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
+      padding: const EdgeInsets.all(16),
+      decoration: const BoxDecoration(
         color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -5),
-          ),
-        ],
+        border: Border(top: BorderSide(color: Color(0xFFEEEEEE))),
       ),
       child: SafeArea(
         child: Row(
           children: [
+            IconButton(
+              icon: const Icon(Icons.add_circle_outline, color: Colors.grey),
+              onPressed: _showAttachmentBottomSheet,
+            ),
             Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: TextField(
-                  controller: controller.messageController,
-                  decoration: const InputDecoration(
-                    hintText: 'Type a message...',
-                    border: InputBorder.none,
+              child: TextField(
+                controller: controller.messageController,
+                decoration: InputDecoration(
+                  hintText: "Type a message...",
+                  filled: true,
+                  fillColor: const Color(0xFFF5F5F5),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: BorderSide.none,
                   ),
-                  textCapitalization: TextCapitalization.sentences,
-                  minLines: 1,
-                  maxLines: 4,
-                  enabled: !controller.limitReached.value,
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
+                textCapitalization: TextCapitalization.sentences,
+                minLines: 1,
+                maxLines: 4,
+                enabled: !controller.limitReached.value,
               ),
             ),
             const SizedBox(width: 8),
             Obx(() => GestureDetector(
               onTap: controller.limitReached.value ? null : controller.sendMessage,
               child: Container(
-                width: 48,
-                height: 48,
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: controller.limitReached.value ? Colors.grey : AppColors.primaryColor,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
-                  Icons.send_rounded,
-                  color: Colors.white,
-                  size: 20,
-                ),
+                child: const Icon(Iconsax.send_1_copy, color: Colors.white, size: 20),
               ),
             )),
           ],
@@ -319,4 +372,111 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
       ),
     );
   }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: source);
+    if (image != null) {
+      controller.sendImageAttachment(image);
+    }
+  }
+
+  Future<void> _pickDocument() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    if (result != null && result.files.single.path != null) {
+      controller.sendDocumentAttachment(result.files.single);
+    }
+  }
+
+  void _showAttachmentBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 20),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildAttachmentOption(
+                  icon: Iconsax.camera,
+                  color: Colors.blue,
+                  label: "Camera",
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _pickImage(ImageSource.camera);
+                  },
+                ),
+                _buildAttachmentOption(
+                  icon: Iconsax.gallery,
+                  color: Colors.purple,
+                  label: "Gallery",
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _pickImage(ImageSource.gallery);
+                  },
+                ),
+                _buildAttachmentOption(
+                  icon: Iconsax.document,
+                  color: Colors.orange,
+                  label: "Document",
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _pickDocument();
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAttachmentOption({
+    required IconData icon,
+    required Color color,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color, size: 28),
+          ),
+          const SizedBox(height: 8),
+          AppText(
+            label,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ],
+      ),
+    );
+  }
 }
+

@@ -128,9 +128,9 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
                   CircleAvatar(
                     radius: 20,
                     backgroundColor: AppColors.primaryColor.withOpacity(0.1),
-                    backgroundImage: userImage != null ? NetworkImage(userImage) : null,
-                    child: userImage == null 
-                      ? AppText(userName.substring(0, 1).toUpperCase(), color: AppColors.primaryColor, fontWeight: FontWeight.bold)
+                    backgroundImage: (userImage != null && userImage.isNotEmpty) ? NetworkImage(userImage) : null,
+                    child: (userImage == null || userImage.isEmpty) 
+                      ? AppText(userName.isNotEmpty ? userName.substring(0, 1).toUpperCase() : 'U', color: AppColors.primaryColor, fontWeight: FontWeight.bold)
                       : null,
                   ),
                   const SizedBox(width: 12),

@@ -21,7 +21,7 @@ class AssistantChatListController extends GetxController {
     try {
       final response = await _apiClient.get(AppUrls.chatAssistanceSessions);
       if (response.isSuccess) {
-        final data = response.body['data']['data'] as List;
+        final data = response.body['data'] as List;
         activeSessions.assignAll(data);
       } else {
         hasError.value = true;
