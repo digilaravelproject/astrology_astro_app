@@ -363,22 +363,19 @@ class CallController extends GetxController with WidgetsBindingObserver {
       cost = double.tryParse(session['total_cost']?.toString() ?? '') ?? 0.0;
     }
     
-    final wasVisible = isCallScreenVisible || Get.currentRoute == '/CallScreen';
+    final wasVisible = isCallScreenVisible;
     final sIdBeforeCleanup = sessionId ?? sId;
     cleanUp();
     
     final resolvedId = sIdBeforeCleanup > 0 ? sIdBeforeCleanup : sId;
 
-    // First pop CallScreen immediately if visible
+    // 1. Pop CallScreen completely back to first route if visible
     if (wasVisible) {
-      Get.until((route) => route.settings.name != '/CallScreen' && !route.isFirst);
-      if (Get.currentRoute == '/CallScreen') {
-        Get.back();
-      }
+      Get.until((route) => route.isFirst);
     }
 
-    // After animation completes, show summary dialog
-    Future.delayed(const Duration(milliseconds: 300), () {
+    // 2. Now open the summary dialog on top of the clean home screen
+    Future.delayed(const Duration(milliseconds: 200), () {
       CallSummaryDialog.show(
         sessionId: resolvedId,
         durationSeconds: duration,
