@@ -363,27 +363,27 @@ class CallController extends GetxController with WidgetsBindingObserver {
       cost = double.tryParse(session['total_cost']?.toString() ?? '') ?? 0.0;
     }
     
-    final wasVisible = isCallScreenVisible;
+    final wasVisible = isCallScreenVisible || Get.currentRoute == '/CallScreen';
     final sIdBeforeCleanup = sessionId ?? sId;
     cleanUp();
     
     final resolvedId = sIdBeforeCleanup > 0 ? sIdBeforeCleanup : sId;
 
-    // First pop CallScreen, then after animation completes, show summary dialog
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Step 1: Pop CallScreen if visible
-      if (wasVisible) {
+    // First pop CallScreen immediately if visible
+    if (wasVisible) {
+      Get.until((route) => route.settings.name != '/CallScreen' && !route.isFirst);
+      if (Get.currentRoute == '/CallScreen') {
         Get.back();
       }
+    }
 
-      // Step 3: After pop animation finishes (~500ms), show summary dialog
-      Future.delayed(const Duration(milliseconds: 500), () {
-        CallSummaryDialog.show(
-          sessionId: resolvedId,
-          durationSeconds: duration,
-          totalCost: cost,
-        );
-      });
+    // After animation completes, show summary dialog
+    Future.delayed(const Duration(milliseconds: 300), () {
+      CallSummaryDialog.show(
+        sessionId: resolvedId,
+        durationSeconds: duration,
+        totalCost: cost,
+      );
     });
   }
 
