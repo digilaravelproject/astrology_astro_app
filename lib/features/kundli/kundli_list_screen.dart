@@ -183,7 +183,8 @@ class _KundliListScreenState extends State<KundliListScreen> {
             _toggleSelection(id);
           }
         } else {
-          String? rawDatetime;
+          String? dobVal;
+          String? tobVal;
           if (data['dob'] != null && data['dob']!.isNotEmpty) {
             try {
               // dob is like 05-July-1994, try to parse it
@@ -195,17 +196,20 @@ class _KundliListScreenState extends State<KundliListScreen> {
                   String y = parts[2];
                   String m = (monthIndex + 1).toString().padLeft(2, '0');
                   String d = parts[0].padLeft(2, '0');
+                  dobVal = "$y-$m-$d";
                   String t = data['time'] ?? "00:00:00";
                   if (t.length == 5) t += ":00";
-                  rawDatetime = "${y}-${m}-${d}T$t";
+                  tobVal = t;
                 }
               }
             } catch (_) {}
           }
           Get.to(() => KundliScreen(
-            name: data['name'],
-            datetime: rawDatetime,
-            place: data['place'],
+            fullName: data['name'] ?? "",
+            gender: data['gender'] ?? "",
+            dob: dobVal ?? "",
+            tob: tobVal ?? "",
+            place: data['place'] ?? "",
           ));
         }
       },
@@ -297,7 +301,8 @@ class _KundliListScreenState extends State<KundliListScreen> {
                     alignment: Alignment.centerRight,
                     child: GestureDetector(
                       onTap: () {
-                        String? rawDatetime;
+                        String? dobVal2;
+                        String? tobVal2;
                         if (data['dob'] != null && data['dob']!.isNotEmpty) {
                           try {
                             final parts = data['dob']!.split('-');
@@ -308,17 +313,20 @@ class _KundliListScreenState extends State<KundliListScreen> {
                                 String y = parts[2];
                                 String m = (monthIndex + 1).toString().padLeft(2, '0');
                                 String d = parts[0].padLeft(2, '0');
+                                dobVal2 = "$y-$m-$d";
                                 String t = data['time'] ?? "00:00:00";
                                 if (t.length == 5) t += ":00";
-                                rawDatetime = "${y}-${m}-${d}T$t";
+                                tobVal2 = t;
                               }
                             }
                           } catch (_) {}
                         }
                         Get.to(() => KundliScreen(
-                          name: data['name'],
-                          datetime: rawDatetime,
-                          place: data['place'],
+                          fullName: data['name'] ?? "",
+                          gender: data['gender'] ?? "",
+                          dob: dobVal2 ?? "",
+                          tob: tobVal2 ?? "",
+                          place: data['place'] ?? "",
                         ));
                       },
                       child: Container(

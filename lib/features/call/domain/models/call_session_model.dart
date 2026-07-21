@@ -84,6 +84,8 @@ class CallSessionUserModel {
   final String? dateOfBirth;
   final String? timeOfBirth;
   final String? placeOfBirth;
+  final double? latitude;
+  final double? longitude;
   final int? chatAssistanceSessionId;
 
   CallSessionUserModel({
@@ -95,6 +97,8 @@ class CallSessionUserModel {
     this.dateOfBirth,
     this.timeOfBirth,
     this.placeOfBirth,
+    this.latitude,
+    this.longitude,
     this.chatAssistanceSessionId,
   });
 
@@ -112,6 +116,8 @@ class CallSessionUserModel {
       dateOfBirth: json['date_of_birth']?.toString(),
       timeOfBirth: json['time_of_birth']?.toString(),
       placeOfBirth: json['place_of_birth']?.toString(),
+      latitude: double.tryParse(json['latitude']?.toString() ?? json['lat']?.toString() ?? ''),
+      longitude: double.tryParse(json['longitude']?.toString() ?? json['lng']?.toString() ?? json['long']?.toString() ?? ''),
       chatAssistanceSessionId: int.tryParse(json['chat_assistance_session_id']?.toString() ?? ''),
     );
   }

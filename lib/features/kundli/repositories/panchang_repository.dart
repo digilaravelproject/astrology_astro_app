@@ -50,7 +50,18 @@ class PanchangRepository {
     required String timezone,
   }) async {
     try {
-      final response = await _dio.post(
+      // Extract just the date part (YYYY-MM-DD) — Vedika returns sunrise/sunset via GET+date
+      final date = datetime.contains('T') ? datetime.split('T')[0] : datetime;
+
+      // Convert timezone string (e.g. "+05:30") to decimal offset (e.g. 5.5)
+      double tzOffset = 5.5;
+      try {
+        final sign = timezone.startsWith('-') ? -1 : 1;
+        final parts = timezone.replaceAll('+', '').replaceAll('-', '').split(':');
+        tzOffset = sign * (double.parse(parts[0]) + (parts.length > 1 ? double.parse(parts[1]) / 60 : 0));
+      } catch (_) {}
+
+      final response = await _dio.get(
         '${VedikaConstants.baseUrl}${VedikaConstants.panchangEndpoint}',
         options: Options(
           headers: {
@@ -58,11 +69,11 @@ class PanchangRepository {
             'x-api-key': VedikaConstants.apiKey,
           },
         ),
-        data: {
-          'datetime': datetime,
+        queryParameters: {
+          'date': date,
           'latitude': latitude,
           'longitude': longitude,
-          'timezone': timezone,
+          'timezone': tzOffset,
         },
       );
 

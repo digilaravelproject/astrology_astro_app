@@ -53,36 +53,33 @@ class ChatHistoryScreen extends StatelessWidget {
                         String dobStr = "N/A";
                         if (session.consumer?.dateOfBirth != null) {
                           try {
-                            final dobDate = DateTime.tryParse(session.consumer!.dateOfBirth!)?.toLocal();
-                            if (dobDate != null) {
-                              final months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                              final monthName = months[dobDate.month - 1];
-                              final day = dobDate.day.toString().padLeft(2, '0');
-                              final year = dobDate.year.toString();
-                              
-                              String timeStr = "";
-                              if (session.consumer?.timeOfBirth != null && session.consumer!.timeOfBirth!.isNotEmpty) {
-                                timeStr = ",${session.consumer!.timeOfBirth!}";
-                              }
-                              dobStr = "$day-$monthName-$year$timeStr";
+                            // date_of_birth is UTC; toLocal() gives correct IST date
+                            final dobDate = DateTime.parse(session.consumer!.dateOfBirth!).toLocal();
+                            final months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                            final monthName = months[dobDate.month - 1];
+                            final day = dobDate.day.toString().padLeft(2, '0');
+                            final year = dobDate.year.toString();
+                            String timeStr = "";
+                            if (session.consumer?.timeOfBirth != null && session.consumer!.timeOfBirth!.isNotEmpty) {
+                              timeStr = ",${session.consumer!.timeOfBirth!}";
                             }
+                            dobStr = "$day-$monthName-$year$timeStr";
                           } catch (_) {}
                         }
 
-                      String? rawDatetime;
+                      String? dobVal;
+                      String? tobVal;
                       if (session.consumer?.dateOfBirth != null) {
                         try {
-                          final dobDate = DateTime.tryParse(session.consumer!.dateOfBirth!)?.toLocal();
-                          if (dobDate != null) {
-                            String d = "${dobDate.year}-${dobDate.month.toString().padLeft(2, '0')}-${dobDate.day.toString().padLeft(2, '0')}";
-                            String t = "00:00:00";
-                            if (session.consumer?.timeOfBirth != null && session.consumer!.timeOfBirth!.isNotEmpty) {
-                              t = session.consumer!.timeOfBirth!;
-                              if (t.length == 5) t += ":00";
-                            }
-                            rawDatetime = "${d}T$t";
-                          }
+                          // date_of_birth is UTC; toLocal() gives correct IST date
+                          final dobDate = DateTime.parse(session.consumer!.dateOfBirth!).toLocal();
+                          dobVal = "${dobDate.year}-${dobDate.month.toString().padLeft(2, '0')}-${dobDate.day.toString().padLeft(2, '0')}";
                         } catch (_) {}
+                      }
+                      // time_of_birth is already IST (e.g. "19:12"), use directly
+                      if (session.consumer?.timeOfBirth != null && session.consumer!.timeOfBirth!.isNotEmpty) {
+                        tobVal = session.consumer!.timeOfBirth!;
+                        if (tobVal.length == 5) tobVal += ":00";
                       }
 
                       final Map<String, String> details = {
@@ -103,7 +100,10 @@ class ChatHistoryScreen extends StatelessWidget {
                           date: session.createdAt.toString().split('.')[0],
                           details: details,
                           imageUrl: session.consumer?.profilePhoto,
-                          rawDatetime: rawDatetime,
+                          dobVal: dobVal,
+                          tobVal: tobVal,
+                          latitude: session.consumer?.latitude,
+                          longitude: session.consumer?.longitude,
                           chatAssistanceSessionId: session.chatAssistanceSessionId ?? session.consumer?.chatAssistanceSessionId,
                         );
                       },
@@ -150,7 +150,10 @@ class ChatHistoryScreen extends StatelessWidget {
     bool showSuggestRemedy = false,
     bool showDropdown = false,
     String? imageUrl,
-    String? rawDatetime,
+    String? dobVal,
+    String? tobVal,
+    double? latitude,
+    double? longitude,
     int? chatAssistanceSessionId,
   }) {
     return Container(
@@ -465,11 +468,13 @@ class ChatHistoryScreen extends StatelessWidget {
                           Expanded(
                               child: CustomButton(
                                 text: "Open Kundli",
-                                onPressed: () => Get.to(() => KundliScreen(
-                                  name: details["Name"],
-                                  datetime: rawDatetime,
-                                  place: details["POB"],
-                                )),
+                                 onPressed: () => Get.to(() => KundliScreen(
+                                   fullName: details["Name"]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "",
+                                   gender: details["Gender"] ?? "",
+                                   dob: dobVal ?? "",
+                                   tob: tobVal ?? "",
+                                   place: details["POB"] ?? "",
+                                 )),
                                 height: 42,
                               padding: EdgeInsets.zero,
                               buttonType: ButtonStyleType.outlined,

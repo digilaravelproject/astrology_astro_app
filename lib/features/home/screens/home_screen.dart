@@ -997,6 +997,14 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       // Astrology content
       _MenuData(
+        title: 'Kundli',
+        icon: Iconsax.document_text_1_copy,
+        bgColor: const Color(0xFFFFF0F5),
+        iconBgColor: const Color(0xFFFFD1DC),
+        textColor: AppColors.primaryColor,
+        onTap: () => Get.to(() => const KundliListScreen()),
+      ),
+      _MenuData(
         title: 'Panchang',
         icon: Iconsax.sun_1_copy,
         bgColor: const Color(0xFFFFF3E0),

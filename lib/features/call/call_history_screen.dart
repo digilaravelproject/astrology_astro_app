@@ -79,20 +79,20 @@ class CallHistoryScreen extends StatelessWidget {
                         } catch (_) {}
                       }
 
-                      String? rawDatetime;
+                      String? dobVal;
+                      String? tobVal;
                       if (session.consumer?.dateOfBirth != null) {
                         try {
-                          final dobDate = DateTime.tryParse(session.consumer!.dateOfBirth!)?.toLocal();
-                          if (dobDate != null) {
-                            String d = "${dobDate.year}-${dobDate.month.toString().padLeft(2, '0')}-${dobDate.day.toString().padLeft(2, '0')}";
-                            String t = "00:00:00";
-                            if (session.consumer?.timeOfBirth != null && session.consumer!.timeOfBirth!.isNotEmpty) {
-                              t = session.consumer!.timeOfBirth!;
-                              if (t.length == 5) t += ":00"; // append seconds if HH:mm
-                            }
-                            rawDatetime = "${d}T$t";
-                          }
+                          // date_of_birth comes as UTC (e.g. 2006-06-07T18:30:00.000000Z)
+                          // toLocal() converts it to IST, giving the correct local date (2006-06-08)
+                          final dobDate = DateTime.parse(session.consumer!.dateOfBirth!).toLocal();
+                          dobVal = "${dobDate.year}-${dobDate.month.toString().padLeft(2, '0')}-${dobDate.day.toString().padLeft(2, '0')}";
                         } catch (_) {}
+                      }
+                      // time_of_birth is already in IST (e.g. "19:12"), use directly
+                      if (session.consumer?.timeOfBirth != null && session.consumer!.timeOfBirth!.isNotEmpty) {
+                        tobVal = session.consumer!.timeOfBirth!;
+                        if (tobVal.length == 5) tobVal += ":00";
                       }
 
                       final Map<String, String> details = {
@@ -114,7 +114,10 @@ class CallHistoryScreen extends StatelessWidget {
                         details: details,
                         showRefund: false,
                         imageUrl: session.consumer?.profilePhoto,
-                        rawDatetime: rawDatetime,
+                        dobVal: dobVal,
+                        tobVal: tobVal,
+                        latitude: session.consumer?.latitude,
+                        longitude: session.consumer?.longitude,
                         chatAssistanceSessionId: session.chatAssistanceSessionId ?? session.consumer?.chatAssistanceSessionId,
                       );
                     },
@@ -150,7 +153,10 @@ class CallHistoryScreen extends StatelessWidget {
     bool showRefund = false,
     bool showSuggestRemedy = false,
     String? imageUrl,
-    String? rawDatetime,
+    String? dobVal,
+    String? tobVal,
+    double? latitude,
+    double? longitude,
     int? chatAssistanceSessionId,
   }) {
     return Container(
@@ -458,9 +464,11 @@ class CallHistoryScreen extends StatelessWidget {
                             child: CustomButton(
                               text: "Open Kundli",
                               onPressed: () => Get.to(() => KundliScreen(
-                                name: details["Name"],
-                                datetime: rawDatetime,
-                                place: details["POB"],
+                                fullName: details["Name"]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "",
+                                gender: details["Gender"] ?? "",
+                                dob: dobVal ?? "",
+                                tob: tobVal ?? "",
+                                place: details["POB"] ?? "",
                               )),
                               height: 42,
                               padding: EdgeInsets.zero,

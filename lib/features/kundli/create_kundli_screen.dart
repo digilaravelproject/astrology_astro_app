@@ -138,38 +138,42 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
             padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
             child: GestureDetector(
               onTap: () {
-                String? rawDatetime;
+                String? dobPart;
+                String? tobPart;
                 try {
                   String dobStr = _dobController.text; // Expected format: 05-July-1994 or DD-MM-YYYY
                   String timeStr = _tobController.text; // Expected format: HH:mm
-                  
+
                   if (dobStr.isNotEmpty) {
                     final parts = dobStr.split('-');
                     if (parts.length == 3) {
                       final months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
                       int monthIndex = -1;
-                      
+
                       if (int.tryParse(parts[1]) != null) {
                         monthIndex = int.parse(parts[1]) - 1;
                       } else {
                         monthIndex = months.indexWhere((m) => m.toLowerCase() == parts[1].toLowerCase());
                       }
-                      
+
                       if (monthIndex != -1) {
                         String y = parts[2];
                         String m = (monthIndex + 1).toString().padLeft(2, '0');
                         String d = parts[0].padLeft(2, '0');
+                        dobPart = "$y-$m-$d";
                         String t = timeStr.isNotEmpty ? timeStr : "00:00:00";
                         if (t.length == 5) t += ":00";
-                        rawDatetime = "${y}-${m}-${d}T$t";
+                        tobPart = t;
                       }
                     }
                   }
                 } catch (_) {}
 
                 Get.to(() => KundliScreen(
-                  name: _nameController.text,
-                  datetime: rawDatetime,
+                  fullName: _nameController.text,
+                  gender: _genderController.text,
+                  dob: dobPart ?? "",
+                  tob: tobPart ?? "",
                   place: _pobController.text,
                 ));
               },

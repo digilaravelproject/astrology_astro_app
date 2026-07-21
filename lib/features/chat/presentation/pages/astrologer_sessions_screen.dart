@@ -165,18 +165,18 @@ class AstrologerSessionsScreen extends StatelessWidget {
       'POB': pob,
     };
 
-    String? rawDatetime;
+    String? dobPart;
+    String? tobPart;
     if (consumer != null && consumer.dateOfBirth != null) {
       try {
-        final dobDate = DateTime.tryParse(consumer.dateOfBirth!)?.toLocal();
-        if (dobDate != null) {
-          String d = "${dobDate.year}-${dobDate.month.toString().padLeft(2, '0')}-${dobDate.day.toString().padLeft(2, '0')}";
-          String t = "00:00:00";
-          if (consumer.timeOfBirth != null && consumer.timeOfBirth!.isNotEmpty) {
-            t = consumer.timeOfBirth!;
-            if (t.length == 5) t += ":00";
-          }
-          rawDatetime = "${d}T$t";
+        // date_of_birth is UTC; toLocal() gives correct IST date
+        final dobDate = DateTime.parse(consumer.dateOfBirth!).toLocal();
+        dobPart = "${dobDate.year}-${dobDate.month.toString().padLeft(2, '0')}-${dobDate.day.toString().padLeft(2, '0')}";
+        // time_of_birth is already IST (e.g. "19:12"), use directly
+        tobPart = "00:00:00";
+        if (consumer.timeOfBirth != null && consumer.timeOfBirth!.isNotEmpty) {
+          tobPart = consumer.timeOfBirth!;
+          if (tobPart.length == 5) tobPart += ":00";
         }
       } catch (_) {}
     }
@@ -370,8 +370,10 @@ class AstrologerSessionsScreen extends StatelessWidget {
                         child: CustomButton(
                           text: 'Open Kundli',
                           onPressed: () => Get.to(() => KundliScreen(
-                            name: name,
-                            datetime: rawDatetime,
+                            fullName: name,
+                            gender: consumer?.gender ?? "",
+                            dob: dobPart ?? "",
+                            tob: tobPart ?? "",
                             place: pob,
                           )),
                           height: 42,
