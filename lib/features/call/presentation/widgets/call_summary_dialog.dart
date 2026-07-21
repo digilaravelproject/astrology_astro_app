@@ -15,11 +15,14 @@ class CallSummaryDialog extends StatelessWidget {
     required this.totalCost,
   });
 
+  static bool isSummaryOpen = false;
+
   static void show({
     required int sessionId,
     required int durationSeconds,
     required double totalCost,
   }) {
+    isSummaryOpen = true;
     Get.dialog(
       CallSummaryDialog(
         sessionId: sessionId,
@@ -27,7 +30,16 @@ class CallSummaryDialog extends StatelessWidget {
         totalCost: totalCost,
       ),
       barrierDismissible: false,
-    );
+    ).then((_) {
+      isSummaryOpen = false;
+    });
+  }
+
+  static void dismissIfOpen() {
+    if (isSummaryOpen && Get.isDialogOpen == true) {
+      isSummaryOpen = false;
+      Get.back();
+    }
   }
 
   String _formatDuration(int seconds) {

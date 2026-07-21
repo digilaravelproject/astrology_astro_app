@@ -125,6 +125,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
     }
 
     // Trigger Incoming Call screen/dialog
+    CallSummaryDialog.dismissIfOpen();
     Get.dialog(
       IncomingCallDialog(offerSdp: offerSdp),
       barrierDismissible: false,
@@ -579,6 +580,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
           // Show IncomingCallDialog — pass empty string as offerSdp since we may not have it yet
           // The accept flow will fetch the SDP when the astrologer taps Accept
           WidgetsBinding.instance.addPostFrameCallback((_) {
+            CallSummaryDialog.dismissIfOpen();
             if (Get.isDialogOpen != true) {
               Get.dialog(
                 IncomingCallDialog(offerSdp: ''),

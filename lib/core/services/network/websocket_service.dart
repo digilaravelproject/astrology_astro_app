@@ -11,6 +11,7 @@ import '../../../core/constants/app_constants.dart';
 import '../../../features/auth/domain/models/user_model.dart';
 import 'api_client.dart';
 import '../../../features/chat/presentation/widgets/incoming_chat_dialog.dart';
+import '../../../features/call/presentation/widgets/call_summary_dialog.dart';
 import '../../../core/constants/app_urls.dart';
 import '../../utils/logger.dart';
 import 'package:flutter/material.dart';
@@ -590,6 +591,7 @@ class WebSocketService extends GetxService {
       if (session != null && senderData != null) {
         chatInitiatedEvent.add(Map<String, dynamic>.from(session));
         WidgetsBinding.instance.addPostFrameCallback((_) {
+          CallSummaryDialog.dismissIfOpen();
           Get.dialog(
             IncomingChatDialog(
               sessionData: Map<String, dynamic>.from(session),
