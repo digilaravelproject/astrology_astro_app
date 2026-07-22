@@ -1,47 +1,12 @@
-import 'package:dio/dio.dart';
-import 'package:astro_astrologer/core/constants/vedika_constants.dart';
-import 'package:astro_astrologer/core/utils/logger.dart';
+import 'package:astro_user/core/services/network/astrology_api_client.dart';
+import 'package:astro_user/core/utils/logger.dart';
 import '../models/ashtakvarga_model.dart';
 
 class AshtakvargaRepository {
-  final Dio _dio;
+  final AstrologyApiClient _client;
 
-  AshtakvargaRepository() : _dio = Dio() {
-    _dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) {
-        Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        Logger.d('|🌐 ASHTAKVARGA API REQUEST');
-        Logger.d('|📍 URL: ${options.baseUrl}${options.path}');
-        Logger.d('|🔧 Method: ${options.method}');
-        Logger.d('|📋 Headers: ${options.headers}');
-        if (options.data != null) {
-          Logger.d('|📦 Body: ${options.data}');
-        }
-        return handler.next(options);
-      },
-      onResponse: (response, handler) {
-        Logger.d('|✅ ASHTAKVARGA API RESPONSE');
-        Logger.d('|📍 URL: ${response.requestOptions.baseUrl}${response.requestOptions.path}');
-        Logger.d('|📊 Status Code: ${response.statusCode}');
-        Logger.d('|📨 Response: ${response.data}');
-        Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        return handler.next(response);
-      },
-      onError: (error, handler) {
-        Logger.e('|❌ ASHTAKVARGA API ERROR');
-        Logger.e('|📍 URL: ${error.requestOptions.baseUrl}${error.requestOptions.path}');
-        Logger.e('|🔧 Method: ${error.requestOptions.method}');
-        Logger.e('|⚠️ Error Type: ${error.type}');
-        Logger.e('|💬 Error Message: ${error.message}');
-        if (error.response != null) {
-          Logger.e('|📊 Status Code: ${error.response?.statusCode}');
-          Logger.e('|📨 Response: ${error.response?.data}');
-        }
-        Logger.e('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        return handler.next(error);
-      },
-    ));
-  }
+  AshtakvargaRepository({AstrologyApiClient? client})
+      : _client = client ?? AstrologyApiClient();
 
   Future<AshtakvargaModel?> getAshtakvargaDetails({
     required String datetime,
@@ -50,27 +15,74 @@ class AshtakvargaRepository {
     required String timezone,
   }) async {
     try {
-      final response = await _dio.post(
-        '${VedikaConstants.baseUrl}${VedikaConstants.ashtakavargaEndpoint}',
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': VedikaConstants.apiKey,
-          },
-        ),
-        data: {
-          'datetime': datetime,
-          'latitude': latitude,
-          'longitude': longitude,
-          'timezone': timezone,
-        },
+      final payload = _client.buildBirthPayload(
+        datetime: datetime,
+        latitude: latitude,
+        longitude: longitude,
+        timezone: timezone,
       );
 
+      final response = await _client.getAshtakavarga(payload);
+
       if (response.statusCode == 200) {
-        return AshtakvargaModel.fromJson(response.data);
+        final Map<String, dynamic> rawData = response.data is Map<String, dynamic> ? response.data : {};
+        final Map<String, dynamic> ashtakPoints = rawData['ashtak_points'] ?? {};
+        
+        final Map<String, dynamic> bhinnashtakavarga = {};
+        final planets = {
+          'Sun': 'sun',
+          'Moon': 'moon',
+          'Mars': 'mars',
+          'Mercury': 'mercury',
+          'Jupiter': 'jupiter',
+          'Venus': 'venus',
+          'Saturn': 'saturn'
+        };
+
+        final signsMap = {
+          'aries': 'Aries',
+          'taurus': 'Taurus',
+          'gemini': 'Gemini',
+          'cancer': 'Cancer',
+          'leo': 'Leo',
+          'virgo': 'Virgo',
+          'libra': 'Libra',
+          'scorpio': 'Scorpio',
+          'sagittarius': 'Sagittarius',
+          'capricorn': 'Capricorn',
+          'aquarius': 'Aquarius',
+          'pisces': 'Pisces'
+        };
+
+        planets.forEach((modelPlanet, apiPlanet) {
+          final List<Map<String, dynamic>> strongSigns = [];
+          ashtakPoints.forEach((apiSign, pointsMap) {
+            final properSignName = signsMap[apiSign.toLowerCase()] ?? apiSign;
+            if (pointsMap is Map) {
+              final pts = pointsMap[apiPlanet] ?? 0;
+              strongSigns.add({
+                'points': pts,
+                'sign': properSignName
+              });
+            }
+          });
+          bhinnashtakavarga[modelPlanet] = {
+            'planet': modelPlanet,
+            'strongSigns': strongSigns
+          };
+        });
+
+        final transformedJson = {
+          'success': true,
+          'data': {
+            'bhinnashtakavarga': bhinnashtakavarga
+          }
+        };
+
+        return AshtakvargaModel.fromJson(transformedJson);
       }
     } catch (e) {
-      Logger.e('Error fetching ashtakvarga details: $e');
+      Logger.e('Error fetching ashtakvarga details', error: e);
     }
     return null;
   }

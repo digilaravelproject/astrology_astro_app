@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text.dart';
-import 'package:astro_astrologer/features/kundli/kundli_chart_widget.dart';
+import 'package:astro_user/features/kundli/kundli_chart_widget.dart';
 import '../controllers/kp_controller.dart';
 
 class KPTab extends StatelessWidget {
@@ -82,7 +82,7 @@ class KPTab extends StatelessWidget {
           northIndianPlanetData.putIfAbsent(house, () => []).add(abbr);
           
           if (p.signIndex != null) {
-            // signIndex is 0-indexed in Vedika API (0=Aries), South Indian needs 1-indexed
+            // signIndex is 0-indexed (0=Aries), South Indian needs 1-indexed
             southIndianPlanetData.putIfAbsent(p.signIndex! + 1, () => []).add(abbr);
           }
         }

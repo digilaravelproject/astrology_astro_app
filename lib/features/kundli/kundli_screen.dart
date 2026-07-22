@@ -3,14 +3,13 @@ import 'package:get/get.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_app_bar.dart';
-import 'package:astro_astrologer/features/kundli/kundli_chart_widget.dart';
+import 'package:astro_user/features/kundli/kundli_chart_widget.dart';
 import 'kundli_tabs/shad_bala_tab.dart';
 import 'kundli_tabs/bhav_bala_tab.dart';
 import 'kundli_tabs/manglik_report_tab.dart';
 import 'kundli_tabs/divisional_chart_tab.dart';
 import 'kundli_tabs/kp_tab.dart';
 import 'kundli_tabs/sade_sati_tab.dart';
-import 'create_kundli_screen.dart';
 import 'controllers/panchang_controller.dart';
 import 'controllers/dasha_controller.dart';
 import 'controllers/birth_chart_controller.dart';
@@ -131,6 +130,7 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
     print('   • Longitude (Lng): $lng');
     print('   • Timezone (TZ): $tz');
     print('════════════════════════════════════════════════════════════════');
+
     try {
       final parsedDt = DateTime.parse(dt);
       final months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -155,31 +155,21 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
     _birthChartController.fetchBirthChart(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
     _navamshaController.fetchNavamsha(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
     _transitController.fetchTransit(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
-    
-    // Fetch D2 (Hora) by default for divisional chart tab
     _divisionalChartController.fetchDivisionalChart(division: 2, datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
     _houseCuspsController.fetchHouseCusps(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
     _kpController.fetchKPData(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
     _sadeSatiController.fetchSadeSati(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
-
     _remediesController.fetchGemstoneRemedies(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
   }
-
-  final Map<int, List<String>> _samplePlanetData = {
-    1: ["Ju", "Me"],
-    4: ["Ma"],
-    7: ["Sa", "Ra"],
-    9: ["Su", "Ke"],
-    10: ["Ve", "Mo"],
-  };
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDF9F5), // Premium Ivory/Off-white
+      backgroundColor: const Color(0xFFFDF9F5),
       appBar: CustomAppBar(
         title: 'Kundli',
       ),
+
       body: Column(
         children: [
           _buildTopTabBar(),
@@ -189,11 +179,28 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
               children: [
                 _buildBasicTab(),
                 Obx(() {
-                  final chartData = _birthChartController.birthChartModel.value?.data?.chart;
+                  final planets = _birthChartController.birthChartModel.value?.data?.planets ?? [];
+                  
+                  // Map data for North Indian chart (key = house)
+                  final northPlanetData = <int, List<String>>{};
+                  for (var planet in planets) {
+                    if (planet.house != null && planet.name != null) {
+                      northPlanetData.putIfAbsent(planet.house!, () => []).add(planet.name!.substring(0, 2));
+                    }
+                  }
+
+                  // Map data for South Indian chart (key = signNumber)
+                  final southPlanetData = <int, List<String>>{};
+                  for (var planet in planets) {
+                    if (planet.signNumber != null && planet.name != null) {
+                      southPlanetData.putIfAbsent(planet.signNumber!, () => []).add(planet.name!.substring(0, 2));
+                    }
+                  }
+
                   return KundliChartWidget(
-                    title: "Lagna / Ascendant / D1 Chart", 
-                    northIndianSvg: chartData?.northIndian,
-                    southIndianSvg: chartData?.southIndian,
+                    title: "Lagna / Ascendant / D1 Chart",
+                    northIndianPlanetData: northPlanetData,
+                    southIndianPlanetData: southPlanetData,
                     isLoading: _birthChartController.isLoading.value,
                   );
                 }),
@@ -475,25 +482,6 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
         children: [
           Expanded(flex: 2, child: AppText(label, fontSize: 12, color: Colors.grey.shade700)),
           Expanded(flex: 3, child: AppText(value, fontSize: 12, fontWeight: FontWeight.w600)),
-          if (showEdit) 
-            GestureDetector(
-              onTap: () {
-                Get.to(() => CreateKundliScreen(
-                  hideMatchingTab: true,
-                  initialKundliData: {
-                    'name': _name,
-                    'dob': _dobStr,
-                    'time': _timeStr,
-                    'place': _place,
-                    'gender': 'Male',
-                  }
-                ));
-              },
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8.0, top: 4.0, bottom: 4.0),
-                child: Icon(Icons.edit, size: 15, color: Colors.black.withOpacity(0.6)),
-              ),
-            ),
         ],
       ),
     );
@@ -832,13 +820,30 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
       child: Column(
         children: [
           Obx(() {
-            final chartData = _birthChartController.birthChartModel.value?.data?.chart;
+            final planets = _birthChartController.birthChartModel.value?.data?.planets ?? [];
+            
+            // Map data for North Indian chart (key = house)
+            final northPlanetData = <int, List<String>>{};
+            for (var planet in planets) {
+              if (planet.house != null && planet.name != null) {
+                northPlanetData.putIfAbsent(planet.house!, () => []).add(planet.name!.substring(0, 2));
+              }
+            }
+
+            // Map data for South Indian chart (key = signNumber)
+            final southPlanetData = <int, List<String>>{};
+            for (var planet in planets) {
+              if (planet.signNumber != null && planet.name != null) {
+                southPlanetData.putIfAbsent(planet.signNumber!, () => []).add(planet.name!.substring(0, 2));
+              }
+            }
+
             return SizedBox(
               height: 300,
               child: KundliChartWidget(
                 title: "Varshphal Chart - Year $currentYear",
-                northIndianSvg: chartData?.northIndian,
-                southIndianSvg: chartData?.southIndian,
+                northIndianPlanetData: northPlanetData,
+                southIndianPlanetData: southPlanetData,
                 isLoading: _birthChartController.isLoading.value,
               ),
             );

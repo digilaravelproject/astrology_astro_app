@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/widgets/app_text.dart';
-import '../kundli_chart_widget.dart';
+import 'package:astro_user/features/kundli/kundli_chart_widget.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/widgets/app_text.dart';
 import '../controllers/divisional_chart_controller.dart';
 import '../controllers/house_cusps_controller.dart';
 import '../controllers/planet_positions_controller.dart';
