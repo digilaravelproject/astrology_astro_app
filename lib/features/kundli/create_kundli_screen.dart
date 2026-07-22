@@ -5,6 +5,7 @@ import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart' as sax;
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
+import '../../../core/widgets/location_search_screen.dart';
 
 class CreateKundliScreen extends StatefulWidget {
   final bool initialIsMatching;
@@ -29,6 +30,16 @@ class CreateKundliScreen extends StatefulWidget {
 class _CreateKundliScreenState extends State<CreateKundliScreen> {
   late bool isMatching;
   
+  // Single Kundli Coordinates
+  double _lat = 28.6139;
+  double _lng = 77.2090;
+  
+  // Matching Coordinates
+  double _boyLat = 28.6139;
+  double _boyLng = 77.2090;
+  double _girlLat = 28.6139;
+  double _girlLng = 77.2090;
+
   // Single Kundli Controllers
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _genderController = TextEditingController();
@@ -175,6 +186,8 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                   dob: dobPart ?? "",
                   tob: tobPart ?? "",
                   place: _pobController.text,
+                  latitude: _lat,
+                  longitude: _lng,
                 ));
               },
               child: Container(
@@ -281,7 +294,20 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
               _buildField("Gender", "Select gender", sax.Iconsax.user_tag_copy, controller: _genderController, isPicker: true, onTap: () => _showGenderSelection(_genderController)),
               _buildField("Birth Date", "Select date", sax.Iconsax.calendar_copy, controller: _dobController, isPicker: true, onTap: () => _selectDate(_dobController)),
               _buildField("Birth Time", "Select time", sax.Iconsax.clock_copy, controller: _tobController, isPicker: true, onTap: () => _selectTime(_tobController)),
-              _buildField("Birth Place", "Enter birth place", sax.Iconsax.location_copy, controller: _pobController),
+              _buildField("Birth Place", "Enter birth place", sax.Iconsax.location_copy, controller: _pobController, isPicker: true, onTap: () async {
+                final result = await Navigator.of(context, rootNavigator: true)
+                    .push<LocationResult>(MaterialPageRoute(
+                  builder: (_) => const LocationSearchScreen(title: "Select Birth Place"),
+                  fullscreenDialog: true,
+                ));
+                if (result != null) {
+                  setState(() {
+                    _pobController.text = result.displayName;
+                    _lat = result.latitude;
+                    _lng = result.longitude;
+                  });
+                }
+              }),
             ],
           ),
         ),
@@ -302,7 +328,20 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
               _buildField("Gender", "Select gender", sax.Iconsax.user_tag_copy, controller: _boysGenderController, isPicker: true, onTap: () => _showGenderSelection(_boysGenderController)),
               _buildField("Birth Date", "Select date", sax.Iconsax.calendar_copy, controller: _boysDobController, isPicker: true, onTap: () => _selectDate(_boysDobController)),
               _buildField("Birth Time", "Select time", sax.Iconsax.clock_copy, controller: _boysTobController, isPicker: true, onTap: () => _selectTime(_boysTobController)),
-              _buildField("Birth Place", "Enter birth place", sax.Iconsax.location_copy, controller: _boysPobController),
+              _buildField("Birth Place", "Enter birth place", sax.Iconsax.location_copy, controller: _boysPobController, isPicker: true, onTap: () async {
+                final result = await Navigator.of(context, rootNavigator: true)
+                    .push<LocationResult>(MaterialPageRoute(
+                  builder: (_) => const LocationSearchScreen(title: "Select Boy's Birth Place"),
+                  fullscreenDialog: true,
+                ));
+                if (result != null) {
+                  setState(() {
+                    _boysPobController.text = result.displayName;
+                    _boyLat = result.latitude;
+                    _boyLng = result.longitude;
+                  });
+                }
+              }),
             ],
           ),
         ),
@@ -317,7 +356,20 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
               _buildField("Gender", "Select gender", sax.Iconsax.user_tag_copy, controller: _girlsGenderController, isPicker: true, onTap: () => _showGenderSelection(_girlsGenderController)),
               _buildField("Birth Date", "Select date", sax.Iconsax.calendar_copy, controller: _girlsDobController, isPicker: true, onTap: () => _selectDate(_girlsDobController)),
               _buildField("Birth Time", "Select time", sax.Iconsax.clock_copy, controller: _girlsTobController, isPicker: true, onTap: () => _selectTime(_girlsTobController)),
-              _buildField("Birth Place", "Enter birth place", sax.Iconsax.location_copy, controller: _girlsPobController),
+              _buildField("Birth Place", "Enter birth place", sax.Iconsax.location_copy, controller: _girlsPobController, isPicker: true, onTap: () async {
+                final result = await Navigator.of(context, rootNavigator: true)
+                    .push<LocationResult>(MaterialPageRoute(
+                  builder: (_) => const LocationSearchScreen(title: "Select Girl's Birth Place"),
+                  fullscreenDialog: true,
+                ));
+                if (result != null) {
+                  setState(() {
+                    _girlsPobController.text = result.displayName;
+                    _girlLat = result.latitude;
+                    _girlLng = result.longitude;
+                  });
+                }
+              }),
             ],
           ),
         ),
