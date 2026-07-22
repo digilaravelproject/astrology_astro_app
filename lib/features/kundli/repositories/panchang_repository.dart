@@ -1,5 +1,5 @@
-import 'package:astro_user/core/services/network/astrology_api_client.dart';
-import 'package:astro_user/core/utils/logger.dart';
+import 'package:astro_astrologer/core/services/network/astrology_api_client.dart';
+import 'package:astro_astrologer/core/utils/logger.dart';
 import '../models/panchang_model.dart';
 
 class PanchangRepository {

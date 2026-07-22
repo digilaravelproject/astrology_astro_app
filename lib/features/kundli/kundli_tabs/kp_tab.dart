@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text.dart';
-import 'package:astro_user/features/kundli/kundli_chart_widget.dart';
+import 'package:astro_astrologer/features/kundli/kundli_chart_widget.dart';
 import '../controllers/kp_controller.dart';
 
 class KPTab extends StatelessWidget {
