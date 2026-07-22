@@ -5,7 +5,7 @@ import '../../../../core/services/network/astrology_api_client.dart';
 import '../../../../core/services/network/api_client.dart';
 import 'saved_kundli_repository.dart';
 import '../models/kundli_request_model.dart';
-import '../models/kundli_response_model.dart';
+import '../models/kundli_response_model.dart' hide KundliData;
 import '../models/create_kundli_request_model.dart';
 import '../models/create_kundli_response_model.dart';
 import '../models/kundli_list_response_model.dart';
@@ -48,7 +48,7 @@ class KundliRepositoryImpl implements KundliRepository {
     try {
       print('[KUNDLI_APP] [DEBUG] Repository: Creating kundli');
       print('[KUNDLI_APP] [DEBUG] Repository: Request data: ${request.toJson()}');
-      
+
       final response = await apiClient.post(
         AppUrls.createKundali,
         data: request.toJson(),
@@ -56,14 +56,21 @@ class KundliRepositoryImpl implements KundliRepository {
         showToaster: false,
       );
 
-      print('[KUNDLI_APP] [DEBUG] Repository: Response: ${response.body}');
-      
+      print('[KUNDLI_APP] [DEBUG] Repository: isSuccess=${response.isSuccess}, body=${response.body}');
+
       if (response.isSuccess) {
-        final model = CreateKundliResponseModel.fromJson(response.body as Map<String, dynamic>);
-        print('[KUNDLI_APP] [DEBUG] Repository: Kundli created successfully');
+        // response.body is already the kundli data object (ResponseModel strips the wrapper)
+        final body = response.body as Map<String, dynamic>;
+        final model = CreateKundliResponseModel(
+          status: 'success',
+          message: response.message,
+          data: KundliData.fromJson(body),
+        );
+        print('[KUNDLI_APP] [DEBUG] Repository: Kundli created successfully id=${model.data.id}');
         return model;
       } else {
-        throw Exception(response.message ?? 'Failed to create kundli');
+        final errMsg = response.message.isNotEmpty ? response.message : 'Failed to create kundli';
+        throw Exception(errMsg);
       }
     } catch (e) {
       print('[KUNDLI_APP] [ERROR] Repository error: $e');
@@ -146,23 +153,29 @@ class KundliRepositoryImpl implements KundliRepository {
     try {
       print('[KUNDLI_APP] [DEBUG] Repository: Updating kundli id: $id');
       print('[KUNDLI_APP] [DEBUG] Repository: Request data: ${request.toJson()}');
-      
+
       final response = await apiClient.put(
-        //'/api/v1/kundli/$id',
         AppUrls.updateKundali(id),
         data: request.toJson(),
         handleError: false,
         showToaster: false,
       );
 
-      print('[KUNDLI_APP] [DEBUG] Repository: Response: ${response.body}');
-      
+      print('[KUNDLI_APP] [DEBUG] Repository: isSuccess=${response.isSuccess}, body=${response.body}');
+
       if (response.isSuccess) {
-        final model = CreateKundliResponseModel.fromJson(response.body as Map<String, dynamic>);
-        print('[KUNDLI_APP] [DEBUG] Repository: Kundli updated successfully');
+        // response.body is already the kundli data object
+        final body = response.body as Map<String, dynamic>;
+        final model = CreateKundliResponseModel(
+          status: 'success',
+          message: response.message,
+          data: KundliData.fromJson(body),
+        );
+        print('[KUNDLI_APP] [DEBUG] Repository: Kundli updated successfully id=${model.data.id}');
         return model;
       } else {
-        throw Exception(response.message ?? 'Failed to update kundli');
+        final errMsg = response.message.isNotEmpty ? response.message : 'Failed to update kundli';
+        throw Exception(errMsg);
       }
     } catch (e) {
       print('[KUNDLI_APP] [ERROR] Repository error: $e');
