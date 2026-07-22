@@ -97,11 +97,6 @@ class MatchingController extends GetxController {
     } catch (e) {
       print('[MATCHING_APP] [ERROR] Controller: Failed to load matching: $e');
       errorMessage.value = 'Failed to load matching data: $e';
-      Get.snackbar(
-        'Error',
-        errorMessage.value,
-        snackPosition: SnackPosition.BOTTOM,
-      );
     } finally {
       isLoading.value = false;
     }

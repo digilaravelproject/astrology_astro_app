@@ -233,7 +233,10 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                     _savedKundliController.isLoadingAction.value = true;
                     final matchingRepo = MatchingRepositoryImpl();
                     final getMatchingUseCase = GetMatchingUseCase(repository: matchingRepo);
-                    final matchingController = Get.put(MatchingController(getMatchingUseCase: getMatchingUseCase));
+                    // Reuse existing or register new — same pattern as user app
+                    final matchingController = Get.isRegistered<MatchingController>()
+                        ? Get.find<MatchingController>()
+                        : Get.put(MatchingController(getMatchingUseCase: getMatchingUseCase));
 
                     await matchingController.fetchMatchingData(
                       boyName: _boysNameController.text.trim().isEmpty ? 'Boy' : _boysNameController.text.trim(),
@@ -258,15 +261,22 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                       Get.to(() => const KundliMatchScreen());
                     } else {
                       if (context.mounted) {
+                        final err = matchingController.errorMessage.value;
+                        final friendly = err.contains('429')
+                            ? 'API limit reached. Please wait a moment and try again.'
+                            : err.isNotEmpty ? err : 'Failed to calculate horoscope matching.';
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(matchingController.errorMessage.value.isNotEmpty ? matchingController.errorMessage.value : 'Failed to calculate horoscope matching.'), backgroundColor: Colors.red),
+                          SnackBar(content: Text(friendly), backgroundColor: Colors.red),
                         );
                       }
                     }
                   } catch (e) {
                     if (context.mounted) {
+                      final msg = e.toString().contains('429')
+                          ? 'API limit reached. Please wait a moment and try again.'
+                          : 'Matching error: $e';
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Matching error: $e'), backgroundColor: Colors.red),
+                        SnackBar(content: Text(msg), backgroundColor: Colors.red),
                       );
                     }
                   } finally {
@@ -274,6 +284,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                   }
                   return;
                 }
+
 
                 // --- Validate Single Kundli fields ---
                 if (_nameController.text.trim().isEmpty) {
