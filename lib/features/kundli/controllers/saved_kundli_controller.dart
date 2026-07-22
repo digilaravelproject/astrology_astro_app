@@ -64,7 +64,7 @@ class SavedKundliController extends GetxController {
       return response;
     } catch (e) {
       error.value = e.toString();
-      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
+      print('[KUNDLI_APP] [ERROR] createKundli: $e');
       return null;
     } finally {
       isLoadingAction.value = false;
@@ -100,7 +100,7 @@ class SavedKundliController extends GetxController {
       return response;
     } catch (e) {
       error.value = e.toString();
-      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
+      print('[KUNDLI_APP] [ERROR] updateKundli: $e');
       return null;
     } finally {
       isLoadingAction.value = false;
@@ -116,7 +116,7 @@ class SavedKundliController extends GetxController {
       return true;
     } catch (e) {
       error.value = e.toString();
-      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
+      print('[KUNDLI_APP] [ERROR] deleteKundli: $e');
       return false;
     } finally {
       isLoadingAction.value = false;

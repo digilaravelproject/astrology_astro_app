@@ -244,29 +244,40 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                   result = await _savedKundliController.updateKundli(
                     id: id,
                     name: _nameController.text.trim(),
-                    gender: _genderController.text.trim(),
+                    gender: _genderController.text.trim().toLowerCase(),
                     birthDate: dobPart,
                     birthTime: tobPart,
                     latitude: _lat!.toString(),
                     longitude: _lng!.toString(),
-                    datetime: "${dobPart}T$tobPart",
+                    datetime: "$dobPart $tobPart",
                     place: _pobController.text.trim(),
                   );
                 } else {
                   result = await _savedKundliController.createKundli(
                     name: _nameController.text.trim(),
-                    gender: _genderController.text.trim(),
+                    gender: _genderController.text.trim().toLowerCase(),
                     birthDate: dobPart,
                     birthTime: tobPart,
                     latitude: _lat!.toString(),
                     longitude: _lng!.toString(),
-                    datetime: "${dobPart}T$tobPart",
+                    datetime: "$dobPart $tobPart",
                     place: _pobController.text.trim(),
                   );
                 }
 
                 if (result != null) {
                   Get.back();
+                } else {
+                  // Show error from controller
+                  final errMsg = _savedKundliController.error.value;
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(errMsg.isNotEmpty ? errMsg : 'Failed to save Kundli. Please try again.'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
                 }
               },
               child: Container(
