@@ -34,14 +34,14 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
   late bool isMatching;
   
   // Single Kundli Coordinates
-  double _lat = 28.6139;
-  double _lng = 77.2090;
-  
+  double? _lat;
+  double? _lng;
+
   // Matching Coordinates
-  double _boyLat = 28.6139;
-  double _boyLng = 77.2090;
-  double _girlLat = 28.6139;
-  double _girlLng = 77.2090;
+  double? _boyLat;
+  double? _boyLng;
+  double? _girlLat;
+  double? _girlLng;
 
   // Single Kundli Controllers
   final TextEditingController _nameController = TextEditingController();
@@ -76,8 +76,8 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
       _dobController.text = widget.initialKundliData!['dob'] ?? "";
       _tobController.text = widget.initialKundliData!['time'] ?? "";
       _pobController.text = widget.initialKundliData!['place'] ?? "";
-      _lat = double.tryParse(widget.initialKundliData!['latitude'] ?? "") ?? 28.6139;
-      _lng = double.tryParse(widget.initialKundliData!['longitude'] ?? "") ?? 77.2090;
+      _lat = double.tryParse(widget.initialKundliData!['latitude'] ?? "");
+      _lng = double.tryParse(widget.initialKundliData!['longitude'] ?? "");
     }
 
     if (widget.initialBoyData != null) {
@@ -86,8 +86,8 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
       _boysDobController.text = widget.initialBoyData!['dob'] ?? "";
       _boysTobController.text = widget.initialBoyData!['time'] ?? "";
       _boysPobController.text = widget.initialBoyData!['place'] ?? "";
-      _boyLat = double.tryParse(widget.initialBoyData!['latitude'] ?? "") ?? 28.6139;
-      _boyLng = double.tryParse(widget.initialBoyData!['longitude'] ?? "") ?? 77.2090;
+      _boyLat = double.tryParse(widget.initialBoyData!['latitude'] ?? "");
+      _boyLng = double.tryParse(widget.initialBoyData!['longitude'] ?? "");
     }
 
     if (widget.initialGirlData != null) {
@@ -96,8 +96,8 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
       _girlsDobController.text = widget.initialGirlData!['dob'] ?? "";
       _girlsTobController.text = widget.initialGirlData!['time'] ?? "";
       _girlsPobController.text = widget.initialGirlData!['place'] ?? "";
-      _girlLat = double.tryParse(widget.initialGirlData!['latitude'] ?? "") ?? 28.6139;
-      _girlLng = double.tryParse(widget.initialGirlData!['longitude'] ?? "") ?? 77.2090;
+      _girlLat = double.tryParse(widget.initialGirlData!['latitude'] ?? "");
+      _girlLng = double.tryParse(widget.initialGirlData!['longitude'] ?? "");
     }
   }
 
@@ -179,6 +179,11 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                   return;
                 }
 
+                if (_lat == null || _lng == null) {
+                  Get.snackbar('Error', 'Please select a Birth Place to get coordinates', snackPosition: SnackPosition.BOTTOM);
+                  return;
+                }
+
                 final hasId = widget.initialKundliData != null && widget.initialKundliData!['id'] != null;
                 CreateKundliResponseModel? result;
 
@@ -190,8 +195,8 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                     gender: _genderController.text,
                     birthDate: dobPart,
                     birthTime: tobPart,
-                    latitude: _lat.toString(),
-                    longitude: _lng.toString(),
+                    latitude: _lat!.toString(),
+                    longitude: _lng!.toString(),
                     datetime: "${dobPart}T$tobPart",
                     place: _pobController.text,
                   );
@@ -201,8 +206,8 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                     gender: _genderController.text,
                     birthDate: dobPart,
                     birthTime: tobPart,
-                    latitude: _lat.toString(),
-                    longitude: _lng.toString(),
+                    latitude: _lat!.toString(),
+                    longitude: _lng!.toString(),
                     datetime: "${dobPart}T$tobPart",
                     place: _pobController.text,
                   );
