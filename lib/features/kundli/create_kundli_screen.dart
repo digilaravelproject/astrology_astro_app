@@ -68,51 +68,36 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
   void initState() {
     super.initState();
     isMatching = widget.initialIsMatching;
-    
-    // Initialize with default or passed data
+
+    // Initialize with passed data only (no defaults)
     if (widget.initialKundliData != null) {
       _nameController.text = widget.initialKundliData!['name'] ?? "";
-      _genderController.text = widget.initialKundliData!['gender'] ?? "Male";
-      _dobController.text = widget.initialKundliData!['dob'] ?? "10 February 2026";
-      _tobController.text = widget.initialKundliData!['time'] ?? "08:41 AM";
-      _pobController.text = widget.initialKundliData!['place'] ?? "New Delhi, Delhi, India";
+      _genderController.text = widget.initialKundliData!['gender'] ?? "";
+      _dobController.text = widget.initialKundliData!['dob'] ?? "";
+      _tobController.text = widget.initialKundliData!['time'] ?? "";
+      _pobController.text = widget.initialKundliData!['place'] ?? "";
       _lat = double.tryParse(widget.initialKundliData!['latitude'] ?? "") ?? 28.6139;
       _lng = double.tryParse(widget.initialKundliData!['longitude'] ?? "") ?? 77.2090;
-    } else {
-      _genderController.text = "Male";
-      _dobController.text = "10 February 2026";
-      _tobController.text = "08:41 AM";
-      _pobController.text = "New Delhi, Delhi, India";
     }
 
     if (widget.initialBoyData != null) {
       _boysNameController.text = widget.initialBoyData!['name'] ?? "";
-      _boysGenderController.text = widget.initialBoyData!['gender'] ?? "Male";
-      _boysDobController.text = widget.initialBoyData!['dob'] ?? "10 February 2026";
-      _boysTobController.text = widget.initialBoyData!['time'] ?? "08:41 AM";
-      _boysPobController.text = widget.initialBoyData!['place'] ?? "New Delhi, Delhi, India";
+      _boysGenderController.text = widget.initialBoyData!['gender'] ?? "";
+      _boysDobController.text = widget.initialBoyData!['dob'] ?? "";
+      _boysTobController.text = widget.initialBoyData!['time'] ?? "";
+      _boysPobController.text = widget.initialBoyData!['place'] ?? "";
       _boyLat = double.tryParse(widget.initialBoyData!['latitude'] ?? "") ?? 28.6139;
       _boyLng = double.tryParse(widget.initialBoyData!['longitude'] ?? "") ?? 77.2090;
-    } else {
-      _boysGenderController.text = "Male";
-      _boysDobController.text = "10 February 2026";
-      _boysTobController.text = "08:41 AM";
-      _boysPobController.text = "New Delhi, Delhi, India";
     }
 
     if (widget.initialGirlData != null) {
       _girlsNameController.text = widget.initialGirlData!['name'] ?? "";
-      _girlsGenderController.text = widget.initialGirlData!['gender'] ?? "Female";
-      _girlsDobController.text = widget.initialGirlData!['dob'] ?? "10 February 2026";
-      _girlsTobController.text = widget.initialGirlData!['time'] ?? "08:41 AM";
-      _girlsPobController.text = widget.initialGirlData!['place'] ?? "New Delhi, Delhi, India";
+      _girlsGenderController.text = widget.initialGirlData!['gender'] ?? "";
+      _girlsDobController.text = widget.initialGirlData!['dob'] ?? "";
+      _girlsTobController.text = widget.initialGirlData!['time'] ?? "";
+      _girlsPobController.text = widget.initialGirlData!['place'] ?? "";
       _girlLat = double.tryParse(widget.initialGirlData!['latitude'] ?? "") ?? 28.6139;
       _girlLng = double.tryParse(widget.initialGirlData!['longitude'] ?? "") ?? 77.2090;
-    } else {
-      _girlsGenderController.text = "Female";
-      _girlsDobController.text = "10 February 2026";
-      _girlsTobController.text = "08:41 AM";
-      _girlsPobController.text = "New Delhi, Delhi, India";
     }
   }
 
