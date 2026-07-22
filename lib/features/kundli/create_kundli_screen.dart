@@ -181,25 +181,33 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                 try {
                   String dobStr = _dobController.text.trim();
                   String timeStr = _tobController.text.trim();
+
+                  // Full names AND 3-letter abbreviations
                   final months = ["January", "February", "March", "April", "May", "June",
                     "July", "August", "September", "October", "November", "December"];
+                  final monthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
                   // Try ISO format: YYYY-MM-DD
                   if (RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(dobStr)) {
                     dobPart = dobStr;
                   } else {
-                    // Support both "13 July 2026" (space) and "13-July-2026" (dash)
+                    // Support "13 July 2026", "13-July-2026", "21-Jul-2026", "13 Jul 2026"
                     final parts = dobStr.contains('-') ? dobStr.split('-') : dobStr.split(' ');
                     if (parts.length == 3) {
                       int monthIndex = -1;
-                      if (int.tryParse(parts[1]) != null) {
-                        monthIndex = int.parse(parts[1]) - 1;
+                      final monthStr = parts[1].trim();
+                      if (int.tryParse(monthStr) != null) {
+                        monthIndex = int.parse(monthStr) - 1;
                       } else {
-                        monthIndex = months.indexWhere((m) => m.toLowerCase() == parts[1].toLowerCase());
+                        // Try full name first
+                        monthIndex = months.indexWhere((m) => m.toLowerCase() == monthStr.toLowerCase());
+                        // Try 3-letter abbreviation
+                        if (monthIndex == -1) {
+                          monthIndex = monthsShort.indexWhere((m) => m.toLowerCase() == monthStr.toLowerCase());
+                        }
                       }
                       if (monthIndex != -1) {
-                        // Handle "13 July 2026" → day=parts[0], month=parts[1], year=parts[2]
-                        // Handle "13-July-1994" → same
                         String d = parts[0].trim().padLeft(2, '0');
                         String m = (monthIndex + 1).toString().padLeft(2, '0');
                         String y = parts[2].trim();
