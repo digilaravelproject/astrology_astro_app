@@ -1014,7 +1014,7 @@ class _HomeScreenState extends State<HomeScreen> {
         textColor: const Color(0xFFE63946),
         onTap: () => Get.to(() => CreateKundliScreen(
               initialIsMatching: true,
-              hideMatchingTab: false,
+              hideMatchingTab: true,
             )),
       ),
       _MenuData(
