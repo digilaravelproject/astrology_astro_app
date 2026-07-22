@@ -87,6 +87,7 @@ class _KundliListScreenState extends State<KundliListScreen> {
               if (list.isEmpty) {
                 return _buildEmptyState();
               }
+
               return ListView.builder(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 itemCount: list.length,
@@ -249,6 +250,7 @@ class _KundliListScreenState extends State<KundliListScreen> {
                           GestureDetector(
                             onTap: () => Get.to(() => CreateKundliScreen(
                                   initialIsMatching: false,
+                                  hideMatchingTab: true,
                                   initialKundliData: {
                                     'id': item.id.toString(),
                                     'name': item.name,
