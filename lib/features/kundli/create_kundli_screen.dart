@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/theme/app_colors.dart';
@@ -6,8 +7,13 @@ import '../../../core/widgets/custom_app_bar.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart' as sax;
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
 import '../../../core/widgets/location_search_screen.dart';
+import '../../../core/services/network/astrology_api_client.dart';
 import 'controllers/saved_kundli_controller.dart';
+import 'controllers/matching_controller.dart';
+import 'repositories/matching_repository_impl.dart';
+import 'usecases/get_matching_usecase.dart';
 import 'models/create_kundli_response_model.dart';
+import 'kundali_matching_screen.dart';
 
 class CreateKundliScreen extends StatefulWidget {
   final bool initialIsMatching;
@@ -143,7 +149,133 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
             padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
             child: GestureDetector(
               onTap: () async {
-                // --- Validate fields ---
+                if (isMatching) {
+                  // --- Validate Matching Fields ---
+                  if (_boysNameController.text.trim().isEmpty ||
+                      _boysDobController.text.trim().isEmpty ||
+                      _boysTobController.text.trim().isEmpty ||
+                      _boysPobController.text.trim().isEmpty ||
+                      _boyLat == null ||
+                      _boyLng == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Please fill all Boy details completely'), backgroundColor: Colors.red),
+                    );
+                    return;
+                  }
+
+                  if (_girlsNameController.text.trim().isEmpty ||
+                      _girlsDobController.text.trim().isEmpty ||
+                      _girlsTobController.text.trim().isEmpty ||
+                      _girlsPobController.text.trim().isEmpty ||
+                      _girlLat == null ||
+                      _girlLng == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Please fill all Girl details completely'), backgroundColor: Colors.red),
+                    );
+                    return;
+                  }
+
+                  String parseDateHelper(String dobStr) {
+                    final months = ["January", "February", "March", "April", "May", "June",
+                      "July", "August", "September", "October", "November", "December"];
+                    final monthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                    dobStr = dobStr.trim();
+                    if (RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(dobStr)) return dobStr;
+                    final parts = dobStr.contains('-') ? dobStr.split('-') : dobStr.split(' ');
+                    if (parts.length == 3) {
+                      int monthIndex = -1;
+                      final monthStr = parts[1].trim();
+                      if (int.tryParse(monthStr) != null) {
+                        monthIndex = int.parse(monthStr) - 1;
+                      } else {
+                        monthIndex = months.indexWhere((m) => m.toLowerCase() == monthStr.toLowerCase());
+                        if (monthIndex == -1) {
+                          monthIndex = monthsShort.indexWhere((m) => m.toLowerCase() == monthStr.toLowerCase());
+                        }
+                      }
+                      if (monthIndex != -1) {
+                        String d = parts[0].trim().padLeft(2, '0');
+                        String m = (monthIndex + 1).toString().padLeft(2, '0');
+                        String y = parts[2].trim();
+                        return "$y-$m-$d";
+                      }
+                    }
+                    return dobStr;
+                  }
+
+                  String parseTimeHelper(String timeStr) {
+                    timeStr = timeStr.trim();
+                    if (timeStr.toUpperCase().contains('AM') || timeStr.toUpperCase().contains('PM')) {
+                      final isPM = timeStr.toUpperCase().contains('PM');
+                      var t = timeStr.replaceAll(RegExp(r'[APM\s]', caseSensitive: false), '').trim();
+                      final timeParts = t.split(':');
+                      if (timeParts.length >= 2) {
+                        int hour = int.parse(timeParts[0]);
+                        final min = timeParts[1].padLeft(2, '0');
+                        if (isPM && hour != 12) hour += 12;
+                        if (!isPM && hour == 12) hour = 0;
+                        return '${hour.toString().padLeft(2, '0')}:$min:00';
+                      }
+                    } else if (timeStr.length == 5) {
+                      return '$timeStr:00';
+                    }
+                    return timeStr;
+                  }
+
+                  final boyDob = parseDateHelper(_boysDobController.text);
+                  final boyTob = parseTimeHelper(_boysTobController.text);
+                  final girlDob = parseDateHelper(_girlsDobController.text);
+                  final girlTob = parseTimeHelper(_girlsTobController.text);
+
+                  // Call Matching Controller
+                  try {
+                    _savedKundliController.isLoadingAction.value = true;
+                    final matchingRepo = MatchingRepositoryImpl();
+                    final getMatchingUseCase = GetMatchingUseCase(repository: matchingRepo);
+                    final matchingController = Get.put(MatchingController(getMatchingUseCase: getMatchingUseCase));
+
+                    await matchingController.fetchMatchingData(
+                      boyName: _boysNameController.text.trim().isEmpty ? 'Boy' : _boysNameController.text.trim(),
+                      boyGender: 'Male',
+                      boyDob: boyDob,
+                      boyTob: boyTob,
+                      boyPlace: _boysPobController.text.trim(),
+                      boyLat: _boyLat!,
+                      boyLng: _boyLng!,
+                      boyTz: '+05:30',
+                      girlName: _girlsNameController.text.trim().isEmpty ? 'Girl' : _girlsNameController.text.trim(),
+                      girlGender: 'Female',
+                      girlDob: girlDob,
+                      girlTob: girlTob,
+                      girlPlace: _girlsPobController.text.trim(),
+                      girlLat: _girlLat!,
+                      girlLng: _girlLng!,
+                      girlTz: '+05:30',
+                    );
+
+                    if (matchingController.matchingData.value != null) {
+                      Get.to(() => const KundliMatchScreen());
+                    } else {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(matchingController.errorMessage.value.isNotEmpty ? matchingController.errorMessage.value : 'Failed to calculate horoscope matching.'), backgroundColor: Colors.red),
+                        );
+                      }
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Matching error: $e'), backgroundColor: Colors.red),
+                      );
+                    }
+                  } finally {
+                    _savedKundliController.isLoadingAction.value = false;
+                  }
+                  return;
+                }
+
+                // --- Validate Single Kundli fields ---
                 if (_nameController.text.trim().isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Please enter name'), backgroundColor: Colors.red),
@@ -308,7 +440,9 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                       child: Obx(() => _savedKundliController.isLoadingAction.value
                           ? const CircularProgressIndicator(color: Colors.white)
                           : AppText(
-                              widget.initialKundliData != null ? "Update Kundli" : "Save & View Kundli",
+                              isMatching
+                                  ? "Generate Horoscope"
+                                  : (widget.initialKundliData != null ? "Update Kundli" : "Save & View Kundli"),
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 15,
