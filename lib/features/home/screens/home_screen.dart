@@ -1005,6 +1005,14 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: () => Get.to(() => const KundliListScreen()),
       ),
       _MenuData(
+        title: 'Match Making',
+        icon: Iconsax.heart_copy,
+        bgColor: const Color(0xFFFFF0F3),
+        iconBgColor: const Color(0xFFFFCCD5),
+        textColor: const Color(0xFFE63946),
+        onTap: () => Get.to(() => const KundliListScreen(isMatchingMode: true)),
+      ),
+      _MenuData(
         title: 'Panchang',
         icon: Iconsax.sun_1_copy,
         bgColor: const Color(0xFFFFF3E0),
