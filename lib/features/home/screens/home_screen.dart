@@ -15,6 +15,8 @@ import '../../call/call_history_screen.dart';
 import '../../chat/presentation/pages/chat_history_screen.dart';
 import '../../chat/presentation/pages/astrologer_sessions_screen.dart';
 import '../../kundli/kundli_list_screen.dart';
+import '../../kundli/create_kundli_screen.dart';
+
 import '../../astromall/astromall_orders_screen.dart';
 import '../../waitlist/waitlist_screen.dart';
 import '../../chat/presentation/pages/assistant_chat_screen.dart';
@@ -1010,7 +1012,10 @@ class _HomeScreenState extends State<HomeScreen> {
         bgColor: const Color(0xFFFFF0F3),
         iconBgColor: const Color(0xFFFFCCD5),
         textColor: const Color(0xFFE63946),
-        onTap: () => Get.to(() => const KundliListScreen(isMatchingMode: true)),
+        onTap: () => Get.to(() => CreateKundliScreen(
+              initialIsMatching: true,
+              hideMatchingTab: false,
+            )),
       ),
       _MenuData(
         title: 'Panchang',
