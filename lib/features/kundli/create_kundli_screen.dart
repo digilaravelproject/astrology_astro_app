@@ -143,44 +143,96 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
             padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
             child: GestureDetector(
               onTap: () async {
+                // --- Validate fields ---
+                if (_nameController.text.trim().isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please enter name'), backgroundColor: Colors.red),
+                  );
+                  return;
+                }
+                if (_genderController.text.trim().isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please select gender'), backgroundColor: Colors.red),
+                  );
+                  return;
+                }
+                if (_dobController.text.trim().isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please select birth date'), backgroundColor: Colors.red),
+                  );
+                  return;
+                }
+                if (_tobController.text.trim().isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please select birth time'), backgroundColor: Colors.red),
+                  );
+                  return;
+                }
+                if (_pobController.text.trim().isEmpty || _lat == null || _lng == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please select birth place'), backgroundColor: Colors.red),
+                  );
+                  return;
+                }
+
+                // --- Parse date ---
                 String? dobPart;
                 String? tobPart;
                 try {
-                  String dobStr = _dobController.text; // Expected format: 05-July-1994 or DD-MM-YYYY
-                  String timeStr = _tobController.text; // Expected format: HH:mm
+                  String dobStr = _dobController.text.trim();
+                  String timeStr = _tobController.text.trim();
+                  final months = ["January", "February", "March", "April", "May", "June",
+                    "July", "August", "September", "October", "November", "December"];
 
-                  if (dobStr.isNotEmpty) {
-                    final parts = dobStr.split('-');
+                  // Try ISO format: YYYY-MM-DD
+                  if (RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(dobStr)) {
+                    dobPart = dobStr;
+                  } else {
+                    // Support both "13 July 2026" (space) and "13-July-2026" (dash)
+                    final parts = dobStr.contains('-') ? dobStr.split('-') : dobStr.split(' ');
                     if (parts.length == 3) {
-                      final months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
                       int monthIndex = -1;
-
                       if (int.tryParse(parts[1]) != null) {
                         monthIndex = int.parse(parts[1]) - 1;
                       } else {
                         monthIndex = months.indexWhere((m) => m.toLowerCase() == parts[1].toLowerCase());
                       }
-
                       if (monthIndex != -1) {
-                        String y = parts[2];
+                        // Handle "13 July 2026" → day=parts[0], month=parts[1], year=parts[2]
+                        // Handle "13-July-1994" → same
+                        String d = parts[0].trim().padLeft(2, '0');
                         String m = (monthIndex + 1).toString().padLeft(2, '0');
-                        String d = parts[0].padLeft(2, '0');
+                        String y = parts[2].trim();
                         dobPart = "$y-$m-$d";
-                        String t = timeStr.isNotEmpty ? timeStr : "00:00:00";
-                        if (t.length == 5) t += ":00";
-                        tobPart = t;
                       }
                     }
+                  }
+
+                  if (dobPart != null && timeStr.isNotEmpty) {
+                    // Convert 12-hour "11:35 PM" → "23:35:00"
+                    String t = timeStr;
+                    if (t.toUpperCase().contains('AM') || t.toUpperCase().contains('PM')) {
+                      final isPM = t.toUpperCase().contains('PM');
+                      t = t.replaceAll(RegExp(r'[APM\s]', caseSensitive: false), '').trim();
+                      final timeParts = t.split(':');
+                      if (timeParts.length >= 2) {
+                        int hour = int.parse(timeParts[0]);
+                        final min = timeParts[1].padLeft(2, '0');
+                        if (isPM && hour != 12) hour += 12;
+                        if (!isPM && hour == 12) hour = 0;
+                        t = '${hour.toString().padLeft(2, '0')}:$min:00';
+                      }
+                    } else if (t.length == 5) {
+                      t += ':00';
+                    }
+                    tobPart = t;
                   }
                 } catch (_) {}
 
                 if (dobPart == null || tobPart == null) {
-                  Get.snackbar('Error', 'Please fill all details correctly', snackPosition: SnackPosition.BOTTOM);
-                  return;
-                }
-
-                if (_lat == null || _lng == null) {
-                  Get.snackbar('Error', 'Please select a Birth Place to get coordinates', snackPosition: SnackPosition.BOTTOM);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Invalid date or time format'), backgroundColor: Colors.red),
+                  );
                   return;
                 }
 
@@ -191,25 +243,25 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                   final id = int.parse(widget.initialKundliData!['id']!);
                   result = await _savedKundliController.updateKundli(
                     id: id,
-                    name: _nameController.text,
-                    gender: _genderController.text,
+                    name: _nameController.text.trim(),
+                    gender: _genderController.text.trim(),
                     birthDate: dobPart,
                     birthTime: tobPart,
                     latitude: _lat!.toString(),
                     longitude: _lng!.toString(),
                     datetime: "${dobPart}T$tobPart",
-                    place: _pobController.text,
+                    place: _pobController.text.trim(),
                   );
                 } else {
                   result = await _savedKundliController.createKundli(
-                    name: _nameController.text,
-                    gender: _genderController.text,
+                    name: _nameController.text.trim(),
+                    gender: _genderController.text.trim(),
                     birthDate: dobPart,
                     birthTime: tobPart,
                     latitude: _lat!.toString(),
                     longitude: _lng!.toString(),
                     datetime: "${dobPart}T$tobPart",
-                    place: _pobController.text,
+                    place: _pobController.text.trim(),
                   );
                 }
 
