@@ -6,6 +6,8 @@ import '../../../core/widgets/custom_app_bar.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart' as sax;
 import 'create_kundli_screen.dart';
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
+import 'controllers/saved_kundli_controller.dart';
+import 'models/kundli_list_response_model.dart';
 
 class KundliListScreen extends StatefulWidget {
   final bool isMatchingMode;
@@ -16,35 +18,15 @@ class KundliListScreen extends StatefulWidget {
 }
 
 class _KundliListScreenState extends State<KundliListScreen> {
-  final List<Map<String, String>> kundliList = [
-    {
-      "id": "1",
-      "name": "Utkarsha Rathod",
-      "gender": "Female",
-      "dob": "05-July-1994",
-      "time": "08:13 PM",
-      "place": "New Delhi, Delhi, India",
-      "initial": "U",
-    },
-    {
-      "id": "2",
-      "name": "abc",
-      "gender": "Female",
-      "dob": "26-November-2000",
-      "time": "05:35 AM",
-      "place": "Amravati, Maharashtra, India",
-      "initial": "a",
-    },
-  ];
-
+  final SavedKundliController _savedKundliController = Get.put(SavedKundliController());
   final Set<String> _selectedIds = {};
   final TextEditingController _searchController = TextEditingController();
-  List<Map<String, String>> _filteredList = [];
+  final RxString _searchQuery = ''.obs;
 
   @override
   void initState() {
     super.initState();
-    _filteredList = kundliList;
+    _savedKundliController.fetchKundliList();
   }
 
   @override
@@ -53,12 +35,17 @@ class _KundliListScreenState extends State<KundliListScreen> {
     super.dispose();
   }
 
+  List<KundliItem> get _filteredList {
+    if (_searchQuery.value.isEmpty) {
+      return _savedKundliController.kundliList;
+    }
+    return _savedKundliController.kundliList
+        .where((item) => item.name.toLowerCase().contains(_searchQuery.value.toLowerCase()))
+        .toList();
+  }
+
   void _onSearchChanged(String query) {
-    setState(() {
-      _filteredList = kundliList
-          .where((item) => (item['name'] ?? '').toLowerCase().contains(query.toLowerCase()))
-          .toList();
-    });
+    _searchQuery.value = query;
   }
 
   void _toggleSelection(String id) {
@@ -92,15 +79,22 @@ class _KundliListScreenState extends State<KundliListScreen> {
         children: [
           _buildSearchBar(),
           Expanded(
-            child: _filteredList.isEmpty
-                ? _buildEmptyState()
-                : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    itemCount: _filteredList.length,
-                    itemBuilder: (context, index) {
-                      return _buildKundliItem(_filteredList[index]);
-                    },
-                  ),
+            child: Obx(() {
+              if (_savedKundliController.isLoadingList.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              final list = _filteredList;
+              if (list.isEmpty) {
+                return _buildEmptyState();
+              }
+              return ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                itemCount: list.length,
+                itemBuilder: (context, index) {
+                  return _buildKundliItem(list[index]);
+                },
+              );
+            }),
           ),
           _buildBottomButtons(),
         ],
@@ -171,45 +165,27 @@ class _KundliListScreenState extends State<KundliListScreen> {
     );
   }
 
-  Widget _buildKundliItem(Map<String, String> data) {
-    bool isAbc = data['name'] == "abc";
-    bool isSelected = _selectedIds.contains(data['id']);
+  Widget _buildKundliItem(KundliItem item) {
+    final idStr = item.id.toString();
+    final bool isSelected = _selectedIds.contains(idStr);
+    final String initial = item.name.isNotEmpty ? item.name[0].toUpperCase() : '?';
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
         if (widget.isMatchingMode) {
-          final id = data['id'];
-          if (id != null) {
-            _toggleSelection(id);
-          }
+          _toggleSelection(idStr);
         } else {
-          String? dobVal;
-          String? tobVal;
-          if (data['dob'] != null && data['dob']!.isNotEmpty) {
-            try {
-              // dob is like 05-July-1994, try to parse it
-              final parts = data['dob']!.split('-');
-              if (parts.length == 3) {
-                final months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                int monthIndex = months.indexWhere((m) => m.toLowerCase() == parts[1].toLowerCase());
-                if (monthIndex != -1) {
-                  String y = parts[2];
-                  String m = (monthIndex + 1).toString().padLeft(2, '0');
-                  String d = parts[0].padLeft(2, '0');
-                  dobVal = "$y-$m-$d";
-                  String t = data['time'] ?? "00:00:00";
-                  if (t.length == 5) t += ":00";
-                  tobVal = t;
-                }
-              }
-            } catch (_) {}
-          }
+          String tobPart = item.birthTime;
+          if (tobPart.length == 5) tobPart += ':00';
           Get.to(() => KundliScreen(
-            fullName: data['name'] ?? "",
-            gender: data['gender'] ?? "",
-            dob: dobVal ?? "",
-            tob: tobVal ?? "",
-            place: data['place'] ?? "",
+            fullName: item.name,
+            gender: item.gender,
+            dob: item.birthDate,
+            tob: tobPart,
+            place: item.displayPlace,
+            latitude: double.tryParse(item.latitude) ?? 28.6139,
+            longitude: double.tryParse(item.longitude) ?? 77.2090,
           ));
         }
       },
@@ -252,7 +228,7 @@ class _KundliListScreenState extends State<KundliListScreen> {
               ),
               child: Center(
                 child: AppText(
-                  data['initial']?.toUpperCase() ?? '',
+                  initial,
                   color: AppColors.primaryColor,
                   fontWeight: FontWeight.w800,
                   fontSize: 20,
@@ -267,13 +243,22 @@ class _KundliListScreenState extends State<KundliListScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      AppText(data['name'] ?? '', fontSize: 17, fontWeight: FontWeight.bold),
+                      Expanded(child: AppText(item.name, fontSize: 17, fontWeight: FontWeight.bold, maxLines: 1, overflow: TextOverflow.ellipsis)),
                       Row(
                         children: [
                           GestureDetector(
                             onTap: () => Get.to(() => CreateKundliScreen(
                                   initialIsMatching: false,
-                                  initialKundliData: data,
+                                  initialKundliData: {
+                                    'id': item.id.toString(),
+                                    'name': item.name,
+                                    'gender': item.gender,
+                                    'dob': item.formattedDate,
+                                    'time': item.formattedTime,
+                                    'place': item.displayPlace,
+                                    'latitude': item.latitude,
+                                    'longitude': item.longitude,
+                                  },
                                 )),
                             child: Icon(Icons.edit_note_rounded, color: AppColors.primaryColor.withOpacity(0.5), size: 24),
                           ),
@@ -290,43 +275,26 @@ class _KundliListScreenState extends State<KundliListScreen> {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  // Details with micro-icons
-                  _buildDetailRow(sax.Iconsax.user_copy, data['gender'] ?? ''),
+                  _buildDetailRow(sax.Iconsax.user_copy, item.gender),
                   const SizedBox(height: 4),
-                  _buildDetailRow(sax.Iconsax.calendar_1_copy, "${data['dob']} | ${data['time']}"),
+                  _buildDetailRow(sax.Iconsax.calendar_1_copy, "${item.formattedDate} | ${item.formattedTime}"),
                   const SizedBox(height: 4),
-                  _buildDetailRow(sax.Iconsax.location_copy, data['place'] ?? ''),
+                  _buildDetailRow(sax.Iconsax.location_copy, item.displayPlace),
                   const SizedBox(height: 12),
                   Align(
                     alignment: Alignment.centerRight,
                     child: GestureDetector(
                       onTap: () {
-                        String? dobVal2;
-                        String? tobVal2;
-                        if (data['dob'] != null && data['dob']!.isNotEmpty) {
-                          try {
-                            final parts = data['dob']!.split('-');
-                            if (parts.length == 3) {
-                              final months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                              int monthIndex = months.indexWhere((m) => m.toLowerCase() == parts[1].toLowerCase());
-                              if (monthIndex != -1) {
-                                String y = parts[2];
-                                String m = (monthIndex + 1).toString().padLeft(2, '0');
-                                String d = parts[0].padLeft(2, '0');
-                                dobVal2 = "$y-$m-$d";
-                                String t = data['time'] ?? "00:00:00";
-                                if (t.length == 5) t += ":00";
-                                tobVal2 = t;
-                              }
-                            }
-                          } catch (_) {}
-                        }
+                        String tobPart = item.birthTime;
+                        if (tobPart.length == 5) tobPart += ':00';
                         Get.to(() => KundliScreen(
-                          fullName: data['name'] ?? "",
-                          gender: data['gender'] ?? "",
-                          dob: dobVal2 ?? "",
-                          tob: tobVal2 ?? "",
-                          place: data['place'] ?? "",
+                          fullName: item.name,
+                          gender: item.gender,
+                          dob: item.birthDate,
+                          tob: tobPart,
+                          place: item.displayPlace,
+                          latitude: double.tryParse(item.latitude) ?? 28.6139,
+                          longitude: double.tryParse(item.longitude) ?? 77.2090,
                         ));
                       },
                       child: Container(
@@ -396,18 +364,30 @@ class _KundliListScreenState extends State<KundliListScreen> {
               child: GestureDetector(
                 onTap: canMatch
                     ? () {
-                        final selectedItems = kundliList.where((item) => _selectedIds.contains(item['id'])).toList();
-                        // Simple logic: first is boy, second is girl or based on gender if available
+                        final selectedItems = _savedKundliController.kundliList
+                            .where((item) => _selectedIds.contains(item.id.toString()))
+                            .toList();
                         Map<String, String>? boyData;
                         Map<String, String>? girlData;
 
+                        Map<String, String> toMap(KundliItem item) => {
+                          'id': item.id.toString(),
+                          'name': item.name,
+                          'gender': item.gender,
+                          'dob': item.formattedDate,
+                          'time': item.formattedTime,
+                          'place': item.displayPlace,
+                          'latitude': item.latitude,
+                          'longitude': item.longitude,
+                        };
+
                         if (selectedItems.length == 2) {
-                          if (selectedItems[0]['gender'] == 'Male' || selectedItems[1]['gender'] == 'Female') {
-                            boyData = selectedItems[0];
-                            girlData = selectedItems[1];
+                          if (selectedItems[0].gender.toLowerCase() == 'male' || selectedItems[1].gender.toLowerCase() == 'female') {
+                            boyData = toMap(selectedItems[0]);
+                            girlData = toMap(selectedItems[1]);
                           } else {
-                            boyData = selectedItems[1];
-                            girlData = selectedItems[0];
+                            boyData = toMap(selectedItems[1]);
+                            girlData = toMap(selectedItems[0]);
                           }
                         }
 

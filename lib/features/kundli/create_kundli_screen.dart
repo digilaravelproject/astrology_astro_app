@@ -6,6 +6,8 @@ import '../../../core/widgets/custom_app_bar.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart' as sax;
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
 import '../../../core/widgets/location_search_screen.dart';
+import 'controllers/saved_kundli_controller.dart';
+import 'models/create_kundli_response_model.dart';
 
 class CreateKundliScreen extends StatefulWidget {
   final bool initialIsMatching;
@@ -28,6 +30,7 @@ class CreateKundliScreen extends StatefulWidget {
 }
 
 class _CreateKundliScreenState extends State<CreateKundliScreen> {
+  final SavedKundliController _savedKundliController = Get.put(SavedKundliController());
   late bool isMatching;
   
   // Single Kundli Coordinates
@@ -73,6 +76,8 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
       _dobController.text = widget.initialKundliData!['dob'] ?? "10 February 2026";
       _tobController.text = widget.initialKundliData!['time'] ?? "08:41 AM";
       _pobController.text = widget.initialKundliData!['place'] ?? "New Delhi, Delhi, India";
+      _lat = double.tryParse(widget.initialKundliData!['latitude'] ?? "") ?? 28.6139;
+      _lng = double.tryParse(widget.initialKundliData!['longitude'] ?? "") ?? 77.2090;
     } else {
       _genderController.text = "Male";
       _dobController.text = "10 February 2026";
@@ -86,6 +91,8 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
       _boysDobController.text = widget.initialBoyData!['dob'] ?? "10 February 2026";
       _boysTobController.text = widget.initialBoyData!['time'] ?? "08:41 AM";
       _boysPobController.text = widget.initialBoyData!['place'] ?? "New Delhi, Delhi, India";
+      _boyLat = double.tryParse(widget.initialBoyData!['latitude'] ?? "") ?? 28.6139;
+      _boyLng = double.tryParse(widget.initialBoyData!['longitude'] ?? "") ?? 77.2090;
     } else {
       _boysGenderController.text = "Male";
       _boysDobController.text = "10 February 2026";
@@ -99,6 +106,8 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
       _girlsDobController.text = widget.initialGirlData!['dob'] ?? "10 February 2026";
       _girlsTobController.text = widget.initialGirlData!['time'] ?? "08:41 AM";
       _girlsPobController.text = widget.initialGirlData!['place'] ?? "New Delhi, Delhi, India";
+      _girlLat = double.tryParse(widget.initialGirlData!['latitude'] ?? "") ?? 28.6139;
+      _girlLng = double.tryParse(widget.initialGirlData!['longitude'] ?? "") ?? 77.2090;
     } else {
       _girlsGenderController.text = "Female";
       _girlsDobController.text = "10 February 2026";
@@ -148,7 +157,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
             child: GestureDetector(
-              onTap: () {
+              onTap: () async {
                 String? dobPart;
                 String? tobPart;
                 try {
@@ -180,15 +189,43 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                   }
                 } catch (_) {}
 
-                Get.to(() => KundliScreen(
-                  fullName: _nameController.text,
-                  gender: _genderController.text,
-                  dob: dobPart ?? "",
-                  tob: tobPart ?? "",
-                  place: _pobController.text,
-                  latitude: _lat,
-                  longitude: _lng,
-                ));
+                if (dobPart == null || tobPart == null) {
+                  Get.snackbar('Error', 'Please fill all details correctly', snackPosition: SnackPosition.BOTTOM);
+                  return;
+                }
+
+                final hasId = widget.initialKundliData != null && widget.initialKundliData!['id'] != null;
+                CreateKundliResponseModel? result;
+
+                if (hasId) {
+                  final id = int.parse(widget.initialKundliData!['id']!);
+                  result = await _savedKundliController.updateKundli(
+                    id: id,
+                    name: _nameController.text,
+                    gender: _genderController.text,
+                    birthDate: dobPart,
+                    birthTime: tobPart,
+                    latitude: _lat.toString(),
+                    longitude: _lng.toString(),
+                    datetime: "${dobPart}T$tobPart",
+                    place: _pobController.text,
+                  );
+                } else {
+                  result = await _savedKundliController.createKundli(
+                    name: _nameController.text,
+                    gender: _genderController.text,
+                    birthDate: dobPart,
+                    birthTime: tobPart,
+                    latitude: _lat.toString(),
+                    longitude: _lng.toString(),
+                    datetime: "${dobPart}T$tobPart",
+                    place: _pobController.text,
+                  );
+                }
+
+                if (result != null) {
+                  Get.back();
+                }
               },
               child: Container(
                 height: 56,
@@ -204,16 +241,18 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                     ),
                   ],
                 ),
-                  child: Stack(
-                    children: [
-                      Center(
-                        child: AppText(
-                          "Generate Horoscope",
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        ),
-                      ),
+                child: Stack(
+                  children: [
+                    Center(
+                      child: Obx(() => _savedKundliController.isLoadingAction.value
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : AppText(
+                              widget.initialKundliData != null ? "Update Kundli" : "Save & View Kundli",
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            )),
+                    ),
                       Positioned(
                         right: 20,
                         top: 0,
