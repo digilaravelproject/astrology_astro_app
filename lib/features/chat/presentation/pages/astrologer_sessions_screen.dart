@@ -243,50 +243,6 @@ class AstrologerSessionsScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              showModalBottomSheet(
-                                context: context,
-                                isScrollControlled: true,
-                                backgroundColor: Colors.transparent,
-                                builder: (context) => const Padding(padding: EdgeInsets.only(top: 100), child: AddNoteBottomSheet()),
-                              );
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade300), borderRadius: BorderRadius.circular(10)),
-                              child: Icon(Iconsax.document_copy, size: 16, color: Colors.grey.shade600),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          SizedBox(
-                            width: 30,
-                            height: 30,
-                            child: PopupMenuButton<String>(
-                              padding: EdgeInsets.zero,
-                              icon: Container(
-                                padding: const EdgeInsets.all(6),
-                                decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade300), borderRadius: BorderRadius.circular(10)),
-                                child: Icon(Icons.more_vert, size: 16, color: Colors.grey.shade600),
-                              ),
-                              color: Colors.white,
-                              onSelected: (value) {
-                                if (value == 'block') {
-                                  Get.snackbar('Block User', 'Block user: $name', snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.black87, colorText: Colors.white);
-                                }
-                              },
-                              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                                const PopupMenuItem<String>(value: 'block', child: AppText('Block User', fontSize: 14)),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          const AnimatedFavoriteButton(),
-                        ],
-                      ),
                     ],
                   ),
 
@@ -375,6 +331,8 @@ class AstrologerSessionsScreen extends StatelessWidget {
                             dob: dobPart ?? "",
                             tob: tobPart ?? "",
                             place: pob,
+                            latitude: consumer?.latitude ?? 0.0,
+                            longitude: consumer?.longitude ?? 0.0,
                           )),
                           height: 42,
                           padding: EdgeInsets.zero,

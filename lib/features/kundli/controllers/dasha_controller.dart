@@ -13,8 +13,8 @@ class DashaController extends GetxController {
 
   Future<void> fetchDashaDetails({
     required String datetime,
-    double latitude = 28.65,
-    double longitude = 77.23,
+    required double latitude,
+    required double longitude,
     String timezone = "+05:30",
   }) async {
     isLoading.value = true;
@@ -33,8 +33,8 @@ class DashaController extends GetxController {
 
   Future<void> fetchYoginiDashaDetails({
     required String datetime,
-    double latitude = 28.65,
-    double longitude = 77.23,
+    required double latitude,
+    required double longitude,
     String timezone = "+05:30",
   }) async {
     isYoginiLoading.value = true;

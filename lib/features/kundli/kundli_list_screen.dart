@@ -185,8 +185,8 @@ class _KundliListScreenState extends State<KundliListScreen> {
             dob: item.birthDate,
             tob: tobPart,
             place: item.displayPlace,
-            latitude: double.tryParse(item.latitude) ?? 28.6139,
-            longitude: double.tryParse(item.longitude) ?? 77.2090,
+            latitude: double.tryParse(item.latitude) ?? 0.0,
+            longitude: double.tryParse(item.longitude) ?? 0.0,
           ));
         }
       },
@@ -295,8 +295,8 @@ class _KundliListScreenState extends State<KundliListScreen> {
                           dob: item.birthDate,
                           tob: tobPart,
                           place: item.displayPlace,
-                          latitude: double.tryParse(item.latitude) ?? 28.6139,
-                          longitude: double.tryParse(item.longitude) ?? 77.2090,
+                          latitude: double.tryParse(item.latitude) ?? 0.0,
+                          longitude: double.tryParse(item.longitude) ?? 0.0,
                         ));
                       },
                       child: Container(

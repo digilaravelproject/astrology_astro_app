@@ -42,8 +42,8 @@ class KundliScreen extends StatefulWidget {
     required this.dob,
     required this.tob,
     required this.place,
-    this.latitude = 28.65,
-    this.longitude = 77.23,
+    required this.latitude,
+    required this.longitude,
   });
 
   @override
