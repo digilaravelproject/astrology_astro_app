@@ -1012,27 +1012,9 @@ class _HomeScreenState extends State<HomeScreen> {
         bgColor: const Color(0xFFFFF0F3),
         iconBgColor: const Color(0xFFFFCCD5),
         textColor: const Color(0xFFE63946),
-        onTap: () => Get.to(() => CreateKundliScreen(
+        onTap: () => Get.to(() => const CreateKundliScreen(
               initialIsMatching: true,
               hideMatchingTab: true,
-              initialBoyData: {
-                'name': 'Rahul Sharma',
-                'gender': 'Male',
-                'dob': '15-Jan-1995',
-                'time': '10:30 AM',
-                'place': 'Delhi, India',
-                'latitude': '28.6139',
-                'longitude': '77.2090',
-              },
-              initialGirlData: {
-                'name': 'Priya Singh',
-                'gender': 'Female',
-                'dob': '22-Mar-1997',
-                'time': '06:45 AM',
-                'place': 'Mumbai, Maharashtra, India',
-                'latitude': '19.0760',
-                'longitude': '72.8777',
-              },
             )),
       ),
       _MenuData(

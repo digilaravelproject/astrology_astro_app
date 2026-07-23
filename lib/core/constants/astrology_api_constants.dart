@@ -31,5 +31,6 @@ class AstrologyApiConstants {
   static const String houseCuspsEndpoint = '/kp_house_cusps';
   static const String kpFullReportEndpoint = '/kp_planets';
   static const String sadeSatiAdvancedEndpoint = '/sadhesati_current_status';
+  static const String sadeSatiLifeDetailsEndpoint = '/sadhesati_life_details';
   static const String matchingAshtakootaEndpoint = '/match_ashtakoot_points';
 }

@@ -130,4 +130,8 @@ class AstrologyApiClient {
   Future<Response> getSadhesatiStatus(Map<String, dynamic> payload) {
     return _dio.post(AstrologyApiConstants.sadeSatiAdvancedEndpoint, data: payload);
   }
+
+  Future<Response> getSadhesatiLifeDetails(Map<String, dynamic> payload) {
+    return _dio.post(AstrologyApiConstants.sadeSatiLifeDetailsEndpoint, data: payload);
+  }
 }

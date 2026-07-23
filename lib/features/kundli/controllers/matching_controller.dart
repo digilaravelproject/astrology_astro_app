@@ -12,36 +12,36 @@ class MatchingController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxString errorMessage = ''.obs;
 
-  String boyName = 'John';
+  String boyName = '';
   String boyGender = 'Male';
-  String boyDobRaw = '2026-07-22';
-  String boyTobRaw = '11:07:00';
-  String boyPlace = 'Agra, UP, India';
-  double boyLatVal = 28.6139;
-  double boyLngVal = 77.2090;
+  String boyDobRaw = '';
+  String boyTobRaw = '';
+  String boyPlace = '';
+  double boyLatVal = 0.0;
+  double boyLngVal = 0.0;
 
-  String girlName = 'Awi';
+  String girlName = '';
   String girlGender = 'Female';
-  String girlDobRaw = '2026-07-22';
-  String girlTobRaw = '11:07:00';
-  String girlPlace = 'Agra, UP, India';
-  double girlLatVal = 19.0760;
-  double girlLngVal = 72.8777;
+  String girlDobRaw = '';
+  String girlTobRaw = '';
+  String girlPlace = '';
+  double girlLatVal = 0.0;
+  double girlLngVal = 0.0;
 
   Future<void> fetchMatchingData({
-    String boyName = 'John',
+    String boyName = '',
     String boyGender = 'Male',
     required String boyDob,
     required String boyTob,
-    String boyPlace = 'Agra, UP, India',
+    String boyPlace = '',
     required double boyLat,
     required double boyLng,
     required String boyTz,
-    String girlName = 'Awi',
+    String girlName = '',
     String girlGender = 'Female',
     required String girlDob,
     required String girlTob,
-    String girlPlace = 'Agra, UP, India',
+    String girlPlace = '',
     required double girlLat,
     required double girlLng,
     required String girlTz,

@@ -41,6 +41,21 @@ class SadeSatiRepository {
       if (response.statusCode == 200) {
         final Map<String, dynamic> rawData = response.data is Map<String, dynamic> ? response.data : {};
         
+        List<Map<String, dynamic>> timelineList = [];
+        try {
+          final lifeResponse = await _client.getSadhesatiLifeDetails(payload);
+          if (lifeResponse.statusCode == 200) {
+            final rawLife = lifeResponse.data;
+            if (rawLife is List) {
+              timelineList = List<Map<String, dynamic>>.from(rawLife.map((e) => e is Map<String, dynamic> ? e : {}));
+            } else if (rawLife is Map<String, dynamic> && rawLife['sub_periods'] is List) {
+              timelineList = List<Map<String, dynamic>>.from(rawLife['sub_periods']);
+            }
+          }
+        } catch (e) {
+          Logger.e('Error fetching Sade Sati life details', error: e);
+        }
+
         final transformedJson = {
           'success': true,
           'data': {
@@ -60,7 +75,8 @@ class SadeSatiRepository {
                 'name': rawData['saturn_sign'],
                 'id': 0
               }
-            }
+            },
+            'timeline': timelineList,
           }
         };
 

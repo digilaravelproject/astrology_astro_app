@@ -35,6 +35,10 @@ class SadeSatiTab extends StatelessWidget {
           children: [
             _buildSadesatiStatusCard(data),
             const SizedBox(height: 16),
+            if (data.timeline != null && data.timeline!.isNotEmpty) ...[
+              _buildSadesatiTimelineTable(data.timeline!),
+              const SizedBox(height: 16),
+            ],
             if (data.guidance != null) _buildGuidanceSection(data.guidance!),
             const SizedBox(height: 16),
             if (data.effects != null && data.effects!.isNotEmpty) _buildEffectsSection(data.effects!),
@@ -194,6 +198,68 @@ class SadeSatiTab extends StatelessWidget {
                   ],
                 ),
               )),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSadesatiTimelineTable(List<SadeSatiTimelineItem> timeline) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              color: AppColors.primaryColor,
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: const Row(
+              children: [
+                Expanded(child: Center(child: AppText("Start", fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87))),
+                Expanded(child: Center(child: AppText("End", fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87))),
+                Expanded(child: Center(child: AppText("Sign Name", fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87))),
+                Expanded(child: Center(child: AppText("Type", fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87))),
+              ],
+            ),
+          ),
+          ...timeline.asMap().entries.map((entry) {
+            final index = entry.key;
+            final item = entry.value;
+            final isEven = index % 2 == 0;
+            return _buildTimelineRow(
+              item.startDate ?? '',
+              item.endDate ?? '',
+              item.signName ?? '',
+              item.type ?? '',
+              isEven: isEven,
+              isHighlight: item.isHighlight ?? false,
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimelineRow(String start, String end, String sign, String type, {required bool isEven, bool isHighlight = false}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: isEven ? Colors.transparent : const Color(0xFFF6F8F9),
+        border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Row(
+        children: [
+          Expanded(child: Center(child: AppText(start, fontSize: 12, fontWeight: isHighlight ? FontWeight.bold : FontWeight.normal, color: isHighlight ? AppColors.primaryColor : Colors.black87))),
+          Expanded(child: Center(child: AppText(end, fontSize: 12, fontWeight: isHighlight ? FontWeight.bold : FontWeight.normal, color: isHighlight ? AppColors.primaryColor : Colors.black87))),
+          Expanded(child: Center(child: AppText(sign, fontSize: 12, fontWeight: isHighlight ? FontWeight.bold : FontWeight.normal, color: isHighlight ? AppColors.primaryColor : Colors.black87))),
+          Expanded(child: Center(child: AppText(type, fontSize: 12, fontWeight: isHighlight ? FontWeight.bold : FontWeight.normal, color: isHighlight ? AppColors.primaryColor : Colors.black87))),
         ],
       ),
     );
