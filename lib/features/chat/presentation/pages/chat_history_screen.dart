@@ -292,7 +292,6 @@ class ChatHistoryScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    ),
                   ],
                 ),
                 

@@ -295,7 +295,6 @@ class CallHistoryScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-                      ),
                     ],
                   ),
                   
