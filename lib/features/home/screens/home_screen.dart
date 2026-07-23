@@ -18,7 +18,6 @@ import '../../kundli/kundli_list_screen.dart';
 import '../../kundli/create_kundli_screen.dart';
 
 import '../../astromall/astromall_orders_screen.dart';
-import '../../waitlist/waitlist_screen.dart';
 import '../../chat/presentation/pages/assistant_chat_screen.dart';
 import '../../orders/presentation/pages/orders_screen.dart';
 import '../../live/presentation/pages/live_schedule_screen.dart';
@@ -948,14 +947,6 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: () => Get.to(() => const CallHistoryScreen()),
       ),
       // Consultation tools
-      _MenuData(
-        title: 'Waitlist',
-        icon: Iconsax.timer_1_copy,
-        bgColor: const Color(0xFFF0F4FF),
-        iconBgColor: const Color(0xFFDBE4FF),
-        textColor: const Color(0xFF3B5BDB),
-        onTap: () => Get.to(() => const WaitlistScreen()),
-      ),
       _MenuData(
         title: 'Assistant Chat',
         icon: Iconsax.cpu_setting_copy,
