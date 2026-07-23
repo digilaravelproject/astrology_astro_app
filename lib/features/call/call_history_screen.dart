@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -366,11 +367,24 @@ class CallHistoryScreen extends StatelessWidget {
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
-                                    if (entry.key == "Name" || entry.key == "POB")
-                                      Padding(
-                                        padding: const EdgeInsets.only(left: 8),
-                                        child: Icon(Icons.copy_rounded, size: 14, color: AppColors.primaryColor.withOpacity(0.5)),
-                                      ),
+                                     if (entry.key == "Name" || entry.key == "POB")
+                                       GestureDetector(
+                                         onTap: () {
+                                           Clipboard.setData(ClipboardData(text: entry.value));
+                                           Get.snackbar(
+                                             'Copied',
+                                             '${entry.key} copied to clipboard',
+                                             snackPosition: SnackPosition.BOTTOM,
+                                             duration: const Duration(seconds: 2),
+                                             backgroundColor: Colors.black87,
+                                             colorText: Colors.white,
+                                           );
+                                         },
+                                         child: Padding(
+                                           padding: const EdgeInsets.only(left: 8),
+                                           child: Icon(Icons.copy_rounded, size: 14, color: AppColors.primaryColor.withOpacity(0.7)),
+                                         ),
+                                       ),
                                   ],
                                 ),
                               ),
