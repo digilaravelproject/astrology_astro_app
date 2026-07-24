@@ -724,11 +724,61 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
     );
   }
 
+  DateTime? _parseDateString(String str) {
+    if (str.isEmpty) return null;
+    try {
+      final parsed = DateTime.tryParse(str);
+      if (parsed != null) return parsed;
+
+      final cleaned = str.replaceAll('-', ' ').replaceAll('/', ' ').replaceAll(',', ' ').trim();
+      final parts = cleaned.split(RegExp(r'\s+'));
+      if (parts.length >= 3) {
+        int? day = int.tryParse(parts[0]);
+        int? year = int.tryParse(parts[2]);
+        int? month;
+
+        final monthStr = parts[1].toLowerCase();
+        final monthNames = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+        for (int i = 0; i < monthNames.length; i++) {
+          if (monthStr.startsWith(monthNames[i])) {
+            month = i + 1;
+            break;
+          }
+        }
+        month ??= int.tryParse(parts[1]);
+
+        if (day != null && month != null && year != null) {
+          return DateTime(year, month, day);
+        }
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  TimeOfDay? _parseTimeString(String str) {
+    if (str.isEmpty) return null;
+    try {
+      final isPm = str.toLowerCase().contains('pm');
+      final isAm = str.toLowerCase().contains('am');
+      final cleaned = str.replaceAll(RegExp(r'[^\d:]'), '').trim();
+      final parts = cleaned.split(':');
+      if (parts.length >= 2) {
+        int hour = int.parse(parts[0]);
+        int minute = int.parse(parts[1]);
+        if (isPm && hour < 12) hour += 12;
+        if (isAm && hour == 12) hour = 0;
+        return TimeOfDay(hour: hour, minute: minute);
+      }
+    } catch (_) {}
+    return null;
+  }
+
   // Pickers
   Future<void> _selectDate(TextEditingController controller) async {
+    final initial = _parseDateString(controller.text) ?? DateTime.now();
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: initial,
       firstDate: DateTime(1900),
       lastDate: DateTime(2100),
       builder: (context, child) {
@@ -755,9 +805,10 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
   }
 
   Future<void> _selectTime(TextEditingController controller) async {
+    final initial = _parseTimeString(controller.text) ?? TimeOfDay.now();
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
+      initialTime: initial,
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -772,9 +823,9 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
       },
     );
     if (picked != null) {
+      final hour = picked.hourOfPeriod == 0 ? 12 : picked.hourOfPeriod;
+      final period = picked.period == DayPeriod.am ? 'AM' : 'PM';
       setState(() {
-        final hour = picked.hourOfPeriod == 0 ? 12 : picked.hourOfPeriod;
-        final period = picked.period == DayPeriod.am ? "AM" : "PM";
         controller.text = "${hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')} $period";
       });
     }
