@@ -108,30 +108,54 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
           ],
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Iconsax.scroll_copy, color: AppColors.primaryColor, size: 22),
-            tooltip: 'Kundli',
-            onPressed: () {
-              if (widget.dob != null && widget.dob!.isNotEmpty) {
-                Get.to(() => KundliScreen(
-                  fullName: widget.userName,
-                  gender: widget.gender ?? '',
-                  dob: widget.dob!,
-                  tob: widget.tob ?? '00:00:00',
-                  place: widget.place ?? '',
-                  latitude: widget.latitude ?? 0.0,
-                  longitude: widget.longitude ?? 0.0,
-                ));
-              } else {
-                Get.to(() => CreateKundliScreen(
-                  initialKundliData: {
-                    'name': widget.userName,
-                  },
-                ));
-              }
-            },
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: InkWell(
+                onTap: () {
+                  if (widget.dob != null && widget.dob!.isNotEmpty) {
+                    Get.to(() => KundliScreen(
+                      fullName: widget.userName,
+                      gender: widget.gender ?? '',
+                      dob: widget.dob!,
+                      tob: widget.tob ?? '00:00:00',
+                      place: widget.place ?? '',
+                      latitude: widget.latitude ?? 0.0,
+                      longitude: widget.longitude ?? 0.0,
+                    ));
+                  } else {
+                    Get.to(() => CreateKundliScreen(
+                      initialKundliData: {
+                        'name': widget.userName,
+                      },
+                    ));
+                  }
+                },
+                borderRadius: BorderRadius.circular(20),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppColors.primaryColor.withOpacity(0.4)),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.auto_awesome, size: 14, color: AppColors.primaryColor),
+                      SizedBox(width: 4),
+                      AppText(
+                        'Kundli',
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primaryColor,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
-          const SizedBox(width: 4),
         ],
       ),
       body: SafeArea(
