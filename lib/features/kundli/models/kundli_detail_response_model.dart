@@ -57,10 +57,20 @@ class KundliDetailData {
     );
   }
 
-  // Helper method to format date for display
   String get formattedDate {
     try {
-      final date = DateTime.parse(birthDate);
+      if (datetime.isNotEmpty && RegExp(r'^\d{4}-\d{2}-\d{2}').hasMatch(datetime)) {
+        final datePart = datetime.split(' ')[0].split('T')[0];
+        final parts = datePart.split('-');
+        if (parts.length == 3) {
+          final year = int.parse(parts[0]);
+          final month = int.parse(parts[1]);
+          final day = int.parse(parts[2]);
+          final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          return '$day-${months[month - 1]}-$year';
+        }
+      }
+      final date = DateTime.parse(birthDate).toLocal();
       final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       return '${date.day}-${months[date.month - 1]}-${date.year}';
     } catch (e) {
