@@ -492,7 +492,7 @@ class AstrologerSessionsScreen extends StatelessWidget {
   String _formatDob(String? dob, String? tob) {
     if (dob == null || dob.isEmpty) return 'N/A';
     try {
-      final dt = DateTime.parse(dob);
+      final dt = DateTime.parse(dob).toLocal();
       final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       final dateStr = '${dt.day}-${months[dt.month - 1]}-${dt.year}';
       return tob != null && tob.isNotEmpty ? '$dateStr, $tob' : dateStr;
