@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text.dart';
-import 'package:astro_astrologer/features/kundli/kundli_chart_widget.dart';
 import '../controllers/kp_controller.dart';
 
 class KPTab extends StatelessWidget {
@@ -33,10 +32,8 @@ class KPTab extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildBhavChalitChart(data.planets, data.cusps),
-            const SizedBox(height: 24),
             if (data.rulingPlanets != null) _buildRulingPlanets(data.rulingPlanets!),
-            const SizedBox(height: 24),
+            if (data.rulingPlanets != null) const SizedBox(height: 24),
             _buildPlanetsTable(data.planets),
             const SizedBox(height: 24),
             _buildCuspsTable(data.cusps),
@@ -44,70 +41,6 @@ class KPTab extends StatelessWidget {
         ),
       );
     });
-  }
-
-  Widget _buildBhavChalitChart(planets, cusps) {
-    final Map<int, List<String>> northIndianPlanetData = {};
-    final Map<int, List<String>> southIndianPlanetData = {};
-    
-    if (planets != null && cusps != null && cusps.isNotEmpty) {
-      final sortedCusps = List.of(cusps)..sort((a, b) => (a.house ?? 0).compareTo(b.house ?? 0));
-      
-      for (var p in planets) {
-        if (p.planet != null && p.longitude != null) {
-          final abbr = p.isRetrograde == true ? "${p.planet!.substring(0, 2)}®" : p.planet!.substring(0, 2);
-          final deg = p.longitude!;
-          
-          int house = 1;
-          for (int i = 0; i < sortedCusps.length; i++) {
-            final currentCusp = sortedCusps[i];
-            final nextCusp = sortedCusps[(i + 1) % sortedCusps.length];
-            
-            final startDeg = currentCusp.cuspLongitude ?? 0.0;
-            final endDeg = nextCusp.cuspLongitude ?? 0.0;
-            
-            bool inHouse = false;
-            if (startDeg < endDeg) {
-              inHouse = deg >= startDeg && deg < endDeg;
-            } else {
-              inHouse = deg >= startDeg || deg < endDeg; 
-            }
-            
-            if (inHouse) {
-              house = currentCusp.house ?? 1;
-              break;
-            }
-          }
-          
-          northIndianPlanetData.putIfAbsent(house, () => []).add(abbr);
-          
-          if (p.signIndex != null) {
-            // signIndex is 0-indexed (0=Aries), South Indian needs 1-indexed
-            southIndianPlanetData.putIfAbsent(p.signIndex! + 1, () => []).add(abbr);
-          }
-        }
-      }
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const AppText("KP Bhav Chalit Chart", fontSize: 16, fontWeight: FontWeight.bold),
-        const SizedBox(height: 12),
-        Container(
-          width: double.infinity,
-          color: Colors.white,
-          child: AspectRatio(
-            aspectRatio: 1,
-            child: KundliChartWidget(
-              title: "",
-              northIndianPlanetData: northIndianPlanetData,
-              southIndianPlanetData: southIndianPlanetData,
-            ),
-          ),
-        ),
-      ],
-    );
   }
 
   Widget _buildRulingPlanets(rulingPlanets) {
