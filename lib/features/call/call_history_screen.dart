@@ -456,25 +456,6 @@ class CallHistoryScreen extends StatelessWidget {
                               textStyle: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold),
                             ),
                           ),
-                        ],
-                      ),
-
-                      if (showRefund) ...[
-                        const SizedBox(height: 12),
-                        const AppText(
-                          "Refund",
-                          fontSize: 14,
-                          color: Colors.red,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        const SizedBox(height: 2),
-                        const AppText(
-                          "PO@Rs5",
-                          fontSize: 13,
-                          color: Colors.red,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ],
                     ],
                   ),
                 ),

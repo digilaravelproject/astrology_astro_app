@@ -381,11 +381,6 @@ class AstrologerSessionsScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-
-                  if (session.status == 'completed') ...[
-                    const SizedBox(height: 12),
-                    const AppText('Refund', fontSize: 14, color: Colors.red, fontWeight: FontWeight.w500),
-                  ],
                 ],
               ),
             ),

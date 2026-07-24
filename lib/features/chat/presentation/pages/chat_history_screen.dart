@@ -463,15 +463,10 @@ class ChatHistoryScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-
-                      if (showRefund) ...[
-                        const SizedBox(height: 12),
-                        const AppText("Refund", fontSize: 14, color: Colors.red, fontWeight: FontWeight.w500),
-                      ],
                     ],
                   ),
                 ),
-          ),
+              ),
           if (isLoyal) LoyalBadge.positioned(),
         ],
       ),
