@@ -70,4 +70,34 @@ class DivisionalChartRepository {
     }
     return null;
   }
+
+  Future<String?> getHoroChartSvg({
+    required String chartId,
+    required String datetime,
+    required double latitude,
+    required double longitude,
+    required String timezone,
+    String chartType = 'north',
+  }) async {
+    try {
+      final payload = _client.buildBirthPayload(
+        datetime: datetime,
+        latitude: latitude,
+        longitude: longitude,
+        timezone: timezone,
+      );
+
+      final response = await _client.getHoroChartImage(chartId, payload, chartType: chartType);
+      if (response.statusCode == 200 && response.data != null) {
+        if (response.data is Map && response.data['svg'] != null) {
+          return response.data['svg'].toString();
+        } else if (response.data is String) {
+          return response.data.toString();
+        }
+      }
+    } catch (e) {
+      Logger.e('Error fetching chart SVG for $chartId', error: e);
+    }
+    return null;
+  }
 }
