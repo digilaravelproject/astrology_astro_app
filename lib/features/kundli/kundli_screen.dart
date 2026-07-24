@@ -4,12 +4,10 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import 'package:astro_astrologer/features/kundli/kundli_chart_widget.dart';
-import 'kundli_tabs/shad_bala_tab.dart';
 import 'kundli_tabs/bhav_bala_tab.dart';
 import 'kundli_tabs/manglik_report_tab.dart';
 import 'kundli_tabs/divisional_chart_tab.dart';
 import 'kundli_tabs/kp_tab.dart';
-import 'kundli_tabs/sade_sati_tab.dart';
 import 'controllers/panchang_controller.dart';
 import 'controllers/dasha_controller.dart';
 import 'controllers/birth_chart_controller.dart';
@@ -18,11 +16,8 @@ import 'controllers/transit_controller.dart';
 import 'controllers/divisional_chart_controller.dart';
 import 'controllers/house_cusps_controller.dart';
 import 'controllers/kp_controller.dart';
-import 'controllers/sade_sati_controller.dart';
 import 'models/dasha_model.dart';
 import 'controllers/planet_positions_controller.dart';
-import 'controllers/shadbala_controller.dart';
-import 'controllers/remedies_controller.dart';
 import 'package:collection/collection.dart';
 
 class KundliScreen extends StatefulWidget {
@@ -54,15 +49,12 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
   final PanchangController _panchangController = Get.put(PanchangController());
   final DashaController _dashaController = Get.put(DashaController());
   final PlanetPositionsController _planetPositionsController = Get.put(PlanetPositionsController());
-  final ShadbalaController _shadbalaController = Get.put(ShadbalaController());
   final BirthChartController _birthChartController = Get.put(BirthChartController());
   final NavamshaController _navamshaController = Get.put(NavamshaController());
   final TransitController _transitController = Get.put(TransitController());
   final DivisionalChartController _divisionalChartController = Get.put(DivisionalChartController());
   final HouseCuspsController _houseCuspsController = Get.put(HouseCuspsController());
   final KPController _kpController = Get.put(KPController());
-  final SadeSatiController _sadeSatiController = Get.put(SadeSatiController());
-  final RemediesController _remediesController = Get.put(RemediesController());
 
   int _selectedTabIndex = 0;
   final List<String> _tabs = [
@@ -73,12 +65,8 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
     "Dasha",
     "Divisional Chart",
     "KP",
-    "Sade Sati",
-    "Shad Bala",
     "Bhav Bala",
-    "Manglik Report",
-    "Varshphal",
-    "Remedies"
+    "Manglik Report"
   ];
 
   String _selectedBasicSubTab = "Birth Details";
@@ -144,15 +132,12 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
     _panchangController.fetchPanchangDetails(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
     _dashaController.fetchDashaDetails(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
     _planetPositionsController.fetchPlanetPositions(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
-    _shadbalaController.fetchShadbalaDetails(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
     _birthChartController.fetchBirthChart(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
     _navamshaController.fetchNavamsha(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
     _transitController.fetchTransit(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
     _divisionalChartController.fetchDivisionalChart(division: 2, datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
     _houseCuspsController.fetchHouseCusps(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
     _kpController.fetchKPData(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
-    _sadeSatiController.fetchSadeSati(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
-    _remediesController.fetchGemstoneRemedies(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
   }
 
   @override
@@ -252,12 +237,8 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
                 _buildDashaTab("Mahadasha"),
                 _buildDivisionalChartTab(),
                 _buildKPTab(),
-                _buildSadeSatiTab(),
-                _buildShadBalaTab(),
                 _buildBhavBalaTab(),
                 _buildManglikReportTab(),
-                _buildVarshphalTab(),
-                _buildRemediesTab(),
               ],
             ),
           ),
@@ -613,179 +594,6 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
 
 
 
-  Widget _buildVarshphalTab() {
-    int currentYear = DateTime.now().year;
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          Obx(() {
-            final planets = _birthChartController.birthChartModel.value?.data?.planets ?? [];
-            
-            // Map data for North Indian chart (key = house)
-            final northPlanetData = <int, List<String>>{};
-            for (var planet in planets) {
-              if (planet.house != null && planet.name != null) {
-                northPlanetData.putIfAbsent(planet.house!, () => []).add(planet.name!.substring(0, 2));
-              }
-            }
-
-            // Map data for South Indian chart (key = signNumber)
-            final southPlanetData = <int, List<String>>{};
-            for (var planet in planets) {
-              if (planet.signNumber != null && planet.name != null) {
-                southPlanetData.putIfAbsent(planet.signNumber!, () => []).add(planet.name!.substring(0, 2));
-              }
-            }
-
-            return SizedBox(
-              height: 300,
-              child: KundliChartWidget(
-                title: "Varshphal Chart - Year $currentYear",
-                northIndianPlanetData: northPlanetData,
-                southIndianPlanetData: southPlanetData,
-                isLoading: _birthChartController.isLoading.value,
-              ),
-            );
-          }),
-          const SizedBox(height: 20),
-          _buildVarshphalInfoGrid(currentYear),
-          const SizedBox(height: 20),
-          _buildMuddaDashaTable(),
-          const SizedBox(height: 20),
-          _buildPanchaVargeeyaBalaTable(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildVarshphalInfoGrid(int currentYear) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
-        ],
-      ),
-      child: Obx(() {
-        final panchang = _panchangController.panchangModel.value?.data;
-        return Column(
-          children: [
-            _buildInfoRow("Year", currentYear.toString(), false),
-            _buildInfoRow("Tithi", panchang?.tithi?.name ?? "N/A", false),
-            _buildInfoRow("Yoga", panchang?.yoga?.name ?? "N/A", false),
-            _buildInfoRow("Karana", panchang?.karana?.name ?? "N/A", false),
-            _buildInfoRow("Dina Lord (Vaara)", panchang?.vaara?.name ?? "N/A", false),
-          ],
-        );
-      }),
-    );
-  }
-
-  Widget _buildMuddaDashaTable() {
-    return Obx(() {
-      final dashaList = _dashaController.dashaModel.value?.data?.mahaDasha;
-
-      return Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
-          ],
-        ),
-        child: Column(
-          children: [
-            const AppText("Mudda Dasha", fontWeight: FontWeight.bold, fontSize: 14),
-            const SizedBox(height: 12),
-            const Row(
-              children: [
-                Expanded(child: AppText("Planet", fontWeight: FontWeight.bold, fontSize: 12)),
-                Expanded(child: AppText("Start Date", fontWeight: FontWeight.bold, fontSize: 12)),
-                Expanded(child: AppText("End Date", fontWeight: FontWeight.bold, fontSize: 12)),
-              ],
-            ),
-            const Divider(height: 16),
-            if (dashaList != null && dashaList.isNotEmpty)
-              ...dashaList.take(6).map((data) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                child: Row(
-                  children: [
-                    Expanded(child: AppText(data.planet ?? "N/A", fontSize: 12)),
-                    Expanded(child: AppText(data.startDate ?? "N/A", fontSize: 12)),
-                    Expanded(child: AppText(data.endDate ?? "N/A", fontSize: 12)),
-                  ],
-                ),
-              ))
-            else
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 12),
-                child: AppText("No Dasha details available.", fontSize: 12, color: Colors.grey),
-              ),
-          ],
-        ),
-      );
-    });
-  }
-
-  Widget _buildPanchaVargeeyaBalaTable() {
-    return Obx(() {
-      final shadbalaData = _shadbalaController.shadbalaModel.value?.data?.shadbala;
-
-      return Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: AppColors.primaryColor.withOpacity(0.1)),
-          boxShadow: [
-            BoxShadow(color: AppColors.primaryColor.withOpacity(0.05), blurRadius: 12, offset: const Offset(0, 6)),
-          ],
-        ),
-        child: Column(
-          children: [
-            const AppText("Pancha Vargeeya Bala", fontWeight: FontWeight.bold, fontSize: 14),
-            const SizedBox(height: 12),
-            if (shadbalaData != null && shadbalaData.isNotEmpty)
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: DataTable(
-                  columnSpacing: 15,
-                  horizontalMargin: 0,
-                  headingRowHeight: 35,
-                  dataRowMinHeight: 30,
-                  dataRowMaxHeight: 40,
-                  columns: const [
-                    DataColumn(label: AppText("Planet", fontWeight: FontWeight.bold, fontSize: 12)),
-                    DataColumn(label: AppText("Total Strength", fontWeight: FontWeight.bold, fontSize: 12)),
-                    DataColumn(label: AppText("Ratio", fontWeight: FontWeight.bold, fontSize: 12)),
-                    DataColumn(label: AppText("Req Min", fontWeight: FontWeight.bold, fontSize: 12)),
-                  ],
-                  rows: shadbalaData.map((data) => DataRow(
-                    cells: [
-                      DataCell(AppText(data.planet ?? "N/A", fontSize: 12)),
-                      DataCell(AppText(data.totalStrength?.toStringAsFixed(2) ?? "N/A", fontSize: 12)),
-                      DataCell(AppText(data.strengthRatio?.toStringAsFixed(2) ?? "N/A", fontSize: 12)),
-                      DataCell(AppText(data.requiredMinimum?.toStringAsFixed(2) ?? "N/A", fontSize: 12, fontWeight: FontWeight.bold)),
-                    ],
-                  )).toList(),
-                ),
-              )
-            else
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 12),
-                child: AppText("Loading Bala Strength Data...", fontSize: 12, color: Colors.grey),
-              ),
-          ],
-        ),
-      );
-    });
-  }
-
   Widget _buildDivisionalChartTab() {
     String t = widget.tob.isEmpty ? "00:00:00" : widget.tob;
     if (t.length == 5) t += ":00";
@@ -807,14 +615,6 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
     return const KPTab();
   }
 
-  Widget _buildSadeSatiTab() {
-    return const SadeSatiTab();
-  }
-
-  Widget _buildShadBalaTab() {
-    return const ShadBalaTab();
-  }
-
   Widget _buildBhavBalaTab() {
     return const BhavBalaTab();
   }
@@ -822,110 +622,5 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
   Widget _buildManglikReportTab() {
     return const ManglikReportTab();
   }
-
-  Widget _buildEmptyTab(String label) {
-    return Center(child: AppText("$label implementation in progress", color: Colors.grey));
-  }
-
-  Widget _buildRemediesTab() {
-    return Obx(() {
-      if (_remediesController.isLoading.value) {
-        return const Padding(
-          padding: EdgeInsets.all(20.0),
-          child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
-        );
-      }
-
-      final crystalsList = _remediesController.remediesModel.value?.data?.crystals;
-      if (crystalsList == null || crystalsList.isEmpty) {
-        return const Padding(
-          padding: EdgeInsets.all(20.0),
-          child: Center(child: AppText("Failed to load Remedies details.")),
-        );
-      }
-
-      return SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: crystalsList.map((crystal) {
-            return Container(
-              margin: const EdgeInsets.only(bottom: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AppText(
-                    "Remedies for ${crystal.planet ?? 'Unknown'} (${crystal.planetStrength ?? ''})",
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                  const SizedBox(height: 12),
-                  if (crystal.gemstone != null)
-                    _buildRemedyCard(
-                      "Gemstone",
-                      "${crystal.gemstone!.gemstone} (${crystal.gemstone!.weight}). Wear on ${crystal.gemstone!.finger} on ${crystal.gemstone!.dayToWear}. Metal: ${crystal.gemstone!.metal}.",
-                      Icons.diamond_outlined,
-                    ),
-                  if (crystal.mantra != null)
-                    _buildRemedyCard(
-                      "Mantra",
-                      "${crystal.mantra!.mantra}\nJapa Count: ${crystal.mantra!.japaCount}",
-                      Icons.spatial_audio_off_outlined,
-                    ),
-                  if (crystal.charity != null)
-                    _buildRemedyCard(
-                      "Charity",
-                      "Donate ${crystal.charity!.items?.join(', ')} to ${crystal.charity!.donateTo} on ${crystal.charity!.bestDay}.",
-                      Icons.volunteer_activism_outlined,
-                    ),
-                  if (crystal.fasting != null)
-                    _buildRemedyCard(
-                      "Fasting",
-                      "${crystal.fasting!.fastingType} on ${crystal.fasting!.day}s. Duration: ${crystal.fasting!.duration}.",
-                      Icons.restaurant_menu_outlined,
-                    ),
-                ],
-              ),
-            );
-          }).toList(),
-        ),
-      );
-    });
-  }
-
-  Widget _buildRemedyCard(String title, String desc, IconData icon) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: AppColors.primaryColor.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-            child: Icon(icon, color: AppColors.primaryColor, size: 20),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppText(title, fontWeight: FontWeight.bold, fontSize: 14),
-                const SizedBox(height: 2),
-                AppText(desc, fontSize: 12, color: Colors.grey.shade600),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
 }
 
