@@ -87,6 +87,10 @@ class AstrologyApiClient {
     return _dio.post(AstrologyApiConstants.birthChartEndpoint, data: payload);
   }
 
+  Future<Response> getHoroChartImage(String chartId, Map<String, dynamic> payload) {
+    return _dio.post('${AstrologyApiConstants.horoChartImageEndpoint}/${chartId.toLowerCase()}', data: payload);
+  }
+
   Future<Response> getDivisionalChart(String chartType, Map<String, dynamic> payload) {
     return _dio.post('${AstrologyApiConstants.divisionalChartEndpoint}/${chartType.toLowerCase()}', data: payload);
   }

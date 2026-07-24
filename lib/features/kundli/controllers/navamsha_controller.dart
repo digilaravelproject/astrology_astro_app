@@ -7,6 +7,7 @@ class NavamshaController extends GetxController {
 
   var isLoading = false.obs;
   var navamshaModel = Rxn<NavamshaModel>();
+  var chartSvg = ''.obs;
 
   Future<void> fetchNavamsha({
     required String datetime,
@@ -24,6 +25,16 @@ class NavamshaController extends GetxController {
       );
       if (result != null) {
         navamshaModel.value = result;
+      }
+      final svgResult = await _repository.getHoroChartSvg(
+        chartId: 'd9',
+        datetime: datetime,
+        latitude: latitude,
+        longitude: longitude,
+        timezone: timezone,
+      );
+      if (svgResult != null) {
+        chartSvg.value = svgResult;
       }
     } finally {
       isLoading.value = false;

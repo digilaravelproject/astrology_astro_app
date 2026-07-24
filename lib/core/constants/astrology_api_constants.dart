@@ -26,6 +26,7 @@ class AstrologyApiConstants {
   static const String navamshaEndpoint = '/horo_chart/d9';
   static const String transitEndpoint = '/planet_transit';
   static const String divisionalChartEndpoint = '/horo_chart';
+  static const String horoChartImageEndpoint = '/horo_chart_image';
   static const String houseCuspsEndpoint = '/kp_house_cusps';
   static const String kpFullReportEndpoint = '/kp_planets';
   static const String sadeSatiAdvancedEndpoint = '/sadhesati_current_status';

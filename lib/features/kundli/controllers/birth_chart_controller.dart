@@ -7,6 +7,7 @@ class BirthChartController extends GetxController {
 
   var isLoading = false.obs;
   var birthChartModel = Rxn<BirthChartModel>();
+  var chartSvg = ''.obs;
 
   Future<void> fetchBirthChart({
     required String datetime,
@@ -24,6 +25,16 @@ class BirthChartController extends GetxController {
       );
       if (result != null) {
         birthChartModel.value = result;
+      }
+      final svgResult = await _repository.getHoroChartSvg(
+        chartId: 'd1',
+        datetime: datetime,
+        latitude: latitude,
+        longitude: longitude,
+        timezone: timezone,
+      );
+      if (svgResult != null) {
+        chartSvg.value = svgResult;
       }
     } finally {
       isLoading.value = false;

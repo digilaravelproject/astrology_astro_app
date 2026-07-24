@@ -7,6 +7,7 @@ class TransitController extends GetxController {
 
   var isLoading = false.obs;
   var transitModel = Rxn<TransitModel>();
+  var chartSvg = ''.obs;
 
   Future<void> fetchTransit({
     required String datetime,
@@ -24,6 +25,16 @@ class TransitController extends GetxController {
       );
       if (result != null) {
         transitModel.value = result;
+      }
+      final svgResult = await _repository.getHoroChartSvg(
+        chartId: 'transit',
+        datetime: datetime,
+        latitude: latitude,
+        longitude: longitude,
+        timezone: timezone,
+      );
+      if (svgResult != null) {
+        chartSvg.value = svgResult;
       }
     } finally {
       isLoading.value = false;
