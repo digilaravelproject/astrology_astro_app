@@ -125,7 +125,7 @@ class _DivisionalChartTabState extends State<DivisionalChartTab> {
       width: double.infinity,
       color: Colors.white,
       child: AspectRatio(
-        aspectRatio: 1,
+        aspectRatio: 0.85,
         child: Obx(() {
           return KundliChartWidget(
             title: "$_selectedChartType Chart",
