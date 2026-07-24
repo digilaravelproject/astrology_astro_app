@@ -85,6 +85,21 @@ class KundliItem {
     );
   }
 
+  String get formattedIsoDate {
+    if (datetime.isNotEmpty && RegExp(r'^\d{4}-\d{2}-\d{2}').hasMatch(datetime)) {
+      return datetime.split(' ')[0].split('T')[0];
+    }
+    try {
+      final date = DateTime.parse(birthDate).toLocal();
+      final y = date.year.toString().padLeft(4, '0');
+      final m = date.month.toString().padLeft(2, '0');
+      final d = date.day.toString().padLeft(2, '0');
+      return '$y-$m-$d';
+    } catch (_) {
+      return birthDate;
+    }
+  }
+
   String get formattedDate {
     try {
       if (datetime.isNotEmpty && RegExp(r'^\d{4}-\d{2}-\d{2}').hasMatch(datetime)) {

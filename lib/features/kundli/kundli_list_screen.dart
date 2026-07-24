@@ -292,7 +292,7 @@ class _KundliListScreenState extends State<KundliListScreen> {
                         Get.to(() => KundliScreen(
                           fullName: item.name,
                           gender: item.gender,
-                          dob: item.birthDate,
+                          dob: item.formattedIsoDate,
                           tob: tobPart,
                           place: item.displayPlace,
                           latitude: double.tryParse(item.latitude) ?? 0.0,

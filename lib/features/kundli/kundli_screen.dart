@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_app_bar.dart';
-import 'package:astro_astrologer/features/kundli/kundli_chart_widget.dart';
+import 'package:astro_user/features/kundli/kundli_chart_widget.dart';
 import 'kundli_tabs/bhav_bala_tab.dart';
 import 'kundli_tabs/manglik_report_tab.dart';
 import 'kundli_tabs/divisional_chart_tab.dart';
@@ -84,16 +84,36 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
     super.initState();
     _tabController = TabController(length: _tabs.length, vsync: this);
 
-    String dt = "";
-    if (widget.dob.isNotEmpty) {
-      if (widget.dob.contains("T")) {
-        dt = widget.dob;
-      } else {
-        String t = widget.tob.isEmpty ? "00:00:00" : widget.tob;
-        if (t.length == 5) t += ":00";
-        dt = "${widget.dob}T$t";
-      }
+    String cleanDob = widget.dob.trim();
+    String cleanTob = widget.tob.trim();
+
+    if (cleanDob.contains("T")) {
+      try {
+        final localDt = DateTime.parse(cleanDob).toLocal();
+        final y = localDt.year.toString().padLeft(4, '0');
+        final m = localDt.month.toString().padLeft(2, '0');
+        final d = localDt.day.toString().padLeft(2, '0');
+        cleanDob = "$y-$m-$d";
+      } catch (_) {}
     }
+
+    if (cleanTob.toUpperCase().contains('AM') || cleanTob.toUpperCase().contains('PM')) {
+      final isPM = cleanTob.toUpperCase().contains('PM');
+      var t = cleanTob.replaceAll(RegExp(r'[APM\s]', caseSensitive: false), '').trim();
+      final timeParts = t.split(':');
+      if (timeParts.length >= 2) {
+        int hour = int.parse(timeParts[0]);
+        final min = timeParts[1].padLeft(2, '0');
+        if (isPM && hour != 12) hour += 12;
+        if (!isPM && hour == 12) hour = 0;
+        cleanTob = '${hour.toString().padLeft(2, '0')}:$min:00';
+      }
+    } else if (cleanTob.length == 5) {
+      cleanTob += ":00";
+    }
+    if (cleanTob.isEmpty) cleanTob = "00:00:00";
+
+    String dt = "${cleanDob}T$cleanTob";
 
     final lat = widget.latitude;
     final lng = widget.longitude;
@@ -107,8 +127,8 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
     print('🌟 [KUNDLI SCREEN OPENED] Received Data:');
     print('   • Full Name: $_name');
     print('   • Gender: $_gender');
-    print('   • DOB: ${widget.dob}');
-    print('   • TOB: ${widget.tob}');
+    print('   • DOB Clean: $cleanDob');
+    print('   • TOB Clean: $cleanTob');
     print('   • Combined ISO Datetime: $dt');
     print('   • Place of Birth (POB): $_place');
     print('   • Latitude (Lat): $lat');
@@ -117,16 +137,32 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
     print('════════════════════════════════════════════════════════════════');
 
     try {
-      final parsedDt = DateTime.parse(dt);
-      final months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-      _dobStr = "${parsedDt.day.toString().padLeft(2, '0')} ${months[parsedDt.month - 1]} ${parsedDt.year}";
+      final parts = cleanDob.split('-');
+      if (parts.length == 3) {
+        final year = int.parse(parts[0]);
+        final month = int.parse(parts[1]);
+        final day = int.parse(parts[2]);
+        final months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        _dobStr = "${day.toString().padLeft(2, '0')} ${months[month - 1]} $year";
+      } else {
+        _dobStr = cleanDob;
+      }
 
-      int hour = parsedDt.hour;
-      String ampm = hour >= 12 ? "PM" : "AM";
-      if (hour > 12) hour -= 12;
-      if (hour == 0) hour = 12;
-      _timeStr = "${hour.toString().padLeft(2, '0')}:${parsedDt.minute.toString().padLeft(2, '0')} $ampm";
-    } catch (_) {}
+      final tParts = cleanTob.split(':');
+      if (tParts.length >= 2) {
+        int hour = int.parse(tParts[0]);
+        final min = tParts[1].padLeft(2, '0');
+        String ampm = hour >= 12 ? "PM" : "AM";
+        if (hour > 12) hour -= 12;
+        if (hour == 0) hour = 12;
+        _timeStr = "${hour.toString().padLeft(2, '0')}:$min $ampm";
+      } else {
+        _timeStr = cleanTob;
+      }
+    } catch (_) {
+      _dobStr = cleanDob;
+      _timeStr = cleanTob;
+    }
 
     final reqLat = lat;
     final reqLng = lng;
