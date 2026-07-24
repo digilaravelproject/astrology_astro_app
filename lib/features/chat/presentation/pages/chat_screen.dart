@@ -12,6 +12,8 @@ import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:astro_astrologer/features/chat/domain/entities/chat_message.dart';
 import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
+import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
+import 'package:astro_astrologer/features/kundli/create_kundli_screen.dart';
 
 class ChatScreen extends StatefulWidget {
   final String userName;
@@ -19,6 +21,12 @@ class ChatScreen extends StatefulWidget {
   final int sessionId;
   final String initialStatus;
   final String? startedAtString;
+  final String? gender;
+  final String? dob;
+  final String? tob;
+  final String? place;
+  final double? latitude;
+  final double? longitude;
 
   const ChatScreen({
     super.key,
@@ -27,6 +35,12 @@ class ChatScreen extends StatefulWidget {
     required this.sessionId,
     required this.initialStatus,
     this.startedAtString,
+    this.gender,
+    this.dob,
+    this.tob,
+    this.place,
+    this.latitude,
+    this.longitude,
   });
 
   @override
@@ -165,6 +179,29 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             }
           },
           actions: [
+            IconButton(
+              icon: const Icon(Iconsax.scroll_copy, color: AppColors.primaryColor, size: 22),
+              tooltip: 'Kundli',
+              onPressed: () {
+                if (widget.dob != null && widget.dob!.isNotEmpty) {
+                  Get.to(() => KundliScreen(
+                    fullName: widget.userName,
+                    gender: widget.gender ?? '',
+                    dob: widget.dob!,
+                    tob: widget.tob ?? '00:00:00',
+                    place: widget.place ?? '',
+                    latitude: widget.latitude ?? 0.0,
+                    longitude: widget.longitude ?? 0.0,
+                  ));
+                } else {
+                  Get.to(() => CreateKundliScreen(
+                    initialKundliData: {
+                      'name': widget.userName,
+                    },
+                  ));
+                }
+              },
+            ),
             Obx(() {
               if (_controller.status.value == 'ongoing') {
                 return TextButton(

@@ -7,19 +7,33 @@ import '../../../../core/constants/app_urls.dart';
 import '../controllers/assistance_chat_room_controller.dart';
 import 'package:astro_astrologer/core/theme/app_colors.dart';
 import 'package:astro_astrologer/core/widgets/app_text.dart';
-import 'package:astro_astrologer/features/chat/domain/entities/chat_message.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:astro_astrologer/features/chat/domain/entities/chat_message.dart';
+import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
+import 'package:astro_astrologer/features/kundli/create_kundli_screen.dart';
 
 class AssistanceChatRoomScreen extends StatefulWidget {
   final int sessionId;
   final String userName;
   final String? userImage;
+  final String? gender;
+  final String? dob;
+  final String? tob;
+  final String? place;
+  final double? latitude;
+  final double? longitude;
 
   const AssistanceChatRoomScreen({
     Key? key,
     required this.sessionId,
     required this.userName,
     this.userImage,
+    this.gender,
+    this.dob,
+    this.tob,
+    this.place,
+    this.latitude,
+    this.longitude,
   }) : super(key: key);
 
   @override
@@ -93,6 +107,32 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
             ),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Iconsax.scroll_copy, color: AppColors.primaryColor, size: 22),
+            tooltip: 'Kundli',
+            onPressed: () {
+              if (widget.dob != null && widget.dob!.isNotEmpty) {
+                Get.to(() => KundliScreen(
+                  fullName: widget.userName,
+                  gender: widget.gender ?? '',
+                  dob: widget.dob!,
+                  tob: widget.tob ?? '00:00:00',
+                  place: widget.place ?? '',
+                  latitude: widget.latitude ?? 0.0,
+                  longitude: widget.longitude ?? 0.0,
+                ));
+              } else {
+                Get.to(() => CreateKundliScreen(
+                  initialKundliData: {
+                    'name': widget.userName,
+                  },
+                ));
+              }
+            },
+          ),
+          const SizedBox(width: 4),
+        ],
       ),
       body: SafeArea(
         child: Column(
