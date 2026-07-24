@@ -71,6 +71,7 @@ class NavamshaRepository {
     required double latitude,
     required double longitude,
     required String timezone,
+    String chartType = 'north',
   }) async {
     try {
       final payload = _client.buildBirthPayload(
@@ -80,7 +81,7 @@ class NavamshaRepository {
         timezone: timezone,
       );
 
-      final response = await _client.getHoroChartImage(chartId, payload);
+      final response = await _client.getHoroChartImage(chartId, payload, chartType: chartType);
       if (response.statusCode == 200 && response.data != null) {
         if (response.data is Map && response.data['svg'] != null) {
           return response.data['svg'].toString();

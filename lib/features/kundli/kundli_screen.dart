@@ -177,7 +177,8 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
 
                   return KundliChartWidget(
                     title: "Lagna / Ascendant / D1 Chart",
-                    northIndianSvg: _birthChartController.chartSvg.value,
+                    northIndianSvg: _birthChartController.northChartSvg.value,
+                    southIndianSvg: _birthChartController.southChartSvg.value,
                     northIndianPlanetData: northPlanetData,
                     southIndianPlanetData: southPlanetData,
                     isLoading: _birthChartController.isLoading.value,
@@ -204,7 +205,8 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
 
                   return KundliChartWidget(
                     title: "Navamsa Chart",
-                    northIndianSvg: _navamshaController.chartSvg.value,
+                    northIndianSvg: _navamshaController.northChartSvg.value,
+                    southIndianSvg: _navamshaController.southChartSvg.value,
                     northIndianPlanetData: northPlanetData,
                     southIndianPlanetData: southPlanetData,
                     isLoading: _navamshaController.isLoading.value,
@@ -231,7 +233,8 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
 
                   return KundliChartWidget(
                     title: "Transit Chart",
-                    northIndianSvg: _transitController.chartSvg.value,
+                    northIndianSvg: _transitController.northChartSvg.value,
+                    southIndianSvg: _transitController.southChartSvg.value,
                     northIndianPlanetData: northPlanetData,
                     southIndianPlanetData: southPlanetData,
                     isLoading: _transitController.isLoading.value,
