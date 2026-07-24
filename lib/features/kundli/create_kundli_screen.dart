@@ -716,7 +716,6 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                     ),
                   ),
                 ),
-                if (isPicker) Icon(Icons.keyboard_arrow_down_rounded, size: 18, color: AppColors.primaryColor.withOpacity(0.4)),
               ],
             ),
           ),
