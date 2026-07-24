@@ -86,9 +86,14 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
       _lng = double.tryParse(widget.initialKundliData!['longitude'] ?? "");
     }
 
+    _boysGenderController.text = "male";
+    _girlsGenderController.text = "female";
+
     if (widget.initialBoyData != null) {
       _boysNameController.text = widget.initialBoyData!['name'] ?? "";
-      _boysGenderController.text = widget.initialBoyData!['gender'] ?? "";
+      if (widget.initialBoyData!['gender'] != null && widget.initialBoyData!['gender']!.isNotEmpty) {
+        _boysGenderController.text = widget.initialBoyData!['gender']!;
+      }
       _boysDobController.text = widget.initialBoyData!['dob'] ?? "";
       _boysTobController.text = widget.initialBoyData!['time'] ?? "";
       _boysPobController.text = widget.initialBoyData!['place'] ?? "";
@@ -98,7 +103,9 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
 
     if (widget.initialGirlData != null) {
       _girlsNameController.text = widget.initialGirlData!['name'] ?? "";
-      _girlsGenderController.text = widget.initialGirlData!['gender'] ?? "";
+      if (widget.initialGirlData!['gender'] != null && widget.initialGirlData!['gender']!.isNotEmpty) {
+        _girlsGenderController.text = widget.initialGirlData!['gender']!;
+      }
       _girlsDobController.text = widget.initialGirlData!['dob'] ?? "";
       _girlsTobController.text = widget.initialGirlData!['time'] ?? "";
       _girlsPobController.text = widget.initialGirlData!['place'] ?? "";
@@ -570,7 +577,6 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildField("Name", "Enter name", sax.Iconsax.user_copy, controller: _boysNameController),
-              _buildField("Gender", "Select gender", sax.Iconsax.user_tag_copy, controller: _boysGenderController, isPicker: true, onTap: () => _showGenderSelection(_boysGenderController)),
               _buildField("Birth Date", "Select date", sax.Iconsax.calendar_copy, controller: _boysDobController, isPicker: true, onTap: () => _selectDate(_boysDobController)),
               _buildField("Birth Time", "Select time", sax.Iconsax.clock_copy, controller: _boysTobController, isPicker: true, onTap: () => _selectTime(_boysTobController)),
               _buildField("Birth Place", "Enter birth place", sax.Iconsax.location_copy, controller: _boysPobController, isPicker: true, onTap: () async {
@@ -598,7 +604,6 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildField("Name", "Enter name", sax.Iconsax.user_copy, controller: _girlsNameController),
-              _buildField("Gender", "Select gender", sax.Iconsax.user_tag_copy, controller: _girlsGenderController, isPicker: true, onTap: () => _showGenderSelection(_girlsGenderController)),
               _buildField("Birth Date", "Select date", sax.Iconsax.calendar_copy, controller: _girlsDobController, isPicker: true, onTap: () => _selectDate(_girlsDobController)),
               _buildField("Birth Time", "Select time", sax.Iconsax.clock_copy, controller: _girlsTobController, isPicker: true, onTap: () => _selectTime(_girlsTobController)),
               _buildField("Birth Place", "Enter birth place", sax.Iconsax.location_copy, controller: _girlsPobController, isPicker: true, onTap: () async {
