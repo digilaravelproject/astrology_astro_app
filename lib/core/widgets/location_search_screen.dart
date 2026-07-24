@@ -71,6 +71,25 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
     });
   }
 
+  LocationResult _refineLocationResult(String displayName, String? address, double lat, double lng) {
+    final lowerName = displayName.toLowerCase().trim();
+    // Refine South Mumbai (18.9582, 72.8320) default point from Google Maps API to standard Mumbai city center (19.0760, 72.8774)
+    if (lowerName == 'mumbai, maharashtra, india' || lowerName == 'mumbai') {
+      return LocationResult(
+        displayName: displayName,
+        address: address,
+        latitude: 19.0760,
+        longitude: 72.8774,
+      );
+    }
+    return LocationResult(
+      displayName: displayName,
+      address: address,
+      latitude: lat,
+      longitude: lng,
+    );
+  }
+
   Future<void> _searchLocation(String query) async {
     setState(() {
       _isLoading = true;
@@ -96,12 +115,7 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
 
           if (lat != null && lng != null) {
             String displayName = formattedAddress.isNotEmpty ? formattedAddress : name;
-            results.add(LocationResult(
-              displayName: displayName,
-              address: formattedAddress != name ? formattedAddress : null,
-              latitude: lat,
-              longitude: lng,
-            ));
+            results.add(_refineLocationResult(displayName, formattedAddress != name ? formattedAddress : null, lat, lng));
           }
         }
       }
@@ -119,11 +133,7 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
             final double? lng = (item['geometry']?['location']?['lng'] as num?)?.toDouble();
 
             if (name.isNotEmpty && lat != null && lng != null) {
-              results.add(LocationResult(
-                displayName: name,
-                latitude: lat,
-                longitude: lng,
-              ));
+              results.add(_refineLocationResult(name, null, lat, lng));
             }
           }
         }
