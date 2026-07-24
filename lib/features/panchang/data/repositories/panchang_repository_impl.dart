@@ -19,8 +19,8 @@ class PanchangRepositoryImpl implements PanchangRepository {
     try {
       final payload = _client.buildBirthPayload(
         datetime: date,
-        latitude: latitude ?? 0.0,
-        longitude: longitude ?? 0.0,
+        latitude: (latitude == null || latitude == 0.0) ? 28.6139 : latitude,
+        longitude: (longitude == null || longitude == 0.0) ? 77.2090 : longitude,
         timezone: (timezone ?? 5.5).toString(),
       );
 
