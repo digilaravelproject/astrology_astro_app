@@ -20,7 +20,6 @@ import 'controllers/house_cusps_controller.dart';
 import 'controllers/kp_controller.dart';
 import 'controllers/sade_sati_controller.dart';
 import 'models/dasha_model.dart';
-import 'controllers/ashtakvarga_controller.dart';
 import 'controllers/planet_positions_controller.dart';
 import 'controllers/shadbala_controller.dart';
 import 'controllers/remedies_controller.dart';
@@ -54,7 +53,6 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
   late TabController _tabController;
   final PanchangController _panchangController = Get.put(PanchangController());
   final DashaController _dashaController = Get.put(DashaController());
-  final AshtakvargaController _ashtakvargaController = Get.put(AshtakvargaController());
   final PlanetPositionsController _planetPositionsController = Get.put(PlanetPositionsController());
   final ShadbalaController _shadbalaController = Get.put(ShadbalaController());
   final BirthChartController _birthChartController = Get.put(BirthChartController());
@@ -73,9 +71,6 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
     "Navamsa",
     "Transit",
     "Dasha",
-    "Yogini Dasha",
-    "Ashtakvarga",
-    "Planets",
     "Divisional Chart",
     "KP",
     "Sade Sati",
@@ -148,8 +143,6 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
 
     _panchangController.fetchPanchangDetails(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
     _dashaController.fetchDashaDetails(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
-    _dashaController.fetchYoginiDashaDetails(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
-    _ashtakvargaController.fetchAshtakvargaDetails(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
     _planetPositionsController.fetchPlanetPositions(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
     _shadbalaController.fetchShadbalaDetails(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
     _birthChartController.fetchBirthChart(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
@@ -257,9 +250,6 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
                   );
                 }),
                 _buildDashaTab("Mahadasha"),
-                _buildDashaTab("Yogini Dasha"),
-                _buildAshtakvargaTab(),
-                _buildPlanetsTab(),
                 _buildDivisionalChartTab(),
                 _buildKPTab(),
                 _buildSadeSatiTab(),
@@ -550,70 +540,6 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
       });
     }
 
-    if (title == "Yogini Dasha") {
-      return Obx(() {
-        if (_dashaController.isYoginiLoading.value) {
-          return const Padding(
-            padding: EdgeInsets.all(20.0),
-            child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
-          );
-        }
-
-        final dashaDataList = _dashaController.yoginiDashaModel.value?.data?.mahadashas;
-        if (dashaDataList == null || dashaDataList.isEmpty) {
-          return const Padding(
-            padding: EdgeInsets.all(20.0),
-            child: Center(child: AppText("Failed to load Yogini Dasha details.")),
-          );
-        }
-
-        return SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              AppText(title, fontSize: 16, fontWeight: FontWeight.w700, textAlign: TextAlign.center),
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: AppColors.primaryColor.withOpacity(0.05)),
-                  boxShadow: [
-                    BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 15, offset: const Offset(0, 6)),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Row(
-                        children: [
-                          Expanded(child: AppText("Yogini", fontWeight: FontWeight.bold, fontSize: 12)),
-                          Expanded(child: AppText("Start Date", fontWeight: FontWeight.bold, fontSize: 12)),
-                          Expanded(child: AppText("End Date", fontWeight: FontWeight.bold, fontSize: 12)),
-                          SizedBox(width: 20),
-                        ],
-                      ),
-                    ),
-                    ...dashaDataList.map((data) {
-                      String start = (data.startDate ?? "N/A").split('T')[0];
-                      String end = (data.endDate ?? "N/A").split('T')[0];
-                      return _buildDashaRow(
-                        data.yogini ?? "N/A",
-                        start,
-                        end,
-                      );
-                    }),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      });
-    }
-
     final dashaData = [
       ["ID", "12-Sep-2023", "12-Sep-2024"],
       ["PI", "12-Sep-2024", "12-Sep-2026"],
@@ -683,133 +609,7 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
     return "${d.toString().padLeft(2, '0')}° ${m.toString().padLeft(2, '0')}' ${s.toString().padLeft(2, '0')}\"";
   }
 
-  Widget _buildPlanetsTab() {
-    return Obx(() {
-      if (_planetPositionsController.isLoading.value) {
-        return const Padding(
-          padding: EdgeInsets.all(20.0),
-          child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
-        );
-      }
 
-      final planetsList = _planetPositionsController.planetPositionsModel.value?.data?.planets;
-      if (planetsList == null || planetsList.isEmpty) {
-        return const Padding(
-          padding: EdgeInsets.all(20.0),
-          child: Center(child: AppText("Failed to load Planet Positions.")),
-        );
-      }
-
-      return SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(18),
-            boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
-            ],
-          ),
-          child: Column(
-            children: [
-              const Padding(
-                padding: EdgeInsets.only(bottom: 10),
-                child: Row(
-                  children: [
-                    Expanded(flex: 2, child: AppText("Planet", fontWeight: FontWeight.bold, fontSize: 12)),
-                    Expanded(flex: 2, child: AppText("Sign", fontWeight: FontWeight.bold, fontSize: 12)),
-                    Expanded(flex: 3, child: AppText("Degree", fontWeight: FontWeight.bold, fontSize: 12)),
-                    Expanded(flex: 3, child: AppText("Nakshatra", fontWeight: FontWeight.bold, fontSize: 12)),
-                  ],
-                ),
-              ),
-              ...planetsList.map((data) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Row(
-                  children: [
-                    Expanded(flex: 2, child: AppText(data.name ?? "N/A", fontSize: 11)),
-                    Expanded(flex: 2, child: AppText(data.sign ?? "N/A", fontSize: 11)),
-                    Expanded(flex: 3, child: AppText(data.normDegree != null ? _formatDegree(data.normDegree!) : "N/A", fontSize: 11)),
-                    Expanded(flex: 3, child: AppText(data.nakshatra?.name ?? "N/A", fontSize: 11)),
-                  ],
-                ),
-              )),
-            ],
-          ),
-        ),
-      );
-    });
-  }
-
-  Widget _buildAshtakvargaTab() {
-    return Obx(() {
-      if (_ashtakvargaController.isLoading.value) {
-        return const Padding(
-          padding: EdgeInsets.all(20.0),
-          child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
-        );
-      }
-
-      final bhinnashtakavarga = _ashtakvargaController.ashtakvargaModel.value?.data?.bhinnashtakavarga;
-      if (bhinnashtakavarga == null || bhinnashtakavarga.isEmpty) {
-        return const Padding(
-          padding: EdgeInsets.all(20.0),
-          child: Center(child: AppText("Failed to load Ashtakvarga details.")),
-        );
-      }
-
-      final signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
-      final signShorts = ["Ari", "Tau", "Gem", "Can", "Leo", "Vir", "Lib", "Sco", "Sag", "Cap", "Aqu", "Pis"];
-      final planets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"];
-
-      return SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(18),
-              boxShadow: [
-                BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
-              ],
-            ),
-            child: DataTable(
-              columnSpacing: 15,
-              horizontalMargin: 0,
-              headingRowHeight: 35,
-              dataRowMinHeight: 30,
-              dataRowMaxHeight: 40,
-              columns: [
-                const DataColumn(label: AppText("Planet", fontWeight: FontWeight.bold, fontSize: 12)),
-                ...signShorts.map((s) => DataColumn(label: AppText(s, fontWeight: FontWeight.bold, fontSize: 12))),
-              ],
-              rows: planets.map((p) {
-                final planetData = bhinnashtakavarga[p];
-                return DataRow(
-                  cells: [
-                    DataCell(AppText(p, fontSize: 11)),
-                    ...signs.map((signName) {
-                      String pointsStr = "0";
-                      if (planetData != null && planetData.strongSigns != null) {
-                        final signMatch = planetData.strongSigns!.firstWhereOrNull((s) => s.sign == signName);
-                        if (signMatch != null) {
-                          pointsStr = signMatch.points?.toString() ?? "0";
-                        }
-                      }
-                      return DataCell(AppText(pointsStr, fontSize: 11));
-                    }),
-                  ],
-                );
-              }).toList(),
-            ),
-          ),
-        ),
-      );
-    });
-  }
 
 
 

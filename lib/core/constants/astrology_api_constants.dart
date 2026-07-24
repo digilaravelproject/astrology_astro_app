@@ -19,8 +19,6 @@ class AstrologyApiConstants {
   // Endpoints
   static const String panchangEndpoint = '/advanced_panchang';
   static const String vimshottariDashaEndpoint = '/major_vdasha';
-  static const String yoginiDashaEndpoint = '/major_yogini_dasha';
-  static const String ashtakavargaEndpoint = '/sarvashtak';
   static const String planetPositionsEndpoint = '/planets';
   static const String shadbalaEndpoint = '/shadbala';
   static const String remediesGemstoneEndpoint = '/basic_gem_suggestion';

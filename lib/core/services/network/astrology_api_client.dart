@@ -99,14 +99,6 @@ class AstrologyApiClient {
     return _dio.post(AstrologyApiConstants.vimshottariDashaEndpoint, data: payload);
   }
 
-  Future<Response> getYoginiDasha(Map<String, dynamic> payload) {
-    return _dio.post(AstrologyApiConstants.yoginiDashaEndpoint, data: payload);
-  }
-
-  Future<Response> getAshtakavarga(Map<String, dynamic> payload) {
-    return _dio.post(AstrologyApiConstants.ashtakavargaEndpoint, data: payload);
-  }
-
   Future<Response> getPlanetPositions(Map<String, dynamic> payload) {
     return _dio.post(AstrologyApiConstants.planetPositionsEndpoint, data: payload);
   }
