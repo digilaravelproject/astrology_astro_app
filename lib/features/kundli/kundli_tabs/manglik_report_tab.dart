@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:collection/collection.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text.dart';
-import '../controllers/planet_positions_controller.dart';
+import '../controllers/manglik_controller.dart';
 
 class ManglikReportTab extends StatelessWidget {
   const ManglikReportTab({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final PlanetPositionsController planetController = Get.find<PlanetPositionsController>();
+    final ManglikController manglikController = Get.find<ManglikController>();
 
     return Obx(() {
-      if (planetController.isLoading.value) {
+      if (manglikController.isLoading.value) {
         return const Center(
           child: Padding(
             padding: EdgeInsets.all(24.0),
@@ -22,52 +21,57 @@ class ManglikReportTab extends StatelessWidget {
         );
       }
 
-      final planets = planetController.planetPositionsModel.value?.data?.planets;
-      final mars = planets?.firstWhereOrNull((p) => p.name?.toLowerCase() == 'mars');
+      final manglikData = manglikController.manglikModel.value;
+      if (manglikData == null) {
+        return const Center(
+          child: Padding(
+            padding: EdgeInsets.all(24.0),
+            child: AppText("No Manglik data available."),
+          ),
+        );
+      }
 
-      int marsHouse = mars?.house ?? 1;
-      String marsSign = mars?.sign ?? "N/A";
-      
-      // Manglik houses: 1, 4, 7, 8, 12
-      bool isManglik = [1, 4, 7, 8, 12].contains(marsHouse);
+      bool isManglik = manglikData.isPresent;
       String resultText = isManglik ? "YES" : "NO";
       Color statusColor = isManglik ? const Color(0xFFEA4335) : const Color(0xFF2EBD59);
-
-      String houseOrdinal = _getHouseOrdinal(marsHouse);
-      String conclusionText = "Since Mars is placed in the $houseOrdinal house ($marsSign sign), the person is ${isManglik ? 'Manglik' : 'Non-Manglik'}.";
 
       return SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            _buildAnalysisCard(resultText, statusColor),
+            _buildAnalysisCard(
+              resultText: resultText,
+              statusText: manglikData.manglikStatus,
+              percentage: manglikData.percentageManglikPresent,
+              statusColor: statusColor,
+            ),
             const SizedBox(height: 16),
-            _buildConclusionCard(conclusionText),
+            if (manglikData.manglikReport.isNotEmpty)
+              _buildConclusionCard(manglikData.manglikReport),
+            if (manglikData.basedOnHouse.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              _buildRulesCard("House Placements", manglikData.basedOnHouse, Icons.home_outlined),
+            ],
+            if (manglikData.basedOnAspect.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              _buildRulesCard("Planetary Aspects", manglikData.basedOnAspect, Icons.remove_red_eye_outlined),
+            ],
+            if (manglikData.cancelRules.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              _buildRulesCard("Cancellation Factors", manglikData.cancelRules, Icons.check_circle_outline),
+            ],
           ],
         ),
       );
     });
   }
 
-  String _getHouseOrdinal(int house) {
-    switch (house) {
-      case 1: return "first";
-      case 2: return "second";
-      case 3: return "third";
-      case 4: return "fourth";
-      case 5: return "fifth";
-      case 6: return "sixth";
-      case 7: return "seventh";
-      case 8: return "eighth";
-      case 9: return "ninth";
-      case 10: return "tenth";
-      case 11: return "eleventh";
-      case 12: return "twelfth";
-      default: return "$house-th";
-    }
-  }
-
-  Widget _buildAnalysisCard(String resultText, Color statusColor) {
+  Widget _buildAnalysisCard({
+    required String resultText,
+    required String statusText,
+    required double percentage,
+    required Color statusColor,
+  }) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -90,7 +94,7 @@ class ManglikReportTab extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24),
+            padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
             child: Column(
               children: [
                 Container(
@@ -101,11 +105,27 @@ class ManglikReportTab extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                   child: Center(
-                    child: AppText(resultText, fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                    child: AppText(
+                      resultText,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 22,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 12),
-                AppText("Manglik Status: $resultText", fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black87),
+                const SizedBox(height: 16),
+                AppText(
+                  "Manglik Status: ${statusText.replaceAll('_', ' ')}",
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+                const SizedBox(height: 6),
+                AppText(
+                  "Dosha Intensity: ${percentage.toStringAsFixed(1)}%",
+                  fontSize: 14,
+                  color: Colors.grey.shade700,
+                  fontWeight: FontWeight.w500,
+                ),
               ],
             ),
           ),
@@ -114,7 +134,7 @@ class ManglikReportTab extends StatelessWidget {
     );
   }
 
-  Widget _buildConclusionCard(String conclusionText) {
+  Widget _buildConclusionCard(String reportText) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -124,6 +144,7 @@ class ManglikReportTab extends StatelessWidget {
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: double.infinity,
@@ -142,17 +163,17 @@ class ManglikReportTab extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AppText(
-                  conclusionText,
+                  reportText,
                   fontSize: 14,
-                  height: 1.5,
+                  height: 1.4,
                   color: Colors.black87,
                 ),
-                const SizedBox(height: 16),
-                const AppText(
+                const SizedBox(height: 12),
+                AppText(
                   "[This is a computer generated result based on planetary positions. Please consult an Astrologer to confirm & understand this in detail.]",
-                  fontSize: 13,
-                  height: 1.5,
-                  color: Colors.black87,
+                  fontSize: 12,
+                  color: Colors.grey.shade600,
+                  height: 1.3,
                 ),
               ],
             ),
@@ -161,5 +182,56 @@ class ManglikReportTab extends StatelessWidget {
       ),
     );
   }
-}
 
+  Widget _buildRulesCard(String title, List<String> rules, IconData icon) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+            decoration: BoxDecoration(
+              color: AppColors.primaryColor.withOpacity(0.1),
+              borderRadius: const BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+            ),
+            child: Row(
+              children: [
+                Icon(icon, size: 18, color: AppColors.primaryColor),
+                const SizedBox(width: 8),
+                AppText(title, fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black87),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: rules.map((rule) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const AppText("• ", fontWeight: FontWeight.bold, fontSize: 14),
+                      Expanded(
+                        child: AppText(rule, fontSize: 13, height: 1.3, color: Colors.black87),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

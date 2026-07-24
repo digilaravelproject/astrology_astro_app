@@ -133,4 +133,8 @@ class AstrologyApiClient {
   Future<Response> getSadhesatiLifeDetails(Map<String, dynamic> payload) {
     return _dio.post(AstrologyApiConstants.sadeSatiLifeDetailsEndpoint, data: payload);
   }
+
+  Future<Response> getManglikReport(Map<String, dynamic> payload) {
+    return _dio.post(AstrologyApiConstants.manglikEndpoint, data: payload);
+  }
 }

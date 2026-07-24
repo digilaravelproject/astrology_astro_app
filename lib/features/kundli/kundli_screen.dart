@@ -16,6 +16,7 @@ import 'controllers/transit_controller.dart';
 import 'controllers/divisional_chart_controller.dart';
 import 'controllers/house_cusps_controller.dart';
 import 'controllers/kp_controller.dart';
+import 'controllers/manglik_controller.dart';
 import 'models/dasha_model.dart';
 import 'controllers/planet_positions_controller.dart';
 import 'package:collection/collection.dart';
@@ -55,6 +56,7 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
   final DivisionalChartController _divisionalChartController = Get.put(DivisionalChartController());
   final HouseCuspsController _houseCuspsController = Get.put(HouseCuspsController());
   final KPController _kpController = Get.put(KPController());
+  final ManglikController _manglikController = Get.put(ManglikController());
 
   int _selectedTabIndex = 0;
   final List<String> _tabs = [
@@ -138,6 +140,7 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
     _divisionalChartController.fetchDivisionalChart(division: 2, datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
     _houseCuspsController.fetchHouseCusps(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
     _kpController.fetchKPData(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
+    _manglikController.fetchManglikReport(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
   }
 
   @override

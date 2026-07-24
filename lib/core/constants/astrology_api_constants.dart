@@ -32,4 +32,5 @@ class AstrologyApiConstants {
   static const String sadeSatiAdvancedEndpoint = '/sadhesati_current_status';
   static const String sadeSatiLifeDetailsEndpoint = '/sadhesati_life_details';
   static const String matchingAshtakootaEndpoint = '/match_ashtakoot_points';
+  static const String manglikEndpoint = '/manglik';
 }
