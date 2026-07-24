@@ -147,8 +147,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       }
     }
 
-    // 2. Fetch session consumer info from API if still missing
-    if (dob.isEmpty) {
+    // 2. Fetch session consumer info from API if dob or coordinates are missing
+    if (dob.isEmpty || lat == 0.0 || lng == 0.0) {
       try {
         final apiClient = ApiClient();
         final response = await apiClient.get('/chat/sessions/astrologer');
@@ -158,13 +158,16 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             for (final item in dataList) {
               if (item['id'] == widget.sessionId && item['consumer'] != null) {
                 final consumer = item['consumer'];
-                name = consumer['name'] ?? name;
-                gender = consumer['gender'] ?? gender;
-                place = consumer['place_of_birth'] ?? place;
-                lat = double.tryParse(consumer['latitude']?.toString() ?? '') ?? lat;
-                lng = double.tryParse(consumer['longitude']?.toString() ?? '') ?? lng;
+                if (name.isEmpty) name = consumer['name'] ?? name;
+                if (gender.isEmpty) gender = consumer['gender'] ?? gender;
+                if (place.isEmpty) place = consumer['place_of_birth'] ?? place;
+                
+                final apiLat = double.tryParse(consumer['latitude']?.toString() ?? '');
+                final apiLng = double.tryParse(consumer['longitude']?.toString() ?? '');
+                if (apiLat != null && apiLat != 0.0) lat = apiLat;
+                if (apiLng != null && apiLng != 0.0) lng = apiLng;
 
-                if (consumer['date_of_birth'] != null) {
+                if (dob.isEmpty && consumer['date_of_birth'] != null) {
                   try {
                     final parsedDate = DateTime.parse(consumer['date_of_birth']).toLocal();
                     dob = "${parsedDate.year}-${parsedDate.month.toString().padLeft(2, '0')}-${parsedDate.day.toString().padLeft(2, '0')}";
@@ -172,7 +175,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     dob = consumer['date_of_birth'].toString().split('T')[0];
                   }
                 }
-                if (consumer['time_of_birth'] != null && consumer['time_of_birth'].toString().isNotEmpty) {
+                if (tob.isEmpty && consumer['time_of_birth'] != null && consumer['time_of_birth'].toString().isNotEmpty) {
                   tob = consumer['time_of_birth'].toString();
                   if (tob.length == 5) tob += ":00";
                 }
