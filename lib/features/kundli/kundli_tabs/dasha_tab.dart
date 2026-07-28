@@ -128,6 +128,15 @@ class DashaTab extends StatelessWidget {
   Widget _buildDashaRow(DashaItem item) {
     final isClickable = controller.currentLevel != DashaLevel.pranadasha;
 
+    // Standardize planet name: get the last planet in combination (e.g. "MOON - MARS" -> "Mars")
+    String rawPlanet = item.planet ?? "N/A";
+    if (rawPlanet.contains(' - ')) {
+      rawPlanet = rawPlanet.split(' - ').last;
+    }
+    final formattedPlanet = rawPlanet.isNotEmpty
+        ? rawPlanet[0].toUpperCase() + rawPlanet.substring(1).toLowerCase()
+        : rawPlanet;
+
     return InkWell(
       onTap: isClickable ? () => controller.onDashaItemClick(item) : null,
       child: Padding(
@@ -136,9 +145,9 @@ class DashaTab extends StatelessWidget {
           children: [
             Expanded(
               child: AppText(
-                item.planet != null ? item.planet!.replaceAll(' - ', ' -\n') : "N/A",
+                formattedPlanet,
                 fontSize: 12,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
               ),
             ),
             Expanded(
