@@ -137,4 +137,20 @@ class AstrologyApiClient {
   Future<Response> getManglikReport(Map<String, dynamic> payload) {
     return _dio.post(AstrologyApiConstants.manglikEndpoint, data: payload);
   }
+
+  Future<Response> getSubVdasha(Map<String, dynamic> payload, String md) {
+    return _dio.post('${AstrologyApiConstants.subVdashaEndpoint}/$md', data: payload);
+  }
+
+  Future<Response> getSubSubVdasha(Map<String, dynamic> payload, String md, String ad) {
+    return _dio.post('${AstrologyApiConstants.subSubVdashaEndpoint}/$md/$ad', data: payload);
+  }
+
+  Future<Response> getSubSubSubVdasha(Map<String, dynamic> payload, String md, String ad, String pd) {
+    return _dio.post('${AstrologyApiConstants.subSubSubVdashaEndpoint}/$md/$ad/$pd', data: payload);
+  }
+
+  Future<Response> getSubSubSubSubVdasha(Map<String, dynamic> payload, String md, String ad, String pd, String sd) {
+    return _dio.post('${AstrologyApiConstants.subSubSubSubVdashaEndpoint}/$md/$ad/$pd/$sd', data: payload);
+  }
 }

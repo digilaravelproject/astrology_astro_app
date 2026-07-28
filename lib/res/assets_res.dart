@@ -7,7 +7,7 @@ class AssetsRes {
   AssetsRes._();
 
   static const String PROJECT_NAME = 'astro_astrologer';
-  static const String PROJECT_VERSION = '1.0.1+2';
+  static const String PROJECT_VERSION = '1.0.2+3';
   static const String APP_ICON = 'assets/images/app_icon.png';
   static const String APP_LOGO = 'assets/images/app_logo.png';
 }

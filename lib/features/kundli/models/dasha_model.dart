@@ -13,38 +13,52 @@ class DashaModel {
 }
 
 class DashaData {
-  final List<MahaDashaItem>? mahaDasha;
+  final List<DashaItem>? mahaDasha;
 
   DashaData({this.mahaDasha});
 
   factory DashaData.fromJson(Map<String, dynamic> json) {
     return DashaData(
       mahaDasha: json['maha_dasha'] != null
-          ? (json['maha_dasha'] as List).map((i) => MahaDashaItem.fromJson(i)).toList()
+          ? (json['maha_dasha'] as List).map((i) => DashaItem.fromJson(i)).toList()
           : null,
     );
   }
 }
 
-class MahaDashaItem {
+class DashaItem {
   final String? planet;
   final String? startDate;
   final String? endDate;
   final String? vedicName;
+  final int? planetId;
 
-  MahaDashaItem({
+  DashaItem({
     this.planet,
     this.startDate,
     this.endDate,
     this.vedicName,
+    this.planetId,
   });
 
-  factory MahaDashaItem.fromJson(Map<String, dynamic> json) {
-    return MahaDashaItem(
-      planet: json['planet'],
-      startDate: json['start_date'],
-      endDate: json['end_date'],
+  factory DashaItem.fromJson(Map<String, dynamic> json) {
+    return DashaItem(
+      planet: json['planet'] ?? json['planet_name'],
+      startDate: json['start'] ?? json['start_date'],
+      endDate: json['end'] ?? json['end_date'],
       vedicName: json['vedic_name'],
+      planetId: json['planet_id'],
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'planet': planet,
+    'start_date': startDate,
+    'end_date': endDate,
+    'vedic_name': vedicName,
+    'planet_id': planetId,
+  };
 }
+
+// Alias for backwards compatibility if needed
+typedef MahaDashaItem = DashaItem;

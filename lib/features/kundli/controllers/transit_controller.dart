@@ -29,7 +29,7 @@ class TransitController extends GetxController {
       }
 
       final northSvg = await _repository.getHoroChartSvg(
-        chartId: 'transit',
+        chartId: 'gochar',
         datetime: datetime,
         latitude: latitude,
         longitude: longitude,
@@ -41,7 +41,7 @@ class TransitController extends GetxController {
       }
 
       final southSvg = await _repository.getHoroChartSvg(
-        chartId: 'transit',
+        chartId: 'gochar',
         datetime: datetime,
         latitude: latitude,
         longitude: longitude,
