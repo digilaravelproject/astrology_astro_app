@@ -102,6 +102,12 @@ class DashaController extends GetxController {
     }
   }
 
+  String _formatPlanetName(String text) {
+    if (text.isEmpty) return text;
+    final lastPlanet = text.contains(' - ') ? text.split(' - ').last : text;
+    return lastPlanet[0].toUpperCase() + lastPlanet.substring(1).toLowerCase();
+  }
+
   Future<void> _fetchAntardasha(String md) async {
     isLoading.value = true;
     try {
@@ -112,7 +118,7 @@ class DashaController extends GetxController {
         timezone: _timezone,
         md: md,
       );
-      breadcrumbs.add(DashaBreadcrumb(level: DashaLevel.antardasha, title: md, planet: md));
+      breadcrumbs.add(DashaBreadcrumb(level: DashaLevel.antardasha, title: _formatPlanetName(md), planet: md));
       currentDashaItems.value = items;
     } finally {
       isLoading.value = false;
@@ -131,7 +137,7 @@ class DashaController extends GetxController {
         md: md,
         ad: ad,
       );
-      breadcrumbs.add(DashaBreadcrumb(level: DashaLevel.pratyantardasha, title: ad, planet: ad));
+      breadcrumbs.add(DashaBreadcrumb(level: DashaLevel.pratyantardasha, title: _formatPlanetName(ad), planet: ad));
       currentDashaItems.value = items;
     } finally {
       isLoading.value = false;
@@ -152,7 +158,7 @@ class DashaController extends GetxController {
         ad: ad,
         pd: pd,
       );
-      breadcrumbs.add(DashaBreadcrumb(level: DashaLevel.sookshmadasha, title: pd, planet: pd));
+      breadcrumbs.add(DashaBreadcrumb(level: DashaLevel.sookshmadasha, title: _formatPlanetName(pd), planet: pd));
       currentDashaItems.value = items;
     } finally {
       isLoading.value = false;
@@ -175,7 +181,7 @@ class DashaController extends GetxController {
         pd: pd,
         sd: sd,
       );
-      breadcrumbs.add(DashaBreadcrumb(level: DashaLevel.pranadasha, title: sd, planet: sd));
+      breadcrumbs.add(DashaBreadcrumb(level: DashaLevel.pranadasha, title: _formatPlanetName(sd), planet: sd));
       currentDashaItems.value = items;
     } finally {
       isLoading.value = false;
