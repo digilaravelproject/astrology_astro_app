@@ -136,8 +136,8 @@ class DashaTab extends StatelessWidget {
           children: [
             Expanded(
               child: AppText(
-                item.planet ?? "N/A",
-                fontSize: 13,
+                item.planet != null ? item.planet!.replaceAll(' - ', ' -\n') : "N/A",
+                fontSize: 12,
                 fontWeight: FontWeight.w500,
               ),
             ),
