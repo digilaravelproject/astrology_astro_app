@@ -96,7 +96,6 @@ class DashaTab extends StatelessWidget {
 
   Widget _buildHeader(BuildContext context) {
     final canGoBack = controller.breadcrumbs.length > 1;
-    final breadcrumbPath = controller.breadcrumbs.map((b) => b.title).join(' > ');
 
     return Column(
       children: [
@@ -108,19 +107,71 @@ class DashaTab extends StatelessWidget {
                 icon: const Icon(Icons.arrow_back_ios, size: 18, color: AppColors.primaryColor),
                 onPressed: () => controller.goBack(),
               ),
-            Expanded(
-              child: AppText(
-                canGoBack ? breadcrumbPath : controller.currentTitle,
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
+            AppText(
+              controller.currentTitle,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              textAlign: TextAlign.center,
             ),
-            if (canGoBack) const SizedBox(width: 48), // Balance back button spacing
           ],
         ),
+        if (canGoBack) ...[
+          const SizedBox(height: 6),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(controller.breadcrumbs.length, (index) {
+                final item = controller.breadcrumbs[index];
+                final isLast = index == controller.breadcrumbs.length - 1;
+
+                // Show standard level name for root/first item or display label
+                String displayTitle = item.title;
+                if (index == 0) {
+                  displayTitle = "Mahadasha";
+                } else if (index == 1) {
+                  displayTitle = "AntarDasha > ${item.title}";
+                } else if (index == 2) {
+                  displayTitle = "PratyantarDasha > ${item.title}";
+                } else if (index == 3) {
+                  displayTitle = "SookshmaDasha > ${item.title}";
+                } else if (index == 4) {
+                  displayTitle = "PranaDasha > ${item.title}";
+                }
+
+                return GestureDetector(
+                  onTap: () {
+                    if (!isLast) {
+                      controller.navigateToBreadcrumbIndex(index);
+                    }
+                  },
+                  child: Row(
+                    children: [
+                      if (index > 0)
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 4),
+                          child: Icon(Icons.chevron_right, size: 16, color: Colors.grey),
+                        ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: isLast ? AppColors.primaryColor.withOpacity(0.1) : Colors.transparent,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: AppText(
+                          displayTitle,
+                          fontSize: 12,
+                          fontWeight: isLast ? FontWeight.w700 : FontWeight.w500,
+                          color: isLast ? AppColors.primaryColor : Colors.grey[700],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -128,14 +179,14 @@ class DashaTab extends StatelessWidget {
   Widget _buildDashaRow(DashaItem item) {
     final isClickable = controller.currentLevel != DashaLevel.pranadasha;
 
-    // Standardize planet name: get the last planet in combination (e.g. "MOON - MARS" -> "Mars")
-    String rawPlanet = item.planet ?? "N/A";
-    if (rawPlanet.contains(' - ')) {
-      rawPlanet = rawPlanet.split(' - ').last;
-    }
-    final formattedPlanet = rawPlanet.isNotEmpty
-        ? rawPlanet[0].toUpperCase() + rawPlanet.substring(1).toLowerCase()
-        : rawPlanet;
+    // Build planet hierarchy path from breadcrumbs
+    final selectedPlanets = controller.breadcrumbs
+        .where((b) => b.planet != null && b.planet!.isNotEmpty)
+        .map((b) => b.planet!)
+        .toList();
+    
+    final currentPlanet = item.planet ?? "N/A";
+    final fullPlanetPath = [...selectedPlanets, currentPlanet].join(" - ");
 
     return InkWell(
       onTap: isClickable ? () => controller.onDashaItemClick(item) : null,
@@ -145,9 +196,9 @@ class DashaTab extends StatelessWidget {
           children: [
             Expanded(
               child: AppText(
-                formattedPlanet,
+                fullPlanetPath,
                 fontSize: 12,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
               ),
             ),
             Expanded(

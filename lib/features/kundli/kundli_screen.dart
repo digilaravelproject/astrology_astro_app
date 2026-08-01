@@ -504,7 +504,129 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
     );
   }
 
+  Widget _buildDashaTab(String title) {
+    if (title == "Mahadasha") {
+      return Obx(() {
+        if (_dashaController.isLoading.value) {
+          return const Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
+          );
+        }
 
+        final dashaDataList = _dashaController.dashaModel.value?.data?.mahaDasha;
+        if (dashaDataList == null || dashaDataList.isEmpty) {
+          return const Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Center(child: AppText("Failed to load Dasha details.")),
+          );
+        }
+
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              AppText(title, fontSize: 16, fontWeight: FontWeight.w700, textAlign: TextAlign.center),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: AppColors.primaryColor.withOpacity(0.05)),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 15, offset: const Offset(0, 6)),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        children: [
+                          Expanded(child: AppText("Planet", fontWeight: FontWeight.bold, fontSize: 12)),
+                          Expanded(child: AppText("Start Date", fontWeight: FontWeight.bold, fontSize: 12)),
+                          Expanded(child: AppText("End Date", fontWeight: FontWeight.bold, fontSize: 12)),
+                          SizedBox(width: 20),
+                        ],
+                      ),
+                    ),
+                    ...dashaDataList.map((data) {
+                      return _buildDashaRow(
+                        data.planet ?? "N/A",
+                        data.startDate ?? "N/A",
+                        data.endDate ?? "N/A",
+                      );
+                    }),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      });
+    }
+
+    final dashaData = [
+      ["ID", "12-Sep-2023", "12-Sep-2024"],
+      ["PI", "12-Sep-2024", "12-Sep-2026"],
+      ["DH", "12-Sep-2026", "12-Sep-2029"],
+      ["BR", "12-Sep-2029", "12-Sep-2033"],
+      ["BH", "12-Sep-2033", "12-Sep-2038"],
+      ["UL", "12-Sep-2038", "12-Sep-2044"],
+    ];
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          AppText(title, fontSize: 16, fontWeight: FontWeight.w700, textAlign: TextAlign.center),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: AppColors.primaryColor.withOpacity(0.05)),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 15, offset: const Offset(0, 6)),
+              ],
+            ),
+            child: Column(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    children: [
+                      Expanded(child: AppText("Planet", fontWeight: FontWeight.bold, fontSize: 12)),
+                      Expanded(child: AppText("Start Date", fontWeight: FontWeight.bold, fontSize: 12)),
+                      Expanded(child: AppText("End Date", fontWeight: FontWeight.bold, fontSize: 12)),
+                      SizedBox(width: 20),
+                    ],
+                  ),
+                ),
+                ...dashaData.map((data) => _buildDashaRow(data[0], data[1], data[2])),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDashaRow(String planet, String start, String end) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        children: [
+          Expanded(child: AppText(planet, fontSize: 12, fontWeight: FontWeight.w500)),
+          Expanded(child: AppText(start, fontSize: 12, fontWeight: FontWeight.w500)),
+          Expanded(child: AppText(end, fontSize: 12, fontWeight: FontWeight.w500)),
+          const Icon(Icons.chevron_right, size: 16, color: Colors.grey),
+        ],
+      ),
+    );
+  }
 
   String _formatDegree(double degree) {
     int d = degree.floor();
