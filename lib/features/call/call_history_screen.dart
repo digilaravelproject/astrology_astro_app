@@ -35,97 +35,97 @@ class CallHistoryScreen extends StatelessWidget {
 
     Widget content = Column(
       children: [
-          Expanded(
-            child: Obx(() {
-              if (controller.isLoading.value && controller.callSessions.isEmpty) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (controller.callSessions.isEmpty) {
-                return const Center(child: AppText("No call history available.", fontSize: 16));
-              }
-              return RefreshIndicator(
-                onRefresh: () => controller.fetchCallSessions(isRefresh: true),
-                child: NotificationListener<ScrollNotification>(
-                  onNotification: (ScrollNotification scrollInfo) {
-                    if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
-                      controller.fetchCallSessions();
+        Expanded(
+          child: Obx(() {
+            if (controller.isLoading.value && controller.callSessions.isEmpty) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (controller.callSessions.isEmpty) {
+              return const Center(child: AppText("No call history available.", fontSize: 16));
+            }
+            return RefreshIndicator(
+              onRefresh: () => controller.fetchCallSessions(isRefresh: true),
+              child: NotificationListener<ScrollNotification>(
+                onNotification: (ScrollNotification scrollInfo) {
+                  if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                    controller.fetchCallSessions();
+                  }
+                  return true;
+                },
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(12),
+                  itemCount: controller.callSessions.length,
+                  itemBuilder: (context, index) {
+                    final session = controller.callSessions[index];
+                    final durationMinutes = (session.durationSeconds / 60).ceil();
+
+                    // Format DOB
+                    String dobStr = "N/A";
+                    if (session.consumer?.dateOfBirth != null) {
+                      try {
+                        final dobDate = DateTime.tryParse(session.consumer!.dateOfBirth!)?.toLocal();
+                        if (dobDate != null) {
+                          final months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                          final monthName = months[dobDate.month - 1];
+                          final day = dobDate.day.toString().padLeft(2, '0');
+                          final year = dobDate.year.toString();
+
+                          String timeStr = "";
+                          if (session.consumer?.timeOfBirth != null && session.consumer!.timeOfBirth!.isNotEmpty) {
+                            timeStr = ",${session.consumer!.timeOfBirth!}";
+                          }
+                          dobStr = "$day-$monthName-$year$timeStr";
+                        }
+                      } catch (_) {}
                     }
-                    return true;
+
+                    String? rawDatetime;
+                    if (session.consumer?.dateOfBirth != null) {
+                      try {
+                        final dobDate = DateTime.tryParse(session.consumer!.dateOfBirth!)?.toLocal();
+                        if (dobDate != null) {
+                          String d = "${dobDate.year}-${dobDate.month.toString().padLeft(2, '0')}-${dobDate.day.toString().padLeft(2, '0')}";
+                          String t = "00:00:00";
+                          if (session.consumer?.timeOfBirth != null && session.consumer!.timeOfBirth!.isNotEmpty) {
+                            t = session.consumer!.timeOfBirth!;
+                            if (t.length == 5) t += ":00"; // append seconds if HH:mm
+                          }
+                          rawDatetime = "${d}T$t";
+                        }
+                      } catch (_) {}
+                    }
+
+                    final Map<String, String> details = {
+                      "Name": session.consumer?.name ?? "User (AT-${session.consumerId})",
+                      "Gender": session.consumer?.gender?.capitalizeFirst ?? "N/A",
+                      "DOB": dobStr,
+                      "Duration": "$durationMinutes minutes",
+                      "Rate": "₹ ${session.ratePerMinute}/min",
+                      "POB": session.consumer?.placeOfBirth ?? "N/A",
+                    };
+
+                    return _buildHistoryCard(
+                      context,
+                      type: "New (indian)",
+                      status: session.status.capitalizeFirst ?? "Completed",
+                      id: "${session.id}",
+                      price: session.totalCost.toString(),
+                      date: session.createdAt ?? "N/A",
+                      details: details,
+                      showRefund: false,
+                      imageUrl: session.consumer?.profilePhoto,
+                      rawDatetime: rawDatetime,
+                      chatAssistanceSessionId: session.chatAssistanceSessionId,
+                    );
                   },
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(12),
-                    itemCount: controller.callSessions.length,
-                    itemBuilder: (context, index) {
-                      final session = controller.callSessions[index];
-                      final durationMinutes = (session.durationSeconds / 60).ceil();
-                      
-                      // Format DOB
-                      String dobStr = "N/A";
-                      if (session.consumer?.dateOfBirth != null) {
-                        try {
-                          final dobDate = DateTime.tryParse(session.consumer!.dateOfBirth!)?.toLocal();
-                          if (dobDate != null) {
-                            final months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                            final monthName = months[dobDate.month - 1];
-                            final day = dobDate.day.toString().padLeft(2, '0');
-                            final year = dobDate.year.toString();
-                            
-                            String timeStr = "";
-                            if (session.consumer?.timeOfBirth != null && session.consumer!.timeOfBirth!.isNotEmpty) {
-                              timeStr = ",${session.consumer!.timeOfBirth!}";
-                            }
-                            dobStr = "$day-$monthName-$year$timeStr";
-                          }
-                        } catch (_) {}
-                      }
-
-                      String? rawDatetime;
-                      if (session.consumer?.dateOfBirth != null) {
-                        try {
-                          final dobDate = DateTime.tryParse(session.consumer!.dateOfBirth!)?.toLocal();
-                          if (dobDate != null) {
-                            String d = "${dobDate.year}-${dobDate.month.toString().padLeft(2, '0')}-${dobDate.day.toString().padLeft(2, '0')}";
-                            String t = "00:00:00";
-                            if (session.consumer?.timeOfBirth != null && session.consumer!.timeOfBirth!.isNotEmpty) {
-                              t = session.consumer!.timeOfBirth!;
-                              if (t.length == 5) t += ":00"; // append seconds if HH:mm
-                            }
-                            rawDatetime = "${d}T$t";
-                          }
-                        } catch (_) {}
-                      }
-
-                      final Map<String, String> details = {
-                        "Name": session.consumer?.name ?? "User (AT-${session.consumerId})",
-                        "Gender": session.consumer?.gender?.capitalizeFirst ?? "N/A",
-                        "DOB": dobStr,
-                        "Duration": "$durationMinutes minutes",
-                        "Rate": "₹ ${session.ratePerMinute}/min",
-                        "POB": session.consumer?.placeOfBirth ?? "N/A",
-                      };
-
-                      return _buildHistoryCard(
-                        context,
-                        type: "New (indian)",
-                        status: session.status.capitalizeFirst ?? "Completed",
-                        id: "${session.id}",
-                        price: session.totalCost.toString(),
-                        date: session.createdAt ?? "N/A",
-                        details: details,
-                        showRefund: false,
-                        imageUrl: session.consumer?.profilePhoto,
-                        rawDatetime: rawDatetime,
-                        chatAssistanceSessionId: session.chatAssistanceSessionId,
-                      );
-                    },
-                  ),
                 ),
-              );
-            }),
-          ),
-          _buildFooterNote(),
-        ],
-      );
+              ),
+            );
+          }),
+        ),
+        _buildFooterNote(),
+      ],
+    );
 
     if (isFromTab) return content;
 
@@ -139,20 +139,20 @@ class CallHistoryScreen extends StatelessWidget {
   }
 
   Widget _buildHistoryCard(
-    BuildContext context, {
-    required String type,
-    required String status,
-    required String id,
-    required String price,
-    required String date,
-    required Map<String, String> details,
-    bool isLoyal = false,
-    bool showRefund = false,
-    bool showSuggestRemedy = false,
-    String? imageUrl,
-    String? rawDatetime,
-    int? chatAssistanceSessionId,
-  }) {
+      BuildContext context, {
+        required String type,
+        required String status,
+        required String id,
+        required String price,
+        required String date,
+        required Map<String, String> details,
+        bool isLoyal = false,
+        bool showRefund = false,
+        bool showSuggestRemedy = false,
+        String? imageUrl,
+        String? rawDatetime,
+        int? chatAssistanceSessionId,
+      }) {
     return Container(
       margin: const EdgeInsets.only(top: 14, bottom: 8),
       child: Stack(
@@ -161,15 +161,15 @@ class CallHistoryScreen extends StatelessWidget {
           GestureDetector(
             onTap: () {
               Get.to(() => CallDetailsScreen(
-                    title: 'Call Details',
-                    name: details["Name"]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "N/A",
-                    dateOfBirth: details["DOB"] ?? "N/A",
-                    placeOfBirth: details["POB"] ?? "N/A",
-                    gender: details["Gender"] ?? "N/A",
-                    schedule: date,
-                    duration: details["Duration"] ?? "N/A",
-                    rating: details["Rating"] ?? "N/A",
-                  ));
+                title: 'Call Details',
+                name: details["Name"]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "N/A",
+                dateOfBirth: details["DOB"] ?? "N/A",
+                placeOfBirth: details["POB"] ?? "N/A",
+                gender: details["Gender"] ?? "N/A",
+                schedule: date,
+                duration: details["Duration"] ?? "N/A",
+                rating: details["Rating"] ?? "N/A",
+              ));
             },
             child: Container(
               padding: const EdgeInsets.all(16),
@@ -229,9 +229,9 @@ class CallHistoryScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // Astrotalk, ID and Icons
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -245,32 +245,32 @@ class CallHistoryScreen extends StatelessWidget {
                         child: ClipOval(
                           child: imageUrl != null && imageUrl.isNotEmpty
                               ? CachedNetworkImage(
-                                  imageUrl: imageUrl.startsWith('http')
-                                      ? imageUrl
-                                      : '${AppUrls.baseImageUrl}$imageUrl',
-                                  fit: BoxFit.cover,
-                                  placeholder: (context, url) => const CircularProgressIndicator(strokeWidth: 2),
-                                  errorWidget: (context, url, error) => Container(
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: [Colors.orange.shade300, Colors.deepOrange.shade400],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                      ),
-                                    ),
-                                    child: const Icon(Icons.wb_sunny_rounded, color: Colors.white, size: 20),
-                                  ),
-                                )
-                              : Container(
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [Colors.orange.shade300, Colors.deepOrange.shade400],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    ),
-                                  ),
-                                  child: const Icon(Icons.wb_sunny_rounded, color: Colors.white, size: 20),
+                            imageUrl: imageUrl.startsWith('http')
+                                ? imageUrl
+                                : '${AppUrls.baseImageUrl}$imageUrl',
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => const CircularProgressIndicator(strokeWidth: 2),
+                            errorWidget: (context, url, error) => Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [Colors.orange.shade300, Colors.deepOrange.shade400],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
                                 ),
+                              ),
+                              child: const Icon(Icons.wb_sunny_rounded, color: Colors.white, size: 20),
+                            ),
+                          )
+                              : Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [Colors.orange.shade300, Colors.deepOrange.shade400],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                            ),
+                            child: const Icon(Icons.wb_sunny_rounded, color: Colors.white, size: 20),
+                          ),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -353,9 +353,9 @@ class CallHistoryScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // Price & Date container
                   Container(
                     padding: const EdgeInsets.all(12),
@@ -394,127 +394,127 @@ class CallHistoryScreen extends StatelessWidget {
                   const Divider(height: 1, thickness: 1, color: Color(0xFFEEEEEE)),
                   const SizedBox(height: 16),
 
-                      // Details Table
-                      ...details.entries.map((entry) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 6),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                width: 100,
-                                child: AppText(
-                                  entry.key,
-                                  fontSize: 14,
-                                  color: Colors.black87,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const AppText(":  ", fontWeight: FontWeight.bold),
-                              Expanded(
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: AppText(
-                                        entry.value,
-                                        fontSize: 13,
-                                        color: entry.key == "Rating" ? Colors.amber : Colors.grey.shade700,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    if (entry.key == "Name" || entry.key == "POB")
-                                      Padding(
-                                        padding: const EdgeInsets.only(left: 8),
-                                        child: Icon(Icons.copy_rounded, size: 14, color: AppColors.primaryColor.withOpacity(0.5)),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-
-                      const SizedBox(height: 20),
-
-                      // Buttons
-                      Row(
+                  // Details Table
+                  ...details.entries.map((entry) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (showSuggestRemedy) ...[
-                            Expanded(
-                              child: CustomButton(
-                                text: "Suggest Remedy",
-                                onPressed: () {},
-                                height: 42,
-                                padding: EdgeInsets.zero,
-                                buttonType: ButtonStyleType.outlined,
-                                borderRadius: 8,
-                                textStyle: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                          ],
-                          Expanded(
-                            child: CustomButton(
-                              text: "Open Kundli",
-                              onPressed: () => Get.to(() => KundliScreen(
-                                name: details["Name"],
-                                datetime: rawDatetime,
-                                place: details["POB"],
-                              )),
-                              height: 42,
-                              padding: EdgeInsets.zero,
-                              buttonType: ButtonStyleType.outlined,
-                              borderRadius: 8,
-                              textStyle: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold),
+                          SizedBox(
+                            width: 100,
+                            child: AppText(
+                              entry.key,
+                              fontSize: 14,
+                              color: Colors.black87,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          const AppText(":  ", fontWeight: FontWeight.bold),
                           Expanded(
-                            child: CustomButton(
-                              text: "Chat Assistant",
-                              onPressed: () {
-                                if (chatAssistanceSessionId != null) {
-                                  Get.to(() => AssistanceChatRoomScreen(
-                                    sessionId: chatAssistanceSessionId,
-                                    userName: details["Name"]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "User",
-                                    userImage: imageUrl,
-                                  ));
-                                } else {
-                                  Get.snackbar("Error", "No Chat Assistance Session available");
-                                }
-                              },
-                              height: 42,
-                              padding: EdgeInsets.zero,
-                              backgroundColor: const Color(0xFF2CB772),
-                              prefixIcon: const Icon(Icons.chat_bubble_rounded, color: Colors.white, size: 12),
-                              borderRadius: 8,
-                              textColor: Colors.white,
-                              textStyle: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: AppText(
+                                    entry.value,
+                                    fontSize: 13,
+                                    color: entry.key == "Rating" ? Colors.amber : Colors.grey.shade700,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                if (entry.key == "Name" || entry.key == "POB")
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8),
+                                    child: Icon(Icons.copy_rounded, size: 14, color: AppColors.primaryColor.withOpacity(0.5)),
+                                  ),
+                              ],
                             ),
                           ),
                         ],
                       ),
+                    );
+                  }).toList(),
 
-                      if (showRefund) ...[
-                        const SizedBox(height: 12),
-                        const AppText(
-                          "Refund",
-                          fontSize: 14,
-                          color: Colors.red,
-                          fontWeight: FontWeight.w500,
+                  const SizedBox(height: 20),
+
+                  // Buttons
+                  Row(
+                    children: [
+                      if (showSuggestRemedy) ...[
+                        Expanded(
+                          child: CustomButton(
+                            text: "Suggest Remedy",
+                            onPressed: () {},
+                            height: 42,
+                            padding: EdgeInsets.zero,
+                            buttonType: ButtonStyleType.outlined,
+                            borderRadius: 8,
+                            textStyle: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold),
+                          ),
                         ),
-                        const SizedBox(height: 2),
-                        const AppText(
-                          "PO@Rs5",
-                          fontSize: 13,
-                          color: Colors.red,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        const SizedBox(width: 8),
                       ],
+                      Expanded(
+                        child: CustomButton(
+                          text: "Open Kundli",
+                          onPressed: () => Get.to(() => KundliScreen(
+                            name: details["Name"],
+                            datetime: rawDatetime,
+                            place: details["POB"],
+                          )),
+                          height: 42,
+                          padding: EdgeInsets.zero,
+                          buttonType: ButtonStyleType.outlined,
+                          borderRadius: 8,
+                          textStyle: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: CustomButton(
+                          text: "Chat Assistant",
+                          onPressed: () {
+                            if (chatAssistanceSessionId != null) {
+                              Get.to(() => AssistanceChatRoomScreen(
+                                sessionId: chatAssistanceSessionId,
+                                userName: details["Name"]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "User",
+                                userImage: imageUrl,
+                              ));
+                            } else {
+                              Get.snackbar("Error", "No Chat Assistance Session available");
+                            }
+                          },
+                          height: 42,
+                          padding: EdgeInsets.zero,
+                          backgroundColor: const Color(0xFF2CB772),
+                          prefixIcon: const Icon(Icons.chat_bubble_rounded, color: Colors.white, size: 12),
+                          borderRadius: 8,
+                          textColor: Colors.white,
+                          textStyle: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold),
+                        ),
+                      ),
                     ],
                   ),
-                ),
+
+                  if (showRefund) ...[
+                    const SizedBox(height: 12),
+                    const AppText(
+                      "Refund",
+                      fontSize: 14,
+                      color: Colors.red,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    const SizedBox(height: 2),
+                    const AppText(
+                      "PO@Rs5",
+                      fontSize: 13,
+                      color: Colors.red,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ],
+                ],
+              ),
+            ),
           ),
           if (isLoyal) LoyalBadge.positioned(),
         ],
