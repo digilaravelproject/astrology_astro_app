@@ -20,6 +20,9 @@ class PanchangData {
   final PanchangItem? masa;
   final PanchangItem? ritu;
   final PanchangItem? vaara;
+  final String? timezone;
+  final String? sunrise;
+  final String? sunset;
 
   PanchangData({
     this.tithi,
@@ -29,6 +32,9 @@ class PanchangData {
     this.masa,
     this.ritu,
     this.vaara,
+    this.timezone,
+    this.sunrise,
+    this.sunset,
   });
 
   factory PanchangData.fromJson(Map<String, dynamic> json) {
@@ -39,7 +45,11 @@ class PanchangData {
       nakshatra: json['nakshatra'] != null ? PanchangItem.fromJson(json['nakshatra']) : null,
       masa: json['masa'] != null ? PanchangItem.fromJson(json['masa']) : null,
       ritu: json['ritu'] != null ? PanchangItem.fromJson(json['ritu']) : null,
-      vaara: json['vaara'] != null ? PanchangItem.fromJson(json['vaara']) : null,
+      vaara: json['vara'] != null ? PanchangItem.fromJson(json['vara'])
+           : json['vaara'] != null ? PanchangItem.fromJson(json['vaara']) : null,
+      timezone: json['timezone']?.toString(),
+      sunrise: json['sunrise']?.toString(),
+      sunset: json['sunset']?.toString(),
     );
   }
 }

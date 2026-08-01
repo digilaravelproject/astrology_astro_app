@@ -7,19 +7,33 @@ import '../../../../core/constants/app_urls.dart';
 import '../controllers/assistance_chat_room_controller.dart';
 import 'package:astro_astrologer/core/theme/app_colors.dart';
 import 'package:astro_astrologer/core/widgets/app_text.dart';
-import 'package:astro_astrologer/features/chat/domain/entities/chat_message.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:astro_astrologer/features/chat/domain/entities/chat_message.dart';
+import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
+import 'package:astro_astrologer/features/kundli/create_kundli_screen.dart';
 
 class AssistanceChatRoomScreen extends StatefulWidget {
   final int sessionId;
   final String userName;
   final String? userImage;
+  final String? gender;
+  final String? dob;
+  final String? tob;
+  final String? place;
+  final double? latitude;
+  final double? longitude;
 
   const AssistanceChatRoomScreen({
     Key? key,
     required this.sessionId,
     required this.userName,
     this.userImage,
+    this.gender,
+    this.dob,
+    this.tob,
+    this.place,
+    this.latitude,
+    this.longitude,
   }) : super(key: key);
 
   @override
@@ -60,7 +74,9 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
               radius: 20,
               backgroundColor: AppColors.primaryColor.withOpacity(0.1),
               backgroundImage: (widget.userImage != null && widget.userImage!.isNotEmpty)
-                  ? NetworkImage("${AppUrls.baseImageUrl}${widget.userImage!}")
+                  ? NetworkImage(widget.userImage!.startsWith('http')
+                      ? widget.userImage!
+                      : "${AppUrls.baseImageUrl}${widget.userImage!}")
                   : null,
               child: (widget.userImage == null || widget.userImage!.isEmpty)
                   ? AppText(
@@ -91,6 +107,56 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
             ),
           ],
         ),
+        actions: [
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: InkWell(
+                onTap: () {
+                  if (widget.dob != null && widget.dob!.isNotEmpty) {
+                    Get.to(() => KundliScreen(
+                      fullName: widget.userName,
+                      gender: widget.gender ?? '',
+                      dob: widget.dob!,
+                      tob: widget.tob ?? '00:00:00',
+                      place: widget.place ?? '',
+                      latitude: widget.latitude ?? 0.0,
+                      longitude: widget.longitude ?? 0.0,
+                    ));
+                  } else {
+                    Get.to(() => CreateKundliScreen(
+                      initialKundliData: {
+                        'name': widget.userName,
+                      },
+                    ));
+                  }
+                },
+                borderRadius: BorderRadius.circular(20),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppColors.primaryColor.withOpacity(0.4)),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.auto_awesome, size: 14, color: AppColors.primaryColor),
+                      SizedBox(width: 4),
+                      AppText(
+                        'Kundli',
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primaryColor,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Column(
@@ -102,7 +168,7 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
                   color: Colors.orange.shade100,
                   padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                   child: AppText(
-                    'You have reached your daily free assistance reply limit.',
+                    'Daily message reply limit reached. You cannot send more replies today.',
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
                     color: Colors.deepOrange.shade800,
@@ -152,7 +218,7 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
                 );
               }),
             ),
-            _buildMessageInput(),
+            Obx(() => _buildMessageInput()),
           ],
         ),
       ),
@@ -315,6 +381,9 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
   }
 
   Widget _buildMessageInput() {
+    if (controller.limitReached.value) {
+      return const SizedBox.shrink();
+    }
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: const BoxDecoration(
@@ -352,7 +421,6 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
                 textCapitalization: TextCapitalization.sentences,
                 minLines: 1,
                 maxLines: 4,
-                enabled: !controller.limitReached.value,
               ),
             ),
             const SizedBox(width: 8),

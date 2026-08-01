@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
@@ -165,18 +166,18 @@ class AstrologerSessionsScreen extends StatelessWidget {
       'POB': pob,
     };
 
-    String? rawDatetime;
+    String? dobPart;
+    String? tobPart;
     if (consumer != null && consumer.dateOfBirth != null) {
       try {
-        final dobDate = DateTime.tryParse(consumer.dateOfBirth!)?.toLocal();
-        if (dobDate != null) {
-          String d = "${dobDate.year}-${dobDate.month.toString().padLeft(2, '0')}-${dobDate.day.toString().padLeft(2, '0')}";
-          String t = "00:00:00";
-          if (consumer.timeOfBirth != null && consumer.timeOfBirth!.isNotEmpty) {
-            t = consumer.timeOfBirth!;
-            if (t.length == 5) t += ":00";
-          }
-          rawDatetime = "${d}T$t";
+        // date_of_birth is UTC; toLocal() gives correct IST date
+        final dobDate = DateTime.parse(consumer.dateOfBirth!).toLocal();
+        dobPart = "${dobDate.year}-${dobDate.month.toString().padLeft(2, '0')}-${dobDate.day.toString().padLeft(2, '0')}";
+        // time_of_birth is already IST (e.g. "19:12"), use directly
+        tobPart = "00:00:00";
+        if (consumer.timeOfBirth != null && consumer.timeOfBirth!.isNotEmpty) {
+          tobPart = consumer.timeOfBirth!;
+          if (tobPart.length == 5) tobPart += ":00";
         }
       } catch (_) {}
     }
@@ -193,6 +194,12 @@ class AstrologerSessionsScreen extends StatelessWidget {
                 userImage: photoUrl,
                 sessionId: session.id,
                 initialStatus: session.status,
+                gender: consumer?.gender,
+                dob: dobPart,
+                tob: tobPart,
+                place: pob,
+                latitude: consumer?.latitude,
+                longitude: consumer?.longitude,
               ),
               binding: ChatBinding(),
             ),
@@ -242,50 +249,6 @@ class AstrologerSessionsScreen extends StatelessWidget {
                             AppText('ID: #${session.consumerId}${session.providerId}', fontSize: 13, color: Colors.grey.shade500, fontWeight: FontWeight.w500),
                           ],
                         ),
-                      ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              showModalBottomSheet(
-                                context: context,
-                                isScrollControlled: true,
-                                backgroundColor: Colors.transparent,
-                                builder: (context) => const Padding(padding: EdgeInsets.only(top: 100), child: AddNoteBottomSheet()),
-                              );
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade300), borderRadius: BorderRadius.circular(10)),
-                              child: Icon(Iconsax.document_copy, size: 16, color: Colors.grey.shade600),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          SizedBox(
-                            width: 30,
-                            height: 30,
-                            child: PopupMenuButton<String>(
-                              padding: EdgeInsets.zero,
-                              icon: Container(
-                                padding: const EdgeInsets.all(6),
-                                decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade300), borderRadius: BorderRadius.circular(10)),
-                                child: Icon(Icons.more_vert, size: 16, color: Colors.grey.shade600),
-                              ),
-                              color: Colors.white,
-                              onSelected: (value) {
-                                if (value == 'block') {
-                                  Get.snackbar('Block User', 'Block user: $name', snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.black87, colorText: Colors.white);
-                                }
-                              },
-                              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                                const PopupMenuItem<String>(value: 'block', child: AppText('Block User', fontSize: 14)),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          const AnimatedFavoriteButton(),
-                        ],
                       ),
                     ],
                   ),
@@ -348,11 +311,24 @@ class AstrologerSessionsScreen extends StatelessWidget {
                                 Expanded(
                                   child: AppText(entry.value, fontSize: 13, fontWeight: FontWeight.w600, color: Colors.grey.shade700),
                                 ),
-                                if (entry.key == 'Name' || entry.key == 'POB')
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 8),
-                                    child: Icon(Icons.copy_rounded, size: 14, color: AppColors.primaryColor.withValues(alpha: 0.5)),
-                                  ),
+                                 if (entry.key == 'Name' || entry.key == 'POB')
+                                   GestureDetector(
+                                     onTap: () {
+                                       Clipboard.setData(ClipboardData(text: entry.value));
+                                       Get.snackbar(
+                                         'Copied',
+                                         '${entry.key} copied to clipboard',
+                                         snackPosition: SnackPosition.BOTTOM,
+                                         duration: const Duration(seconds: 2),
+                                         backgroundColor: Colors.black87,
+                                         colorText: Colors.white,
+                                       );
+                                     },
+                                     child: Padding(
+                                       padding: const EdgeInsets.only(left: 8),
+                                       child: Icon(Icons.copy_rounded, size: 14, color: AppColors.primaryColor.withValues(alpha: 0.7)),
+                                     ),
+                                   ),
                               ],
                             ),
                           ),
@@ -370,9 +346,13 @@ class AstrologerSessionsScreen extends StatelessWidget {
                         child: CustomButton(
                           text: 'Open Kundli',
                           onPressed: () => Get.to(() => KundliScreen(
-                            name: name,
-                            datetime: rawDatetime,
+                            fullName: name,
+                            gender: consumer?.gender ?? "",
+                            dob: dobPart ?? "",
+                            tob: tobPart ?? "",
                             place: pob,
+                            latitude: consumer?.latitude ?? 0.0,
+                            longitude: consumer?.longitude ?? 0.0,
                           )),
                           height: 42,
                           padding: EdgeInsets.zero,
@@ -407,11 +387,6 @@ class AstrologerSessionsScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-
-                  if (session.status == 'completed') ...[
-                    const SizedBox(height: 12),
-                    const AppText('Refund', fontSize: 14, color: Colors.red, fontWeight: FontWeight.w500),
-                  ],
                 ],
               ),
             ),
@@ -518,7 +493,7 @@ class AstrologerSessionsScreen extends StatelessWidget {
   String _formatDob(String? dob, String? tob) {
     if (dob == null || dob.isEmpty) return 'N/A';
     try {
-      final dt = DateTime.parse(dob);
+      final dt = DateTime.parse(dob).toLocal();
       final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       final dateStr = '${dt.day}-${months[dt.month - 1]}-${dt.year}';
       return tob != null && tob.isNotEmpty ? '$dateStr, $tob' : dateStr;

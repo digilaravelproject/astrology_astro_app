@@ -15,8 +15,9 @@ import '../../call/call_history_screen.dart';
 import '../../chat/presentation/pages/chat_history_screen.dart';
 import '../../chat/presentation/pages/astrologer_sessions_screen.dart';
 import '../../kundli/kundli_list_screen.dart';
+import '../../kundli/create_kundli_screen.dart';
+
 import '../../astromall/astromall_orders_screen.dart';
-import '../../waitlist/waitlist_screen.dart';
 import '../../chat/presentation/pages/assistant_chat_screen.dart';
 import '../../orders/presentation/pages/orders_screen.dart';
 import '../../live/presentation/pages/live_schedule_screen.dart';
@@ -947,14 +948,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       // Consultation tools
       _MenuData(
-        title: 'Waitlist',
-        icon: Iconsax.timer_1_copy,
-        bgColor: const Color(0xFFF0F4FF),
-        iconBgColor: const Color(0xFFDBE4FF),
-        textColor: const Color(0xFF3B5BDB),
-        onTap: () => Get.to(() => const WaitlistScreen()),
-      ),
-      _MenuData(
         title: 'Assistant Chat',
         icon: Iconsax.cpu_setting_copy,
         bgColor: const Color(0xFFF3EEFF),
@@ -996,6 +989,25 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: () => Get.to(() => const HistoryScreen()),
       ),
       // Astrology content
+      _MenuData(
+        title: 'Kundli',
+        icon: Iconsax.document_text_1_copy,
+        bgColor: const Color(0xFFFFF0F5),
+        iconBgColor: const Color(0xFFFFD1DC),
+        textColor: AppColors.primaryColor,
+        onTap: () => Get.to(() => const KundliListScreen()),
+      ),
+      _MenuData(
+        title: 'Match Making',
+        icon: Iconsax.heart_copy,
+        bgColor: const Color(0xFFFFF0F3),
+        iconBgColor: const Color(0xFFFFCCD5),
+        textColor: const Color(0xFFE63946),
+        onTap: () => Get.to(() => const CreateKundliScreen(
+              initialIsMatching: true,
+              hideMatchingTab: true,
+            )),
+      ),
       _MenuData(
         title: 'Panchang',
         icon: Iconsax.sun_1_copy,

@@ -10,6 +10,7 @@ import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
 import 'package:astro_astrologer/features/call/call_details_screen.dart';
 import 'package:astro_astrologer/features/home/widgets/add_note_bottom_sheet.dart';
 import 'package:astro_astrologer/features/home/widgets/animated_favorite_button.dart';
+import 'package:astro_astrologer/features/chat/presentation/pages/assistance_chat_room_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/widgets/loyal_badge.dart';
 import '../../../../core/constants/app_urls.dart';
@@ -103,6 +104,7 @@ class ChatHistoryScreen extends StatelessWidget {
                           details: details,
                           imageUrl: session.consumer?.profilePhoto,
                           rawDatetime: rawDatetime,
+                          chatAssistanceSessionId: session.chatAssistanceSessionId,
                         );
                       },
                     ),
@@ -149,6 +151,7 @@ class ChatHistoryScreen extends StatelessWidget {
     bool showDropdown = false,
     String? imageUrl,
     String? rawDatetime,
+    int? chatAssistanceSessionId,
   }) {
     return Container(
       margin: const EdgeInsets.only(top: 14, bottom: 8),
@@ -478,7 +481,17 @@ class ChatHistoryScreen extends StatelessWidget {
                           Expanded(
                             child: CustomButton(
                               text: "Chat Assistant",
-                              onPressed: () {},
+                              onPressed: () {
+                                if (chatAssistanceSessionId != null) {
+                                  Get.to(() => AssistanceChatRoomScreen(
+                                    sessionId: chatAssistanceSessionId,
+                                    userName: details["Name"]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "User",
+                                    userImage: imageUrl,
+                                  ));
+                                } else {
+                                  Get.snackbar("Error", "No Chat Assistance Session available");
+                                }
+                              },
                               height: 42,
                               padding: EdgeInsets.zero,
                               backgroundColor: const Color(0xFF2CB772),

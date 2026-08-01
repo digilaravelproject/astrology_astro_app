@@ -114,6 +114,13 @@ class AppUrls {
   static String getChatMessages(int sessionId) => "/chat/$sessionId/messages";
   static const String astrologerChatSessions = "/chat/sessions/astrologer";
 
+  // Saved Kundli Endpoints
+  static const String createKundali = '/kundli/create';
+  static const String getKundali = '/kundli';
+  static String getKundaliById(int id) => '/kundli/$id';
+  static String updateKundali(int id) => '/kundli/$id';
+  static String deleteKundali(int id) => '/kundli/$id';
+
   // WebSocket / Pusher Events
   static const String pusherConnectionEstablished = 'pusher:connection_established';
   static const String pusherSubscriptionSucceeded = 'pusher_internal:subscription_succeeded';

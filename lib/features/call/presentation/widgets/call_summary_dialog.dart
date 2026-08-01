@@ -15,11 +15,14 @@ class CallSummaryDialog extends StatelessWidget {
     required this.totalCost,
   });
 
+  static bool isSummaryOpen = false;
+
   static void show({
     required int sessionId,
     required int durationSeconds,
     required double totalCost,
   }) {
+    isSummaryOpen = true;
     Get.dialog(
       CallSummaryDialog(
         sessionId: sessionId,
@@ -27,7 +30,16 @@ class CallSummaryDialog extends StatelessWidget {
         totalCost: totalCost,
       ),
       barrierDismissible: false,
-    );
+    ).then((_) {
+      isSummaryOpen = false;
+    });
+  }
+
+  static void dismissIfOpen() {
+    if (isSummaryOpen && Get.isDialogOpen == true) {
+      isSummaryOpen = false;
+      Get.back();
+    }
   }
 
   String _formatDuration(int seconds) {
@@ -95,7 +107,11 @@ class CallSummaryDialog extends StatelessWidget {
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+                onPressed: () {
+                  // Pop only the CallSummaryDialog itself, so we don't accidentally close
+                  // any incoming chat request dialogs that opened in the background.
+                  Get.back();
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryColor,
                   foregroundColor: Colors.white,

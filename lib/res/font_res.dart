@@ -7,7 +7,7 @@ class FontRes {
   FontRes._();
 
   static const String PROJECT_NAME = 'astro_astrologer';
-  static const String PROJECT_VERSION = '1.0.0+1';
+  static const String PROJECT_VERSION = '1.0.2+3';
   static const String POPPINS_BOLD = 'Poppins-Bold';
   static const String POPPINS_ITALIC = 'Poppins-Italic';
   static const String POPPINS_LIGHT = 'Poppins-Light';

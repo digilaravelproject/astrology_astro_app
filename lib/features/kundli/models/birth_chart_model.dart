@@ -13,29 +13,31 @@ class BirthChartModel {
 }
 
 class BirthChartData {
-  final ChartSvgData? chart;
+  final List<BirthChartPlanet>? planets;
 
-  BirthChartData({this.chart});
+  BirthChartData({this.planets});
 
   factory BirthChartData.fromJson(Map<String, dynamic> json) {
     return BirthChartData(
-      chart: json['chart'] != null ? ChartSvgData.fromJson(json['chart']) : null,
+      planets: json['planets'] != null
+          ? (json['planets'] as List).map((i) => BirthChartPlanet.fromJson(i)).toList()
+          : null,
     );
   }
 }
 
-class ChartSvgData {
-  final String? format;
-  final String? northIndian;
-  final String? southIndian;
+class BirthChartPlanet {
+  final String? name;
+  final int? house;
+  final int? signNumber;
 
-  ChartSvgData({this.format, this.northIndian, this.southIndian});
+  BirthChartPlanet({this.name, this.house, this.signNumber});
 
-  factory ChartSvgData.fromJson(Map<String, dynamic> json) {
-    return ChartSvgData(
-      format: json['format'],
-      northIndian: json['northIndian'],
-      southIndian: json['southIndian'],
+  factory BirthChartPlanet.fromJson(Map<String, dynamic> json) {
+    return BirthChartPlanet(
+      name: json['name'],
+      house: json['house'],
+      signNumber: json['signNumber'],
     );
   }
 }

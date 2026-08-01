@@ -12,6 +12,9 @@ import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:astro_astrologer/features/chat/domain/entities/chat_message.dart';
 import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
+import 'package:astro_astrologer/core/services/network/api_client.dart';
+import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
+import 'package:astro_astrologer/features/kundli/create_kundli_screen.dart';
 
 class ChatScreen extends StatefulWidget {
   final String userName;
@@ -19,6 +22,12 @@ class ChatScreen extends StatefulWidget {
   final int sessionId;
   final String initialStatus;
   final String? startedAtString;
+  final String? gender;
+  final String? dob;
+  final String? tob;
+  final String? place;
+  final double? latitude;
+  final double? longitude;
 
   const ChatScreen({
     super.key,
@@ -27,6 +36,12 @@ class ChatScreen extends StatefulWidget {
     required this.sessionId,
     required this.initialStatus,
     this.startedAtString,
+    this.gender,
+    this.dob,
+    this.tob,
+    this.place,
+    this.latitude,
+    this.longitude,
   });
 
   @override
@@ -50,13 +65,15 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     }
     // Retrieve or instantiate controller
     _controller = Get.find<ChatController>();
-    _controller.initSession(
-      sessionId: widget.sessionId,
-      currentUserId: 0,
-      initialStatus: widget.initialStatus,
-      userName: widget.userName,
-      startedAtString: widget.startedAtString,
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _controller.initSession(
+        sessionId: widget.sessionId,
+        currentUserId: 0,
+        initialStatus: widget.initialStatus,
+        userName: widget.userName,
+        startedAtString: widget.startedAtString,
+      );
+    });
 
     _pulseController = AnimationController(
       vsync: this,
@@ -93,6 +110,106 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     _pulseController.dispose();
     _dotController.dispose();
     super.dispose();
+  }
+
+  Future<void> _openKundli(BuildContext context) async {
+    String name = widget.userName;
+    String gender = widget.gender ?? '';
+    String dob = widget.dob ?? '';
+    String tob = widget.tob ?? '';
+    String place = widget.place ?? '';
+    double lat = widget.latitude ?? 0.0;
+    double lng = widget.longitude ?? 0.0;
+
+    // 1. Check messages loaded in ChatController for system message with birth details
+    if (dob.isEmpty) {
+      for (final msg in _controller.messages) {
+        final content = msg.text;
+        if (content.contains('Birth Details:') || content.contains('Date of Birth:')) {
+          final lines = content.split('\n');
+          for (final line in lines) {
+            final trimmed = line.trim().replaceAll(RegExp(r'^-\s*'), '');
+            final lower = trimmed.toLowerCase();
+            if (lower.startsWith('name:')) {
+              name = trimmed.substring(5).trim();
+            } else if (lower.startsWith('date of birth:')) {
+              dob = trimmed.substring(14).trim();
+            } else if (lower.startsWith('time of birth:')) {
+              tob = trimmed.substring(14).trim();
+            } else if (lower.startsWith('place of birth:')) {
+              place = trimmed.substring(15).trim();
+            } else if (lower.startsWith('gender:')) {
+              gender = trimmed.substring(7).trim();
+            }
+          }
+          if (dob.isNotEmpty) break;
+        }
+      }
+    }
+
+    // 2. Fetch session consumer info from API if dob or coordinates are missing
+    if (dob.isEmpty || lat == 0.0 || lng == 0.0) {
+      try {
+        final apiClient = ApiClient();
+        final response = await apiClient.get('/chat/sessions/astrologer');
+        if (response.isSuccess && response.body != null) {
+          final dataList = response.body['data']?['data'] as List?;
+          if (dataList != null) {
+            for (final item in dataList) {
+              if (item['id'] == widget.sessionId && item['consumer'] != null) {
+                final consumer = item['consumer'];
+                if (name.isEmpty) name = consumer['name'] ?? name;
+                if (gender.isEmpty) gender = consumer['gender'] ?? gender;
+                if (place.isEmpty) place = consumer['place_of_birth'] ?? place;
+                
+                final apiLat = double.tryParse(consumer['latitude']?.toString() ?? '');
+                final apiLng = double.tryParse(consumer['longitude']?.toString() ?? '');
+                if (apiLat != null && apiLat != 0.0) lat = apiLat;
+                if (apiLng != null && apiLng != 0.0) lng = apiLng;
+
+                if (dob.isEmpty && consumer['date_of_birth'] != null) {
+                  try {
+                    final parsedDate = DateTime.parse(consumer['date_of_birth']).toLocal();
+                    dob = "${parsedDate.year}-${parsedDate.month.toString().padLeft(2, '0')}-${parsedDate.day.toString().padLeft(2, '0')}";
+                  } catch (_) {
+                    dob = consumer['date_of_birth'].toString().split('T')[0];
+                  }
+                }
+                if (tob.isEmpty && consumer['time_of_birth'] != null && consumer['time_of_birth'].toString().isNotEmpty) {
+                  tob = consumer['time_of_birth'].toString();
+                  if (tob.length == 5) tob += ":00";
+                }
+                break;
+              }
+            }
+          }
+        }
+      } catch (e) {
+        debugPrint('[ChatScreen] error fetching session for kundli: $e');
+      }
+    }
+
+    if (tob.length == 5) tob += ":00";
+
+    if (dob.isNotEmpty) {
+      Get.to(() => KundliScreen(
+        fullName: name,
+        gender: gender,
+        dob: dob,
+        tob: tob.isNotEmpty ? tob : '00:00:00',
+        place: place,
+        latitude: lat,
+        longitude: lng,
+      ));
+    } else {
+      Get.to(() => CreateKundliScreen(
+        initialKundliData: {
+          'name': name,
+          'gender': gender,
+          'place': place,
+        },
+      ));
+    }
   }
 
   String _formatDuration(int totalSeconds) {
@@ -163,6 +280,36 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             }
           },
           actions: [
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: InkWell(
+                  onTap: () => _openKundli(context),
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: AppColors.primaryColor.withOpacity(0.4)),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.auto_awesome, size: 14, color: AppColors.primaryColor),
+                        SizedBox(width: 4),
+                        AppText(
+                          'Kundli',
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.primaryColor,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
             Obx(() {
               if (_controller.status.value == 'ongoing') {
                 return TextButton(
