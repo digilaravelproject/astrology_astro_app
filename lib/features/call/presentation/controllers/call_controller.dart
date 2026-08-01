@@ -13,6 +13,7 @@ import 'package:astro_astrologer/features/call/presentation/widgets/incoming_cal
 import 'package:astro_astrologer/features/call/presentation/widgets/call_summary_dialog.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 import 'package:astro_astrologer/core/services/foreground_task_service.dart';
+import 'package:astro_astrologer/core/services/storage/token_manger.dart';
 
 import 'package:flutter/material.dart';
 import 'package:astro_astrologer/features/call/presentation/widgets/floating_call_bubble.dart';
@@ -475,7 +476,11 @@ class CallController extends GetxController with WidgetsBindingObserver {
       }
     } else if (state == AppLifecycleState.resumed) {
       // First check pending calls (incoming not yet accepted), then fall back to current session
-      checkPendingCall();
+      TokenManager.getToken().then((token) {
+        if (token != null && token.isNotEmpty) {
+          checkPendingCall();
+        }
+      });
     }
   }
 
