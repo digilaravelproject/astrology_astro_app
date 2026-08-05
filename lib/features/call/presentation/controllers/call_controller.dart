@@ -13,6 +13,7 @@ import 'package:astro_astrologer/features/call/presentation/widgets/incoming_cal
 import 'package:astro_astrologer/features/call/presentation/widgets/call_summary_dialog.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 import 'package:astro_astrologer/core/services/foreground_task_service.dart';
+import 'package:astro_astrologer/core/services/storage/token_manger.dart';
 
 import 'package:flutter/material.dart';
 import 'package:astro_astrologer/features/call/presentation/widgets/floating_call_bubble.dart';
@@ -97,8 +98,13 @@ class CallController extends GetxController with WidgetsBindingObserver {
     _endedSubscription = WebSocketService.callEndedData.listen((data) {
       if (data.isNotEmpty) {
         final session = data['session'];
-        if (session != null && session['id'] == sessionId) {
-          _handleCallEnded(data);
+        if (session != null) {
+          final incomingId = int.tryParse(session['id']?.toString() ?? '');
+          // Only handle if incomingId matches our current session
+          if (incomingId != null && (sessionId == null || incomingId == sessionId)) {
+            Logger.d('CallController: WebSocket callEndedData received: $data');
+            _handleCallEnded(data);
+          }
         }
       }
     });
@@ -120,6 +126,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
     }
 
     // Trigger Incoming Call screen/dialog
+    CallSummaryDialog.dismissIfOpen();
     Get.dialog(
       IncomingCallDialog(offerSdp: offerSdp),
       barrierDismissible: false,
@@ -294,17 +301,27 @@ class CallController extends GetxController with WidgetsBindingObserver {
         }
         
         final sId = sessionId ?? 0;
+        final wasVisible = isCallScreenVisible;
         cleanUp();
         
-        Future.delayed(const Duration(milliseconds: 300), () {
-          CallSummaryDialog.show(
-            sessionId: sId,
-            durationSeconds: duration,
-            totalCost: cost,
-          );
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (wasVisible) {
+            Get.back(); // Pop CallScreen
+          }
+          Future.delayed(const Duration(milliseconds: 300), () {
+            CallSummaryDialog.show(
+              sessionId: sId,
+              durationSeconds: duration,
+              totalCost: cost,
+            );
+          });
         });
       } else {
+        final wasVisible = isCallScreenVisible;
         cleanUp();
+        if (wasVisible) {
+          Get.back();
+        }
       }
     } catch (e) {
       Logger.e('CallController: Error ending call -> $e');
@@ -347,16 +364,21 @@ class CallController extends GetxController with WidgetsBindingObserver {
       cost = double.tryParse(session['total_cost']?.toString() ?? '') ?? 0.0;
     }
     
+    final wasVisible = isCallScreenVisible;
+    final sIdBeforeCleanup = sessionId ?? sId;
     cleanUp();
     
-    // Close CallScreen
-    if (isCallScreenVisible || Get.isDialogOpen == true) {
-      Get.back();
+    final resolvedId = sIdBeforeCleanup > 0 ? sIdBeforeCleanup : sId;
+
+    // 1. If CallScreen is open, immediately pop it back to the home screen (route.isFirst)
+    if (isCallScreenVisible || Get.currentRoute == '/CallScreen') {
+      Get.until((route) => route.isFirst);
     }
-    
-    Future.delayed(const Duration(milliseconds: 300), () {
+
+    // 2. Open CallSummaryDialog on the clean home screen
+    Future.delayed(const Duration(milliseconds: 150), () {
       CallSummaryDialog.show(
-        sessionId: sId,
+        sessionId: resolvedId,
         durationSeconds: duration,
         totalCost: cost,
       );
@@ -454,7 +476,11 @@ class CallController extends GetxController with WidgetsBindingObserver {
       }
     } else if (state == AppLifecycleState.resumed) {
       // First check pending calls (incoming not yet accepted), then fall back to current session
-      checkPendingCall();
+      TokenManager.getToken().then((token) {
+        if (token != null && token.isNotEmpty) {
+          checkPendingCall();
+        }
+      });
     }
   }
 
@@ -556,6 +582,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
           // Show IncomingCallDialog — pass empty string as offerSdp since we may not have it yet
           // The accept flow will fetch the SDP when the astrologer taps Accept
           WidgetsBinding.instance.addPostFrameCallback((_) {
+            CallSummaryDialog.dismissIfOpen();
             if (Get.isDialogOpen != true) {
               Get.dialog(
                 IncomingCallDialog(offerSdp: ''),

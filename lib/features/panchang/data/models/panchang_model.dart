@@ -12,9 +12,10 @@ class PanchangModel {
   });
 
   factory PanchangModel.fromJson(Map<String, dynamic> json) {
+    final rootData = json.containsKey('data') ? json['data'] : json;
     return PanchangModel(
-      success: json['success'] ?? false,
-      data: PanchangData.fromJson(json['data'] ?? {}),
+      success: json['success'] ?? true,
+      data: PanchangData.fromJson(rootData as Map<String, dynamic>),
       billing: BillingInfo.fromJson(json['billing'] ?? {}),
       meta: MetaInfo.fromJson(json['meta'] ?? {}),
     );
@@ -84,7 +85,6 @@ class PanchangData {
   });
 
   factory PanchangData.fromJson(Map<String, dynamic> json) {
-    // Support coordinates & timezone for location in production v2 response
     String parsedLocation = json['location'] ?? '';
     if (parsedLocation.isEmpty && json['coordinates'] != null) {
       final lat = json['coordinates']['latitude'];
@@ -100,19 +100,19 @@ class PanchangData {
       location: parsedLocation,
       timezone: json['timezone'] ?? '',
       coordinates: Coordinates.fromJson(json['coordinates'] ?? {}),
-      tithi: Tithi.fromJson(json['tithi'] ?? {}),
-      nakshatra: Nakshatra.fromJson(json['nakshatra'] ?? {}),
-      yoga: Yoga.fromJson(json['yoga'] ?? {}),
-      karana: Karana.fromJson(json['karana'] ?? {}),
-      vara: Vara.fromJson(json['vara'] ?? json['vaara'] ?? {}),
-      sunrise: json['sunrise'] ?? '',
-      sunset: json['sunset'] ?? '',
+      tithi: Tithi.fromJson(json['tithi'] is Map ? {...Map<String, dynamic>.from(json['tithi']), if (json['paksha'] != null) 'paksha': json['paksha']} : {'name': json['tithi']?.toString(), if (json['paksha'] != null) 'paksha': json['paksha']}),
+      nakshatra: Nakshatra.fromJson(json['nakshatra'] is Map ? Map<String, dynamic>.from(json['nakshatra']) : {'name': json['nakshatra']?.toString()}),
+      yoga: Yoga.fromJson(json['yog'] is Map ? Map<String, dynamic>.from(json['yog']) : (json['yoga'] is Map ? Map<String, dynamic>.from(json['yoga']) : {'name': json['yog']?.toString() ?? json['yoga']?.toString()})),
+      karana: Karana.fromJson(json['karan'] is Map ? Map<String, dynamic>.from(json['karan']) : (json['karana'] is Map ? Map<String, dynamic>.from(json['karana']) : {'name': json['karan']?.toString() ?? json['karana']?.toString()})),
+      vara: Vara.fromJson(json['vara'] is Map ? Map<String, dynamic>.from(json['vara']) : {'name': json['day']?.toString() ?? ''}),
+      sunrise: json['sunrise'] ?? json['vedic_sunrise'] ?? '',
+      sunset: json['sunset'] ?? json['vedic_sunset'] ?? '',
       moonrise: json['moonrise'] ?? '',
       moonset: json['moonset'] ?? '',
-      rahukaal: TimeRange.fromJson(json['rahukaal'] ?? {}),
-      yamagandam: TimeRange.fromJson(json['yamagandam'] ?? {}),
-      gulika: TimeRange.fromJson(json['gulika'] ?? {}),
-      abhijitMuhurta: TimeRange.fromJson(json['abhijit_muhurta'] ?? {}),
+      rahukaal: TimeRange.fromJson(json['rahukaal'] is Map ? Map<String, dynamic>.from(json['rahukaal']) : {}),
+      yamagandam: TimeRange.fromJson(json['yamghant_kaal'] is Map ? Map<String, dynamic>.from(json['yamghant_kaal']) : (json['yamagandam'] is Map ? Map<String, dynamic>.from(json['yamagandam']) : {})),
+      gulika: TimeRange.fromJson(json['guliKaal'] is Map ? Map<String, dynamic>.from(json['guliKaal']) : (json['gulika'] is Map ? Map<String, dynamic>.from(json['gulika']) : {})),
+      abhijitMuhurta: TimeRange.fromJson(json['abhijit_muhurta'] is Map ? Map<String, dynamic>.from(json['abhijit_muhurta']) : {}),
       auspiciousTimings: (json['auspicious_timings'] as List<dynamic>?)
               ?.map((e) => AuspiciousTiming.fromJson(e))
               .toList() ??
@@ -121,10 +121,22 @@ class PanchangData {
               ?.map((e) => InauspiciousPeriod.fromJson(e))
               .toList() ??
           [],
-      guidance: GuidanceInfo.fromJson(json['guidance'] ?? {}),
-      masa: json['masa'] != null ? Masa.fromJson(json['masa']) : null,
-      ritu: json['ritu'] != null ? Ritu.fromJson(json['ritu']) : null,
-      dishaShool: json['disha_shool'] != null ? DishaShool.fromJson(json['disha_shool']) : null,
+      guidance: GuidanceInfo.fromJson(json['guidance'] is Map ? Map<String, dynamic>.from(json['guidance']) : {}),
+      masa: json['masa'] is Map
+          ? Masa.fromJson(Map<String, dynamic>.from(json['masa']))
+          : (json['hindu_maah'] is Map
+              ? Masa.fromJson({'name': json['hindu_maah']['purnimanta']?.toString() ?? ''})
+              : null),
+      ritu: json['ritu'] is Map
+          ? Ritu.fromJson(Map<String, dynamic>.from(json['ritu']))
+          : (json['ritu'] != null
+              ? Ritu.fromJson({'name': json['ritu']?.toString() ?? ''})
+              : null),
+      dishaShool: json['disha_shool'] is Map
+          ? DishaShool.fromJson(Map<String, dynamic>.from(json['disha_shool']))
+          : (json['disha_shool'] != null
+              ? DishaShool.fromJson({'direction': json['disha_shool']?.toString() ?? ''})
+              : null),
     );
   }
 
@@ -183,11 +195,17 @@ class Paksha {
 
   Paksha({required this.id, required this.name});
 
-  factory Paksha.fromJson(Map<String, dynamic> json) {
-    return Paksha(
-      id: json['id'] ?? 0,
-      name: json['name'] ?? '',
-    );
+  factory Paksha.fromJson(dynamic json) {
+    if (json is String) {
+      return Paksha(id: 0, name: json);
+    }
+    if (json is Map) {
+      return Paksha(
+        id: json['id'] ?? 0,
+        name: json['name'] ?? json['paksha_name'] ?? '',
+      );
+    }
+    return Paksha(id: 0, name: '');
   }
 
   Map<String, dynamic> toJson() => {'id': id, 'name': name};
@@ -249,15 +267,27 @@ class Tithi {
   });
 
   factory Tithi.fromJson(Map<String, dynamic> json) {
+    final details = json['details'] is Map ? json['details'] as Map<String, dynamic> : json;
+    String formattedEndTime = '';
+    if (json['end_time'] != null) {
+      if (json['end_time'] is Map) {
+        final h = json['end_time']['hour'] ?? 0;
+        final m = json['end_time']['minute'] ?? 0;
+        formattedEndTime = '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
+      } else {
+        formattedEndTime = json['end_time'].toString();
+      }
+    }
+
     return Tithi(
-      id: json['id'] ?? 0,
-      name: json['name'] ?? '',
-      endTime: json['end_time'] ?? '',
+      id: details['tithi_number'] ?? json['id'] ?? 0,
+      name: details['tithi_name'] ?? json['name'] ?? '',
+      endTime: formattedEndTime,
       paksha: Paksha.fromJson(json['paksha'] ?? {}),
-      deity: json['deity'] ?? json['lord'] ?? '',
+      deity: details['deity'] ?? json['deity'] ?? json['lord'] ?? '',
       completionPercentage: (json['completionPercentage'] ?? json['completion_percentage'] ?? 0.0).toDouble(),
       isKrishna: json['isKrishna'] ?? json['is_krishna'] ?? false,
-      interpretation: CommonInterpretation.fromJson(json['interpretation'] ?? {}),
+      interpretation: CommonInterpretation.fromJson(details['summary'] != null ? {'meaning': details['summary']} : (json['interpretation'] ?? {})),
     );
   }
 
@@ -303,18 +333,30 @@ class Nakshatra {
   });
 
   factory Nakshatra.fromJson(Map<String, dynamic> json) {
+    final details = json['details'] is Map ? json['details'] as Map<String, dynamic> : json;
+    String formattedEndTime = '';
+    if (json['end_time'] != null) {
+      if (json['end_time'] is Map) {
+        final h = json['end_time']['hour'] ?? 0;
+        final m = json['end_time']['minute'] ?? 0;
+        formattedEndTime = '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
+      } else {
+        formattedEndTime = json['end_time'].toString();
+      }
+    }
+
     return Nakshatra(
-      id: json['id'] ?? 0,
-      name: json['name'] ?? '',
-      endTime: json['end_time'] ?? '',
-      lord: json['lord'] ?? '',
-      deity: json['deity'] ?? json['lord'] ?? '',
-      gana: json['gana'] ?? '',
-      pada: json['pada'] ?? 0,
+      id: details['nak_number'] ?? json['id'] ?? 0,
+      name: details['nak_name'] ?? json['name'] ?? '',
+      endTime: formattedEndTime,
+      lord: details['ruler'] ?? json['lord'] ?? '',
+      deity: details['deity'] ?? json['deity'] ?? json['lord'] ?? '',
+      gana: details['gana'] ?? json['gana'] ?? '',
+      pada: details['pada'] ?? json['pada'] ?? 0,
       completionPercentage: (json['completionPercentage'] ?? json['completion_percentage'] ?? 0.0).toDouble(),
       startDegree: (json['startDegree'] ?? json['start_degree'] ?? 0.0).toDouble(),
       endDegree: (json['endDegree'] ?? json['end_degree'] ?? 0.0).toDouble(),
-      interpretation: CommonInterpretation.fromJson(json['interpretation'] ?? {}),
+      interpretation: CommonInterpretation.fromJson(details['summary'] != null ? {'meaning': details['summary']} : (json['interpretation'] ?? {})),
     );
   }
 
@@ -379,13 +421,25 @@ class Yoga {
   });
 
   factory Yoga.fromJson(Map<String, dynamic> json) {
+    final details = json['details'] is Map ? json['details'] as Map<String, dynamic> : json;
+    String formattedEndTime = '';
+    if (json['end_time'] != null) {
+      if (json['end_time'] is Map) {
+        final h = json['end_time']['hour'] ?? 0;
+        final m = json['end_time']['minute'] ?? 0;
+        formattedEndTime = '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
+      } else {
+        formattedEndTime = json['end_time'].toString();
+      }
+    }
+
     return Yoga(
-      id: json['id'] ?? 0,
-      name: json['name'] ?? '',
-      endTime: json['end_time'] ?? '',
-      quality: json['quality'] ?? '',
+      id: details['yog_number'] ?? json['id'] ?? 0,
+      name: details['yog_name'] ?? json['name'] ?? '',
+      endTime: formattedEndTime,
+      quality: details['special'] ?? json['quality'] ?? '',
       completionPercentage: (json['completionPercentage'] ?? json['completion_percentage'] ?? 0.0).toDouble(),
-      interpretation: YogaInterpretation.fromJson(json['interpretation'] ?? {}),
+      interpretation: YogaInterpretation.fromJson(details['meaning'] != null ? {'meaning': details['meaning'], 'guidance': details['special'] ?? ''} : (json['interpretation'] ?? {})),
     );
   }
 
@@ -428,7 +482,7 @@ class KaranaInterpretation {
 
   Map<String, dynamic> toJson() => {
         'meaning': meaning,
-        'nature': nature,
+        'energy': nature,
         'bestFor': bestFor,
         'avoid': avoid,
         'tip': tip,
@@ -453,13 +507,25 @@ class Karana {
   });
 
   factory Karana.fromJson(Map<String, dynamic> json) {
+    final details = json['details'] is Map ? json['details'] as Map<String, dynamic> : json;
+    String formattedEndTime = '';
+    if (json['end_time'] != null) {
+      if (json['end_time'] is Map) {
+        final h = json['end_time']['hour'] ?? 0;
+        final m = json['end_time']['minute'] ?? 0;
+        formattedEndTime = '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
+      } else {
+        formattedEndTime = json['end_time'].toString();
+      }
+    }
+
     return Karana(
-      id: json['id'] ?? 0,
-      name: json['name'] ?? '',
-      endTime: json['end_time'] ?? '',
-      type: json['type'] ?? '',
+      id: details['karan_number'] ?? json['id'] ?? 0,
+      name: details['karan_name'] ?? json['name'] ?? '',
+      endTime: formattedEndTime,
+      type: details['deity'] ?? json['type'] ?? '',
       completionPercentage: (json['completionPercentage'] ?? json['completion_percentage'] ?? 0.0).toDouble(),
-      interpretation: KaranaInterpretation.fromJson(json['interpretation'] ?? {}),
+      interpretation: KaranaInterpretation.fromJson(details['special'] != null ? {'meaning': details['special']} : (json['interpretation'] ?? {})),
     );
   }
 
@@ -871,3 +937,4 @@ class DishaShool {
         'description': description,
       };
 }
+

@@ -1,78 +1,102 @@
-import 'package:dio/dio.dart';
-import '../../../../core/constants/vedika_constants.dart';
+import '../../../../core/services/network/astrology_api_client.dart';
 import '../../../../core/utils/logger.dart';
 import '../models/divisional_chart_model.dart';
 
 class DivisionalChartRepository {
-  final Dio _dio;
+  final AstrologyApiClient _client;
 
-  DivisionalChartRepository() : _dio = Dio() {
-    _dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) {
-        Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        Logger.d('|🌐 DIVISIONAL CHART API REQUEST');
-        Logger.d('|📍 URL: ${options.baseUrl}${options.path}');
-        Logger.d('|🔧 Method: ${options.method}');
-        Logger.d('|📋 Headers: ${options.headers}');
-        if (options.data != null) {
-          Logger.d('|📦 Body: ${options.data}');
+  DivisionalChartRepository({AstrologyApiClient? client})
+      : _client = client ?? AstrologyApiClient();
+
+  List<Map<String, dynamic>> _transformSignListToPlanets(List<dynamic> rawList) {
+    final List<Map<String, dynamic>> planets = [];
+    for (int i = 0; i < rawList.length; i++) {
+      final item = rawList[i];
+      if (item is Map) {
+        final house = i + 1;
+        final signNumber = item['sign'] is int ? item['sign'] as int : int.tryParse(item['sign']?.toString() ?? '1') ?? 1;
+        final signName = item['sign_name']?.toString() ?? '';
+        final List<dynamic> pList = item['planet_small'] ?? item['planet'] ?? [];
+        for (var p in pList) {
+          final pStr = p.toString().trim();
+          if (pStr.isNotEmpty) {
+            planets.add({
+              'planet': pStr,
+              'house': house,
+              'sign': signNumber - 1, // Model expects 0-indexed sign, signNumber gets sign + 1
+              'signName': signName,
+            });
+          }
         }
-        return handler.next(options);
-      },
-      onResponse: (response, handler) {
-        Logger.d('|✅ DIVISIONAL CHART API RESPONSE');
-        Logger.d('|📍 URL: ${response.requestOptions.baseUrl}${response.requestOptions.path}');
-        Logger.d('|📊 Status Code: ${response.statusCode}');
-        Logger.d('|📨 Response: ${response.data}');
-        Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        return handler.next(response);
-      },
-      onError: (error, handler) {
-        Logger.e('|❌ DIVISIONAL CHART API ERROR');
-        Logger.e('|📍 URL: ${error.requestOptions.baseUrl}${error.requestOptions.path}');
-        Logger.e('|🔧 Method: ${error.requestOptions.method}');
-        Logger.e('|⚠️ Error Type: ${error.type}');
-        Logger.e('|💬 Error Message: ${error.message}');
-        if (error.response != null) {
-          Logger.e('|📊 Status Code: ${error.response?.statusCode}');
-          Logger.e('|📨 Response: ${error.response?.data}');
-        }
-        Logger.e('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        return handler.next(error);
-      },
-    ));
+      }
+    }
+    return planets;
   }
 
   Future<DivisionalChartModel?> getDivisionalChart({
-    required int division,
+    dynamic division,
+    String? chartType,
     required String datetime,
     required double latitude,
     required double longitude,
     required String timezone,
   }) async {
     try {
-      final response = await _dio.post(
-        '${VedikaConstants.baseUrl}${VedikaConstants.divisionalChartEndpoint}',
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': VedikaConstants.apiKey,
-          },
-        ),
-        data: {
-          "division": division,
-          "datetime": datetime,
-          "latitude": latitude,
-          "longitude": longitude,
-          "timezone": timezone,
-        },
+      final payload = _client.buildBirthPayload(
+        datetime: datetime,
+        latitude: latitude,
+        longitude: longitude,
+        timezone: timezone,
       );
 
+      final String typeStr = chartType ?? (division != null ? 'd$division' : 'd1');
+
+      final response = await _client.getDivisionalChart(typeStr, payload);
+
       if (response.statusCode == 200) {
-        return DivisionalChartModel.fromJson(response.data);
+        final List<dynamic> rawList = response.data is List ? response.data : [];
+        final positions = _transformSignListToPlanets(rawList);
+        final transformedJson = {
+          'success': true,
+          'data': {
+            'division': division is int ? division : int.tryParse(division?.toString() ?? '1') ?? 1,
+            'positions': positions,
+          }
+        };
+        return DivisionalChartModel.fromJson(transformedJson);
       }
     } catch (e) {
       Logger.e('Error fetching divisional chart', error: e);
+    }
+    return null;
+  }
+
+  Future<String?> getHoroChartSvg({
+    required String chartId,
+    required String datetime,
+    required double latitude,
+    required double longitude,
+    required String timezone,
+    String chartType = 'north',
+  }) async {
+    try {
+      final payload = _client.buildBirthPayload(
+        datetime: datetime,
+        latitude: latitude,
+        longitude: longitude,
+        timezone: timezone,
+      );
+
+      final response = await _client.getHoroChartImage(chartId, payload, chartType: chartType);
+      if (response.statusCode == 200 && response.data != null) {
+        if (response.data is Map && response.data['svg'] != null) {
+          return response.data['svg'].toString();
+        } else if (response.data is String) {
+          return response.data.toString();
+        }
+      }
+    } catch (e) {
+      Logger.e('Error fetching chart SVG for $chartId', error: e);
     }
     return null;
   }

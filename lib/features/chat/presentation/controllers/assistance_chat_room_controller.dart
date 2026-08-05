@@ -131,8 +131,9 @@ class AssistanceChatRoomController extends GetxController {
           messages[index] = messages[index].copyWith(status: 'failed');
           if (response.message.toLowerCase().contains('limit')) {
             limitReached.value = true;
+          } else {
+            CustomSnackBar.showError(response.message);
           }
-          CustomSnackBar.showError(response.message);
         }
         messages.refresh();
       }
@@ -187,8 +188,9 @@ class AssistanceChatRoomController extends GetxController {
           messages[index] = messages[index].copyWith(status: 'failed');
           if (response.message.toLowerCase().contains('limit')) {
             limitReached.value = true;
+          } else {
+            CustomSnackBar.showError(response.message);
           }
-          CustomSnackBar.showError(response.message);
         }
         messages.refresh();
       }
@@ -241,8 +243,9 @@ class AssistanceChatRoomController extends GetxController {
           messages[index] = messages[index].copyWith(status: 'failed');
           if (response.message.toLowerCase().contains('limit')) {
             limitReached.value = true;
+          } else {
+            CustomSnackBar.showError(response.message);
           }
-          CustomSnackBar.showError(response.message);
         }
         messages.refresh();
       }

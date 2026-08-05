@@ -7,6 +7,7 @@ class AppConstants {
     static String baseUrl = AppUrls.baseUrl;
     static const String fontFamily = 'Poppins';
     static const String defaultTag = 'PCB_APP'; // default tag for log checking
+    static const String googleMapApiKey = 'AIzaSyA4mCZDv97Ks802PCQgStmdkQfQXe7ZT2Y';
 
     static const bool isHandleInternetScreen = true;
     static const bool isHandleErrorScreen = false;

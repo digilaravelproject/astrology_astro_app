@@ -1,47 +1,25 @@
-import 'package:dio/dio.dart';
-import 'package:astro_astrologer/core/constants/vedika_constants.dart';
+import 'package:astro_astrologer/core/services/network/astrology_api_client.dart';
 import 'package:astro_astrologer/core/utils/logger.dart';
 import '../models/dasha_model.dart';
-import '../models/yogini_dasha_model.dart';
 
 class DashaRepository {
-  final Dio _dio;
+  final AstrologyApiClient _client;
 
-  DashaRepository() : _dio = Dio() {
-    _dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) {
-        Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        Logger.d('|🌐 DASHA API REQUEST');
-        Logger.d('|📍 URL: ${options.baseUrl}${options.path}');
-        Logger.d('|🔧 Method: ${options.method}');
-        Logger.d('|📋 Headers: ${options.headers}');
-        if (options.data != null) {
-          Logger.d('|📦 Body: ${options.data}');
-        }
-        return handler.next(options);
-      },
-      onResponse: (response, handler) {
-        Logger.d('|✅ DASHA API RESPONSE');
-        Logger.d('|📍 URL: ${response.requestOptions.baseUrl}${response.requestOptions.path}');
-        Logger.d('|📊 Status Code: ${response.statusCode}');
-        Logger.d('|📨 Response: ${response.data}');
-        Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        return handler.next(response);
-      },
-      onError: (error, handler) {
-        Logger.e('|❌ DASHA API ERROR');
-        Logger.e('|📍 URL: ${error.requestOptions.baseUrl}${error.requestOptions.path}');
-        Logger.e('|🔧 Method: ${error.requestOptions.method}');
-        Logger.e('|⚠️ Error Type: ${error.type}');
-        Logger.e('|💬 Error Message: ${error.message}');
-        if (error.response != null) {
-          Logger.e('|📊 Status Code: ${error.response?.statusCode}');
-          Logger.e('|📨 Response: ${error.response?.data}');
-        }
-        Logger.e('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        return handler.next(error);
-      },
-    ));
+  DashaRepository({AstrologyApiClient? client})
+      : _client = client ?? AstrologyApiClient();
+
+  Future<DashaModel?> getVimshottariDasha({
+    required String datetime,
+    required double latitude,
+    required double longitude,
+    required String timezone,
+  }) async {
+    return getDashaDetails(
+      datetime: datetime,
+      latitude: latitude,
+      longitude: longitude,
+      timezone: timezone,
+    );
   }
 
   Future<DashaModel?> getDashaDetails({
@@ -51,61 +29,152 @@ class DashaRepository {
     required String timezone,
   }) async {
     try {
-      final response = await _dio.post(
-        '${VedikaConstants.baseUrl}${VedikaConstants.vimshottariDashaEndpoint}',
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': VedikaConstants.apiKey,
-          },
-        ),
-        data: {
-          'datetime': datetime,
-          'latitude': latitude,
-          'longitude': longitude,
-          'timezone': timezone,
-          'depth': 1,
-        },
+      final payload = _client.buildBirthPayload(
+        datetime: datetime,
+        latitude: latitude,
+        longitude: longitude,
+        timezone: timezone,
       );
 
-      if (response.statusCode == 200) {
-        return DashaModel.fromJson(response.data);
-      }
+      final response = await _client.getVimshottariDasha(payload);
+      return _parseDashaResponse(response);
     } catch (e) {
-      Logger.e('Error fetching dasha details: $e');
+      Logger.e('Error fetching Vimshottari dasha', error: e);
     }
     return null;
   }
 
-  Future<YoginiDashaModel?> getYoginiDashaDetails({
+  Future<List<DashaItem>> getSubDasha({
     required String datetime,
     required double latitude,
     required double longitude,
     required String timezone,
+    required String md,
   }) async {
     try {
-      final response = await _dio.post(
-        '${VedikaConstants.baseUrl}${VedikaConstants.yoginiDashaEndpoint}',
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': VedikaConstants.apiKey,
-          },
-        ),
-        data: {
-          'datetime': datetime,
-          'latitude': latitude,
-          'longitude': longitude,
-          'timezone': timezone,
-        },
+      final payload = _client.buildBirthPayload(
+        datetime: datetime,
+        latitude: latitude,
+        longitude: longitude,
+        timezone: timezone,
       );
-
-      if (response.statusCode == 200) {
-        return YoginiDashaModel.fromJson(response.data);
-      }
+      final response = await _client.getSubVdasha(payload, md);
+      return _parseDashaList(response);
     } catch (e) {
-      Logger.e('Error fetching yogini dasha details: $e');
+      Logger.e('Error fetching sub dasha for $md', error: e);
+    }
+    return [];
+  }
+
+  Future<List<DashaItem>> getSubSubDasha({
+    required String datetime,
+    required double latitude,
+    required double longitude,
+    required String timezone,
+    required String md,
+    required String ad,
+  }) async {
+    try {
+      final payload = _client.buildBirthPayload(
+        datetime: datetime,
+        latitude: latitude,
+        longitude: longitude,
+        timezone: timezone,
+      );
+      final response = await _client.getSubSubVdasha(payload, md, ad);
+      return _parseDashaList(response);
+    } catch (e) {
+      Logger.e('Error fetching sub sub dasha for $md/$ad', error: e);
+    }
+    return [];
+  }
+
+  Future<List<DashaItem>> getSubSubSubDasha({
+    required String datetime,
+    required double latitude,
+    required double longitude,
+    required String timezone,
+    required String md,
+    required String ad,
+    required String pd,
+  }) async {
+    try {
+      final payload = _client.buildBirthPayload(
+        datetime: datetime,
+        latitude: latitude,
+        longitude: longitude,
+        timezone: timezone,
+      );
+      final response = await _client.getSubSubSubVdasha(payload, md, ad, pd);
+      return _parseDashaList(response);
+    } catch (e) {
+      Logger.e('Error fetching sub sub sub dasha for $md/$ad/$pd', error: e);
+    }
+    return [];
+  }
+
+  Future<List<DashaItem>> getSubSubSubSubDasha({
+    required String datetime,
+    required double latitude,
+    required double longitude,
+    required String timezone,
+    required String md,
+    required String ad,
+    required String pd,
+    required String sd,
+  }) async {
+    try {
+      final payload = _client.buildBirthPayload(
+        datetime: datetime,
+        latitude: latitude,
+        longitude: longitude,
+        timezone: timezone,
+      );
+      final response = await _client.getSubSubSubSubVdasha(payload, md, ad, pd, sd);
+      return _parseDashaList(response);
+    } catch (e) {
+      Logger.e('Error fetching sub sub sub sub dasha for $md/$ad/$pd/$sd', error: e);
+    }
+    return [];
+  }
+
+  DashaModel? _parseDashaResponse(dynamic response) {
+    if (response.statusCode == 200) {
+      final list = _parseDashaList(response);
+      final transformedJson = {
+        'success': true,
+        'data': {
+          'maha_dasha': list.map((e) => e.toJson()).toList(),
+        }
+      };
+      return DashaModel.fromJson(transformedJson);
     }
     return null;
+  }
+
+  List<DashaItem> _parseDashaList(dynamic response) {
+    if (response.statusCode == 200) {
+      dynamic rawData = response.data;
+      if (rawData is Map && rawData.containsKey('sub_dasha')) {
+        rawData = rawData['sub_dasha'];
+      } else if (rawData is Map && rawData.containsKey('sub_sub_dasha')) {
+        rawData = rawData['sub_sub_dasha'];
+      } else if (rawData is Map && rawData.containsKey('sub_sub_sub_dasha')) {
+        rawData = rawData['sub_sub_sub_dasha'];
+      } else if (rawData is Map && rawData.containsKey('sub_sub_sub_sub_dasha')) {
+        rawData = rawData['sub_sub_sub_sub_dasha'];
+      }
+
+      final List<dynamic> rawList = rawData is List ? rawData : [rawData];
+      return rawList.map((item) {
+        if (item is Map<String, dynamic>) {
+          return DashaItem.fromJson(item);
+        } else if (item is Map) {
+          return DashaItem.fromJson(Map<String, dynamic>.from(item));
+        }
+        return DashaItem();
+      }).toList();
+    }
+    return [];
   }
 }

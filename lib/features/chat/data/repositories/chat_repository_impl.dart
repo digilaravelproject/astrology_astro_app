@@ -17,21 +17,33 @@ class ChatRepositoryImpl implements IChatRepository {
         _localDataSource = localDataSource;
 
   @override
-  Future<({List<ChatMessage> messages, String? startedAt})> getChatHistory({
+  Future<({List<ChatMessage> messages, String? startedAt, int? peerId})> getChatHistory({
     required int sessionId,
     required int currentUserId,
   }) async {
     final cached = _localDataSource.getCachedMessages(sessionId);
     if (cached.isNotEmpty) {
-      return (messages: cached, startedAt: null);
+      // Find peer ID from cache if possible
+      return (messages: cached, startedAt: null, peerId: null);
     }
 
     final response = await _remoteDataSource.getChatHistory(sessionId);
     if (response.isSuccess && response.body != null) {
       final body = response.body;
-      final dynamic messagesData = body['messages'] ?? body['data'] ?? [];
-      final List<ChatMessage> messagesList = [];
+      
+      dynamic messagesData;
+      if (body['messages'] != null) {
+        messagesData = body['messages'];
+      } else if (body['data'] != null) {
+        if (body['data'] is Map && body['data']['data'] != null) {
+          messagesData = body['data']['data'];
+        } else {
+          messagesData = body['data'];
+        }
+      }
+      messagesData ??= [];
 
+      final List<ChatMessage> messagesList = [];
       if (messagesData is List) {
         for (var item in messagesData) {
           if (item is Map<String, dynamic>) {
@@ -40,12 +52,41 @@ class ChatRepositoryImpl implements IChatRepository {
         }
       }
 
+      int? peerId;
+      final dynamic sessionData = body['session'] ?? 
+          (body['data'] is Map ? (body['data']['session'] ?? body['data']) : {});
+      
+      final int cId = int.tryParse(sessionData['consumer_id']?.toString() ?? '') ?? 0;
+      final int pId = int.tryParse(sessionData['provider_id']?.toString() ?? '') ?? 0;
+      if (cId != 0 && pId != 0) {
+        peerId = (currentUserId == cId) ? pId : cId;
+      }
+
+      if (peerId == null || peerId == 0) {
+        if (messagesData is List) {
+          for (var item in messagesData) {
+            if (item is Map<String, dynamic>) {
+              final sId = int.tryParse(item['sender_id']?.toString() ?? '') ?? 0;
+              final rId = int.tryParse(item['receiver_id']?.toString() ?? '') ?? 0;
+              if (sId != 0 && sId != currentUserId) {
+                peerId = sId;
+                break;
+              }
+              if (rId != 0 && rId != currentUserId) {
+                peerId = rId;
+                break;
+              }
+            }
+          }
+        }
+      }
+
       final String? startedAt = body['started_at']?.toString();
       _localDataSource.cacheMessages(sessionId, messagesList);
-      return (messages: messagesList, startedAt: startedAt);
+      return (messages: messagesList, startedAt: startedAt, peerId: peerId);
     }
 
-    return (messages: <ChatMessage>[], startedAt: null);
+    return (messages: <ChatMessage>[], startedAt: null, peerId: null);
   }
 
   @override

@@ -98,7 +98,10 @@ class ApiChecker {
   static ResponseModel handleError(dynamic error, {bool showErrorScreen = false}) {
     final responseModel = _processError(error, showErrorScreen: showErrorScreen);
     if (!showErrorScreen) {
-      handleResponse(responseModel, showSuccess: false, showError: true);
+      final isLimitError = responseModel.message.toLowerCase().contains('limit') || 
+                           (responseModel.errors != null && responseModel.errors!.isNotEmpty && 
+                            responseModel.errors!.first.message.toString().toLowerCase().contains('limit'));
+      handleResponse(responseModel, showSuccess: false, showError: !isLimitError);
     }
     return responseModel;
   }

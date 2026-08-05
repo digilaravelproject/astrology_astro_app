@@ -80,7 +80,7 @@ class AuthRepository implements AuthRepositoryInterface {
       'phone': mobile,
       'otp': otp,
     });
-    return await _apiClient.post(AppUrls.sendOtp, data: data);
+    return await _apiClient.post(AppUrls.sendOtp, data: data, showToaster: false);
   }
 
   @override

@@ -12,8 +12,8 @@ class PanchangController extends GetxController {
   // In a real scenario, datetime, lat, long should come from user inputs (birth details)
   Future<void> fetchPanchangDetails({
     required String datetime,
-    double latitude = 28.65,
-    double longitude = 77.23,
+    required double latitude,
+    required double longitude,
     String timezone = "+05:30",
   }) async {
     isLoading.value = true;

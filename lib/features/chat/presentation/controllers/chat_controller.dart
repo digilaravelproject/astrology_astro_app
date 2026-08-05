@@ -54,6 +54,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
 
   int? _sessionId;
   int? _currentUserId;
+  int? _peerId;
   String? _userName;
   Timer? _timer;
   String? _startedAt;
@@ -145,14 +146,19 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       }
     });
 
-    // Listen to WebSocket Incoming Messages
     _msgSub?.cancel();
     _msgSub = WebSocketService.incomingMessages.listen((list) {
       if (list.isNotEmpty) {
         final lastMsg = list.last;
         final msgSessionId = int.tryParse(lastMsg['chat_session_id']?.toString() ?? '') ?? 0;
-        if (msgSessionId == _sessionId) {
-          final int senderId = int.tryParse(lastMsg['sender_id']?.toString() ?? '') ?? 0;
+        final int senderId = int.tryParse(lastMsg['sender_id']?.toString() ?? '') ?? 0;
+        final int receiverId = int.tryParse(lastMsg['receiver_id']?.toString() ?? '') ?? 0;
+        
+        final isSameUserPair = (_peerId != null && _currentUserId != null) &&
+            ((senderId == _currentUserId && receiverId == _peerId) || 
+             (senderId == _peerId && receiverId == _currentUserId));
+
+        if (msgSessionId == _sessionId || isSameUserPair) {
           final bool isMe = senderId == _currentUserId;
 
           // Don't add if it's sent by me since we already added local/sending state or handle duplicates
@@ -216,6 +222,14 @@ class ChatController extends GetxController with WidgetsBindingObserver {
         if (Get.isRegistered<AuthController>()) {
           Get.find<AuthController>().checkLoginStatus();
         }
+        // Pop the chat screen so it doesn't stay open
+        Future.delayed(const Duration(milliseconds: 400), () {
+          if (Get.currentRoute.isNotEmpty) {
+            if (Get.isRegistered<ChatController>()) {
+              Get.back();
+            }
+          }
+        });
       }
     });
 
@@ -229,7 +243,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
           LocalNotificationService.cancelOngoingChatNotification(_sessionId!);
         }
         Get.back();
-        Get.snackbar("Chat Cancelled", "The chat request was cancelled or timed out.");
+        // Get.snackbar("Chat Cancelled", "The chat request was cancelled or timed out.");
       }
     });
 
@@ -285,6 +299,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
         currentUserId: _currentUserId!,
       );
       messages.assignAll(result.messages);
+      _peerId = result.peerId;
       if (result.startedAt != null) {
         _startedAt = result.startedAt;
         _setupTimer(result.startedAt);

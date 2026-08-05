@@ -236,12 +236,16 @@ class _RegistrationScreenState extends State<RegistrationScreen>
 
   Future<void> _pickImage() async {
     final p = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
-    if (p != null) setState(() => _profileImage = File(p.path));
+    if (p != null) {
+      if (!mounted) return;
+      setState(() => _profileImage = File(p.path));
+    }
   }
 
   Future<void> _pickDocImage(bool isId) async {
     final p = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
     if (p != null) {
+      if (!mounted) return;
       setState(() {
         if (isId) {
           _idProofImage = File(p.path);

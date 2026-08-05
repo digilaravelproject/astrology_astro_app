@@ -14,8 +14,8 @@ class PanchangController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxBool showFullCalendar = false.obs;
   final RxString errorMessage = ''.obs;
-  final RxDouble latitude = 28.6139.obs;
-  final RxDouble longitude = 77.209.obs;
+  final RxDouble latitude = 0.0.obs;
+  final RxDouble longitude = 0.0.obs;
   final RxDouble timezone = 5.5.obs;
 
   late ScrollController scrollController;

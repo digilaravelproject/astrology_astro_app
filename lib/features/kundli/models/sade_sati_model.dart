@@ -27,6 +27,8 @@ class SadeSatiData {
   final String? endDate;
   final TransitSaturn? transitSaturn;
 
+  final List<SadeSatiTimelineItem>? timeline;
+
   SadeSatiData({
     this.description,
     this.effects,
@@ -41,6 +43,7 @@ class SadeSatiData {
     this.startDate,
     this.endDate,
     this.transitSaturn,
+    this.timeline,
   });
 
   factory SadeSatiData.fromJson(Map<String, dynamic> json) {
@@ -58,6 +61,36 @@ class SadeSatiData {
       startDate: json['start_date'],
       endDate: json['end_date'],
       transitSaturn: json['transit_saturn'] != null ? TransitSaturn.fromJson(json['transit_saturn']) : null,
+      timeline: json['timeline'] != null
+          ? List<SadeSatiTimelineItem>.from(json['timeline'].map((x) => SadeSatiTimelineItem.fromJson(x)))
+          : null,
+    );
+  }
+}
+
+class SadeSatiTimelineItem {
+  final String? startDate;
+  final String? endDate;
+  final String? signName;
+  final String? type;
+  final bool? isHighlight;
+
+  SadeSatiTimelineItem({
+    this.startDate,
+    this.endDate,
+    this.signName,
+    this.type,
+    this.isHighlight,
+  });
+
+  factory SadeSatiTimelineItem.fromJson(Map<String, dynamic> json) {
+    final typeStr = json['type'] ?? json['phase'] ?? json['summary'] ?? '';
+    return SadeSatiTimelineItem(
+      startDate: json['start_date'] ?? json['date'] ?? json['start'] ?? '',
+      endDate: json['end_date'] ?? json['end'] ?? '',
+      signName: json['sign'] ?? json['sign_name'] ?? json['zodiac'] ?? json['zodiac_name'] ?? '',
+      type: typeStr,
+      isHighlight: typeStr.toString().toLowerCase().contains('peak') || json['is_highlight'] == true,
     );
   }
 }

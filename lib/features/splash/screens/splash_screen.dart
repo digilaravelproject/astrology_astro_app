@@ -74,21 +74,10 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                               offset: Offset(0, value >= 0.99 ? _floatAnimation.value : -30 * (1 - value)),
                               child: Opacity(
                                 opacity: value.clamp(0.0, 1.0),
-                                child: Container(
-                                  padding: const EdgeInsets.all(30),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.white,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: AppColors.primaryColor.withOpacity(0.3),
-                                        blurRadius: 30,
-                                        offset: const Offset(0, 10),
-                                      ),
-                                    ],
-                                  ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
                                   child: Image.asset(
-                                    ImageConstants.logo,
+                                    ImageConstants.appImage,
                                     width: 150,
                                     height: 150,
                                   ),

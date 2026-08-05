@@ -438,10 +438,12 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
                           }
                         } catch (e) {
                           debugPrint('Accept error: $e');
-                          if (Navigator.of(context, rootNavigator: true).canPop()) {
-                            Navigator.of(context, rootNavigator: true).pop();
-                          } else {
-                            Navigator.of(context).pop();
+                          if (context.mounted) {
+                            if (Navigator.of(context, rootNavigator: true).canPop()) {
+                              Navigator.of(context, rootNavigator: true).pop();
+                            } else {
+                              Navigator.of(context).pop();
+                            }
                           }
                         }
                       },

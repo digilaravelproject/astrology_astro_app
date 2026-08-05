@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/theme/app_colors.dart';
@@ -5,6 +6,14 @@ import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart' as sax;
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
+import '../../../core/widgets/location_search_screen.dart';
+import '../../../core/services/network/astrology_api_client.dart';
+import 'controllers/saved_kundli_controller.dart';
+import 'controllers/matching_controller.dart';
+import 'repositories/matching_repository_impl.dart';
+import 'usecases/get_matching_usecase.dart';
+import 'models/create_kundli_response_model.dart';
+import 'kundali_matching_screen.dart';
 
 class CreateKundliScreen extends StatefulWidget {
   final bool initialIsMatching;
@@ -27,8 +36,19 @@ class CreateKundliScreen extends StatefulWidget {
 }
 
 class _CreateKundliScreenState extends State<CreateKundliScreen> {
+  final SavedKundliController _savedKundliController = Get.put(SavedKundliController());
   late bool isMatching;
   
+  // Single Kundli Coordinates
+  double? _lat;
+  double? _lng;
+
+  // Matching Coordinates
+  double? _boyLat;
+  double? _boyLng;
+  double? _girlLat;
+  double? _girlLng;
+
   // Single Kundli Controllers
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _genderController = TextEditingController();
@@ -54,45 +74,43 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
   void initState() {
     super.initState();
     isMatching = widget.initialIsMatching;
-    
-    // Initialize with default or passed data
+
+    // Initialize with passed data only (no defaults)
     if (widget.initialKundliData != null) {
       _nameController.text = widget.initialKundliData!['name'] ?? "";
-      _genderController.text = widget.initialKundliData!['gender'] ?? "Male";
-      _dobController.text = widget.initialKundliData!['dob'] ?? "10 February 2026";
-      _tobController.text = widget.initialKundliData!['time'] ?? "08:41 AM";
-      _pobController.text = widget.initialKundliData!['place'] ?? "New Delhi, Delhi, India";
-    } else {
-      _genderController.text = "Male";
-      _dobController.text = "10 February 2026";
-      _tobController.text = "08:41 AM";
-      _pobController.text = "New Delhi, Delhi, India";
+      _genderController.text = widget.initialKundliData!['gender'] ?? "";
+      _dobController.text = widget.initialKundliData!['dob'] ?? "";
+      _tobController.text = widget.initialKundliData!['time'] ?? "";
+      _pobController.text = widget.initialKundliData!['place'] ?? "";
+      _lat = double.tryParse(widget.initialKundliData!['latitude'] ?? "");
+      _lng = double.tryParse(widget.initialKundliData!['longitude'] ?? "");
     }
+
+    _boysGenderController.text = "male";
+    _girlsGenderController.text = "female";
 
     if (widget.initialBoyData != null) {
       _boysNameController.text = widget.initialBoyData!['name'] ?? "";
-      _boysGenderController.text = widget.initialBoyData!['gender'] ?? "Male";
-      _boysDobController.text = widget.initialBoyData!['dob'] ?? "10 February 2026";
-      _boysTobController.text = widget.initialBoyData!['time'] ?? "08:41 AM";
-      _boysPobController.text = widget.initialBoyData!['place'] ?? "New Delhi, Delhi, India";
-    } else {
-      _boysGenderController.text = "Male";
-      _boysDobController.text = "10 February 2026";
-      _boysTobController.text = "08:41 AM";
-      _boysPobController.text = "New Delhi, Delhi, India";
+      if (widget.initialBoyData!['gender'] != null && widget.initialBoyData!['gender']!.isNotEmpty) {
+        _boysGenderController.text = widget.initialBoyData!['gender']!;
+      }
+      _boysDobController.text = widget.initialBoyData!['dob'] ?? "";
+      _boysTobController.text = widget.initialBoyData!['time'] ?? "";
+      _boysPobController.text = widget.initialBoyData!['place'] ?? "";
+      _boyLat = double.tryParse(widget.initialBoyData!['latitude'] ?? "");
+      _boyLng = double.tryParse(widget.initialBoyData!['longitude'] ?? "");
     }
 
     if (widget.initialGirlData != null) {
       _girlsNameController.text = widget.initialGirlData!['name'] ?? "";
-      _girlsGenderController.text = widget.initialGirlData!['gender'] ?? "Female";
-      _girlsDobController.text = widget.initialGirlData!['dob'] ?? "10 February 2026";
-      _girlsTobController.text = widget.initialGirlData!['time'] ?? "08:41 AM";
-      _girlsPobController.text = widget.initialGirlData!['place'] ?? "New Delhi, Delhi, India";
-    } else {
-      _girlsGenderController.text = "Female";
-      _girlsDobController.text = "10 February 2026";
-      _girlsTobController.text = "08:41 AM";
-      _girlsPobController.text = "New Delhi, Delhi, India";
+      if (widget.initialGirlData!['gender'] != null && widget.initialGirlData!['gender']!.isNotEmpty) {
+        _girlsGenderController.text = widget.initialGirlData!['gender']!;
+      }
+      _girlsDobController.text = widget.initialGirlData!['dob'] ?? "";
+      _girlsTobController.text = widget.initialGirlData!['time'] ?? "";
+      _girlsPobController.text = widget.initialGirlData!['place'] ?? "";
+      _girlLat = double.tryParse(widget.initialGirlData!['latitude'] ?? "");
+      _girlLng = double.tryParse(widget.initialGirlData!['longitude'] ?? "");
     }
   }
 
@@ -137,41 +155,288 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
             child: GestureDetector(
-              onTap: () {
-                String? rawDatetime;
-                try {
-                  String dobStr = _dobController.text; // Expected format: 05-July-1994 or DD-MM-YYYY
-                  String timeStr = _tobController.text; // Expected format: HH:mm
-                  
-                  if (dobStr.isNotEmpty) {
-                    final parts = dobStr.split('-');
+              onTap: () async {
+                if (isMatching) {
+                  // --- Validate Matching Fields ---
+                  if (_boysNameController.text.trim().isEmpty ||
+                      _boysDobController.text.trim().isEmpty ||
+                      _boysTobController.text.trim().isEmpty ||
+                      _boysPobController.text.trim().isEmpty ||
+                      _boyLat == null ||
+                      _boyLng == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Please fill all Boy details completely'), backgroundColor: Colors.red),
+                    );
+                    return;
+                  }
+
+                  if (_girlsNameController.text.trim().isEmpty ||
+                      _girlsDobController.text.trim().isEmpty ||
+                      _girlsTobController.text.trim().isEmpty ||
+                      _girlsPobController.text.trim().isEmpty ||
+                      _girlLat == null ||
+                      _girlLng == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Please fill all Girl details completely'), backgroundColor: Colors.red),
+                    );
+                    return;
+                  }
+
+                  String parseDateHelper(String dobStr) {
+                    final months = ["January", "February", "March", "April", "May", "June",
+                      "July", "August", "September", "October", "November", "December"];
+                    final monthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                    dobStr = dobStr.trim();
+                    if (RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(dobStr)) return dobStr;
+                    final parts = dobStr.contains('-') ? dobStr.split('-') : dobStr.split(' ');
                     if (parts.length == 3) {
-                      final months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
                       int monthIndex = -1;
-                      
-                      if (int.tryParse(parts[1]) != null) {
-                        monthIndex = int.parse(parts[1]) - 1;
+                      final monthStr = parts[1].trim();
+                      if (int.tryParse(monthStr) != null) {
+                        monthIndex = int.parse(monthStr) - 1;
                       } else {
-                        monthIndex = months.indexWhere((m) => m.toLowerCase() == parts[1].toLowerCase());
+                        monthIndex = months.indexWhere((m) => m.toLowerCase() == monthStr.toLowerCase());
+                        if (monthIndex == -1) {
+                          monthIndex = monthsShort.indexWhere((m) => m.toLowerCase() == monthStr.toLowerCase());
+                        }
                       }
-                      
                       if (monthIndex != -1) {
-                        String y = parts[2];
+                        String d = parts[0].trim().padLeft(2, '0');
                         String m = (monthIndex + 1).toString().padLeft(2, '0');
-                        String d = parts[0].padLeft(2, '0');
-                        String t = timeStr.isNotEmpty ? timeStr : "00:00:00";
-                        if (t.length == 5) t += ":00";
-                        rawDatetime = "${y}-${m}-${d}T$t";
+                        String y = parts[2].trim();
+                        return "$y-$m-$d";
+                      }
+                    }
+                    return dobStr;
+                  }
+
+                  String parseTimeHelper(String timeStr) {
+                    timeStr = timeStr.trim();
+                    if (timeStr.toUpperCase().contains('AM') || timeStr.toUpperCase().contains('PM')) {
+                      final isPM = timeStr.toUpperCase().contains('PM');
+                      var t = timeStr.replaceAll(RegExp(r'[APM\s]', caseSensitive: false), '').trim();
+                      final timeParts = t.split(':');
+                      if (timeParts.length >= 2) {
+                        int hour = int.parse(timeParts[0]);
+                        final min = timeParts[1].padLeft(2, '0');
+                        if (isPM && hour != 12) hour += 12;
+                        if (!isPM && hour == 12) hour = 0;
+                        return '${hour.toString().padLeft(2, '0')}:$min:00';
+                      }
+                    } else if (timeStr.length == 5) {
+                      return '$timeStr:00';
+                    }
+                    return timeStr;
+                  }
+
+                  final boyDob = parseDateHelper(_boysDobController.text);
+                  final boyTob = parseTimeHelper(_boysTobController.text);
+                  final girlDob = parseDateHelper(_girlsDobController.text);
+                  final girlTob = parseTimeHelper(_girlsTobController.text);
+
+                  // Call Matching Controller
+                  try {
+                    _savedKundliController.isLoadingAction.value = true;
+                    final matchingRepo = MatchingRepositoryImpl();
+                    final getMatchingUseCase = GetMatchingUseCase(repository: matchingRepo);
+                    // Reuse existing or register new — same pattern as user app
+                    final matchingController = Get.isRegistered<MatchingController>()
+                        ? Get.find<MatchingController>()
+                        : Get.put(MatchingController(getMatchingUseCase: getMatchingUseCase));
+
+                    await matchingController.fetchMatchingData(
+                      boyName: _boysNameController.text.trim().isEmpty ? 'Boy' : _boysNameController.text.trim(),
+                      boyGender: 'Male',
+                      boyDob: boyDob,
+                      boyTob: boyTob,
+                      boyPlace: _boysPobController.text.trim(),
+                      boyLat: _boyLat!,
+                      boyLng: _boyLng!,
+                      boyTz: '+05:30',
+                      girlName: _girlsNameController.text.trim().isEmpty ? 'Girl' : _girlsNameController.text.trim(),
+                      girlGender: 'Female',
+                      girlDob: girlDob,
+                      girlTob: girlTob,
+                      girlPlace: _girlsPobController.text.trim(),
+                      girlLat: _girlLat!,
+                      girlLng: _girlLng!,
+                      girlTz: '+05:30',
+                    );
+
+                    if (matchingController.matchingData.value != null) {
+                      Get.to(() => const KundliMatchScreen());
+                    } else {
+                      if (context.mounted) {
+                        final err = matchingController.errorMessage.value;
+                        final friendly = err.contains('429')
+                            ? 'API limit reached. Please wait a moment and try again.'
+                            : err.isNotEmpty ? err : 'Failed to calculate horoscope matching.';
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(friendly), backgroundColor: Colors.red),
+                        );
+                      }
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      final msg = e.toString().contains('429')
+                          ? 'API limit reached. Please wait a moment and try again.'
+                          : 'Matching error: $e';
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(msg), backgroundColor: Colors.red),
+                      );
+                    }
+                  } finally {
+                    _savedKundliController.isLoadingAction.value = false;
+                  }
+                  return;
+                }
+
+
+                // --- Validate Single Kundli fields ---
+                if (_nameController.text.trim().isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please enter name'), backgroundColor: Colors.red),
+                  );
+                  return;
+                }
+                if (_genderController.text.trim().isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please select gender'), backgroundColor: Colors.red),
+                  );
+                  return;
+                }
+                if (_dobController.text.trim().isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please select birth date'), backgroundColor: Colors.red),
+                  );
+                  return;
+                }
+                if (_tobController.text.trim().isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please select birth time'), backgroundColor: Colors.red),
+                  );
+                  return;
+                }
+                if (_pobController.text.trim().isEmpty || _lat == null || _lng == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please select birth place'), backgroundColor: Colors.red),
+                  );
+                  return;
+                }
+
+                // --- Parse date ---
+                String? dobPart;
+                String? tobPart;
+                try {
+                  String dobStr = _dobController.text.trim();
+                  String timeStr = _tobController.text.trim();
+
+                  // Full names AND 3-letter abbreviations
+                  final months = ["January", "February", "March", "April", "May", "June",
+                    "July", "August", "September", "October", "November", "December"];
+                  final monthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+                  // Try ISO format: YYYY-MM-DD
+                  if (RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(dobStr)) {
+                    dobPart = dobStr;
+                  } else {
+                    // Support "13 July 2026", "13-July-2026", "21-Jul-2026", "13 Jul 2026"
+                    final parts = dobStr.contains('-') ? dobStr.split('-') : dobStr.split(' ');
+                    if (parts.length == 3) {
+                      int monthIndex = -1;
+                      final monthStr = parts[1].trim();
+                      if (int.tryParse(monthStr) != null) {
+                        monthIndex = int.parse(monthStr) - 1;
+                      } else {
+                        // Try full name first
+                        monthIndex = months.indexWhere((m) => m.toLowerCase() == monthStr.toLowerCase());
+                        // Try 3-letter abbreviation
+                        if (monthIndex == -1) {
+                          monthIndex = monthsShort.indexWhere((m) => m.toLowerCase() == monthStr.toLowerCase());
+                        }
+                      }
+                      if (monthIndex != -1) {
+                        String d = parts[0].trim().padLeft(2, '0');
+                        String m = (monthIndex + 1).toString().padLeft(2, '0');
+                        String y = parts[2].trim();
+                        dobPart = "$y-$m-$d";
                       }
                     }
                   }
+
+                  if (dobPart != null && timeStr.isNotEmpty) {
+                    // Convert 12-hour "11:35 PM" → "23:35:00"
+                    String t = timeStr;
+                    if (t.toUpperCase().contains('AM') || t.toUpperCase().contains('PM')) {
+                      final isPM = t.toUpperCase().contains('PM');
+                      t = t.replaceAll(RegExp(r'[APM\s]', caseSensitive: false), '').trim();
+                      final timeParts = t.split(':');
+                      if (timeParts.length >= 2) {
+                        int hour = int.parse(timeParts[0]);
+                        final min = timeParts[1].padLeft(2, '0');
+                        if (isPM && hour != 12) hour += 12;
+                        if (!isPM && hour == 12) hour = 0;
+                        t = '${hour.toString().padLeft(2, '0')}:$min:00';
+                      }
+                    } else if (t.length == 5) {
+                      t += ':00';
+                    }
+                    tobPart = t;
+                  }
                 } catch (_) {}
 
-                Get.to(() => KundliScreen(
-                  name: _nameController.text,
-                  datetime: rawDatetime,
-                  place: _pobController.text,
-                ));
+                if (dobPart == null || tobPart == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Invalid date or time format'), backgroundColor: Colors.red),
+                  );
+                  return;
+                }
+
+                final hasId = widget.initialKundliData != null && widget.initialKundliData!['id'] != null;
+                CreateKundliResponseModel? result;
+
+                if (hasId) {
+                  final id = int.parse(widget.initialKundliData!['id']!);
+                  result = await _savedKundliController.updateKundli(
+                    id: id,
+                    name: _nameController.text.trim(),
+                    gender: _genderController.text.trim().toLowerCase(),
+                    birthDate: dobPart,
+                    birthTime: tobPart,
+                    latitude: _lat!.toString(),
+                    longitude: _lng!.toString(),
+                    datetime: "$dobPart $tobPart",
+                    place: _pobController.text.trim(),
+                  );
+                } else {
+                  result = await _savedKundliController.createKundli(
+                    name: _nameController.text.trim(),
+                    gender: _genderController.text.trim().toLowerCase(),
+                    birthDate: dobPart,
+                    birthTime: tobPart,
+                    latitude: _lat!.toString(),
+                    longitude: _lng!.toString(),
+                    datetime: "$dobPart $tobPart",
+                    place: _pobController.text.trim(),
+                  );
+                }
+
+                if (result != null) {
+                  Get.back();
+                } else {
+                  // Show error from controller
+                  final errMsg = _savedKundliController.error.value;
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(errMsg.isNotEmpty ? errMsg : 'Failed to save Kundli. Please try again.'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
               },
               child: Container(
                 height: 56,
@@ -187,16 +452,20 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                     ),
                   ],
                 ),
-                  child: Stack(
-                    children: [
-                      Center(
-                        child: AppText(
-                          "Generate Horoscope",
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        ),
-                      ),
+                child: Stack(
+                  children: [
+                    Center(
+                      child: Obx(() => _savedKundliController.isLoadingAction.value
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : AppText(
+                              isMatching
+                                  ? "Generate Horoscope"
+                                  : (widget.initialKundliData != null ? "Update Kundli" : "Save & View Kundli"),
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            )),
+                    ),
                       Positioned(
                         right: 20,
                         top: 0,
@@ -277,7 +546,20 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
               _buildField("Gender", "Select gender", sax.Iconsax.user_tag_copy, controller: _genderController, isPicker: true, onTap: () => _showGenderSelection(_genderController)),
               _buildField("Birth Date", "Select date", sax.Iconsax.calendar_copy, controller: _dobController, isPicker: true, onTap: () => _selectDate(_dobController)),
               _buildField("Birth Time", "Select time", sax.Iconsax.clock_copy, controller: _tobController, isPicker: true, onTap: () => _selectTime(_tobController)),
-              _buildField("Birth Place", "Enter birth place", sax.Iconsax.location_copy, controller: _pobController),
+              _buildField("Birth Place", "Enter birth place", sax.Iconsax.location_copy, controller: _pobController, isPicker: true, onTap: () async {
+                final result = await Navigator.of(context, rootNavigator: true)
+                    .push<LocationResult>(MaterialPageRoute(
+                  builder: (_) => const LocationSearchScreen(title: "Select Birth Place"),
+                  fullscreenDialog: true,
+                ));
+                if (result != null) {
+                  setState(() {
+                    _pobController.text = result.displayName;
+                    _lat = result.latitude;
+                    _lng = result.longitude;
+                  });
+                }
+              }),
             ],
           ),
         ),
@@ -295,10 +577,22 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildField("Name", "Enter name", sax.Iconsax.user_copy, controller: _boysNameController),
-              _buildField("Gender", "Select gender", sax.Iconsax.user_tag_copy, controller: _boysGenderController, isPicker: true, onTap: () => _showGenderSelection(_boysGenderController)),
               _buildField("Birth Date", "Select date", sax.Iconsax.calendar_copy, controller: _boysDobController, isPicker: true, onTap: () => _selectDate(_boysDobController)),
               _buildField("Birth Time", "Select time", sax.Iconsax.clock_copy, controller: _boysTobController, isPicker: true, onTap: () => _selectTime(_boysTobController)),
-              _buildField("Birth Place", "Enter birth place", sax.Iconsax.location_copy, controller: _boysPobController),
+              _buildField("Birth Place", "Enter birth place", sax.Iconsax.location_copy, controller: _boysPobController, isPicker: true, onTap: () async {
+                final result = await Navigator.of(context, rootNavigator: true)
+                    .push<LocationResult>(MaterialPageRoute(
+                  builder: (_) => const LocationSearchScreen(title: "Select Boy's Birth Place"),
+                  fullscreenDialog: true,
+                ));
+                if (result != null) {
+                  setState(() {
+                    _boysPobController.text = result.displayName;
+                    _boyLat = result.latitude;
+                    _boyLng = result.longitude;
+                  });
+                }
+              }),
             ],
           ),
         ),
@@ -310,10 +604,22 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildField("Name", "Enter name", sax.Iconsax.user_copy, controller: _girlsNameController),
-              _buildField("Gender", "Select gender", sax.Iconsax.user_tag_copy, controller: _girlsGenderController, isPicker: true, onTap: () => _showGenderSelection(_girlsGenderController)),
               _buildField("Birth Date", "Select date", sax.Iconsax.calendar_copy, controller: _girlsDobController, isPicker: true, onTap: () => _selectDate(_girlsDobController)),
               _buildField("Birth Time", "Select time", sax.Iconsax.clock_copy, controller: _girlsTobController, isPicker: true, onTap: () => _selectTime(_girlsTobController)),
-              _buildField("Birth Place", "Enter birth place", sax.Iconsax.location_copy, controller: _girlsPobController),
+              _buildField("Birth Place", "Enter birth place", sax.Iconsax.location_copy, controller: _girlsPobController, isPicker: true, onTap: () async {
+                final result = await Navigator.of(context, rootNavigator: true)
+                    .push<LocationResult>(MaterialPageRoute(
+                  builder: (_) => const LocationSearchScreen(title: "Select Girl's Birth Place"),
+                  fullscreenDialog: true,
+                ));
+                if (result != null) {
+                  setState(() {
+                    _girlsPobController.text = result.displayName;
+                    _girlLat = result.latitude;
+                    _girlLng = result.longitude;
+                  });
+                }
+              }),
             ],
           ),
         ),
@@ -415,7 +721,6 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                     ),
                   ),
                 ),
-                if (isPicker) Icon(Icons.keyboard_arrow_down_rounded, size: 18, color: AppColors.primaryColor.withOpacity(0.4)),
               ],
             ),
           ),
@@ -424,11 +729,61 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
     );
   }
 
+  DateTime? _parseDateString(String str) {
+    if (str.isEmpty) return null;
+    try {
+      final parsed = DateTime.tryParse(str);
+      if (parsed != null) return parsed;
+
+      final cleaned = str.replaceAll('-', ' ').replaceAll('/', ' ').replaceAll(',', ' ').trim();
+      final parts = cleaned.split(RegExp(r'\s+'));
+      if (parts.length >= 3) {
+        int? day = int.tryParse(parts[0]);
+        int? year = int.tryParse(parts[2]);
+        int? month;
+
+        final monthStr = parts[1].toLowerCase();
+        final monthNames = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+        for (int i = 0; i < monthNames.length; i++) {
+          if (monthStr.startsWith(monthNames[i])) {
+            month = i + 1;
+            break;
+          }
+        }
+        month ??= int.tryParse(parts[1]);
+
+        if (day != null && month != null && year != null) {
+          return DateTime(year, month, day);
+        }
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  TimeOfDay? _parseTimeString(String str) {
+    if (str.isEmpty) return null;
+    try {
+      final isPm = str.toLowerCase().contains('pm');
+      final isAm = str.toLowerCase().contains('am');
+      final cleaned = str.replaceAll(RegExp(r'[^\d:]'), '').trim();
+      final parts = cleaned.split(':');
+      if (parts.length >= 2) {
+        int hour = int.parse(parts[0]);
+        int minute = int.parse(parts[1]);
+        if (isPm && hour < 12) hour += 12;
+        if (isAm && hour == 12) hour = 0;
+        return TimeOfDay(hour: hour, minute: minute);
+      }
+    } catch (_) {}
+    return null;
+  }
+
   // Pickers
   Future<void> _selectDate(TextEditingController controller) async {
+    final initial = _parseDateString(controller.text) ?? DateTime.now();
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: initial,
       firstDate: DateTime(1900),
       lastDate: DateTime(2100),
       builder: (context, child) {
@@ -455,9 +810,10 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
   }
 
   Future<void> _selectTime(TextEditingController controller) async {
+    final initial = _parseTimeString(controller.text) ?? TimeOfDay.now();
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
+      initialTime: initial,
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -472,9 +828,9 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
       },
     );
     if (picked != null) {
+      final hour = picked.hourOfPeriod == 0 ? 12 : picked.hourOfPeriod;
+      final period = picked.period == DayPeriod.am ? 'AM' : 'PM';
       setState(() {
-        final hour = picked.hourOfPeriod == 0 ? 12 : picked.hourOfPeriod;
-        final period = picked.period == DayPeriod.am ? "AM" : "PM";
         controller.text = "${hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')} $period";
       });
     }

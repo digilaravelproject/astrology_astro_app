@@ -7,6 +7,8 @@ class TransitController extends GetxController {
 
   var isLoading = false.obs;
   var transitModel = Rxn<TransitModel>();
+  var northChartSvg = ''.obs;
+  var southChartSvg = ''.obs;
 
   Future<void> fetchTransit({
     required String datetime,
@@ -24,6 +26,30 @@ class TransitController extends GetxController {
       );
       if (result != null) {
         transitModel.value = result;
+      }
+
+      final northSvg = await _repository.getHoroChartSvg(
+        chartId: 'gochar',
+        datetime: datetime,
+        latitude: latitude,
+        longitude: longitude,
+        timezone: timezone,
+        chartType: 'north',
+      );
+      if (northSvg != null) {
+        northChartSvg.value = northSvg;
+      }
+
+      final southSvg = await _repository.getHoroChartSvg(
+        chartId: 'gochar',
+        datetime: datetime,
+        latitude: latitude,
+        longitude: longitude,
+        timezone: timezone,
+        chartType: 'south',
+      );
+      if (southSvg != null) {
+        southChartSvg.value = southSvg;
       }
     } finally {
       isLoading.value = false;

@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/widgets/app_text.dart';
-import '../../../core/widgets/custom_app_bar.dart';
-import '../../../core/widgets/custom_button.dart';
+import 'package:astro_astrologer/core/theme/app_colors.dart';
+import 'package:astro_astrologer/core/widgets/app_text.dart';
+import 'package:astro_astrologer/core/widgets/custom_app_bar.dart';
+import 'package:astro_astrologer/core/widgets/custom_button.dart';
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
 import 'package:astro_astrologer/features/call/call_details_screen.dart';
 import 'package:astro_astrologer/features/home/widgets/add_note_bottom_sheet.dart';
 import 'package:astro_astrologer/features/home/widgets/animated_favorite_button.dart';
+import 'package:astro_astrologer/features/chat/presentation/pages/assistance_chat_room_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../../core/widgets/loyal_badge.dart';
+import 'package:astro_astrologer/core/widgets/loyal_badge.dart';
 
 import 'package:astro_astrologer/core/services/network/api_client.dart';
-import '../../../core/constants/app_urls.dart';
+import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/features/orders/presentation/controllers/history_controller.dart';
 import 'package:astro_astrologer/features/orders/domain/usecases/get_astrologer_call_sessions_usecase.dart';
 import 'package:astro_astrologer/features/orders/data/repositories/history_repository.dart';
@@ -78,20 +80,20 @@ class CallHistoryScreen extends StatelessWidget {
                         } catch (_) {}
                       }
 
-                      String? rawDatetime;
+                      String? dobVal;
+                      String? tobVal;
                       if (session.consumer?.dateOfBirth != null) {
                         try {
-                          final dobDate = DateTime.tryParse(session.consumer!.dateOfBirth!)?.toLocal();
-                          if (dobDate != null) {
-                            String d = "${dobDate.year}-${dobDate.month.toString().padLeft(2, '0')}-${dobDate.day.toString().padLeft(2, '0')}";
-                            String t = "00:00:00";
-                            if (session.consumer?.timeOfBirth != null && session.consumer!.timeOfBirth!.isNotEmpty) {
-                              t = session.consumer!.timeOfBirth!;
-                              if (t.length == 5) t += ":00"; // append seconds if HH:mm
-                            }
-                            rawDatetime = "${d}T$t";
-                          }
+                          // date_of_birth comes as UTC (e.g. 2006-06-07T18:30:00.000000Z)
+                          // toLocal() converts it to IST, giving the correct local date (2006-06-08)
+                          final dobDate = DateTime.parse(session.consumer!.dateOfBirth!).toLocal();
+                          dobVal = "${dobDate.year}-${dobDate.month.toString().padLeft(2, '0')}-${dobDate.day.toString().padLeft(2, '0')}";
                         } catch (_) {}
+                      }
+                      // time_of_birth is already in IST (e.g. "19:12"), use directly
+                      if (session.consumer?.timeOfBirth != null && session.consumer!.timeOfBirth!.isNotEmpty) {
+                        tobVal = session.consumer!.timeOfBirth!;
+                        if (tobVal.length == 5) tobVal += ":00";
                       }
 
                       final Map<String, String> details = {
@@ -113,7 +115,11 @@ class CallHistoryScreen extends StatelessWidget {
                         details: details,
                         showRefund: false,
                         imageUrl: session.consumer?.profilePhoto,
-                        rawDatetime: rawDatetime,
+                        dobVal: dobVal,
+                        tobVal: tobVal,
+                        latitude: session.consumer?.latitude,
+                        longitude: session.consumer?.longitude,
+                        chatAssistanceSessionId: session.chatAssistanceSessionId ?? session.consumer?.chatAssistanceSessionId,
                       );
                     },
                   ),
@@ -148,7 +154,11 @@ class CallHistoryScreen extends StatelessWidget {
     bool showRefund = false,
     bool showSuggestRemedy = false,
     String? imageUrl,
-    String? rawDatetime,
+    String? dobVal,
+    String? tobVal,
+    double? latitude,
+    double? longitude,
+    int? chatAssistanceSessionId,
   }) {
     return Container(
       margin: const EdgeInsets.only(top: 14, bottom: 8),
@@ -286,68 +296,6 @@ class CallHistoryScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              showModalBottomSheet(
-                                context: context,
-                                isScrollControlled: true,
-                                backgroundColor: Colors.transparent,
-                                builder: (context) => const Padding(
-                                  padding: EdgeInsets.only(top: 100),
-                                  child: AddNoteBottomSheet(),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey.shade300),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Icon(Iconsax.document_copy, size: 16, color: Colors.grey.shade600),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          SizedBox(
-                            width: 30,
-                            height: 30,
-                            child: PopupMenuButton<String>(
-                              padding: EdgeInsets.zero,
-                              icon: Container(
-                                padding: const EdgeInsets.all(6),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey.shade300),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Icon(Icons.more_vert, size: 16, color: Colors.grey.shade600),
-                              ),
-                              color: Colors.white,
-                              onSelected: (value) {
-                                if (value == 'block') {
-                                  Get.snackbar(
-                                    'Block User',
-                                    'Block user action triggered for ${details["Name"]}',
-                                    snackPosition: SnackPosition.BOTTOM,
-                                    backgroundColor: Colors.black87,
-                                    colorText: Colors.white,
-                                  );
-                                }
-                              },
-                              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                                const PopupMenuItem<String>(
-                                  value: 'block',
-                                  child: AppText('Block User', fontSize: 14),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          const AnimatedFavoriteButton(),
-                        ],
-                      ),
                     ],
                   ),
                   
@@ -419,11 +367,24 @@ class CallHistoryScreen extends StatelessWidget {
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
-                                    if (entry.key == "Name" || entry.key == "POB")
-                                      Padding(
-                                        padding: const EdgeInsets.only(left: 8),
-                                        child: Icon(Icons.copy_rounded, size: 14, color: AppColors.primaryColor.withOpacity(0.5)),
-                                      ),
+                                     if (entry.key == "Name" || entry.key == "POB")
+                                       GestureDetector(
+                                         onTap: () {
+                                           Clipboard.setData(ClipboardData(text: entry.value));
+                                           Get.snackbar(
+                                             'Copied',
+                                             '${entry.key} copied to clipboard',
+                                             snackPosition: SnackPosition.BOTTOM,
+                                             duration: const Duration(seconds: 2),
+                                             backgroundColor: Colors.black87,
+                                             colorText: Colors.white,
+                                           );
+                                         },
+                                         child: Padding(
+                                           padding: const EdgeInsets.only(left: 8),
+                                           child: Icon(Icons.copy_rounded, size: 14, color: AppColors.primaryColor.withOpacity(0.7)),
+                                         ),
+                                       ),
                                   ],
                                 ),
                               ),
@@ -455,9 +416,13 @@ class CallHistoryScreen extends StatelessWidget {
                             child: CustomButton(
                               text: "Open Kundli",
                               onPressed: () => Get.to(() => KundliScreen(
-                                name: details["Name"],
-                                datetime: rawDatetime,
-                                place: details["POB"],
+                                fullName: details["Name"]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "",
+                                gender: details["Gender"] ?? "",
+                                dob: dobVal ?? "",
+                                tob: tobVal ?? "",
+                                place: details["POB"] ?? "",
+                                latitude: latitude ?? 0.0,
+                                longitude: longitude ?? 0.0,
                               )),
                               height: 42,
                               padding: EdgeInsets.zero,
@@ -470,7 +435,18 @@ class CallHistoryScreen extends StatelessWidget {
                           Expanded(
                             child: CustomButton(
                               text: "Chat Assistant",
-                              onPressed: () {},
+                              onPressed: () {
+                                debugPrint("Call History: Chat Assistant clicked! chatAssistanceSessionId: $chatAssistanceSessionId");
+                                if (chatAssistanceSessionId != null) {
+                                  Get.to(() => AssistanceChatRoomScreen(
+                                    sessionId: chatAssistanceSessionId,
+                                    userName: details["Name"]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "User",
+                                    userImage: imageUrl,
+                                  ));
+                                } else {
+                                  Get.snackbar("Error", "No Chat Assistance Session available");
+                                }
+                              },
                               height: 42,
                               padding: EdgeInsets.zero,
                               backgroundColor: const Color(0xFF2CB772),
@@ -482,27 +458,10 @@ class CallHistoryScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-
-                      if (showRefund) ...[
-                        const SizedBox(height: 12),
-                        const AppText(
-                          "Refund",
-                          fontSize: 14,
-                          color: Colors.red,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        const SizedBox(height: 2),
-                        const AppText(
-                          "PO@Rs5",
-                          fontSize: 13,
-                          color: Colors.red,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ],
                     ],
                   ),
                 ),
-          ),
+              ),
           if (isLoyal) LoyalBadge.positioned(),
         ],
       ),

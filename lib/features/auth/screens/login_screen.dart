@@ -50,10 +50,13 @@ class LoginScreen extends StatelessWidget {
                     children: [
                       const SizedBox(height: 20),
                       // Logo
-                      Image.asset(
-                        ImageConstants.logo,
-                        width: 170,
-                        height: 170,
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Image.asset(
+                          ImageConstants.appImage,
+                          width: 170,
+                          height: 170,
+                        ),
                       ),
                       
                       const SizedBox(height: 30),

@@ -1,47 +1,12 @@
-import 'package:dio/dio.dart';
-import 'package:astro_astrologer/core/constants/vedika_constants.dart';
+import 'package:astro_astrologer/core/services/network/astrology_api_client.dart';
 import 'package:astro_astrologer/core/utils/logger.dart';
 import '../models/panchang_model.dart';
 
 class PanchangRepository {
-  final Dio _dio;
+  final AstrologyApiClient _client;
 
-  PanchangRepository() : _dio = Dio() {
-    _dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) {
-        Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        Logger.d('|🌐 PANCHANG API REQUEST');
-        Logger.d('|📍 URL: ${options.baseUrl}${options.path}');
-        Logger.d('|🔧 Method: ${options.method}');
-        Logger.d('|📋 Headers: ${options.headers}');
-        if (options.data != null) {
-          Logger.d('|📦 Body: ${options.data}');
-        }
-        return handler.next(options);
-      },
-      onResponse: (response, handler) {
-        Logger.d('|✅ PANCHANG API RESPONSE');
-        Logger.d('|📍 URL: ${response.requestOptions.baseUrl}${response.requestOptions.path}');
-        Logger.d('|📊 Status Code: ${response.statusCode}');
-        Logger.d('|📨 Response: ${response.data}');
-        Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        return handler.next(response);
-      },
-      onError: (error, handler) {
-        Logger.e('|❌ PANCHANG API ERROR');
-        Logger.e('|📍 URL: ${error.requestOptions.baseUrl}${error.requestOptions.path}');
-        Logger.e('|🔧 Method: ${error.requestOptions.method}');
-        Logger.e('|⚠️ Error Type: ${error.type}');
-        Logger.e('|💬 Error Message: ${error.message}');
-        if (error.response != null) {
-          Logger.e('|📊 Status Code: ${error.response?.statusCode}');
-          Logger.e('|📨 Response: ${error.response?.data}');
-        }
-        Logger.e('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        return handler.next(error);
-      },
-    ));
-  }
+  PanchangRepository({AstrologyApiClient? client})
+      : _client = client ?? AstrologyApiClient();
 
   Future<PanchangModel?> getPanchangDetails({
     required String datetime,
@@ -50,27 +15,57 @@ class PanchangRepository {
     required String timezone,
   }) async {
     try {
-      final response = await _dio.post(
-        '${VedikaConstants.baseUrl}${VedikaConstants.panchangEndpoint}',
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': VedikaConstants.apiKey,
-          },
-        ),
-        data: {
-          'datetime': datetime,
-          'latitude': latitude,
-          'longitude': longitude,
-          'timezone': timezone,
-        },
+      final payload = _client.buildBirthPayload(
+        datetime: datetime,
+        latitude: latitude,
+        longitude: longitude,
+        timezone: timezone,
       );
 
+      final response = await _client.getPanchang(payload);
+
       if (response.statusCode == 200) {
-        return PanchangModel.fromJson(response.data);
+        final Map<String, dynamic> rawData = response.data is Map<String, dynamic> ? response.data : {};
+        
+        final tithiName = rawData['tithi']?['details']?['tithi_name'];
+        final tithiId = rawData['tithi']?['details']?['tithi_number'];
+        
+        final nakshatraName = rawData['nakshatra']?['details']?['nak_name'];
+        final nakshatraId = rawData['nakshatra']?['details']?['nak_number'];
+
+        final yogaName = rawData['yog']?['details']?['yog_name'];
+        final yogaId = rawData['yog']?['details']?['yog_number'];
+
+        final karanaName = rawData['karan']?['details']?['karan_name'];
+        final karanaId = rawData['karan']?['details']?['karan_number'];
+
+        final masaName = rawData['hindu_maah']?['purnimanta'] ?? rawData['hindu_maah']?['amanta'] ?? 'N/A';
+        final masaId = rawData['hindu_maah']?['purnimanta_id'] ?? rawData['hindu_maah']?['amanta_id'] ?? 0;
+
+        final rituName = rawData['ritu'] ?? 'N/A';
+
+        final vaaraName = rawData['day'] ?? 'N/A';
+
+        final transformedJson = {
+          'success': true,
+          'data': {
+            'tithi': {'name': tithiName, 'id': tithiId},
+            'karana': {'name': karanaName, 'id': karanaId},
+            'yoga': {'name': yogaName, 'id': yogaId},
+            'nakshatra': {'name': nakshatraName, 'id': nakshatraId},
+            'masa': {'name': masaName, 'id': masaId},
+            'ritu': {'name': rituName, 'id': 0},
+            'vaara': {'name': vaaraName, 'id': 0},
+            'timezone': payload['tzone']?.toString() ?? '+05:30',
+            'sunrise': rawData['sunrise']?.toString(),
+            'sunset': rawData['sunset']?.toString(),
+          }
+        };
+
+        return PanchangModel.fromJson(transformedJson);
       }
     } catch (e) {
-      print('Error fetching panchang details: $e');
+      Logger.e('Error fetching panchang details', error: e);
     }
     return null;
   }
