@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import '../../../../../../../../../core/theme/app_colors.dart';
-import '../../../../../../../../../core/widgets/app_text.dart';
-import '../../../../../../../../../core/widgets/custom_app_bar.dart';
-import '../../../../../../../../../core/widgets/custom_button.dart';
+import 'package:astro_astrologer/core/theme/app_colors.dart';
+import 'package:astro_astrologer/core/widgets/app_text.dart';
+import 'package:astro_astrologer/core/widgets/custom_app_bar.dart';
+import 'package:astro_astrologer/core/widgets/custom_button.dart';
 import 'create_default_message_screen.dart';
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
 import 'package:astro_astrologer/features/call/call_details_screen.dart';
@@ -12,8 +13,8 @@ import 'package:astro_astrologer/features/home/widgets/add_note_bottom_sheet.dar
 import 'package:astro_astrologer/features/home/widgets/animated_favorite_button.dart';
 import 'package:astro_astrologer/features/chat/presentation/pages/assistance_chat_room_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../../../core/widgets/loyal_badge.dart';
-import '../../../../core/constants/app_urls.dart';
+import 'package:astro_astrologer/core/widgets/loyal_badge.dart';
+import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'controllers/astrologer_sessions_controller.dart';
 import '../bindings/chat_binding.dart';
@@ -48,41 +49,38 @@ class ChatHistoryScreen extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final session = controller.sessions[index];
                         final durationMinutes = (session.durationSeconds / 60).ceil();
-                        
+
                         // Format DOB
                         String dobStr = "N/A";
                         if (session.consumer?.dateOfBirth != null) {
                           try {
-                            final dobDate = DateTime.tryParse(session.consumer!.dateOfBirth!)?.toLocal();
-                            if (dobDate != null) {
-                              final months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                              final monthName = months[dobDate.month - 1];
-                              final day = dobDate.day.toString().padLeft(2, '0');
-                              final year = dobDate.year.toString();
-                              
-                              String timeStr = "";
-                              if (session.consumer?.timeOfBirth != null && session.consumer!.timeOfBirth!.isNotEmpty) {
-                                timeStr = ",${session.consumer!.timeOfBirth!}";
-                              }
-                              dobStr = "$day-$monthName-$year$timeStr";
+                            // date_of_birth is UTC; toLocal() gives correct IST date
+                            final dobDate = DateTime.parse(session.consumer!.dateOfBirth!).toLocal();
+                            final months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                            final monthName = months[dobDate.month - 1];
+                            final day = dobDate.day.toString().padLeft(2, '0');
+                            final year = dobDate.year.toString();
+                            String timeStr = "";
+                            if (session.consumer?.timeOfBirth != null && session.consumer!.timeOfBirth!.isNotEmpty) {
+                              timeStr = ",${session.consumer!.timeOfBirth!}";
                             }
+                            dobStr = "$day-$monthName-$year$timeStr";
                           } catch (_) {}
                         }
 
-                      String? rawDatetime;
+                      String? dobVal;
+                      String? tobVal;
                       if (session.consumer?.dateOfBirth != null) {
                         try {
-                          final dobDate = DateTime.tryParse(session.consumer!.dateOfBirth!)?.toLocal();
-                          if (dobDate != null) {
-                            String d = "${dobDate.year}-${dobDate.month.toString().padLeft(2, '0')}-${dobDate.day.toString().padLeft(2, '0')}";
-                            String t = "00:00:00";
-                            if (session.consumer?.timeOfBirth != null && session.consumer!.timeOfBirth!.isNotEmpty) {
-                              t = session.consumer!.timeOfBirth!;
-                              if (t.length == 5) t += ":00";
-                            }
-                            rawDatetime = "${d}T$t";
-                          }
+                          // date_of_birth is UTC; toLocal() gives correct IST date
+                          final dobDate = DateTime.parse(session.consumer!.dateOfBirth!).toLocal();
+                          dobVal = "${dobDate.year}-${dobDate.month.toString().padLeft(2, '0')}-${dobDate.day.toString().padLeft(2, '0')}";
                         } catch (_) {}
+                      }
+                      // time_of_birth is already IST (e.g. "19:12"), use directly
+                      if (session.consumer?.timeOfBirth != null && session.consumer!.timeOfBirth!.isNotEmpty) {
+                        tobVal = session.consumer!.timeOfBirth!;
+                        if (tobVal.length == 5) tobVal += ":00";
                       }
 
                       final Map<String, String> details = {
@@ -103,8 +101,11 @@ class ChatHistoryScreen extends StatelessWidget {
                           date: session.createdAt.toString().split('.')[0],
                           details: details,
                           imageUrl: session.consumer?.profilePhoto,
-                          rawDatetime: rawDatetime,
-                          chatAssistanceSessionId: session.chatAssistanceSessionId,
+                          dobVal: dobVal,
+                          tobVal: tobVal,
+                          latitude: session.consumer?.latitude,
+                          longitude: session.consumer?.longitude,
+                          chatAssistanceSessionId: session.chatAssistanceSessionId ?? session.consumer?.chatAssistanceSessionId,
                         );
                       },
                     ),
@@ -150,7 +151,10 @@ class ChatHistoryScreen extends StatelessWidget {
     bool showSuggestRemedy = false,
     bool showDropdown = false,
     String? imageUrl,
-    String? rawDatetime,
+    String? dobVal,
+    String? tobVal,
+    double? latitude,
+    double? longitude,
     int? chatAssistanceSessionId,
   }) {
     return Container(
@@ -229,9 +233,9 @@ class ChatHistoryScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // Astrotalk, ID and Icons
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -289,73 +293,11 @@ class ChatHistoryScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              backgroundColor: Colors.transparent,
-                              builder: (context) => const Padding(
-                                padding: EdgeInsets.only(top: 100),
-                                child: AddNoteBottomSheet(),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey.shade300),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Icon(Iconsax.document_copy, size: 16, color: Colors.grey.shade600),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        SizedBox(
-                          width: 30,
-                          height: 30,
-                          child: PopupMenuButton<String>(
-                            padding: EdgeInsets.zero,
-                            icon: Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey.shade300),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Icon(Icons.more_vert, size: 16, color: Colors.grey.shade600),
-                            ),
-                            color: Colors.white,
-                            onSelected: (value) {
-                              if (value == 'block') {
-                                Get.snackbar(
-                                  'Block User',
-                                  'Block user action triggered for ${details["Name"]}',
-                                  snackPosition: SnackPosition.BOTTOM,
-                                  backgroundColor: Colors.black87,
-                                  colorText: Colors.white,
-                                );
-                              }
-                            },
-                            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                              const PopupMenuItem<String>(
-                                value: 'block',
-                                child: AppText('Block User', fontSize: 14),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        const AnimatedFavoriteButton(),
-                      ],
-                    ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // Price & Date container
                 Container(
                   padding: const EdgeInsets.all(12),
@@ -432,9 +374,22 @@ class ChatHistoryScreen extends StatelessWidget {
                                       ),
                                     ),
                                     if (entry.key == "Name" || entry.key == "POB")
-                                      Padding(
-                                        padding: const EdgeInsets.only(left: 8),
-                                        child: Icon(Icons.copy_rounded, size: 14, color: AppColors.primaryColor.withOpacity(0.5)),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Clipboard.setData(ClipboardData(text: entry.value));
+                                          Get.snackbar(
+                                            'Copied',
+                                            '${entry.key} copied to clipboard',
+                                            snackPosition: SnackPosition.BOTTOM,
+                                            duration: const Duration(seconds: 2),
+                                            backgroundColor: Colors.black87,
+                                            colorText: Colors.white,
+                                          );
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(left: 8),
+                                          child: Icon(Icons.copy_rounded, size: 14, color: AppColors.primaryColor.withOpacity(0.7)),
+                                        ),
                                       ),
                                   ],
                                 ),
@@ -465,11 +420,15 @@ class ChatHistoryScreen extends StatelessWidget {
                           Expanded(
                               child: CustomButton(
                                 text: "Open Kundli",
-                                onPressed: () => Get.to(() => KundliScreen(
-                                  name: details["Name"],
-                                  datetime: rawDatetime,
-                                  place: details["POB"],
-                                )),
+                                  onPressed: () => Get.to(() => KundliScreen(
+                                    fullName: details["Name"]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "",
+                                    gender: details["Gender"] ?? "",
+                                    dob: dobVal ?? "",
+                                    tob: tobVal ?? "",
+                                    place: details["POB"] ?? "",
+                                    latitude: latitude ?? 0.0,
+                                    longitude: longitude ?? 0.0,
+                                  )),
                                 height: 42,
                               padding: EdgeInsets.zero,
                               buttonType: ButtonStyleType.outlined,
@@ -482,6 +441,7 @@ class ChatHistoryScreen extends StatelessWidget {
                             child: CustomButton(
                               text: "Chat Assistant",
                               onPressed: () {
+                                debugPrint("Chat History: Chat Assistant clicked! chatAssistanceSessionId: $chatAssistanceSessionId");
                                 if (chatAssistanceSessionId != null) {
                                   Get.to(() => AssistanceChatRoomScreen(
                                     sessionId: chatAssistanceSessionId,
@@ -503,15 +463,10 @@ class ChatHistoryScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-
-                      if (showRefund) ...[
-                        const SizedBox(height: 12),
-                        const AppText("Refund", fontSize: 14, color: Colors.red, fontWeight: FontWeight.w500),
-                      ],
                     ],
                   ),
                 ),
-          ),
+              ),
           if (isLoyal) LoyalBadge.positioned(),
         ],
       ),
