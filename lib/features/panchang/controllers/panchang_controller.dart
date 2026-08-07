@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../data/models/panchang_model.dart';
 import '../domain/usecases/get_panchang_usecase.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class PanchangController extends GetxController {
   final GetPanchangUseCase getPanchangUseCase;
@@ -58,7 +59,7 @@ class PanchangController extends GetxController {
     } catch (e) {
       print('[PCB_APP] [ERROR] Failed to load panchang: $e');
       errorMessage.value = 'Failed to load panchang data: $e';
-      Get.snackbar(
+      CustomSnackBar.disabledSnackbar(
         'Error',
         errorMessage.value,
         snackPosition: SnackPosition.BOTTOM,

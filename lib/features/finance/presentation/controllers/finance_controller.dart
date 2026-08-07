@@ -5,6 +5,7 @@ import '../../domain/models/bank_account_model.dart';
 import '../../domain/usecases/add_bank_account_usecase.dart';
 import '../../domain/usecases/get_bank_accounts_usecase.dart';
 import '../../domain/usecases/set_default_bank_account_usecase.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class FinanceController extends GetxController {
   final AddBankAccountUseCase _addBankAccountUseCase;
@@ -41,7 +42,7 @@ class FinanceController extends GetxController {
         print('[FINANCE] Parsed ${bankAccounts.length} bank accounts');
       } else {
         print('[FINANCE] Failed to get bank accounts: ${result.message}');
-        Get.snackbar(
+        CustomSnackBar.disabledSnackbar(
           'Error',
           result.message ?? 'Failed to fetch bank accounts',
           snackPosition: SnackPosition.BOTTOM,
@@ -49,7 +50,7 @@ class FinanceController extends GetxController {
       }
     } catch (e) {
       print('[FINANCE] Exception in getBankAccounts: $e');
-      Get.snackbar(
+      CustomSnackBar.disabledSnackbar(
         'Error',
         'Something went wrong: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
@@ -93,7 +94,7 @@ class FinanceController extends GetxController {
         
         // Show snackbar after navigation
         Future.delayed(const Duration(milliseconds: 300), () {
-          Get.snackbar(
+          CustomSnackBar.disabledSnackbar(
             'Success',
             result.message ?? 'Bank account added successfully',
             snackPosition: SnackPosition.BOTTOM,
@@ -103,7 +104,7 @@ class FinanceController extends GetxController {
         });
       } else {
         print('[FINANCE] Failed to add bank account: ${result.message}');
-        Get.snackbar(
+        CustomSnackBar.disabledSnackbar(
           'Error',
           result.message ?? 'Failed to add bank account',
           snackPosition: SnackPosition.BOTTOM,
@@ -113,7 +114,7 @@ class FinanceController extends GetxController {
       }
     } catch (e) {
       print('[FINANCE] Exception in addBankAccount: $e');
-      Get.snackbar(
+      CustomSnackBar.disabledSnackbar(
         'Error',
         'Something went wrong: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
@@ -144,7 +145,7 @@ class FinanceController extends GetxController {
         }
         bankAccounts.refresh();
         
-        Get.snackbar(
+        CustomSnackBar.disabledSnackbar(
           'Success',
           result.message ?? 'Default bank account set successfully',
           snackPosition: SnackPosition.BOTTOM,
@@ -153,7 +154,7 @@ class FinanceController extends GetxController {
         );
       } else {
         print('[FINANCE] Failed to set default: ${result.message}');
-        Get.snackbar(
+        CustomSnackBar.disabledSnackbar(
           'Error',
           result.message ?? 'Failed to set default bank account',
           snackPosition: SnackPosition.BOTTOM,
@@ -163,7 +164,7 @@ class FinanceController extends GetxController {
       }
     } catch (e) {
       print('[FINANCE] Exception in setDefaultBankAccount: $e');
-      Get.snackbar(
+      CustomSnackBar.disabledSnackbar(
         'Error',
         'Something went wrong: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,

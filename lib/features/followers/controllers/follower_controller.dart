@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:get/get.dart';
 import '../domain/models/follower_model.dart';
 import '../domain/services/follower_service.dart';
+import '../../../../core/constants/app_constants.dart';
+import '../../../../core/services/storage/shared_prefs.dart';
 
 class FollowerController extends GetxController {
   final GetFollowersUseCase _getFollowersUseCase;
@@ -40,7 +42,10 @@ class FollowerController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    getAllData();
+    final isLoggedIn = SharedPrefs.getBool(AppConstants.isLoggedIn) ?? false;
+    if (isLoggedIn) {
+      getAllData();
+    }
   }
 
   Future<void> getAllData() async {

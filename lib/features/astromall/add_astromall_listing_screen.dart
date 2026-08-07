@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class AddAstromallListingScreen extends StatefulWidget {
   final String? initialTitle;
@@ -70,7 +71,7 @@ class _AddAstromallListingScreenState extends State<AddAstromallListingScreen> {
         });
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to pick image: $e', snackPosition: SnackPosition.BOTTOM);
+      CustomSnackBar.disabledSnackbar('Error', 'Failed to pick image: $e', snackPosition: SnackPosition.BOTTOM);
     }
   }
 
@@ -187,7 +188,7 @@ class _AddAstromallListingScreenState extends State<AddAstromallListingScreen> {
                   onPressed: () {
                     // if (_formKey.currentState!.validate()) { ... }
                     Get.back();
-                    Get.snackbar(
+                    CustomSnackBar.disabledSnackbar(
                       'Success',
                       widget.isEditing ? 'Listing updated successfully' : 'Listing added successfully',
                       snackPosition: SnackPosition.BOTTOM,

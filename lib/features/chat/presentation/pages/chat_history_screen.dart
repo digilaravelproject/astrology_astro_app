@@ -18,6 +18,7 @@ import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'controllers/astrologer_sessions_controller.dart';
 import '../bindings/chat_binding.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class ChatHistoryScreen extends StatelessWidget {
   final bool showDefaultMessageButton;
@@ -377,7 +378,7 @@ class ChatHistoryScreen extends StatelessWidget {
                                       GestureDetector(
                                         onTap: () {
                                           Clipboard.setData(ClipboardData(text: entry.value));
-                                          Get.snackbar(
+                                          CustomSnackBar.disabledSnackbar(
                                             'Copied',
                                             '${entry.key} copied to clipboard',
                                             snackPosition: SnackPosition.BOTTOM,
@@ -449,7 +450,7 @@ class ChatHistoryScreen extends StatelessWidget {
                                     userImage: imageUrl,
                                   ));
                                 } else {
-                                  Get.snackbar("Error", "No Chat Assistance Session available");
+                                  CustomSnackBar.disabledSnackbar("Error", "No Chat Assistance Session available");
                                 }
                               },
                               height: 42,

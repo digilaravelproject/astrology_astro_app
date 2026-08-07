@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:astro_astrologer/features/chat/data/models/default_message_model.dart';
 import 'package:astro_astrologer/features/chat/domain/repositories/i_chat_repository.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class DefaultMessageController extends GetxController {
   final IChatRepository _chatRepository;
@@ -22,7 +23,7 @@ class DefaultMessageController extends GetxController {
       final result = await _chatRepository.getAllDefaultMessages();
       messages.value = result.map((e) => DefaultMessageModel.fromJson(e)).toList();
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      CustomSnackBar.disabledSnackbar('Error', e.toString());
     } finally {
       isLoading.value = false;
     }
@@ -43,10 +44,10 @@ class DefaultMessageController extends GetxController {
       }
       messages.add(DefaultMessageModel.fromJson(result));
       messages.refresh();
-      Get.snackbar('Success', 'Message added successfully');
+      CustomSnackBar.disabledSnackbar('Success', 'Message added successfully');
       return true;
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      CustomSnackBar.disabledSnackbar('Error', e.toString());
       return false;
     } finally {
       isLoading.value = false;
@@ -72,10 +73,10 @@ class DefaultMessageController extends GetxController {
         messages[index] = DefaultMessageModel.fromJson(result);
         messages.refresh();
       }
-      Get.snackbar('Success', 'Message updated successfully');
+      CustomSnackBar.disabledSnackbar('Success', 'Message updated successfully');
       return true;
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      CustomSnackBar.disabledSnackbar('Error', e.toString());
       return false;
     } finally {
       isLoading.value = false;
@@ -91,10 +92,10 @@ class DefaultMessageController extends GetxController {
           msg.isDefault = (msg.id == id);
         }
         messages.refresh();
-        Get.snackbar('Success', 'Active default message updated');
+        CustomSnackBar.disabledSnackbar('Success', 'Active default message updated');
       }
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      CustomSnackBar.disabledSnackbar('Error', e.toString());
     } finally {
       isLoading.value = false;
     }
@@ -116,10 +117,10 @@ class DefaultMessageController extends GetxController {
       final success = await _chatRepository.deleteDefaultMessage(id);
       if (success) {
         messages.removeWhere((m) => m.id == id);
-        Get.snackbar('Success', 'Message deleted successfully');
+        CustomSnackBar.disabledSnackbar('Success', 'Message deleted successfully');
       }
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      CustomSnackBar.disabledSnackbar('Error', e.toString());
     } finally {
       isLoading.value = false;
     }

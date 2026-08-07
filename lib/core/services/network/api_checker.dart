@@ -21,9 +21,9 @@ class ApiChecker {
     } else {
       if (showError) {
         if (response.errors != null && response.errors!.isNotEmpty) {
-          CustomSnackBar.showError(response.errors!.first.message ?? response.message);
+          CustomSnackBar.showError(response.errors!.first.message ?? response.message, isApiError: true);
         } else {
-          CustomSnackBar.showError(response.message);
+          CustomSnackBar.showError(response.message, isApiError: true);
         }
       }
     }
@@ -269,7 +269,7 @@ class ApiChecker {
 
     if (statusCode == 401) {
       if (showToaster) {
-        CustomSnackBar.showError('Session expired. Please login again.');
+        CustomSnackBar.showError('Session expired. Please login again.', isApiError: true);
       }
       _logout();
       return const ResponseModel(
@@ -290,14 +290,14 @@ class ApiChecker {
                 responseModel.errors!.first.message ?? 'Something went wrong',
               );
             } else {
-              CustomSnackBar.showError(responseModel.message);
+              CustomSnackBar.showError(responseModel.message, isApiError: true);
             }
           }
 
           return responseModel;
         } catch (e) {
           if (showToaster) {
-            CustomSnackBar.showError('Something went wrong');
+            CustomSnackBar.showError('Something went wrong', isApiError: true);
           }
           return ResponseModel(
             isSuccess: false,
@@ -307,7 +307,7 @@ class ApiChecker {
         }
       } else {
         if (showToaster) {
-          CustomSnackBar.showError('Something went wrong');
+          CustomSnackBar.showError('Something went wrong', isApiError: true);
         }
         return ResponseModel(
           isSuccess: false,
@@ -355,6 +355,8 @@ class ApiChecker {
     SharedPrefs.remove(AppConstants.userData);
     SharedPrefs.setBool(AppConstants.isLoggedIn, false);
     TokenManager.clearToken();
-    getx.Get.offAllNamed(RouteHelper.getLoginRoute());
+    if (getx.Get.currentRoute != RouteHelper.getLoginRoute()) {
+      getx.Get.offAllNamed(RouteHelper.getLoginRoute());
+    }
   }
 }

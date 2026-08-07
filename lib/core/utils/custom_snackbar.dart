@@ -57,15 +57,11 @@ class CustomSnackBar {
   }
 
   static void showSuccess(String message, {String title = 'Success'}) {
-    _show(
-      title: title,
-      message: message,
-      backgroundColor: AppColors.successColor,
-      icon: Icons.check_circle_rounded,
-    );
+    // Disabled as per user request
   }
 
-  static void showError(String message, {String title = 'Error'}) {
+  static void showError(String message, {String title = 'Error', bool isApiError = false}) {
+    if (!isApiError) return;
     _show(
       title: title,
       message: message,
@@ -75,21 +71,52 @@ class CustomSnackBar {
   }
 
   static void showInfo(String message, {String title = 'Info'}) {
-    _show(
-      title: title,
-      message: message,
-      backgroundColor: AppColors.infoColor,
-      icon: Icons.info_rounded,
-    );
+    // Disabled as per user request
   }
 
   static void showWarning(String message, {String title = 'Warning'}) {
-    _show(
-      title: title,
-      message: message,
-      backgroundColor: AppColors.warningColor,
-      icon: Icons.warning_rounded,
-    );
+    // Disabled as per user request
+  }
+
+  // Dummy method to replace Get.snackbar globally
+  static void disabledSnackbar(
+    String title,
+    String message, {
+    Color? colorText,
+    Duration? duration,
+    dynamic snackPosition,
+    Color? backgroundColor,
+    EdgeInsets? margin,
+    Widget? icon,
+    bool shouldIconPulse = true,
+    double? barBlur,
+    bool isDismissible = true,
+    Duration? animationDuration,
+    dynamic titleText,
+    dynamic messageText,
+    dynamic snackStyle,
+    dynamic forwardAnimationCurve,
+    dynamic reverseAnimationCurve,
+    dynamic onStatusChanged,
+    dynamic dismissDirection,
+    dynamic showProgressIndicator,
+    dynamic progressIndicatorController,
+    dynamic progressIndicatorBackgroundColor,
+    dynamic progressIndicatorValueColor,
+    dynamic overlayBlur,
+    dynamic overlayColor,
+    dynamic userInputForm,
+    dynamic padding,
+    dynamic mainButton,
+    dynamic onTap,
+    dynamic borderRadius,
+    dynamic borderColor,
+    dynamic borderWidth,
+    dynamic leftBarIndicatorColor,
+    dynamic iconText,
+    dynamic boxShadows,
+  }) {
+    // Do nothing
   }
 }
 

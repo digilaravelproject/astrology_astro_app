@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
+import 'package:astro_astrologer/core/constants/app_constants.dart';
+import 'package:astro_astrologer/core/services/storage/shared_prefs.dart';
 import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
 import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
 import 'package:astro_astrologer/features/chat/presentation/bindings/chat_binding.dart';
@@ -19,9 +21,12 @@ class DashboardController extends GetxController {
   @override
   void onReady() {
     super.onReady();
+    final isLoggedIn = SharedPrefs.getBool(AppConstants.isLoggedIn) ?? false;
     _checkOverlayPermission();
-    _checkCurrentActiveSession();
-    Get.find<CallController>().checkCurrentActiveCallSession();
+    if (isLoggedIn) {
+      _checkCurrentActiveSession();
+      Get.find<CallController>().checkCurrentActiveCallSession();
+    }
   }
 
   Future<void> _checkOverlayPermission() async {

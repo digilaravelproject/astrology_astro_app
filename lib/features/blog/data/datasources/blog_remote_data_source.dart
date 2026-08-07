@@ -1,6 +1,8 @@
 import '../../../../core/services/network/api_client.dart';
 import '../../../../core/services/network/response_model.dart';
 import '../../../../core/constants/app_urls.dart';
+import '../../../../core/constants/app_constants.dart';
+import '../../../../core/services/storage/shared_prefs.dart';
 import '../../../../core/utils/logger.dart';
 
 abstract class BlogRemoteDataSourceInterface {
@@ -16,7 +18,8 @@ class BlogRemoteDataSource implements BlogRemoteDataSourceInterface {
   @override
   Future<ResponseModel> getBlogList() async {
     try {
-      final response = await apiClient.get(AppUrls.blogs);
+      final lang = SharedPrefs.getString(AppConstants.language) ?? 'en';
+      final response = await apiClient.get('${AppUrls.blogs}?language=$lang');
       Logger.d('BlogRemoteDataSource.getBlogList success');
       return response;
     } catch (e) {
@@ -28,7 +31,8 @@ class BlogRemoteDataSource implements BlogRemoteDataSourceInterface {
   @override
   Future<ResponseModel> getBlogDetails(int id) async {
     try {
-      final response = await apiClient.get(AppUrls.blogDetails(id));
+      final lang = SharedPrefs.getString(AppConstants.language) ?? 'en';
+      final response = await apiClient.get('${AppUrls.blogDetails(id)}?language=$lang');
       Logger.d('BlogRemoteDataSource.getBlogDetails success');
       return response;
     } catch (e) {

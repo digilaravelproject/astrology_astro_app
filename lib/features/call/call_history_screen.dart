@@ -19,6 +19,7 @@ import '../../../core/constants/app_urls.dart';
 import 'package:astro_astrologer/features/orders/presentation/controllers/history_controller.dart';
 import 'package:astro_astrologer/features/orders/domain/usecases/get_astrologer_call_sessions_usecase.dart';
 import 'package:astro_astrologer/features/orders/data/repositories/history_repository.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class CallHistoryScreen extends StatelessWidget {
   final bool isFromTab;
@@ -330,7 +331,7 @@ class CallHistoryScreen extends StatelessWidget {
                               color: Colors.white,
                               onSelected: (value) {
                                 if (value == 'block') {
-                                  Get.snackbar(
+                                  CustomSnackBar.disabledSnackbar(
                                     'Block User',
                                     'Block user action triggered for ${details["Name"]}',
                                     snackPosition: SnackPosition.BOTTOM,
@@ -458,9 +459,13 @@ class CallHistoryScreen extends StatelessWidget {
                         child: CustomButton(
                           text: "Open Kundli",
                           onPressed: () => Get.to(() => KundliScreen(
-                            name: details["Name"],
-                            datetime: rawDatetime,
-                            place: details["POB"],
+                            fullName: details["Name"] ?? "Unknown",
+                            gender: details["Gender"] ?? "Male",
+                            dob: details["DOB"] ?? "",
+                            tob: "",
+                            place: details["POB"] ?? "",
+                            latitude: 0.0,
+                            longitude: 0.0,
                           )),
                           height: 42,
                           padding: EdgeInsets.zero,
@@ -481,7 +486,7 @@ class CallHistoryScreen extends StatelessWidget {
                                 userImage: imageUrl,
                               ));
                             } else {
-                              Get.snackbar("Error", "No Chat Assistance Session available");
+                              CustomSnackBar.disabledSnackbar("Error", "No Chat Assistance Session available");
                             }
                           },
                           height: 42,

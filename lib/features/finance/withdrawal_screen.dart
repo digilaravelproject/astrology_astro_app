@@ -10,6 +10,7 @@ import 'presentation/controllers/finance_controller.dart';
 import '../wallet/presentation/controllers/wallet_controller.dart';
 import 'presentation/screens/bank_accounts_screen.dart';
 import 'domain/models/bank_account_model.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class WithdrawalScreen extends StatefulWidget {
   const WithdrawalScreen({super.key});
@@ -234,11 +235,11 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                     text: 'Confirm Withdrawal',
                     onPressed: () {
                       if (_amountController.text.isEmpty) {
-                         Get.snackbar('Invalid Amount', 'Please enter a valid amount', backgroundColor: Colors.red.shade100, colorText: Colors.red.shade800);
+                         CustomSnackBar.disabledSnackbar('Invalid Amount', 'Please enter a valid amount', backgroundColor: Colors.red.shade100, colorText: Colors.red.shade800);
                          return;
                       }
                       if (defaultBank == null) {
-                         Get.snackbar('No Bank', 'Please select or add a bank account', backgroundColor: Colors.red.shade100, colorText: Colors.red.shade800);
+                         CustomSnackBar.disabledSnackbar('No Bank', 'Please select or add a bank account', backgroundColor: Colors.red.shade100, colorText: Colors.red.shade800);
                          return;
                       }
 
@@ -272,11 +273,11 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                             if (result['success'] == true) {
                               Get.back(); // close withdrawal screen
                               Future.delayed(const Duration(milliseconds: 300), () {
-                                Get.snackbar('Success', result['message'], backgroundColor: Colors.green.shade100, colorText: Colors.green.shade800);
+                                CustomSnackBar.disabledSnackbar('Success', result['message'], backgroundColor: Colors.green.shade100, colorText: Colors.green.shade800);
                               });
                             } else {
                               Future.delayed(const Duration(milliseconds: 300), () {
-                                Get.snackbar('Error', result['message'], backgroundColor: Colors.red.shade100, colorText: Colors.red.shade800);
+                                CustomSnackBar.disabledSnackbar('Error', result['message'], backgroundColor: Colors.red.shade100, colorText: Colors.red.shade800);
                               });
                             }
                           },

@@ -9,6 +9,7 @@ import '../../../../core/services/network/api_client.dart';
 import '../../../../core/services/network/websocket_service.dart';
 import '../pages/chat_screen.dart';
 import '../bindings/chat_binding.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class IncomingChatDialog extends StatefulWidget {
   final Map<String, dynamic> sessionData;
@@ -434,7 +435,7 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
                             } else {
                               Navigator.of(context).pop();
                             }
-                            Get.snackbar('Error', response.message);
+                            CustomSnackBar.disabledSnackbar('Error', response.message);
                           }
                         } catch (e) {
                           debugPrint('Accept error: $e');

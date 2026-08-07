@@ -8,6 +8,7 @@ import 'package:astro_astrologer/core/widgets/custom_button.dart';
 import 'controllers/default_message_controller.dart';
 import 'package:astro_astrologer/features/chat/data/models/default_message_model.dart';
 import 'package:astro_astrologer/features/chat/domain/repositories/i_chat_repository.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class CreateDefaultMessageScreen extends StatefulWidget {
   const CreateDefaultMessageScreen({super.key});
@@ -114,7 +115,7 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
                         isLoading: controller.isLoading.value,
                         onPressed: () async {
                           if (_titleController.text.trim().isEmpty || _messageController.text.trim().isEmpty) {
-                            Get.snackbar('Error', 'Please fill all fields');
+                            CustomSnackBar.disabledSnackbar('Error', 'Please fill all fields');
                             return;
                           }
                           

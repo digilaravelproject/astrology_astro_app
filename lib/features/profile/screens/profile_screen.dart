@@ -29,6 +29,7 @@ import '../../followers/my_followers_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import 'dart:io';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -482,7 +483,7 @@ class ProfileScreen extends StatelessWidget {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
-      Get.snackbar('Error', 'Could not launch $url', snackPosition: SnackPosition.BOTTOM);
+      CustomSnackBar.disabledSnackbar('Error', 'Could not launch $url', snackPosition: SnackPosition.BOTTOM);
     }
   }
 

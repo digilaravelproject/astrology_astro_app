@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 import '../../../../core/services/network/response_model.dart';
 import '../../../../core/utils/logger.dart';
+import '../../../../core/constants/app_constants.dart';
+import '../../../../core/services/storage/shared_prefs.dart';
 import '../domain/models/notice_model.dart';
 import '../domain/services/notice_service_interface.dart';
 
@@ -16,7 +18,10 @@ class NoticeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    getNotices();
+    final isLoggedIn = SharedPrefs.getBool(AppConstants.isLoggedIn) ?? false;
+    if (isLoggedIn) {
+      getNotices();
+    }
   }
 
   Future<void> getNotices() async {
