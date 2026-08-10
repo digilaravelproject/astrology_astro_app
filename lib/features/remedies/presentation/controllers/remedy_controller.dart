@@ -4,6 +4,7 @@ import '../../../../core/utils/logger.dart';
 import '../../domain/models/remedy_model.dart';
 import '../../domain/usecases/get_remedies_usecase.dart';
 import '../../domain/usecases/get_remedy_details_usecase.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class RemedyController extends GetxController {
   final GetRemediesUseCase _getRemediesUseCase;
@@ -35,7 +36,7 @@ class RemedyController extends GetxController {
         Logger.d('Loaded ${remedies.length} remedies', tag: 'REMEDY');
       } else {
         Logger.e('Failed to get remedies: ${result.message}', tag: 'REMEDY');
-        Get.snackbar(
+        CustomSnackBar.disabledSnackbar(
           'Error',
           result.message,
           snackPosition: SnackPosition.BOTTOM,
@@ -45,7 +46,7 @@ class RemedyController extends GetxController {
       }
     } catch (e) {
       Logger.e('Exception in getRemedies: $e', tag: 'REMEDY');
-      Get.snackbar(
+      CustomSnackBar.disabledSnackbar(
         'Error',
         'Something went wrong: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,

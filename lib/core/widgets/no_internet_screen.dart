@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
 import '../services/network/network_info.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class NoInternetScreen extends StatefulWidget {
   const NoInternetScreen({Key? key}) : super(key: key);
@@ -22,7 +23,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
 
     if (isConnected) {
       Get.back(); // close the screen
-      Get.snackbar(
+      CustomSnackBar.disabledSnackbar(
         'Connected',
         'Internet connection restored',
         snackPosition: SnackPosition.BOTTOM,
@@ -31,7 +32,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
         duration: const Duration(seconds: 2),
       );
     } else {
-      Get.snackbar(
+      CustomSnackBar.disabledSnackbar(
         'No Internet',
         'Still no internet connection. Please check your network.',
         snackPosition: SnackPosition.BOTTOM,
@@ -52,7 +53,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
       }
     } catch (e) {
       debugPrint('Error opening settings: $e');
-      Get.snackbar('Error', 'Unable to open settings',
+      CustomSnackBar.disabledSnackbar('Error', 'Unable to open settings',
           snackPosition: SnackPosition.BOTTOM);
     }
   }

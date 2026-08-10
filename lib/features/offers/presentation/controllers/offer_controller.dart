@@ -4,6 +4,7 @@ import 'package:astro_astrologer/features/offers/domain/usecases/toggle_offer_us
 import 'package:astro_astrologer/features/offers/domain/usecases/get_offer_history_usecase.dart';
 import 'package:astro_astrologer/features/offers/domain/models/offer_model.dart';
 import 'package:astro_astrologer/features/offers/domain/models/offer_history_model.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class OfferController extends GetxController {
   final GetOffersUseCase getOffersUseCase;
@@ -38,7 +39,7 @@ class OfferController extends GetxController {
       final result = await getOffersUseCase();
       offers.assignAll(result);
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      CustomSnackBar.disabledSnackbar('Error', e.toString());
     } finally {
       isLoadingOffers.value = false;
     }
@@ -59,7 +60,7 @@ class OfferController extends GetxController {
       final result = await getOfferHistoryUseCase();
       history.assignAll(result);
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      CustomSnackBar.disabledSnackbar('Error', e.toString());
     } finally {
       isLoadingHistory.value = false;
     }
@@ -85,7 +86,7 @@ class OfferController extends GetxController {
       await fetchOffersSilently();
       fetchHistorySilently(); // No need to await history to update UI faster
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      CustomSnackBar.disabledSnackbar('Error', e.toString());
     } finally {
       togglingOfferIds.remove(offerId);
     }

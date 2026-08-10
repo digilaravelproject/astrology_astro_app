@@ -5,6 +5,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import '../../../core/widgets/custom_button.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class AudioRecordScreen extends StatefulWidget {
   const AudioRecordScreen({Key? key}) : super(key: key);
@@ -161,7 +162,7 @@ class _AudioRecordScreenState extends State<AudioRecordScreen> with SingleTicker
                 if (duration.inSeconds > 0 && !isRecording) {
                   Get.back();
                   Get.back();
-                  Get.snackbar(
+                  CustomSnackBar.disabledSnackbar(
                     'Success', 
                     'Audio submitted successfully!',
                     backgroundColor: Colors.black87,

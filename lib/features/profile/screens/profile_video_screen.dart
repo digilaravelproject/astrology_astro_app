@@ -10,6 +10,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_app_bar.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class ProfileVideoScreen extends StatefulWidget {
   const ProfileVideoScreen({super.key});
@@ -129,7 +130,7 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
                     onPressed: () {
                       Get.back(); // Close bottom sheet
                       Get.back(); // Close screen
-                      Get.snackbar(
+                      CustomSnackBar.disabledSnackbar(
                         'Success',
                         'Profile video uploaded successfully!',
                         backgroundColor: Colors.green,

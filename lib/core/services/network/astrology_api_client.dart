@@ -75,6 +75,7 @@ class AstrologyApiClient {
       'lat': latitude,
       'lon': longitude,
       'tzone': tzOffset,
+      'theme_name': 'detailed',
     };
   }
 

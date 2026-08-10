@@ -18,6 +18,7 @@ import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'controllers/astrologer_sessions_controller.dart';
 import '../bindings/chat_binding.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class ChatHistoryScreen extends StatelessWidget {
   final bool showDefaultMessageButton;
@@ -49,7 +50,7 @@ class ChatHistoryScreen extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final session = controller.sessions[index];
                         final durationMinutes = (session.durationSeconds / 60).ceil();
-                        
+
                         // Format DOB
                         String dobStr = "N/A";
                         if (session.consumer?.dateOfBirth != null) {
@@ -233,9 +234,9 @@ class ChatHistoryScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // Astrotalk, ID and Icons
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -295,9 +296,9 @@ class ChatHistoryScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // Price & Date container
                 Container(
                   padding: const EdgeInsets.all(12),
@@ -377,7 +378,7 @@ class ChatHistoryScreen extends StatelessWidget {
                                       GestureDetector(
                                         onTap: () {
                                           Clipboard.setData(ClipboardData(text: entry.value));
-                                          Get.snackbar(
+                                          CustomSnackBar.disabledSnackbar(
                                             'Copied',
                                             '${entry.key} copied to clipboard',
                                             snackPosition: SnackPosition.BOTTOM,
@@ -449,7 +450,7 @@ class ChatHistoryScreen extends StatelessWidget {
                                     userImage: imageUrl,
                                   ));
                                 } else {
-                                  Get.snackbar("Error", "No Chat Assistance Session available");
+                                  CustomSnackBar.disabledSnackbar("Error", "No Chat Assistance Session available");
                                 }
                               },
                               height: 42,

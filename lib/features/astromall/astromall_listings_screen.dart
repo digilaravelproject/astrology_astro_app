@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 import 'add_astromall_listing_screen.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class AstromallListingsScreen extends StatefulWidget {
   const AstromallListingsScreen({super.key});
@@ -234,7 +235,7 @@ class _AstromallListingsScreenState extends State<AstromallListingsScreen> with 
                     cancelTextColor: Colors.black87,
                     onConfirm: () {
                       Get.back();
-                      Get.snackbar(
+                      CustomSnackBar.disabledSnackbar(
                         'Deleted',
                         'Listing "$title" has been removed',
                         snackPosition: SnackPosition.BOTTOM,
@@ -245,7 +246,7 @@ class _AstromallListingsScreenState extends State<AstromallListingsScreen> with 
                     },
                   );
                 } else if (value == 'Status') {
-                  Get.snackbar(
+                  CustomSnackBar.disabledSnackbar(
                     'Status Changed',
                     'Listing status toggled',
                     snackPosition: SnackPosition.BOTTOM,

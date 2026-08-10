@@ -7,6 +7,7 @@ import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import '../../language/controllers/localization_controller.dart';
 import '../../language/domain/models/language_model.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class ChangeLanguageScreen extends StatefulWidget {
   const ChangeLanguageScreen({super.key});
@@ -110,7 +111,7 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
               onPressed: () {
                 _localizationController.setLanguage(languages[_selectedIndex]);
                 
-                Get.snackbar(
+                CustomSnackBar.disabledSnackbar(
                   'Success', 
                   "Language changed to ${languages[_selectedIndex].languageName}", 
                   backgroundColor: Colors.green.withOpacity(0.1),

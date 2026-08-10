@@ -24,6 +24,7 @@ import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/features/auth/controllers/auth_controller.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class ChatController extends GetxController with WidgetsBindingObserver {
   final LoadChatHistoryUseCase _loadChatHistoryUseCase;
@@ -243,7 +244,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
           LocalNotificationService.cancelOngoingChatNotification(_sessionId!);
         }
         Get.back();
-        // Get.snackbar("Chat Cancelled", "The chat request was cancelled or timed out.");
+        // CustomSnackBar.disabledSnackbar("Chat Cancelled", "The chat request was cancelled or timed out.");
       }
     });
 

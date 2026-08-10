@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/io.dart';
+import '../../../features/live/data/models/live_session_model.dart';
 import '../storage/token_manger.dart';
 import '../storage/shared_prefs.dart';
 import '../../../core/constants/app_constants.dart';
@@ -24,6 +25,7 @@ import 'package:astro_astrologer/features/live/presentation/controllers/live_con
 import 'package:astro_astrologer/features/chat/presentation/controllers/assistant_chat_list_controller.dart';
 import 'package:astro_astrologer/features/chat/presentation/controllers/assistance_chat_room_controller.dart';
 import 'package:astro_astrologer/features/live/data/models/live_session_model.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class WebSocketService extends GetxService {
   WebSocketChannel? _channel;
@@ -70,9 +72,12 @@ class WebSocketService extends GetxService {
 
   Future<WebSocketService> init() async {
     // If user is already logged in, connect immediately on app start
-    final token = await TokenManager.getToken();
-    if (token != null && token.isNotEmpty) {
-      connect();
+    final isLoggedIn = SharedPrefs.getBool(AppConstants.isLoggedIn) ?? false;
+    if (isLoggedIn) {
+      final token = await TokenManager.getToken();
+      if (token != null && token.isNotEmpty) {
+        connect();
+      }
     }
     return this;
   }
@@ -799,7 +804,7 @@ class WebSocketService extends GetxService {
     final String text = msg['message'] ?? 'Sent an attachment';
     
     try {
-      Get.snackbar(
+      CustomSnackBar.disabledSnackbar(
         'New Message',
         text,
         snackPosition: SnackPosition.TOP,

@@ -4,6 +4,8 @@ import '../../domain/usecases/set_sleep_hours_usecase.dart';
 import '../../domain/usecases/get_sleep_hours_usecase.dart';
 import '../../domain/models/sleep_hours_model.dart';
 import '../../../../core/utils/custom_snackbar.dart';
+import '../../../../core/constants/app_constants.dart';
+import '../../../../core/services/storage/shared_prefs.dart';
 
 class ScheduleController extends GetxController {
   final SetSleepHoursUseCase _setSleepHoursUseCase;
@@ -68,6 +70,9 @@ class ScheduleController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    getSleepHours();
+    final isLoggedIn = SharedPrefs.getBool(AppConstants.isLoggedIn) ?? false;
+    if (isLoggedIn) {
+      getSleepHours();
+    }
   }
 }

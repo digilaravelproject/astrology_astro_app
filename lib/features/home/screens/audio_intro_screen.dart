@@ -8,6 +8,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_app_bar.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class AudioIntroScreen extends StatefulWidget {
   const AudioIntroScreen({super.key});
@@ -94,7 +95,7 @@ class _AudioIntroScreenState extends State<AudioIntroScreen> {
                     onPressed: () {
                       Get.back(); // Close bottom sheet
                       Get.back(); // Close screen
-                      Get.snackbar(
+                      CustomSnackBar.disabledSnackbar(
                         'Success',
                         'Audio introduction uploaded successfully!',
                         backgroundColor: Colors.green,

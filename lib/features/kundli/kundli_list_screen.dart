@@ -8,6 +8,7 @@ import 'create_kundli_screen.dart';
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
 import 'controllers/saved_kundli_controller.dart';
 import 'models/kundli_list_response_model.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class KundliListScreen extends StatefulWidget {
   final bool isMatchingMode;
@@ -56,7 +57,7 @@ class _KundliListScreenState extends State<KundliListScreen> {
         if (_selectedIds.length < 2) {
           _selectedIds.add(id);
         } else {
-          Get.snackbar(
+          CustomSnackBar.disabledSnackbar(
             "Limit Reached",
             "You can select only 2 Kundlis for Match Making",
             snackPosition: SnackPosition.BOTTOM,

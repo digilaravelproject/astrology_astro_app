@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 import '../../../core/utils/custom_snackbar.dart';
 import '../model/training_videos_model.dart';
 import '../usecase/training_video_use_case.dart';
+import '../../../../core/constants/app_constants.dart';
+import '../../../../core/services/storage/shared_prefs.dart';
 
 class TrainingVideoController extends GetxController {
   final GetTrainingVideosUseCase _useCase;
@@ -43,6 +45,9 @@ class TrainingVideoController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchVideos();
+    final isLoggedIn = SharedPrefs.getBool(AppConstants.isLoggedIn) ?? false;
+    if (isLoggedIn) {
+      fetchVideos();
+    }
   }
 }

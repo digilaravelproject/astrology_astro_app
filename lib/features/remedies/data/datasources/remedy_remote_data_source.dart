@@ -1,6 +1,8 @@
 import '../../../../core/services/network/api_client.dart';
 import '../../../../core/services/network/response_model.dart';
 import '../../../../core/constants/app_urls.dart';
+import '../../../../core/constants/app_constants.dart';
+import '../../../../core/services/storage/shared_prefs.dart';
 
 class RemedyRemoteDataSource {
   final ApiClient _apiClient;
@@ -8,10 +10,12 @@ class RemedyRemoteDataSource {
   RemedyRemoteDataSource(this._apiClient);
 
   Future<ResponseModel> getRemedies() async {
-    return await _apiClient.get(AppUrls.remedies);
+    final lang = SharedPrefs.getString(AppConstants.language) ?? 'en';
+    return await _apiClient.get('${AppUrls.remedies}?language=$lang');
   }
 
   Future<ResponseModel> getRemedyDetails(int id) async {
-    return await _apiClient.get(AppUrls.remedyDetails(id));
+    final lang = SharedPrefs.getString(AppConstants.language) ?? 'en';
+    return await _apiClient.get('${AppUrls.remedyDetails(id)}?language=$lang');
   }
 }

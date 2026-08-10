@@ -7,6 +7,7 @@ import '../../../core/widgets/custom_app_bar.dart';
 import 'price_increase_history_screen.dart';
 import '../../auth/controllers/auth_controller.dart';
 import '../controllers/price_increase_controller.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class PriceSettingScreen extends StatefulWidget {
   const PriceSettingScreen({super.key});
@@ -330,7 +331,7 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
                   iconColor: AppColors.primaryColor,
                   backgroundColor: AppColors.primaryColor.withOpacity(0.1),
                   onTap: () {
-                    Get.snackbar("Video Rate Update", "Video price increase request is not supported yet.");
+                    CustomSnackBar.disabledSnackbar("Video Rate Update", "Video price increase request is not supported yet.");
                   },
                   showEditIcon: false,
                 ),

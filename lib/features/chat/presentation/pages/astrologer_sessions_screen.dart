@@ -18,6 +18,7 @@ import 'package:astro_astrologer/features/home/widgets/add_note_bottom_sheet.dar
 import 'package:astro_astrologer/features/chat/presentation/pages/assistance_chat_room_screen.dart';
 
 import 'controllers/astrologer_sessions_controller.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class AstrologerSessionsScreen extends StatelessWidget {
   AstrologerSessionsScreen({super.key}) {
@@ -315,7 +316,7 @@ class AstrologerSessionsScreen extends StatelessWidget {
                                    GestureDetector(
                                      onTap: () {
                                        Clipboard.setData(ClipboardData(text: entry.value));
-                                       Get.snackbar(
+                                       CustomSnackBar.disabledSnackbar(
                                          'Copied',
                                          '${entry.key} copied to clipboard',
                                          snackPosition: SnackPosition.BOTTOM,
@@ -373,7 +374,7 @@ class AstrologerSessionsScreen extends StatelessWidget {
                                 userImage: photoUrl,
                               ));
                             } else {
-                              Get.snackbar("Error", "No Chat Assistance Session available");
+                              CustomSnackBar.disabledSnackbar("Error", "No Chat Assistance Session available");
                             }
                           },
                           height: 42,

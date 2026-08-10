@@ -45,7 +45,7 @@ class HistoryScreen extends StatelessWidget {
             ),
             Expanded(
               child: TabBarView(
-                children: const [
+                children:  [
                   CallHistoryScreen(isFromTab: true),
                   ChatHistoryScreen(isFromTab: true),
                 ],

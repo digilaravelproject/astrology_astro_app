@@ -944,7 +944,7 @@ class _HomeScreenState extends State<HomeScreen> {
         bgColor: const Color(0xFFFFF4E5),
         iconBgColor: const Color(0xFFFFE4B5),
         textColor: const Color(0xFFF5A623),
-        onTap: () => Get.to(() => const CallHistoryScreen()),
+        onTap: () => Get.to(() =>  CallHistoryScreen()),
       ),
       // Consultation tools
       _MenuData(

@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import '../../domain/models/astrologer_order_model.dart';
 import '../../domain/usecases/get_astrologer_orders_usecase.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class OrdersController extends GetxController {
   final GetAstrologerOrdersUseCase _getAstrologerOrdersUseCase;
@@ -189,11 +190,11 @@ class OrdersController extends GetxController {
           binding: ChatBinding(),
         );
       } else {
-        Get.snackbar('Error', response.message);
+        CustomSnackBar.disabledSnackbar('Error', response.message);
       }
     } catch (e) {
       debugPrint('Accept chat error: $e');
-      Get.snackbar('Error', 'Failed to accept chat request: $e');
+      CustomSnackBar.disabledSnackbar('Error', 'Failed to accept chat request: $e');
     }
   }
 
@@ -204,7 +205,7 @@ class OrdersController extends GetxController {
       fetchChatOrders(isRefresh: true);
     } catch (e) {
       debugPrint('Reject chat error: $e');
-      Get.snackbar('Error', 'Failed to reject chat request: $e');
+      CustomSnackBar.disabledSnackbar('Error', 'Failed to reject chat request: $e');
     }
   }
 
@@ -252,7 +253,7 @@ class OrdersController extends GetxController {
         if (success) {
           Get.to(() => const CallScreen());
         } else {
-          Get.snackbar('Error', 'Failed to accept call. Please try again.',
+          CustomSnackBar.disabledSnackbar('Error', 'Failed to accept call. Please try again.',
               snackPosition: SnackPosition.TOP);
           fetchCallOrders(isRefresh: true);
         }
@@ -262,7 +263,7 @@ class OrdersController extends GetxController {
       }
     } catch (e) {
       debugPrint('Accept call order error: $e');
-      Get.snackbar('Error', 'Failed to accept call: $e');
+      CustomSnackBar.disabledSnackbar('Error', 'Failed to accept call: $e');
       fetchCallOrders(isRefresh: true);
     }
   }
@@ -275,13 +276,13 @@ class OrdersController extends GetxController {
       showErrorScreen: false,
     );
     if (response.isSuccess) {
-      Get.snackbar('Call Accepted', 'Connecting to ${order.userName}...',
+      CustomSnackBar.disabledSnackbar('Call Accepted', 'Connecting to ${order.userName}...',
           backgroundColor: Colors.green.shade50,
           colorText: Colors.green.shade800,
           snackPosition: SnackPosition.TOP);
       Get.to(() => const CallScreen());
     } else {
-      Get.snackbar('Error', 'Failed to accept call: ${response.message}');
+      CustomSnackBar.disabledSnackbar('Error', 'Failed to accept call: ${response.message}');
       fetchCallOrders(isRefresh: true);
     }
   }
@@ -303,7 +304,7 @@ class OrdersController extends GetxController {
             callController.cleanUp();
           }
         }
-        Get.snackbar(
+        CustomSnackBar.disabledSnackbar(
           'Call Rejected',
           'You rejected the call from ${order.userName}.',
           backgroundColor: Colors.red.shade50,
@@ -312,12 +313,12 @@ class OrdersController extends GetxController {
           duration: const Duration(seconds: 2),
         );
       } else {
-        Get.snackbar('Error', 'Failed to reject call: ${response.message}');
+        CustomSnackBar.disabledSnackbar('Error', 'Failed to reject call: ${response.message}');
         fetchCallOrders(isRefresh: true);
       }
     } catch (e) {
       debugPrint('Reject call error: $e');
-      Get.snackbar('Error', 'Failed to reject call: $e');
+      CustomSnackBar.disabledSnackbar('Error', 'Failed to reject call: $e');
       fetchCallOrders(isRefresh: true);
     }
   }

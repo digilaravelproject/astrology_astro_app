@@ -5,6 +5,8 @@ import '../../../../core/services/network/api_checker.dart';
 import '../../../../core/services/local_notification_service.dart';
 import '../../data/models/live_session_model.dart';
 import '../../domain/usecases/live_usecases.dart';
+import '../../../../core/constants/app_constants.dart';
+import '../../../../core/services/storage/shared_prefs.dart';
 import '../pages/live_room_screen.dart';
 
 class LiveController extends GetxController {
@@ -46,8 +48,11 @@ class LiveController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    getSessions();
-    checkCurrentActiveSession();
+    final isLoggedIn = SharedPrefs.getBool(AppConstants.isLoggedIn) ?? false;
+    if (isLoggedIn) {
+      getSessions();
+      checkCurrentActiveSession();
+    }
   }
 
   void showLiveBubbleAndNotification(LiveSessionModel session) {
