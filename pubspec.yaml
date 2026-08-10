@@ -89,6 +89,7 @@ dependencies:
   livekit_client: ^2.4.0
   flutter_foreground_task: ^9.2.2
   open_filex: ^4.7.0
+  cloud_firestore: ^6.8.0
 
 
 dev_dependencies:
