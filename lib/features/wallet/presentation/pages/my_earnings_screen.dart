@@ -4,7 +4,6 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:astro_astrologer/core/theme/app_colors.dart';
 import 'package:astro_astrologer/core/widgets/app_text.dart';
-import 'package:astro_astrologer/core/widgets/custom_button.dart';
 import 'package:astro_astrologer/core/widgets/custom_app_bar.dart';
 import 'package:astro_astrologer/features/profile/screens/weekly_ranking_screen.dart';
 import 'package:astro_astrologer/features/wallet/presentation/controllers/wallet_controller.dart';
@@ -146,20 +145,20 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: CustomButton(
-                    text: 'Withdraw Money',
-                    onPressed: () => Get.to(() => const WithdrawalScreen()),
-                    backgroundColor: AppColors.primaryColor,
-                    borderRadius: 12,
-                    height: 46,
-                  ),
-                ),
-              ],
-            ),
+           /// const SizedBox(height: 20),
+            // Row(
+            //   children: [
+            //     Expanded(
+            //       child: CustomButton(
+            //         text: 'Withdraw Money',
+            //         onPressed: () => Get.to(() => const WithdrawalScreen()),
+            //         backgroundColor: AppColors.primaryColor,
+            //         borderRadius: 12,
+            //         height: 46,
+            //       ),
+            //     ),
+            //   ],
+            // ),
           ],
         );
       }),

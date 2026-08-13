@@ -33,15 +33,17 @@ class GalleryScreen extends StatelessWidget {
     }
     final controller = Get.find<GalleryController>();
     
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
+    // return DefaultTabController(
+    //   length: 2,
+    //   child: 
+      return Scaffold(
         backgroundColor: const Color(0xFFF9F9F9),
         appBar: const CustomAppBar(
           title: 'Gallery',
         ),
         body: Column(
           children: [
+            /*
             Container(
               color: Colors.white,
               width: double.infinity,
@@ -60,20 +62,24 @@ class GalleryScreen extends StatelessWidget {
                 ],
               ),
             ),
+            */
             _buildNoticeBanner(),
-            Expanded(
+            const Expanded(
+              child: GalleryGridView(tabType: 'profile'),
+              /*
               child: TabBarView(
                 children: [
                   GalleryGridView(tabType: 'profile'),
                   GalleryGridView(tabType: 'live'),
                 ],
               ),
+              */
             ),
             _buildUploadButton(context, controller),
           ],
         ),
-      ),
-    );
+      );
+    // );
   }
 
   Widget _buildNoticeBanner() {

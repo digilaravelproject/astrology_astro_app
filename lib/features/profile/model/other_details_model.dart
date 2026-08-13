@@ -36,12 +36,14 @@ class OtherDetailsModel {
     updatedAt: json['updated_at'],
   );
 
-  Map<String, dynamic> toJson() => {
-    "gender": gender,
-    "current_address": currentAddress,
-    "bio": bio,
-    "date_of_birth": dateOfBirth,
-    "website_link": websiteLink,
-    "instagram_username": instagramUsername,
-  };
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    if (gender != null && gender!.isNotEmpty) map["gender"] = gender;
+    if (currentAddress != null && currentAddress!.isNotEmpty) map["current_address"] = currentAddress;
+    if (bio != null && bio!.isNotEmpty) map["bio"] = bio;
+    if (dateOfBirth != null && dateOfBirth!.isNotEmpty) map["date_of_birth"] = dateOfBirth;
+    if (websiteLink != null && websiteLink!.isNotEmpty) map["website_link"] = websiteLink;
+    if (instagramUsername != null && instagramUsername!.isNotEmpty) map["instagram_username"] = instagramUsername;
+    return map;
+  }
 }
