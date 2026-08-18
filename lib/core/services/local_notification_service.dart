@@ -81,33 +81,49 @@ class LocalNotificationService {
     if (androidPlugin != null) {
       await androidPlugin.createNotificationChannel(
         const AndroidNotificationChannel(
+          'calls_channel',
+          'Incoming Calls',
+          description: 'Incoming Call Ringing (User & Astrologer)',
+          importance: Importance.max,
+        ),
+      );
+      await androidPlugin.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'chats_channel',
+          'Chat Messages & Requests',
+          description: 'New Chat Requests and Chat Room messages',
+          importance: Importance.high,
+        ),
+      );
+      await androidPlugin.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'session_channel',
+          'Consultations & Billing',
+          description: 'Session Lifecycle, Acceptance, Ending & Billing Notifications',
+          importance: Importance.high,
+        ),
+      );
+      await androidPlugin.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'wallet_channel',
+          'Wallet & Gifts',
+          description: 'Wallet Top-Up, Gifts & Transactions',
+          importance: Importance.defaultImportance,
+        ),
+      );
+      await androidPlugin.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'system_channel',
+          'Account & System Alerts',
+          description: 'Account status and system notifications',
+          importance: Importance.defaultImportance,
+        ),
+      );
+      await androidPlugin.createNotificationChannel(
+        const AndroidNotificationChannel(
           'astology_notifications',
           'System & General Notifications',
           description: 'General updates and system notifications',
-          importance: Importance.max,
-        ),
-      );
-      await androidPlugin.createNotificationChannel(
-        const AndroidNotificationChannel(
-          'active_chat_channel_v1',
-          'Active Chats',
-          description: 'Ongoing notification for active chat sessions',
-          importance: Importance.max,
-        ),
-      );
-      await androidPlugin.createNotificationChannel(
-        const AndroidNotificationChannel(
-          'active_call_channel_v1',
-          'Active Calls',
-          description: 'Ongoing notification for active audio/video call sessions',
-          importance: Importance.max,
-        ),
-      );
-      await androidPlugin.createNotificationChannel(
-        const AndroidNotificationChannel(
-          'active_live_channel_v1',
-          'Active Live Broadcasts',
-          description: 'Ongoing notification for active live sessions',
           importance: Importance.max,
         ),
       );
