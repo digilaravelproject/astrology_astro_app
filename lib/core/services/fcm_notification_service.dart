@@ -45,6 +45,14 @@ class FCMNotificationService {
     // 4. Foreground Message Handler
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       debugPrint('Foreground Message Received: ${message.notification?.title}');
+      if (message.notification != null) {
+        LocalNotificationService.showNotification(
+          id: message.hashCode,
+          title: message.notification?.title ?? 'Notification',
+          body: message.notification?.body ?? '',
+          payload: message.data.toString(),
+        );
+      }
     });
 
     // 5. Notification Opened Handler

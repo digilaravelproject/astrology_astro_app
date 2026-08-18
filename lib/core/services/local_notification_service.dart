@@ -244,4 +244,37 @@ class LocalNotificationService {
   static Future<void> cancelOngoingLiveNotification(int sessionId) async {
     await _notificationsPlugin.cancel(sessionId + 300000);
   }
+
+  static Future<void> showNotification({
+    required int id,
+    required String title,
+    required String body,
+    String? payload,
+  }) async {
+    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+      'astology_notifications',
+      'System & General Notifications',
+      channelDescription: 'General updates and system notifications',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: true,
+    );
+
+    final NotificationDetails notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: const DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      ),
+    );
+
+    await _notificationsPlugin.show(
+      id,
+      title,
+      body,
+      notificationDetails,
+      payload: payload,
+    );
+  }
 }
