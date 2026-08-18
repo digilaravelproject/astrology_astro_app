@@ -595,6 +595,19 @@ class WebSocketService extends GetxService {
 
       if (session != null && senderData != null) {
         chatInitiatedEvent.add(Map<String, dynamic>.from(session));
+        
+        final int sessionId = session['id'] is int 
+            ? session['id'] 
+            : (int.tryParse(session['id']?.toString() ?? '') ?? 0);
+        final String name = senderData['name']?.toString() ?? 'User';
+
+        // Trigger ongoing notification drawer item during ringing
+        LocalNotificationService.showOngoingChatNotification(
+          sessionId: sessionId,
+          title: 'Incoming Chat Request from $name',
+          body: 'Tap to view incoming request details',
+        );
+
         WidgetsBinding.instance.addPostFrameCallback((_) {
           CallSummaryDialog.dismissIfOpen();
           Get.bottomSheet(
