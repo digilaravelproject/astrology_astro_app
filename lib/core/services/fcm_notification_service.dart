@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
+import 'local_notification_service.dart';
 
 class FCMNotificationService {
   static final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
