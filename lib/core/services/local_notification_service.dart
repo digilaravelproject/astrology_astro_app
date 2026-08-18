@@ -74,10 +74,45 @@ class LocalNotificationService {
       },
     );
 
-    // Request permissions for Android 13+
-    await _notificationsPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestNotificationsPermission();
+    // Pre-create notification channels explicitly
+    final androidPlugin = _notificationsPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+
+    if (androidPlugin != null) {
+      await androidPlugin.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'astology_notifications',
+          'System & General Notifications',
+          description: 'General updates and system notifications',
+          importance: Importance.max,
+        ),
+      );
+      await androidPlugin.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'active_chat_channel_v1',
+          'Active Chats',
+          description: 'Ongoing notification for active chat sessions',
+          importance: Importance.max,
+        ),
+      );
+      await androidPlugin.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'active_call_channel_v1',
+          'Active Calls',
+          description: 'Ongoing notification for active audio/video call sessions',
+          importance: Importance.max,
+        ),
+      );
+      await androidPlugin.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'active_live_channel_v1',
+          'Active Live Broadcasts',
+          description: 'Ongoing notification for active live sessions',
+          importance: Importance.max,
+        ),
+      );
+      await androidPlugin.requestNotificationsPermission();
+    }
   }
 
   static Future<void> showOngoingChatNotification({
