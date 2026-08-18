@@ -17,6 +17,7 @@ import '../../../routes/app_routes.dart';
 
 import 'package:permission_handler/permission_handler.dart';
 import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
+import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
