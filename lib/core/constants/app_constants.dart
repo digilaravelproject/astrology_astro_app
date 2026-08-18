@@ -36,8 +36,8 @@ class AppConstants {
     static const String liveKitTurnUsername = 'livekit';
     static const String liveKitTurnCredential = 'livekit_secret_2024';
 
-    // Notification Sound Resource Names (Android Raw Resources & iOS Sound Files)
-    static const String callNotificationSound = 'call_sound';
-    static const String chatNotificationSound = 'chat_sound';
-    static const String generalNotificationSound = 'notification_sound';
+    // Notification Sound Asset Paths
+    static const String callNotificationSound = 'assets/audio/incoming_ring.mp3';
+    static const String chatNotificationSound = 'assets/audio/incoming_ring.mp3';
+    static const String generalNotificationSound = 'assets/audio/incoming_ring.mp3';
 }
