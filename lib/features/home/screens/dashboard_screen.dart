@@ -93,7 +93,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
       },
       child: Obx(() => Scaffold(
         extendBody: true,
-        body: _screens[controller.selectedIndex.value],
+        body: Stack(
+          children: [
+            _screens[controller.selectedIndex.value],
+            Obx(() {
+              if (FloatingChatBubble.isActive &&
+                  FloatingChatBubble.sessionId != null &&
+                  FloatingChatBubble.name != null) {
+                return FloatingChatBubbleWidget(
+                  sessionId: FloatingChatBubble.sessionId!,
+                  name: FloatingChatBubble.name!,
+                  imageUrl: '',
+                );
+              }
+              return const SizedBox.shrink();
+            }),
+          ],
+        ),
         bottomNavigationBar: CustomBottomNavBar(
           selectedIndex: controller.selectedIndex.value,
           onItemSelected: (index) {
