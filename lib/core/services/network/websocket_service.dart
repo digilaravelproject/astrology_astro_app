@@ -713,23 +713,10 @@ class WebSocketService extends GetxService {
         activeSessionId = null;
         // Emit signal — ChatScreen listens and closes itself
         chatEndedSessionId.value = sessionId;
-        // Show summary after brief delay to allow screen pop
-        Future.delayed(const Duration(milliseconds: 300), () {
-          ChatSummaryDialog.show(
-            sessionId: sessionId,
-            durationSeconds: durationSeconds,
-            totalCost: totalCost,
-          );
-        });
       } else if (FloatingChatBubble.isActive && FloatingChatBubble.sessionId == sessionId) {
         // Chat is minimized as a bubble
         FloatingChatBubble.dismiss();
         chatEndedSessionId.value = sessionId;
-        ChatSummaryDialog.show(
-          sessionId: sessionId,
-          durationSeconds: durationSeconds,
-          totalCost: totalCost,
-        );
       }
     } catch (e) {
       Logger.e('WebSocketService: error handling ChatEnded -> $e');

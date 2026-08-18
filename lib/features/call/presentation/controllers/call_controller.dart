@@ -308,13 +308,6 @@ class CallController extends GetxController with WidgetsBindingObserver {
           if (wasVisible) {
             Get.back(); // Pop CallScreen
           }
-          Future.delayed(const Duration(milliseconds: 300), () {
-            CallSummaryDialog.show(
-              sessionId: sId,
-              durationSeconds: duration,
-              totalCost: cost,
-            );
-          });
         });
       } else {
         final wasVisible = isCallScreenVisible;
@@ -370,19 +363,10 @@ class CallController extends GetxController with WidgetsBindingObserver {
     
     final resolvedId = sIdBeforeCleanup > 0 ? sIdBeforeCleanup : sId;
 
-    // 1. If CallScreen is open, immediately pop it back to the home screen (route.isFirst)
+    // Pop CallScreen safely to home screen
     if (isCallScreenVisible || Get.currentRoute == '/CallScreen') {
       Get.until((route) => route.isFirst);
     }
-
-    // 2. Open CallSummaryDialog on the clean home screen
-    Future.delayed(const Duration(milliseconds: 150), () {
-      CallSummaryDialog.show(
-        sessionId: resolvedId,
-        durationSeconds: duration,
-        totalCost: cost,
-      );
-    });
   }
 
   void _startRingingTimeout() {
