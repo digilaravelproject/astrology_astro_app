@@ -73,69 +73,14 @@ class FloatingChatBubble {
     _isActive = true;
 
     try {
-      final bool isGranted = await FlutterOverlayWindow.isPermissionGranted();
-      if (!isGranted) {
-        await FlutterOverlayWindow.requestPermission();
-      }
-
-      if (await FlutterOverlayWindow.isActive()) {
-        await FlutterOverlayWindow.shareData({
-          'type': 'update',
-          'sessionId': sessionId,
-          'name': name,
-          'imageUrl': imageUrl,
-          'status': status,
-          'unreadCount': 0,
-        });
-      } else {
-        await FlutterOverlayWindow.showOverlay(
-          enableDrag: true,
-          overlayTitle: "Chat in progress",
-          overlayContent: "Active chat with $name",
-          flag: OverlayFlag.defaultFlag,
-          visibility: NotificationVisibility.visibilitySecret,
-          positionGravity: PositionGravity.none,
-          height: 260,
-          width: 260,
-        );
-        
-        await FlutterOverlayWindow.shareData({
-          'type': 'init',
-          'sessionId': sessionId,
-          'name': name,
-          'imageUrl': imageUrl,
-          'status': status,
-          'startedAt': startedAt,
-          'unreadCount': 0,
-        });
-      }
-      
-      // Cancel the local notification to avoid duplicates
-      try {
-        LocalNotificationService.cancelOngoingChatNotification(sessionId);
-      } catch (_) {}
-
-      // Listen for tap events from overlay ALWAYS
-      _overlaySub?.cancel();
-      _overlaySub = FlutterOverlayWindow.overlayListener.listen((event) async {
-        if (event != null && event is Map && event['action'] == 'tap') {
-          debugPrint("==== OVERLAY TAPPED ====");
-          try {
-            debugPrint("==== ATTEMPTING TO BRING TO FOREGROUND ====");
-            await _appRetainChannel.invokeMethod('bringToForeground');
-            debugPrint("==== BROUGHT TO FOREGROUND SUCCESS ====");
-          } catch (e) {
-            debugPrint("==== Error bringing app to foreground: $e ====");
-          }
-          Future.delayed(const Duration(milliseconds: 500), () {
-            debugPrint("==== CALLING ON TAP CALLBACK ====");
-            onTapCallback?.call();
-          });
-        }
-      });
-
+      // Show system notification banner instead of FlutterOverlayWindow
+      LocalNotificationService.showOngoingChatNotification(
+        sessionId: sessionId,
+        title: 'Active Chat with $name',
+        body: 'Tap to return to chat session',
+      );
     } catch (e) {
-      debugPrint("FloatingChatBubble show error: $e");
+      debugPrint("FloatingChatBubble show notification error: $e");
     }
   }
 
