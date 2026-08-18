@@ -56,22 +56,33 @@ class FCMNotificationService {
   }
 
   /// Register or Refresh FCM Device Token on Backend
-  static Future<void> registerDeviceToken(String fcmToken) async {
+  static Future<void> registerDeviceToken(String? fcmToken) async {
     try {
-      if (!Get.isRegistered<ApiClient>()) return;
+      debugPrint('[FCM_SERVICE] registerDeviceToken called. token: $fcmToken');
+      if (!Get.isRegistered<ApiClient>()) {
+        debugPrint('[FCM_SERVICE] ApiClient is NOT registered in GetX container!');
+        return;
+      }
+
+      final tokenToRegister = fcmToken ?? await getToken();
+      if (tokenToRegister == null || tokenToRegister.isEmpty) {
+        debugPrint('[FCM_SERVICE] FCM token is null or empty, skipping API call.');
+        return;
+      }
 
       String deviceType = Platform.isAndroid ? 'android' : (Platform.isIOS ? 'ios' : 'unknown');
 
       final payload = {
-        'fcm_token': fcmToken,
+        'fcm_token': tokenToRegister,
         'device_type': deviceType,
       };
 
+      debugPrint('[FCM_SERVICE] Sending POST to ${AppUrls.registerDeviceToken} with payload: $payload');
       final apiClient = Get.find<ApiClient>();
       final response = await apiClient.post(AppUrls.registerDeviceToken, data: payload);
-      debugPrint('Device token registered response: ${response.body}');
-    } catch (e) {
-      debugPrint('Failed to register device token: $e');
+      debugPrint('[FCM_SERVICE] Device token registered response | Status: ${response.statusCode} | Success: ${response.isSuccess} | Message: ${response.message} | Body: ${response.body}');
+    } catch (e, stackTrace) {
+      debugPrint('[FCM_SERVICE] Failed to register device token error: $e\n$stackTrace');
     }
   }
 

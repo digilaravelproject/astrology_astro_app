@@ -339,8 +339,9 @@ class AuthController extends GetxController {
         
         // Delay to ensure data is saved before navigation
         await Future.delayed(const Duration(milliseconds: 500));
-        // Connect WebSocket after successful login
+        // Connect WebSocket & Register FCM Token after successful login
         Get.find<WebSocketService>().connect();
+        FCMNotificationService.registerDeviceToken(null);
         Get.offAllNamed(RouteHelper.getDashboardRoute());
       } else {
         CustomSnackBar.showError(response.message ?? 'OTP verification failed');
