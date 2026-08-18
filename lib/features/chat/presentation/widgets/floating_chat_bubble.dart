@@ -58,7 +58,7 @@ class FloatingChatBubble {
   }) async {
     _setupIsolatePort();
     
-    if (_isActive && FloatingChatBubble.sessionId == sessionId) {
+    if (_isActive.value && FloatingChatBubble.sessionId == sessionId) {
       // Just update status if already active
       chatStatus.value = status;
       return;
