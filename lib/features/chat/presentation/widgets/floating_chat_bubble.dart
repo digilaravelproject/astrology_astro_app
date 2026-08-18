@@ -75,7 +75,7 @@ class FloatingChatBubble {
       // Show system notification banner instead of FlutterOverlayWindow
       LocalNotificationService.showOngoingChatNotification(
         sessionId: sessionId,
-        title: 'Active Chat with $name',
+        title: status == 'ongoing' ? 'Active Chat with $name' : 'Incoming Chat Request from $name',
         body: 'Tap to return to chat session',
       );
     } catch (e) {
@@ -226,13 +226,26 @@ class _FloatingChatBubbleWidgetState extends State<FloatingChatBubbleWidget> {
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 2),
-                      Obx(() => Text(
-                        _formatDuration(_elapsedSeconds.value),
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 12,
-                        ),
-                      )),
+                      Obx(() {
+                        final currentStatus = FloatingChatBubble.chatStatus.value;
+                        if (currentStatus == 'initiated' || currentStatus == 'ringing' || currentStatus == 'waiting') {
+                          return const Text(
+                            'Incoming Chat Request...',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          );
+                        }
+                        return Text(
+                          _formatDuration(_elapsedSeconds.value),
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 12,
+                          ),
+                        );
+                      }),
                     ],
                   ),
                 ),
