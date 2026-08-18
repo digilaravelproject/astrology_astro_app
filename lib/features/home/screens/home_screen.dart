@@ -8,6 +8,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../auth/controllers/auth_controller.dart';
+import '../../../core/services/fcm_notification_service.dart';
 import '../../profile/screens/profile_screen.dart';
 import '../widgets/home_greeting.dart';
 import '../controllers/dashboard_controller.dart';
@@ -102,6 +103,10 @@ class _HomeScreenState extends State<HomeScreen> {
       Get.put(PerformanceController(repository: Get.find<PerformanceRepository>()));
     }
     _performanceController = Get.find<PerformanceController>();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FCMNotificationService.registerDeviceToken(null);
+    });
   }
 
   Future<void> _onRefresh() async {
