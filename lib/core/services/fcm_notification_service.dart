@@ -6,13 +6,10 @@ import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
-import 'package:audioplayers/audioplayers.dart';
-import 'package:astro_astrologer/core/constants/app_constants.dart';
 import 'local_notification_service.dart';
 
 class FCMNotificationService {
   static final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-  static final AudioPlayer _audioPlayer = AudioPlayer();
 
   static Future<void> initialize() async {
     // 1. Request Notification Permission
@@ -46,26 +43,11 @@ class FCMNotificationService {
       await registerDeviceToken(newToken);
     });
 
-    // 4. Foreground Message Handler with Flutter Asset Audio Playback
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+    // 4. Foreground Message Handler
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       debugPrint('Foreground Message Received: ${message.notification?.title}');
-      final type = message.data['type']?.toString();
-
-      try {
-        String assetPath = AppConstants.generalNotificationSound;
-        if (type == 'call' || type == 'CALL_ACCEPTED' || type == 'CALL_REQUEST') {
-          assetPath = AppConstants.outgoingRingPath;
-        } else if (type == 'chat' || type == 'CHAT_REQUEST' || type == 'MessageSent') {
-          assetPath = AppConstants.incomingRingPath;
-        }
-
-        await _audioPlayer.stop();
-        await _audioPlayer.play(AssetSource(assetPath));
-      } catch (e) {
-        debugPrint('[FCM_SERVICE] Error playing asset audio sound: $e');
-      }
-
       if (message.notification != null) {
+        final type = message.data['type']?.toString();
         LocalNotificationService.showNotification(
           id: message.hashCode,
           title: message.notification?.title ?? 'Notification',
