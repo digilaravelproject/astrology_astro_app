@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'package:device_info_plus/device_info_plus';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:package_info_plus/package_info_plus';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 
@@ -55,7 +57,7 @@ class FCMNotificationService {
     return await _firebaseMessaging.getToken();
   }
 
-  /// Register or Refresh FCM Device Token on Backend
+  /// Register or Refresh FCM Device Token on Backend with full real metadata
   static Future<void> registerDeviceToken(String? fcmToken) async {
     try {
       debugPrint('[FCM_SERVICE] registerDeviceToken called. token: $fcmToken');
@@ -70,14 +72,32 @@ class FCMNotificationService {
         return;
       }
 
+      final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
+      String deviceId = '';
+      String deviceModel = '';
       String deviceType = Platform.isAndroid ? 'android' : (Platform.isIOS ? 'ios' : 'unknown');
+
+      if (Platform.isAndroid) {
+        AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+        deviceId = androidInfo.id;
+        deviceModel = '${androidInfo.manufacturer} ${androidInfo.model}';
+      } else if (Platform.isIOS) {
+        IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+        deviceId = iosInfo.identifierForVendor ?? '';
+        deviceModel = '${iosInfo.name} ${iosInfo.model}';
+      }
 
       final payload = {
         'fcm_token': tokenToRegister,
         'device_type': deviceType,
+        'device_id': deviceId,
+        'device_model': deviceModel,
+        'app_version': packageInfo.version,
       };
 
-      debugPrint('[FCM_SERVICE] Sending POST to ${AppUrls.registerDeviceToken} with payload: $payload');
+      debugPrint('[FCM_SERVICE] Sending POST to ${AppUrls.registerDeviceToken} with full payload: $payload');
       final apiClient = Get.find<ApiClient>();
       final response = await apiClient.post(AppUrls.registerDeviceToken, data: payload);
       debugPrint('[FCM_SERVICE] Device token registered response | Status: ${response.statusCode} | Success: ${response.isSuccess} | Message: ${response.message} | Body: ${response.body}');
@@ -92,16 +112,28 @@ class FCMNotificationService {
       if (!Get.isRegistered<ApiClient>()) return;
 
       final String? fcmToken = await getToken();
+      final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      String deviceId = '';
+
+      if (Platform.isAndroid) {
+        AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+        deviceId = androidInfo.id;
+      } else if (Platform.isIOS) {
+        IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+        deviceId = iosInfo.identifierForVendor ?? '';
+      }
 
       final payload = {
+        'device_id': deviceId,
         'fcm_token': fcmToken ?? '',
       };
 
+      debugPrint('[FCM_SERVICE] Sending POST to ${AppUrls.removeDeviceToken} with payload: $payload');
       final apiClient = Get.find<ApiClient>();
       final response = await apiClient.post(AppUrls.removeDeviceToken, data: payload);
-      debugPrint('Device token removed response: ${response.body}');
+      debugPrint('[FCM_SERVICE] Device token removed response: ${response.body}');
     } catch (e) {
-      debugPrint('Failed to remove device token: $e');
+      debugPrint('[FCM_SERVICE] Failed to remove device token: $e');
     }
   }
 }
