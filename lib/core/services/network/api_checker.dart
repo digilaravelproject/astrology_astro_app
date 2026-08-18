@@ -234,7 +234,7 @@ class ApiChecker {
             message: 'No internet connection',
           );
 
-        case DioExceptionType.unknown:
+        default:
           if (showErrorScreen) {
             _showErrorScreen(
               title: 'Unknown Error',
