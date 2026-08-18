@@ -60,19 +60,17 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
     // Listen for ChatDismissed — auto-close dialog if session matches
     final sessionId = widget.sessionData['id'];
     
-    // Check if already dismissed before dialog rendered
+    // Check if already dismissed before bottom sheet rendered
     if (WebSocketService.chatDismissedSessionId.value == sessionId) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (Get.isDialogOpen == true) {
-          Get.back();
-        }
+        Get.back();
       });
     }
 
     _dismissWorker = ever(
       WebSocketService.chatDismissedSessionId,
       (int dismissedId) {
-        if (dismissedId == sessionId && Get.isDialogOpen == true) {
+        if (dismissedId == sessionId) {
           Get.back();
         }
       },
@@ -389,11 +387,7 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
                         } catch (e) {
                           debugPrint('Reject error: $e');
                         }
-                        if (Navigator.of(context, rootNavigator: true).canPop()) {
-                          Navigator.of(context, rootNavigator: true).pop();
-                        } else {
-                          Navigator.of(context).pop();
-                        }
+                        Get.back();
                       },
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 15),
@@ -417,12 +411,7 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
                           final response = await Get.find<ApiClient>()
                               .post(AppUrls.acceptChatSession(sessionId));
                           if (response.isSuccess) {
-                            // Force close the dialog safely
-                            if (Navigator.of(context, rootNavigator: true).canPop()) {
-                              Navigator.of(context, rootNavigator: true).pop();
-                            } else {
-                              Navigator.of(context).pop();
-                            }
+                            Get.back();
                             
                             // Ensure we have a valid start time to start the timer immediately
                             final startedAt = response.body?['data']?['session']?['started_at']?.toString() 
@@ -442,22 +431,12 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
                               binding: ChatBinding(),
                             );
                           } else {
-                            if (Navigator.of(context, rootNavigator: true).canPop()) {
-                              Navigator.of(context, rootNavigator: true).pop();
-                            } else {
-                              Navigator.of(context).pop();
-                            }
+                            Get.back();
                             CustomSnackBar.disabledSnackbar('Error', response.message);
                           }
                         } catch (e) {
                           debugPrint('Accept error: $e');
-                          if (context.mounted) {
-                            if (Navigator.of(context, rootNavigator: true).canPop()) {
-                              Navigator.of(context, rootNavigator: true).pop();
-                            } else {
-                              Navigator.of(context).pop();
-                            }
-                          }
+                          Get.back();
                         }
                       },
                       style: ElevatedButton.styleFrom(
