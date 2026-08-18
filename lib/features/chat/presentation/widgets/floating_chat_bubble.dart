@@ -86,6 +86,11 @@ class FloatingChatBubble {
 
   static Future<void> dismiss() async {
     _isActive = false;
+    if (sessionId != null) {
+      try {
+        LocalNotificationService.cancelOngoingChatNotification(sessionId!);
+      } catch (_) {}
+    }
     sessionId = null;
     onTapCallback = null;
     unreadCount.value = 0;
