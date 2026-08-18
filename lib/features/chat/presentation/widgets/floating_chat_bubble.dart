@@ -187,28 +187,18 @@ class _FloatingChatBubbleWidgetState extends State<FloatingChatBubbleWidget> {
     final Size size = MediaQuery.of(context).size;
     
     // Constraints to keep bubble inside screen bounds
-    return Padding(
-      padding: EdgeInsets.only(
-        top: MediaQuery.of(context).padding.top + 8,
-        left: 12,
-        right: 12,
-        bottom: 4,
-      ),
-      child: GestureDetector(
-        onTap: () {
-          FloatingChatBubble.onTapCallback?.call();
-        },
-        child: Material(
-          elevation: 6,
-          borderRadius: BorderRadius.circular(30),
-          color: const Color(0xFF1E1E2C),
+    return Container(
+      width: double.infinity,
+      color: const Color(0xFF1E1E2C),
+      child: SafeArea(
+        bottom: false,
+        child: GestureDetector(
+          onTap: () {
+            FloatingChatBubble.onTapCallback?.call();
+          },
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1E1E2C),
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(color: const Color(0xFFFF6F00).withValues(alpha: 0.5), width: 1),
-            ),
+            color: const Color(0xFF1E1E2C),
             child: Row(
               children: [
                 const Icon(Icons.call, color: Colors.greenAccent, size: 20),

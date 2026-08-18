@@ -362,18 +362,26 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
                 ),
               ),
 
-              const SizedBox(height: 20),
-              const Divider(thickness: 0.8, color: Color(0xFFE0E0E0)),
-              const SizedBox(height: 12),
+              // ── User Details Card ──
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.grey.shade200),
+                ),
+                child: Column(
+                  children: [
+                    _buildDetailRow(Icons.person_outline, 'Gender:', gender),
+                    _buildDetailRow(Icons.cake_outlined, 'DOB:', dob),
+                    _buildDetailRow(Icons.access_time_outlined, 'TOB:', tob),
+                    _buildDetailRow(Icons.location_on_outlined, 'POB:', pob),
+                    _buildDetailRow(Icons.translate_outlined, 'Languages:', languages, isLast: true),
+                  ],
+                ),
+              ),
 
-              // ── User Details ──
-              _buildDetailRow(Icons.person_outline, 'Gender:', gender),
-              _buildDetailRow(Icons.cake_outlined, 'DOB:', dob),
-              _buildDetailRow(Icons.access_time_outlined, 'TOB:', tob),
-              _buildDetailRow(Icons.location_on_outlined, 'POB:', pob),
-              _buildDetailRow(Icons.translate_outlined, 'Languages:', languages),
-
-              const SizedBox(height: 28),
+              const SizedBox(height: 24),
 
               // ── Buttons ──
               Row(
@@ -390,11 +398,10 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
                         Get.back();
                       },
                       style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                        side:
-                            const BorderSide(color: Colors.red, width: 1.5),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        side: BorderSide(color: Colors.red.shade400, width: 1.5),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14)),
+                            borderRadius: BorderRadius.circular(16)),
                       ),
                       child: const Text('Reject',
                           style: TextStyle(
@@ -441,10 +448,10 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF2DB84B),
-                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14)),
-                        elevation: 0,
+                            borderRadius: BorderRadius.circular(16)),
+                        elevation: 2,
                       ),
                       child: const Text('Accept',
                           style: TextStyle(
@@ -462,22 +469,21 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
     );
   }
 
-  Widget _buildDetailRow(IconData icon, String label, String value) {
+  Widget _buildDetailRow(IconData icon, String label, String value, {bool isLast = false}) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10.0),
+      padding: EdgeInsets.only(bottom: isLast ? 0 : 10.0),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: Colors.grey.shade500),
+          Icon(icon, size: 18, color: const Color(0xFFE07B2D)),
           const SizedBox(width: 10),
           Text(label,
-              style:
-                  TextStyle(fontSize: 14, color: Colors.grey.shade600)),
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Colors.grey.shade600)),
           const SizedBox(width: 6),
           Expanded(
             child: Text(
               value,
               style: const TextStyle(
-                  fontSize: 14,
+                  fontSize: 13,
                   fontWeight: FontWeight.w700,
                   color: _darkText),
               maxLines: 1,
