@@ -94,9 +94,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       },
       child: Obx(() => Scaffold(
         extendBody: true,
-        body: Stack(
+        body: Column(
           children: [
-            _screens[controller.selectedIndex.value],
             Obx(() {
               if (FloatingChatBubble.isActive &&
                   FloatingChatBubble.sessionId != null &&
@@ -109,6 +108,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               }
               return const SizedBox.shrink();
             }),
+            Expanded(
+              child: _screens[controller.selectedIndex.value],
+            ),
           ],
         ),
         bottomNavigationBar: CustomBottomNavBar(

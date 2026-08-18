@@ -187,10 +187,13 @@ class _FloatingChatBubbleWidgetState extends State<FloatingChatBubbleWidget> {
     final Size size = MediaQuery.of(context).size;
     
     // Constraints to keep bubble inside screen bounds
-    return Positioned(
-      top: MediaQuery.of(context).padding.top + 8,
-      left: 12,
-      right: 12,
+    return Padding(
+      padding: EdgeInsets.only(
+        top: MediaQuery.of(context).padding.top + 8,
+        left: 12,
+        right: 12,
+        bottom: 4,
+      ),
       child: GestureDetector(
         onTap: () {
           FloatingChatBubble.onTapCallback?.call();
