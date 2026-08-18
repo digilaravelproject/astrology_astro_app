@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/constants/app_constants.dart';
@@ -22,49 +21,14 @@ class DashboardController extends GetxController {
   void onReady() {
     super.onReady();
     final isLoggedIn = SharedPrefs.getBool(AppConstants.isLoggedIn) ?? false;
-    _checkOverlayPermission();
     if (isLoggedIn) {
       _checkCurrentActiveSession();
       Get.find<CallController>().checkCurrentActiveCallSession();
     }
   }
 
-  Future<void> _checkOverlayPermission() async {
-    if (GetPlatform.isAndroid) {
-      try {
-        final bool isGranted = await FlutterOverlayWindow.isPermissionGranted();
-        if (!isGranted) {
-          Get.dialog(
-            CupertinoAlertDialog(
-              title: const Text('Overlay Permission'),
-              content: const Text('To show the floating chat bubble when the app is in the background, please allow "Display over other apps" permission.'),
-              actions: [
-                CupertinoDialogAction(
-                  child: const Text('Cancel'),
-                  onPressed: () => Get.back(),
-                ),
-                CupertinoDialogAction(
-                  isDefaultAction: true,
-                  child: const Text('Allow'),
-                  onPressed: () {
-                    Get.back();
-                    FlutterOverlayWindow.requestPermission();
-                  },
-                ),
-              ],
-            ),
-          );
-        }
-      } catch (e) {
-        debugPrint('Error checking overlay permission: $e');
-      }
-    }
-  }
-
   Future<void> _checkCurrentActiveSession() async {
     try {
-      if (await FlutterOverlayWindow.isActive()) return;
-      
       final response = await Get.find<ApiClient>().get(AppUrls.getCurrentSession);
       if (response.isSuccess && response.body != null && response.body['data'] != null) {
         final session = response.body['data'];
