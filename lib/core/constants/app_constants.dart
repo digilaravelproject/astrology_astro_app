@@ -35,4 +35,9 @@ class AppConstants {
     static const String liveKitTurnServerUrl = 'turn:187.127.173.87:3478';
     static const String liveKitTurnUsername = 'livekit';
     static const String liveKitTurnCredential = 'livekit_secret_2024';
+
+    // Notification Sound Resource Names (Android Raw Resources & iOS Sound Files)
+    static const String callNotificationSound = 'call_sound';
+    static const String chatNotificationSound = 'chat_sound';
+    static const String generalNotificationSound = 'notification_sound';
 }

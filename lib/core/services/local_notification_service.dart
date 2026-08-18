@@ -7,6 +7,7 @@ import 'package:astro_astrologer/features/call/presentation/pages/call_screen.da
 import 'package:astro_astrologer/features/live/presentation/widgets/floating_live_bubble.dart';
 import 'package:astro_astrologer/features/live/presentation/controllers/live_controller.dart';
 import 'package:astro_astrologer/features/live/presentation/pages/live_schedule_screen.dart';
+import 'package:astro_astrologer/core/constants/app_constants.dart';
 import 'package:astro_astrologer/features/live/presentation/pages/live_room_screen.dart';
 
 class LocalNotificationService {
@@ -85,6 +86,8 @@ class LocalNotificationService {
           'Incoming Calls',
           description: 'Incoming Call Ringing (User & Astrologer)',
           importance: Importance.max,
+          sound: RawResourceAndroidNotificationSound(AppConstants.callNotificationSound),
+          playSound: true,
         ),
       );
       await androidPlugin.createNotificationChannel(
@@ -93,6 +96,8 @@ class LocalNotificationService {
           'Chat Messages & Requests',
           description: 'New Chat Requests and Chat Room messages',
           importance: Importance.high,
+          sound: RawResourceAndroidNotificationSound(AppConstants.chatNotificationSound),
+          playSound: true,
         ),
       );
       await androidPlugin.createNotificationChannel(
@@ -101,6 +106,8 @@ class LocalNotificationService {
           'Consultations & Billing',
           description: 'Session Lifecycle, Acceptance, Ending & Billing Notifications',
           importance: Importance.high,
+          sound: RawResourceAndroidNotificationSound(AppConstants.generalNotificationSound),
+          playSound: true,
         ),
       );
       await androidPlugin.createNotificationChannel(
