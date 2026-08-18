@@ -308,22 +308,39 @@ class LocalNotificationService {
     required String title,
     required String body,
     String? payload,
+    String? notificationType,
   }) async {
+    String channelId = 'session_channel';
+    String soundName = AppConstants.generalNotificationSound;
+
+    if (notificationType == 'call' || notificationType == 'CALL_ACCEPTED' || notificationType == 'CALL_REQUEST') {
+      channelId = 'calls_channel';
+      soundName = AppConstants.callNotificationSound;
+    } else if (notificationType == 'chat' || notificationType == 'CHAT_REQUEST' || notificationType == 'MessageSent') {
+      channelId = 'chats_channel';
+      soundName = AppConstants.chatNotificationSound;
+    }
+
     final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'astology_notifications',
-      'System & General Notifications',
-      channelDescription: 'General updates and system notifications',
+      channelId,
+      channelId == 'calls_channel'
+          ? 'Incoming Calls'
+          : (channelId == 'chats_channel' ? 'Chat Messages & Requests' : 'Consultations & Billing'),
+      channelDescription: 'System and real-time notifications',
       importance: Importance.max,
       priority: Priority.high,
+      sound: RawResourceAndroidNotificationSound(soundName),
+      playSound: true,
       showWhen: true,
     );
 
     final NotificationDetails notificationDetails = NotificationDetails(
       android: androidDetails,
-      iOS: const DarwinNotificationDetails(
+      iOS: DarwinNotificationDetails(
         presentAlert: true,
         presentBadge: true,
         presentSound: true,
+        sound: '$soundName.caf',
       ),
     );
 
