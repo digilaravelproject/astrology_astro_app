@@ -168,18 +168,30 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
     final languages = _formatLanguages(widget.senderData['languages']);
     final sessionId = widget.sessionData['id'];
 
-    return ScaleTransition(
-      scale: _scaleAnim,
-      alignment: Alignment.topCenter, // scale from top
-      child: Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        backgroundColor: Colors.white,
-        insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+      ),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // ── Bottom Sheet Drag Handle ──
+          Container(
+            width: 48,
+            height: 5,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
               // ── Header ──
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -467,7 +479,7 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
             ],
           ),
         ),
-      ),
+      ]),
     );
   }
 

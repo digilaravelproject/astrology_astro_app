@@ -597,12 +597,15 @@ class WebSocketService extends GetxService {
         chatInitiatedEvent.add(Map<String, dynamic>.from(session));
         WidgetsBinding.instance.addPostFrameCallback((_) {
           CallSummaryDialog.dismissIfOpen();
-          Get.dialog(
+          Get.bottomSheet(
             IncomingChatDialog(
               sessionData: Map<String, dynamic>.from(session),
               senderData: Map<String, dynamic>.from(senderData),
             ),
-            barrierDismissible: false,
+            isDismissible: false,
+            enableDrag: false,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
           );
         });
       } else {
