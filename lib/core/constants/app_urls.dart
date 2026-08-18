@@ -20,6 +20,8 @@ class AppUrls {
   static const String getFollowers = "/astrologer/community/followers";
   static const String getFavorites = "/astrologer/community/favorites";
   static const String getAstroSkills = "/astrologer/profile/skills";
+  static const String registerDeviceToken = "/astrologer/device-token";
+  static const String removeDeviceToken = "/astrologer/remove-token";
   static String getNotificationCount(int userId) => "/user/notifications/count?user_id=$userId";
   static String getNotifications(int userId) => "/user/notifications?user_id=$userId";
   static const String bankAccounts = "/astrologer/bank-accounts";

@@ -12,6 +12,7 @@ import '../domain/services/auth_service.dart';
 import '../../profile/model/other_details_model.dart';
 import '../../profile/model/skill_model.dart';
 import '../../../core/services/network/websocket_service.dart';
+import '../../../core/services/fcm_notification_service.dart';
 
 class AuthController extends GetxController {
   final LoginUseCase _loginUseCase;
@@ -355,6 +356,7 @@ class AuthController extends GetxController {
   Future<void> logout() async {
     try {
       isLoading.value = true;
+      await FCMNotificationService.removeDeviceToken();
       final response = await _logoutUseCase.execute();
       
       if (response.isSuccess) {
