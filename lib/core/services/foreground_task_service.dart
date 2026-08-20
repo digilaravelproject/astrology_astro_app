@@ -35,11 +35,12 @@ class ForegroundTaskService {
   static Future<void> init() async {
     FlutterForegroundTask.init(
       androidNotificationOptions: AndroidNotificationOptions(
-        channelId: 'active_consultation_foreground_channel',
+        channelId: 'active_consultation_foreground_channel_v2',
         channelName: 'Active Consultation Service',
         channelDescription: 'Ongoing active call and chat consultation status',
         channelImportance: NotificationChannelImportance.MAX,
         priority: NotificationPriority.MAX,
+        visibility: NotificationVisibility.VISIBILITY_PUBLIC,
       ),
       iosNotificationOptions: const IOSNotificationOptions(
         showNotification: true,
