@@ -181,48 +181,6 @@ class LocalNotificationService {
       title: title,
       text: body,
     );
-
-    final int startTime = startedAtMillis ?? DateTime.now().millisecondsSinceEpoch;
-    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'active_consultation_foreground_channel',
-      'Active Consultation Service',
-      channelDescription: 'Ongoing active call and chat consultation status',
-      importance: Importance.max,
-      priority: Priority.high,
-      ongoing: true,
-      autoCancel: false,
-      onlyAlertOnce: true,
-      showWhen: true,
-      usesChronometer: true,
-      when: startTime,
-      category: AndroidNotificationCategory.call,
-      visibility: NotificationVisibility.public,
-      actions: const [
-        AndroidNotificationAction(
-          'hangup_btn',
-          'Hang up',
-          titleColor: Color(0xFFD32F2F),
-          showsUserInterface: false,
-        ),
-      ],
-    );
-
-    final NotificationDetails notificationDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: const DarwinNotificationDetails(
-        presentAlert: true,
-        presentBadge: true,
-        presentSound: true,
-      ),
-    );
-
-    await _notificationsPlugin.show(
-      sessionId,
-      title,
-      body,
-      notificationDetails,
-      payload: sessionId.toString(),
-    );
   }
 
   static Future<void> cancelOngoingChatNotification(int sessionId) async {
@@ -278,48 +236,6 @@ class LocalNotificationService {
     await ForegroundTaskService.startService(
       title: title,
       text: body,
-    );
-
-    final int startTime = startedAtMillis ?? DateTime.now().millisecondsSinceEpoch;
-    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'active_consultation_foreground_channel',
-      'Active Consultation Service',
-      channelDescription: 'Ongoing active call and chat consultation status',
-      importance: Importance.max,
-      priority: Priority.high,
-      ongoing: true,
-      autoCancel: false,
-      onlyAlertOnce: true,
-      showWhen: true,
-      usesChronometer: true,
-      when: startTime,
-      category: AndroidNotificationCategory.call,
-      visibility: NotificationVisibility.public,
-      actions: const [
-        AndroidNotificationAction(
-          'hangup_btn',
-          'Hang up',
-          titleColor: Color(0xFFD32F2F),
-          showsUserInterface: false,
-        ),
-      ],
-    );
-
-    final NotificationDetails notificationDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: const DarwinNotificationDetails(
-        presentAlert: true,
-        presentBadge: true,
-        presentSound: true,
-      ),
-    );
-
-    await _notificationsPlugin.show(
-      sessionId + 100000,
-      title,
-      body,
-      notificationDetails,
-      payload: 'call_$sessionId',
     );
   }
 
