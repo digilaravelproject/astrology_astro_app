@@ -177,14 +177,42 @@ class LocalNotificationService {
     required String body,
     int? startedAtMillis,
   }) async {
-    await ForegroundTaskService.startService(
-      title: title,
-      text: body,
+    final int startTime = startedAtMillis ?? DateTime.now().millisecondsSinceEpoch;
+    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+      'active_consultation_foreground_channel_v3',
+      'Active Consultation Service',
+      channelDescription: 'Ongoing active call and chat consultation status',
+      importance: Importance.max,
+      priority: Priority.high,
+      ongoing: true,
+      autoCancel: false,
+      onlyAlertOnce: true,
+      showWhen: true,
+      usesChronometer: true,
+      when: startTime,
+      category: AndroidNotificationCategory.call,
+      visibility: NotificationVisibility.public,
+    );
+
+    final NotificationDetails notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: const DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      ),
+    );
+
+    await _notificationsPlugin.show(
+      sessionId,
+      title,
+      body,
+      notificationDetails,
+      payload: sessionId.toString(),
     );
   }
 
   static Future<void> cancelOngoingChatNotification(int sessionId) async {
-    await ForegroundTaskService.stopService();
     await _notificationsPlugin.cancel(sessionId);
   }
 
@@ -233,14 +261,42 @@ class LocalNotificationService {
     required String body,
     int? startedAtMillis,
   }) async {
-    await ForegroundTaskService.startService(
-      title: title,
-      text: body,
+    final int startTime = startedAtMillis ?? DateTime.now().millisecondsSinceEpoch;
+    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+      'active_consultation_foreground_channel_v3',
+      'Active Consultation Service',
+      channelDescription: 'Ongoing active call and chat consultation status',
+      importance: Importance.max,
+      priority: Priority.high,
+      ongoing: true,
+      autoCancel: false,
+      onlyAlertOnce: true,
+      showWhen: true,
+      usesChronometer: true,
+      when: startTime,
+      category: AndroidNotificationCategory.call,
+      visibility: NotificationVisibility.public,
+    );
+
+    final NotificationDetails notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: const DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      ),
+    );
+
+    await _notificationsPlugin.show(
+      sessionId + 100000,
+      title,
+      body,
+      notificationDetails,
+      payload: 'call_$sessionId',
     );
   }
 
   static Future<void> cancelOngoingCallNotification(int sessionId) async {
-    await ForegroundTaskService.stopService();
     await _notificationsPlugin.cancel(sessionId + 100000);
   }
 

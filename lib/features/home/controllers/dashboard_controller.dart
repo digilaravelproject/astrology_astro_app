@@ -58,11 +58,22 @@ class DashboardController extends GetxController {
             WebSocketService.sessionStartTimes[sessionId] = startedAt.toString();
           }
 
+          DateTime? parsedStart;
+          if (startedAt != null) {
+            String isoUtc = startedAt.toString().replaceAll(' ', 'T');
+            if (!isoUtc.endsWith('Z') && !isoUtc.contains('+') && !isoUtc.contains('-')) {
+              isoUtc += 'Z';
+            }
+            parsedStart = DateTime.tryParse(isoUtc)?.toLocal();
+          }
+          final int? startedAtMillis = parsedStart?.millisecondsSinceEpoch;
+
           if (sessionId != null && (status == 'ongoing' || status == 'initiated' || status == 'accepted')) {
             LocalNotificationService.showOngoingChatNotification(
               sessionId: sessionId,
               title: '$name • Chat',
               body: 'Ongoing chat session',
+              startedAtMillis: startedAtMillis,
             );
             FloatingChatBubble.show(
               context: Get.context!,
