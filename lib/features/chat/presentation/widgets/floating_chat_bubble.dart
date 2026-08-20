@@ -191,6 +191,15 @@ class _FloatingChatBubbleWidgetState extends State<FloatingChatBubbleWidget> {
       } else {
         _elapsedSeconds.value++;
       }
+
+      final currentStatus = FloatingChatBubble.chatStatus.value.toLowerCase();
+      if (currentStatus == 'ongoing' || currentStatus == 'accepted') {
+        final timerStr = _formatDuration(_elapsedSeconds.value);
+        ForegroundTaskService.startService(
+          title: '${widget.name} • Chat • $timerStr',
+          text: 'Tap to return to chat session',
+        );
+      }
     }
 
     updateDuration();
