@@ -185,21 +185,69 @@ class _FloatingCallBubbleWidgetState extends State<FloatingCallBubbleWidget> {
     super.dispose();
   }
 
-  void _startTimer(String? startedAtStr) {
-    if (startedAtStr != null && startedAtStr.isNotEmpty) {
+  DateTime? _parseSmartDate(dynamic input) {
+    if (input == null) return null;
+    if (input is DateTime) return input;
+    final dateStr = input.toString().trim();
+    if (dateStr.isEmpty) return null;
+
+    DateTime? parsed;
+    try {
+      parsed = DateTime.tryParse(dateStr.replaceAll(' ', 'T'));
+    } catch (_) {}
+
+    if (parsed == null) {
       try {
-        final startedAt = DateTime.tryParse(startedAtStr)?.toLocal();
-        if (startedAt != null) {
-          final now = DateTime.now();
-          final diff = now.difference(startedAt).inSeconds;
-          _elapsedSeconds.value = diff > 0 ? diff : 0;
-        }
+        parsed = DateTime.tryParse(dateStr);
       } catch (_) {}
     }
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      final currentStatus = FloatingCallBubble.callStatus.value;
-      if (currentStatus == 'ongoing') {
+
+    if (parsed == null) return null;
+
+    final now = DateTime.now();
+
+    if (parsed.isAfter(now)) {
+      String isoUtc = dateStr.replaceAll(' ', 'T');
+      if (!isoUtc.endsWith('Z') && !isoUtc.contains('+')) {
+        isoUtc += 'Z';
+      }
+      final utcDate = DateTime.tryParse(isoUtc)?.toLocal();
+      if (utcDate != null && !utcDate.isAfter(now)) {
+        return utcDate;
+      }
+      final offsetDate = parsed.subtract(now.timeZoneOffset);
+      if (!offsetDate.isAfter(now)) {
+        return offsetDate;
+      }
+    }
+
+    return parsed;
+  }
+
+  void _startTimer(String? startedAtStr) {
+    void updateDuration() {
+      final startedAt = _parseSmartDate(startedAtStr);
+      if (startedAt != null) {
+        final diff = DateTime.now().difference(startedAt).inSeconds;
+        if (diff > 0) {
+          _elapsedSeconds.value = diff;
+        } else {
+          _elapsedSeconds.value++;
+        }
+      } else {
         _elapsedSeconds.value++;
+      }
+    }
+
+    updateDuration();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      final currentStatus = FloatingCallBubble.callStatus.value.toLowerCase();
+      if (currentStatus == 'ongoing' || currentStatus == 'accepted') {
+        updateDuration();
+        ForegroundTaskService.startService(
+          title: '${widget.name} • Call • ${_formatDuration(_elapsedSeconds.value)}',
+          text: 'Ongoing voice call',
+        );
       }
     });
   }
@@ -210,11 +258,32 @@ class _FloatingCallBubbleWidgetState extends State<FloatingCallBubbleWidget> {
     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
+  Widget _buildInitialAvatar(String name) {
+    final String initial = name.trim().isNotEmpty ? name.trim()[0].toUpperCase() : 'U';
+    return Container(
+      width: 36,
+      height: 36,
+      alignment: Alignment.center,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+      ),
+      child: Text(
+        initial,
+        style: const TextStyle(
+          color: Color(0xFFE65100),
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      color: const Color(0xFF6A0C22),
+      color: const Color(0xFFE65100),
       child: SafeArea(
         bottom: false,
         child: GestureDetector(
@@ -227,19 +296,27 @@ class _FloatingCallBubbleWidgetState extends State<FloatingCallBubbleWidget> {
           },
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            color: const Color(0xFF6A0C22),
+            color: const Color(0xFFE65100),
             child: Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: const BoxDecoration(
-                    color: Colors.white24,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.call,
-                    color: Colors.white,
-                    size: 18,
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(18),
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: const BoxDecoration(
+                      color: Colors.white24,
+                      shape: BoxShape.circle,
+                    ),
+                    child: widget.imageUrl.trim().isNotEmpty
+                        ? Image.network(
+                            widget.imageUrl,
+                            width: 36,
+                            height: 36,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => _buildInitialAvatar(widget.name),
+                          )
+                        : _buildInitialAvatar(widget.name),
                   ),
                 ),
                 const SizedBox(width: 12),

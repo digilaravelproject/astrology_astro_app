@@ -218,6 +218,27 @@ class _FloatingChatBubbleWidgetState extends State<FloatingChatBubbleWidget> {
     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
+  Widget _buildInitialAvatar(String name) {
+    final String initial = name.trim().isNotEmpty ? name.trim()[0].toUpperCase() : 'U';
+    return Container(
+      width: 36,
+      height: 36,
+      alignment: Alignment.center,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+      ),
+      child: Text(
+        initial,
+        style: const TextStyle(
+          color: Color(0xFFE65100),
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -242,13 +263,25 @@ class _FloatingChatBubbleWidgetState extends State<FloatingChatBubbleWidget> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             child: Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.18),
-                    shape: BoxShape.circle,
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(18),
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: const BoxDecoration(
+                      color: Colors.white24,
+                      shape: BoxShape.circle,
+                    ),
+                    child: widget.imageUrl.trim().isNotEmpty
+                        ? Image.network(
+                            widget.imageUrl,
+                            width: 36,
+                            height: 36,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => _buildInitialAvatar(widget.name),
+                          )
+                        : _buildInitialAvatar(widget.name),
                   ),
-                  child: const Icon(Icons.chat_bubble_rounded, color: Colors.white, size: 18),
                 ),
                 const SizedBox(width: 12),
                 Expanded(

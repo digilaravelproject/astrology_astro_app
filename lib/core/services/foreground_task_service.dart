@@ -22,6 +22,13 @@ class CallForegroundTaskHandler extends TaskHandler {
   Future<void> onDestroy(DateTime timestamp, bool isTimeout) async {
     Logger.d('Foreground Task Destroyed');
   }
+
+  @override
+  void onNotificationButtonPressed(String id) {
+    if (id == 'hangup_btn') {
+      FlutterForegroundTask.sendDataToMain({'action': 'hangup'});
+    }
+  }
 }
 
 class ForegroundTaskService {
@@ -61,6 +68,12 @@ class ForegroundTaskService {
   }
 
   static Future<void> startService({required String title, required String text}) async {
+    const buttons = [
+      NotificationButton(
+        id: 'hangup_btn',
+        text: 'Hang up',
+      ),
+    ];
     if (await FlutterForegroundTask.isRunningService) {
       FlutterForegroundTask.updateService(
         notificationTitle: title,
@@ -71,8 +84,13 @@ class ForegroundTaskService {
         notificationTitle: title,
         notificationText: text,
         callback: startCallback,
+        notificationButtons: buttons,
       );
     }
+  }
+
+  static void listenTaskData(Function(dynamic) callback) {
+    FlutterForegroundTask.addTaskDataCallback(callback);
   }
 
   static Future<void> stopService() async {
