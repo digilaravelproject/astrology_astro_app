@@ -150,34 +150,24 @@ class _FloatingChatBubbleWidgetState extends State<FloatingChatBubbleWidget> {
 
   DateTime? _parseSmartDate(dynamic input) {
     if (input == null) return null;
-    if (input is DateTime) return input;
+    if (input is DateTime) return input.toLocal();
     final dateStr = input.toString().trim();
     if (dateStr.isEmpty) return null;
 
-    DateTime? parsed;
-    try {
-      parsed = DateTime.tryParse(dateStr.replaceAll(' ', 'T'));
-    } catch (_) {}
+    String isoUtc = dateStr.replaceAll(' ', 'T');
+    if (!isoUtc.endsWith('Z') && !isoUtc.contains('+') && !isoUtc.contains('-')) {
+      isoUtc += 'Z';
+    }
 
+    DateTime? parsed = DateTime.tryParse(isoUtc)?.toLocal();
     if (parsed == null) {
-      try {
-        parsed = DateTime.tryParse(dateStr);
-      } catch (_) {}
+      parsed = DateTime.tryParse(dateStr)?.toLocal();
     }
 
     if (parsed == null) return null;
 
     final now = DateTime.now();
-
     if (parsed.isAfter(now)) {
-      String isoUtc = dateStr.replaceAll(' ', 'T');
-      if (!isoUtc.endsWith('Z') && !isoUtc.contains('+')) {
-        isoUtc += 'Z';
-      }
-      final utcDate = DateTime.tryParse(isoUtc)?.toLocal();
-      if (utcDate != null && !utcDate.isAfter(now)) {
-        return utcDate;
-      }
       final offsetDate = parsed.subtract(now.timeZoneOffset);
       if (!offsetDate.isAfter(now)) {
         return offsetDate;

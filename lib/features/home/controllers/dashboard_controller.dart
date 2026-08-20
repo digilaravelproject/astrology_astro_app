@@ -9,6 +9,8 @@ import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.da
 import 'package:astro_astrologer/features/chat/presentation/bindings/chat_binding.dart';
 import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 
+import 'package:astro_astrologer/core/services/network/websocket_service.dart';
+
 class DashboardController extends GetxController {
   var selectedIndex = 0.obs;
 
@@ -50,6 +52,10 @@ class DashboardController extends GetxController {
           final startedAt = session['started_at'] ?? session['accepted_at'] ?? session['created_at'];
           final name = session['consumer']?['name'] ?? session['user']?['name'] ?? 'User';
           final imageUrl = session['consumer']?['image'] ?? session['user']?['image'] ?? session['consumer']?['avatar'] ?? '';
+
+          if (sessionId != null && startedAt != null) {
+            WebSocketService.sessionStartTimes[sessionId] = startedAt.toString();
+          }
 
           if (sessionId != null && (status == 'ongoing' || status == 'initiated' || status == 'accepted')) {
             FloatingChatBubble.show(
