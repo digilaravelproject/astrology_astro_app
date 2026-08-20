@@ -669,11 +669,18 @@ class CallController extends GetxController with WidgetsBindingObserver {
               Logger.d('CallController: Showing ongoing call notification...');
               LocalNotificationService.showOngoingCallNotification(
                 sessionId: sessionId!,
-                title: 'Active Call in Progress',
-                body: 'Talking with $consumerName - $minutes:$seconds',
-                startedAtMillis: session['started_at'] != null 
-                    ? DateTime.tryParse(session['started_at'].toString())?.millisecondsSinceEpoch
-                    : null,
+                title: '$consumerName • Call',
+                body: 'Tap to return to call session',
+                startedAtMillis: () {
+                  if (session['started_at'] != null) {
+                    String isoUtc = session['started_at'].toString().trim().replaceAll(' ', 'T');
+                    if (!isoUtc.endsWith('Z') && !isoUtc.contains('+') && !isoUtc.contains('-')) {
+                      isoUtc += 'Z';
+                    }
+                    return DateTime.tryParse(isoUtc)?.toLocal().millisecondsSinceEpoch;
+                  }
+                  return null;
+                }(),
               );
 
               // Navigate to CallScreen if not already visible
