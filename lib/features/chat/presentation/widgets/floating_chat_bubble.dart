@@ -193,7 +193,7 @@ class _FloatingChatBubbleWidgetState extends State<FloatingChatBubbleWidget> {
       final startedAt = _parseSmartDate(actualStr);
       if (startedAt != null) {
         final diff = DateTime.now().difference(startedAt).inSeconds;
-        if (diff > 0) {
+        if (diff >= 0) {
           _elapsedSeconds.value = diff;
         } else {
           _elapsedSeconds.value++;

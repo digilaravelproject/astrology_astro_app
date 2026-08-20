@@ -470,21 +470,23 @@ class CallController extends GetxController with WidgetsBindingObserver {
 
   void minimizeToBubble(BuildContext context, String name, String image, {bool shouldPop = true}) {
     if (sessionId == null || (status.value != 'ongoing' && status.value != 'ringing' && status.value != 'dialing')) return;
-    // FloatingCallBubble.show(
-    //   context: context,
-    //   sessionId: sessionId!,
-    //   name: name,
-    //   imageUrl: image,
-    //   startedAt: status.value == 'ongoing' ? DateTime.now().subtract(Duration(seconds: durationSeconds.value)).toUtc().toIso8601String() : null,
-    //   status: status.value,
-    //   onTap: () {
-    //     final currentStatus = FloatingCallBubble.callStatus.value;
-    //     FloatingCallBubble.dismiss();
-    //     Get.to(() => const CallScreen());
-    //   },
-    // );
+    final startStr = WebSocketService.sessionStartTimes[sessionId!] ?? DateTime.now().subtract(Duration(seconds: durationSeconds.value)).toIso8601String();
+    WebSocketService.sessionStartTimes[sessionId!] = startStr;
+
+    FloatingCallBubble.show(
+      context: context,
+      sessionId: sessionId!,
+      name: name,
+      imageUrl: image,
+      startedAt: status.value == 'ongoing' ? startStr : null,
+      status: status.value,
+      onTap: () {
+        FloatingCallBubble.dismiss(stopForegroundService: false);
+        Get.to(() => const CallScreen());
+      },
+    );
     if (shouldPop) {
-      Navigator.of(context).pop();
+      Get.back();
     }
   }
 
