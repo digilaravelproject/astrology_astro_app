@@ -18,6 +18,7 @@ import '../../../routes/app_routes.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
+import 'package:astro_astrologer/features/call/presentation/widgets/floating_call_bubble.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -97,7 +98,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
         body: Column(
           children: [
             Obx(() {
-              if (FloatingChatBubble.isActive &&
+              if (FloatingCallBubble.isActive &&
+                  FloatingCallBubble.sessionId != null &&
+                  FloatingCallBubble.name != null) {
+                return FloatingCallBubbleWidget(
+                  sessionId: FloatingCallBubble.sessionId!,
+                  name: FloatingCallBubble.name!,
+                  imageUrl: '',
+                );
+              } else if (FloatingChatBubble.isActive &&
                   FloatingChatBubble.sessionId != null &&
                   FloatingChatBubble.name != null) {
                 return FloatingChatBubbleWidget(

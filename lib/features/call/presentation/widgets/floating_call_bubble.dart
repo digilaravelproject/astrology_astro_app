@@ -6,6 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:astro_astrologer/features/call/presentation/pages/call_screen.dart';
+import 'package:astro_astrologer/core/services/local_notification_service.dart';
+import 'package:astro_astrologer/core/services/foreground_task_service.dart';
+import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 
 class FloatingCallBubble {
   static int? sessionId;
@@ -13,8 +16,8 @@ class FloatingCallBubble {
   static VoidCallback? onTapCallback;
   static final RxString callStatus = 'initiated'.obs;
 
-  static bool _isActive = false;
-  static bool get isActive => _isActive;
+  static final RxBool _isActive = false.obs;
+  static bool get isActive => _isActive.value;
   
   static StreamSubscription? _overlaySub;
   static const MethodChannel _appRetainChannel = MethodChannel('com.suryapath.astrologer/app_retain');
@@ -59,7 +62,7 @@ class FloatingCallBubble {
   }) async {
     _setupIsolatePort();
     
-    if (_isActive && FloatingCallBubble.sessionId == sessionId) {
+    if (_isActive.value && FloatingCallBubble.sessionId == sessionId) {
       callStatus.value = status;
       _syncData();
       return;
@@ -68,9 +71,23 @@ class FloatingCallBubble {
     FloatingCallBubble.name = name;
     onTapCallback = onTap;
     callStatus.value = status;
-    _isActive = true;
+    _isActive.value = true;
 
     try {
+      final String statusText = (status == 'ongoing') 
+          ? 'Active Call with $name' 
+          : 'Incoming Call / Calling $name ($status)...';
+
+      LocalNotificationService.showOngoingCallNotification(
+        sessionId: sessionId,
+        title: statusText,
+        body: 'Tap to return to call session',
+      );
+      ForegroundTaskService.startService(
+        title: statusText,
+        text: 'Tap to return to call session',
+      );
+
       final bool isGranted = await FlutterOverlayWindow.isPermissionGranted();
       if (!isGranted) {
         await FlutterOverlayWindow.requestPermission();
@@ -86,58 +103,22 @@ class FloatingCallBubble {
           'isCall': true,
           'unreadCount': 0,
         });
-      } else {
-        await FlutterOverlayWindow.showOverlay(
-          enableDrag: true,
-          overlayTitle: "Call in progress",
-          overlayContent: "Active call with $name",
-          flag: OverlayFlag.defaultFlag,
-          visibility: NotificationVisibility.visibilitySecret,
-          positionGravity: PositionGravity.none,
-          height: 260,
-          width: 260,
-        );
-        
-        await FlutterOverlayWindow.shareData({
-          'type': 'init',
-          'sessionId': sessionId,
-          'name': name,
-          'imageUrl': imageUrl,
-          'status': status,
-          'startedAt': startedAt,
-          'isCall': true,
-          'unreadCount': 0,
-        });
       }
-      
-      // Listen for tap events from overlay ALWAYS
-      _overlaySub?.cancel();
-      _overlaySub = FlutterOverlayWindow.overlayListener.listen((event) async {
-        if (event != null && event is Map && event['action'] == 'tap') {
-          debugPrint("==== CALL OVERLAY TAPPED ====");
-          try {
-            await _appRetainChannel.invokeMethod('bringToForeground');
-          } catch (e) {
-            debugPrint("==== Error bringing app to foreground: $e ====");
-          }
-          Future.delayed(const Duration(milliseconds: 500), () {
-            if (onTapCallback != null) {
-              onTapCallback?.call();
-            } else {
-              FloatingCallBubble.dismiss();
-              Get.to(() => const CallScreen());
-            }
-          });
-        }
-      });
-
     } catch (e) {
       debugPrint("FloatingCallBubble show error: $e");
     }
   }
 
   static Future<void> dismiss() async {
-    _isActive = false;
+    _isActive.value = false;
+    if (sessionId != null) {
+      try {
+        LocalNotificationService.cancelOngoingCallNotification(sessionId!);
+      } catch (_) {}
+    }
+    try {
+      await ForegroundTaskService.stopService();
+    } catch (_) {}
     sessionId = null;
     onTapCallback = null;
     _overlaySub?.cancel();
@@ -155,7 +136,7 @@ class FloatingCallBubble {
   }
 
   static Future<void> _syncData() async {
-    if (_isActive) {
+    if (_isActive.value) {
       try {
         if (await FlutterOverlayWindow.isActive()) {
           await FlutterOverlayWindow.shareData({
@@ -167,5 +148,167 @@ class FloatingCallBubble {
         }
       } catch (_) {}
     }
+  }
+}
+
+class FloatingCallBubbleWidget extends StatefulWidget {
+  final int sessionId;
+  final String name;
+  final String imageUrl;
+  final String? startedAt;
+
+  const FloatingCallBubbleWidget({
+    super.key,
+    required this.sessionId,
+    required this.name,
+    required this.imageUrl,
+    this.startedAt,
+  });
+
+  @override
+  State<FloatingCallBubbleWidget> createState() => _FloatingCallBubbleWidgetState();
+}
+
+class _FloatingCallBubbleWidgetState extends State<FloatingCallBubbleWidget> {
+  Timer? _timer;
+  final RxInt _elapsedSeconds = 0.obs;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer(widget.startedAt);
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _startTimer(String? startedAtStr) {
+    if (startedAtStr != null && startedAtStr.isNotEmpty) {
+      try {
+        final startedAt = DateTime.tryParse(startedAtStr)?.toLocal();
+        if (startedAt != null) {
+          final now = DateTime.now();
+          final diff = now.difference(startedAt).inSeconds;
+          _elapsedSeconds.value = diff > 0 ? diff : 0;
+        }
+      } catch (_) {}
+    }
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      final currentStatus = FloatingCallBubble.callStatus.value;
+      if (currentStatus == 'ongoing') {
+        _elapsedSeconds.value++;
+      }
+    });
+  }
+
+  String _formatDuration(int totalSeconds) {
+    final int minutes = totalSeconds ~/ 60;
+    final int seconds = totalSeconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      color: const Color(0xFF6A0C22),
+      child: SafeArea(
+        bottom: false,
+        child: GestureDetector(
+          onTap: () {
+            if (FloatingCallBubble.onTapCallback != null) {
+              FloatingCallBubble.onTapCallback?.call();
+            } else {
+              Get.to(() => const CallScreen());
+            }
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            color: const Color(0xFF6A0C22),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: const BoxDecoration(
+                    color: Colors.white24,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.call,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Call with ${widget.name}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Obx(() {
+                        final status = FloatingCallBubble.callStatus.value;
+                        if (status == 'ongoing') {
+                          int durationSec = _elapsedSeconds.value;
+                          if (Get.isRegistered<CallController>()) {
+                            final callCtrl = Get.find<CallController>();
+                            if (callCtrl.durationSeconds.value > 0) {
+                              durationSec = callCtrl.durationSeconds.value;
+                            }
+                          }
+                          return Text(
+                            'Active Call • ${_formatDuration(durationSec)}',
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12,
+                            ),
+                          );
+                        } else {
+                          return Text(
+                            'Call Status: ${status.capitalizeFirst}...',
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12,
+                            ),
+                          );
+                        }
+                      }),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Text(
+                    'Return',
+                    style: TextStyle(
+                      color: Color(0xFF6A0C22),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
