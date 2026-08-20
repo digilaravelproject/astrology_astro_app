@@ -9,6 +9,7 @@ import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.da
 import 'package:astro_astrologer/features/chat/presentation/bindings/chat_binding.dart';
 import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 
+import 'package:astro_astrologer/core/services/local_notification_service.dart';
 import 'package:astro_astrologer/core/services/network/websocket_service.dart';
 
 class DashboardController extends GetxController {
@@ -58,6 +59,11 @@ class DashboardController extends GetxController {
           }
 
           if (sessionId != null && (status == 'ongoing' || status == 'initiated' || status == 'accepted')) {
+            LocalNotificationService.showOngoingChatNotification(
+              sessionId: sessionId,
+              title: '$name • Chat',
+              body: 'Ongoing chat session',
+            );
             FloatingChatBubble.show(
               context: Get.context!,
               sessionId: sessionId,

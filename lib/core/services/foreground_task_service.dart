@@ -69,6 +69,7 @@ class ForegroundTaskService {
   }
 
   static Future<void> startService({required String title, required String text}) async {
+    await requestPermissions();
     const buttons = [
       NotificationButton(
         id: 'hangup_btn',
