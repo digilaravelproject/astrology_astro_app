@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
@@ -183,7 +184,7 @@ class LocalNotificationService {
       'Active Consultation Service',
       channelDescription: 'Ongoing active call and chat consultation status',
       importance: Importance.max,
-      priority: Priority.high,
+      priority: Priority.max,
       ongoing: true,
       autoCancel: false,
       onlyAlertOnce: true,
@@ -192,6 +193,7 @@ class LocalNotificationService {
       when: startTime,
       category: AndroidNotificationCategory.call,
       visibility: NotificationVisibility.public,
+      additionalFlags: Int32List.fromList([2, 64]),
     );
 
     final NotificationDetails notificationDetails = NotificationDetails(
@@ -267,7 +269,7 @@ class LocalNotificationService {
       'Active Consultation Service',
       channelDescription: 'Ongoing active call and chat consultation status',
       importance: Importance.max,
-      priority: Priority.high,
+      priority: Priority.max,
       ongoing: true,
       autoCancel: false,
       onlyAlertOnce: true,
@@ -276,6 +278,7 @@ class LocalNotificationService {
       when: startTime,
       category: AndroidNotificationCategory.call,
       visibility: NotificationVisibility.public,
+      additionalFlags: Int32List.fromList([2, 64]),
     );
 
     final NotificationDetails notificationDetails = NotificationDetails(
