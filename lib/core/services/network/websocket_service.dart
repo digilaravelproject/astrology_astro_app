@@ -658,11 +658,12 @@ class WebSocketService extends GetxService {
 
         // Show ongoing local notification since user minimized the chat and it just started!
         int? startedAtMillis;
-        if (startedAt != null) {
-          final parsedDate = DateTime.tryParse(startedAt);
-          if (parsedDate != null) {
-            startedAtMillis = parsedDate.millisecondsSinceEpoch;
+        if (startedAt != null && startedAt.isNotEmpty) {
+          String isoUtc = startedAt.trim().replaceAll(' ', 'T');
+          if (!isoUtc.endsWith('Z') && !isoUtc.contains('+') && !isoUtc.contains('-')) {
+            isoUtc += 'Z';
           }
+          startedAtMillis = DateTime.tryParse(isoUtc)?.toLocal().millisecondsSinceEpoch;
         }
         LocalNotificationService.showOngoingChatNotification(
           sessionId: sessionId,
