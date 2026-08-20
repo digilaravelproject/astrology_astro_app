@@ -278,45 +278,78 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     });
   }
 
-  DateTime? _parseUtcDate(String? dateStr) {
-    if (dateStr == null || dateStr.isEmpty) return null;
+  DateTime? _parseSmartDate(dynamic input) {
+    if (input == null) return null;
+    if (input is DateTime) return input;
+    final dateStr = input.toString().trim();
+    if (dateStr.isEmpty) return null;
+
+    DateTime? parsed;
     try {
-      String formatted = dateStr.trim().replaceAll(' ', 'T');
-      if (!formatted.endsWith('Z') && !formatted.contains('+') && !formatted.contains('-', 10)) {
-        formatted += 'Z';
-      }
-      return DateTime.tryParse(formatted)?.toLocal();
-    } catch (_) {
-      return DateTime.tryParse(dateStr)?.toLocal();
+      parsed = DateTime.tryParse(dateStr.replaceAll(' ', 'T'));
+    } catch (_) {}
+
+    if (parsed == null) {
+      try {
+        parsed = DateTime.tryParse(dateStr);
+      } catch (_) {}
     }
+
+    if (parsed == null) return null;
+
+    final now = DateTime.now();
+
+    if (parsed.isAfter(now)) {
+      String isoUtc = dateStr.replaceAll(' ', 'T');
+      if (!isoUtc.endsWith('Z') && !isoUtc.contains('+')) {
+        isoUtc += 'Z';
+      }
+      final utcDate = DateTime.tryParse(isoUtc)?.toLocal();
+      if (utcDate != null && !utcDate.isAfter(now)) {
+        return utcDate;
+      }
+      final offsetDate = parsed.subtract(now.timeZoneOffset);
+      if (!offsetDate.isAfter(now)) {
+        return offsetDate;
+      }
+    }
+
+    return parsed;
   }
 
   void _setupTimer(String? startedAtString) {
     _timer?.cancel();
-    if (status.value == 'ended' || status.value == 'completed') return;
-    
+    final currentSt = status.value.toLowerCase();
+    if (currentSt == 'ended' || currentSt == 'completed' || currentSt == 'cancelled' || currentSt == 'rejected') return;
+
     final startedAtStr = startedAtString ?? _startedAt ?? WebSocketService.sessionStartTimes[_sessionId];
-    final startedAt = _parseUtcDate(startedAtStr);
-    
+    final startedAt = _parseSmartDate(startedAtStr);
+
     if (startedAt != null) {
       final diff = DateTime.now().difference(startedAt).inSeconds;
       elapsedSeconds.value = diff > 0 ? diff : 0;
-      
+
       _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-        if (status.value == 'ended' || status.value == 'completed') {
+        final st = status.value.toLowerCase();
+        if (st == 'ended' || st == 'completed' || st == 'cancelled' || st == 'rejected') {
           timer.cancel();
           return;
         }
         final nowDiff = DateTime.now().difference(startedAt).inSeconds;
-        elapsedSeconds.value = nowDiff > 0 ? nowDiff : 0;
+        if (nowDiff > 0) {
+          elapsedSeconds.value = nowDiff;
+        } else {
+          elapsedSeconds.value++;
+        }
       });
     } else {
       _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-        if (status.value == 'ended' || status.value == 'completed') {
+        final st = status.value.toLowerCase();
+        if (st == 'ended' || st == 'completed' || st == 'cancelled' || st == 'rejected') {
           timer.cancel();
           return;
         }
-        if (status.value == 'ongoing') {
+        if (st == 'ongoing' || st == 'accepted') {
           elapsedSeconds.value++;
         }
       });
