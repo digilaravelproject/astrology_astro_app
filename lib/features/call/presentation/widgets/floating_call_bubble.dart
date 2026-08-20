@@ -109,16 +109,16 @@ class FloatingCallBubble {
     }
   }
 
-  static Future<void> dismiss() async {
+  static Future<void> dismiss({bool stopForegroundService = false}) async {
     _isActive.value = false;
-    if (sessionId != null) {
+    if (stopForegroundService && sessionId != null) {
       try {
         LocalNotificationService.cancelOngoingCallNotification(sessionId!);
       } catch (_) {}
+      try {
+        await ForegroundTaskService.stopService();
+      } catch (_) {}
     }
-    try {
-      await ForegroundTaskService.stopService();
-    } catch (_) {}
     sessionId = null;
     onTapCallback = null;
     _overlaySub?.cancel();

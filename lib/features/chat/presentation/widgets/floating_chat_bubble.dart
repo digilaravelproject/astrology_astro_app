@@ -88,16 +88,16 @@ class FloatingChatBubble {
     }
   }
 
-  static Future<void> dismiss() async {
+  static Future<void> dismiss({bool stopForegroundService = false}) async {
     _isActive.value = false;
-    if (sessionId != null) {
+    if (stopForegroundService && sessionId != null) {
       try {
         LocalNotificationService.cancelOngoingChatNotification(sessionId!);
       } catch (_) {}
+      try {
+        await ForegroundTaskService.stopService();
+      } catch (_) {}
     }
-    try {
-      await ForegroundTaskService.stopService();
-    } catch (_) {}
     sessionId = null;
     onTapCallback = null;
     unreadCount.value = 0;
