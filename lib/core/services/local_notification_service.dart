@@ -128,10 +128,31 @@ class LocalNotificationService {
       );
       await androidPlugin.createNotificationChannel(
         const AndroidNotificationChannel(
-          'astology_notifications',
-          'System & General Notifications',
-          description: 'General updates and system notifications',
+          'active_chat_channel_v1',
+          'Active Chats',
+          description: 'Ongoing notification for active chat sessions',
           importance: Importance.max,
+          playSound: false,
+          enableVibration: false,
+        ),
+      );
+      await androidPlugin.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'active_call_channel_v1',
+          'Active Calls',
+          description: 'Ongoing notification for active call sessions',
+          importance: Importance.max,
+          playSound: false,
+          enableVibration: false,
+        ),
+      );
+      await androidPlugin.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'incoming_call_channel_v1',
+          'Incoming Calls Alert',
+          description: 'Alert for incoming call notifications',
+          importance: Importance.max,
+          playSound: true,
         ),
       );
       await androidPlugin.requestNotificationsPermission();
