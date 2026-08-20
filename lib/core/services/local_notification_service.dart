@@ -1,5 +1,6 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
+import 'package:astro_astrologer/core/services/foreground_task_service.dart';
 import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
 import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 import 'package:astro_astrologer/features/call/presentation/widgets/incoming_call_dialog.dart';
@@ -165,42 +166,14 @@ class LocalNotificationService {
     required String body,
     int? startedAtMillis,
   }) async {
-    final int startTime = startedAtMillis ?? DateTime.now().millisecondsSinceEpoch;
-    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'active_chat_channel_v1',
-      'Active Chats',
-      channelDescription: 'Ongoing notification for active chat sessions',
-      importance: Importance.max,
-      priority: Priority.high,
-      ongoing: true,
-      autoCancel: false,
-      onlyAlertOnce: true,
-      showWhen: true,
-      usesChronometer: true,
-      when: startTime,
-      category: AndroidNotificationCategory.call,
-      visibility: NotificationVisibility.public,
-    );
-
-    final NotificationDetails notificationDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: const DarwinNotificationDetails(
-        presentAlert: true,
-        presentBadge: true,
-        presentSound: true,
-      ),
-    );
-
-    await _notificationsPlugin.show(
-      sessionId,
-      title,
-      body,
-      notificationDetails,
-      payload: sessionId.toString(),
+    await ForegroundTaskService.startService(
+      title: title,
+      text: body,
     );
   }
 
   static Future<void> cancelOngoingChatNotification(int sessionId) async {
+    await ForegroundTaskService.stopService();
     await _notificationsPlugin.cancel(sessionId);
   }
 
@@ -249,42 +222,14 @@ class LocalNotificationService {
     required String body,
     int? startedAtMillis,
   }) async {
-    final int startTime = startedAtMillis ?? DateTime.now().millisecondsSinceEpoch;
-    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'active_call_channel_v1',
-      'Active Calls',
-      channelDescription: 'Ongoing notification for active call sessions',
-      importance: Importance.max,
-      priority: Priority.high,
-      ongoing: true,
-      autoCancel: false,
-      onlyAlertOnce: true,
-      showWhen: true,
-      usesChronometer: true,
-      when: startTime,
-      category: AndroidNotificationCategory.call,
-      visibility: NotificationVisibility.public,
-    );
-
-    final NotificationDetails notificationDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: DarwinNotificationDetails(
-        presentAlert: true,
-        presentBadge: true,
-        presentSound: true,
-      ),
-    );
-
-    await _notificationsPlugin.show(
-      sessionId + 100000,
-      title,
-      body,
-      notificationDetails,
-      payload: 'call_$sessionId',
+    await ForegroundTaskService.startService(
+      title: title,
+      text: body,
     );
   }
 
   static Future<void> cancelOngoingCallNotification(int sessionId) async {
+    await ForegroundTaskService.stopService();
     await _notificationsPlugin.cancel(sessionId + 100000);
   }
 
