@@ -156,6 +156,16 @@ class LocalNotificationService {
           playSound: true,
         ),
       );
+      await androidPlugin.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'active_consultation_foreground_channel',
+          'Active Consultation Service',
+          description: 'Ongoing active call and chat consultation status',
+          importance: Importance.max,
+          playSound: false,
+          enableVibration: false,
+        ),
+      );
       await androidPlugin.requestNotificationsPermission();
     }
   }
