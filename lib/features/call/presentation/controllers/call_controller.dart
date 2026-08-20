@@ -399,13 +399,6 @@ class CallController extends GetxController with WidgetsBindingObserver {
         title: title,
         body: body,
       );
-
-      ForegroundTaskService.requestPermissions().then((_) {
-        ForegroundTaskService.startService(
-          title: title,
-          text: body,
-        );
-      });
     }
   }
 

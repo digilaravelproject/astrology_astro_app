@@ -75,17 +75,13 @@ class FloatingCallBubble {
 
     try {
       final String statusText = (status == 'ongoing') 
-          ? 'Active Call with $name' 
+          ? '$name • Call' 
           : 'Incoming Call / Calling $name ($status)...';
 
       LocalNotificationService.showOngoingCallNotification(
         sessionId: sessionId,
         title: statusText,
         body: 'Tap to return to call session',
-      );
-      ForegroundTaskService.startService(
-        title: statusText,
-        text: 'Tap to return to call session',
       );
 
       final bool isGranted = await FlutterOverlayWindow.isPermissionGranted();
@@ -244,10 +240,6 @@ class _FloatingCallBubbleWidgetState extends State<FloatingCallBubbleWidget> {
       final currentStatus = FloatingCallBubble.callStatus.value.toLowerCase();
       if (currentStatus == 'ongoing' || currentStatus == 'accepted') {
         updateDuration();
-        ForegroundTaskService.startService(
-          title: '${widget.name} • Call • ${_formatDuration(_elapsedSeconds.value)}',
-          text: 'Ongoing voice call',
-        );
       }
     });
   }
