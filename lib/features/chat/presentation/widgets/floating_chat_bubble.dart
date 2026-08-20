@@ -73,15 +73,23 @@ class FloatingChatBubble {
     _isActive.value = true;
 
     try {
-      // Show system notification banner instead of FlutterOverlayWindow
+      // Kill any old foreground task service to prevent 2 notifications
+      ForegroundTaskService.stopService();
+
+      int? startedAtMillis;
+      if (startedAt != null && startedAt.isNotEmpty) {
+        String isoUtc = startedAt.trim().replaceAll(' ', 'T');
+        if (!isoUtc.endsWith('Z') && !isoUtc.contains('+') && !isoUtc.contains('-')) {
+          isoUtc += 'Z';
+        }
+        startedAtMillis = DateTime.tryParse(isoUtc)?.toLocal().millisecondsSinceEpoch;
+      }
+
       LocalNotificationService.showOngoingChatNotification(
         sessionId: sessionId,
-        title: status == 'ongoing' ? 'Active Chat with $name' : 'Incoming Chat Request from $name',
+        title: status == 'ongoing' ? '$name • Chat' : 'Incoming Chat Request from $name',
         body: 'Tap to return to chat session',
-      );
-      ForegroundTaskService.startService(
-        title: status == 'ongoing' ? 'Active Chat with $name' : 'Incoming Chat Request',
-        text: 'Tap to return to chat session',
+        startedAtMillis: startedAtMillis,
       );
     } catch (e) {
       debugPrint("FloatingChatBubble show notification error: $e");
