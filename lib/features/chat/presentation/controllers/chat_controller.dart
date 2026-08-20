@@ -278,16 +278,48 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     });
   }
 
+  DateTime? _parseUtcDate(String? dateStr) {
+    if (dateStr == null || dateStr.isEmpty) return null;
+    try {
+      String formatted = dateStr.trim().replaceAll(' ', 'T');
+      if (!formatted.endsWith('Z') && !formatted.contains('+') && !formatted.contains('-', 10)) {
+        formatted += 'Z';
+      }
+      return DateTime.tryParse(formatted)?.toLocal();
+    } catch (_) {
+      return DateTime.tryParse(dateStr)?.toLocal();
+    }
+  }
+
   void _setupTimer(String? startedAtString) {
     _timer?.cancel();
-    final startedAtStr = startedAtString ?? WebSocketService.sessionStartTimes[_sessionId];
-    if (startedAtStr != null) {
-      final startedAt = DateTime.tryParse(startedAtStr);
-      if (startedAt != null) {
-        _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-          elapsedSeconds.value = DateTime.now().difference(startedAt).inSeconds;
-        });
-      }
+    if (status.value == 'ended' || status.value == 'completed') return;
+    
+    final startedAtStr = startedAtString ?? _startedAt ?? WebSocketService.sessionStartTimes[_sessionId];
+    final startedAt = _parseUtcDate(startedAtStr);
+    
+    if (startedAt != null) {
+      final diff = DateTime.now().difference(startedAt).inSeconds;
+      elapsedSeconds.value = diff > 0 ? diff : 0;
+      
+      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (status.value == 'ended' || status.value == 'completed') {
+          timer.cancel();
+          return;
+        }
+        final nowDiff = DateTime.now().difference(startedAt).inSeconds;
+        elapsedSeconds.value = nowDiff > 0 ? nowDiff : 0;
+      });
+    } else {
+      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (status.value == 'ended' || status.value == 'completed') {
+          timer.cancel();
+          return;
+        }
+        if (status.value == 'ongoing') {
+          elapsedSeconds.value++;
+        }
+      });
     }
   }
 

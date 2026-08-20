@@ -121,27 +121,25 @@ class FloatingChatBubbleWidget extends StatefulWidget {
   final String? startedAt;
 
   const FloatingChatBubbleWidget({
-    Key? key,
+    super.key,
     required this.sessionId,
     required this.name,
     required this.imageUrl,
     this.startedAt,
-  }) : super(key: key);
+  });
 
   @override
   State<FloatingChatBubbleWidget> createState() => _FloatingChatBubbleWidgetState();
 }
 
 class _FloatingChatBubbleWidgetState extends State<FloatingChatBubbleWidget> {
-  double xPosition = 20.0;
-  double yPosition = 120.0;
   Timer? _timer;
   final RxInt _elapsedSeconds = 0.obs;
 
   @override
   void initState() {
     super.initState();
-    _startTimer(widget.startedAt);
+    _startTimer();
   }
 
   @override
@@ -150,36 +148,36 @@ class _FloatingChatBubbleWidgetState extends State<FloatingChatBubbleWidget> {
     super.dispose();
   }
 
-  void _startTimer(String? startedAtStr) {
-    if (startedAtStr != null && startedAtStr.isNotEmpty) {
-      try {
-        final startedAt = DateTime.tryParse(startedAtStr)?.toLocal();
-        if (startedAt != null) {
-          final now = DateTime.now();
-          final diff = now.difference(startedAt).inSeconds;
-          _elapsedSeconds.value = diff > 0 ? diff : 0;
-        }
-      } catch (_) {}
+  DateTime? _parseUtc(String? dateStr) {
+    if (dateStr == null || dateStr.isEmpty) return null;
+    try {
+      String formatted = dateStr.trim().replaceAll(' ', 'T');
+      if (!formatted.endsWith('Z') && !formatted.contains('+') && !formatted.contains('-', 10)) {
+        formatted += 'Z';
+      }
+      return DateTime.tryParse(formatted)?.toLocal();
+    } catch (_) {
+      return DateTime.tryParse(dateStr)?.toLocal();
     }
+  }
+
+  void _startTimer() {
+    void updateDuration() {
+      final actualStr = widget.startedAt ?? WebSocketService.sessionStartTimes[widget.sessionId];
+      final startedAt = _parseUtc(actualStr);
+      if (startedAt != null) {
+        final diff = DateTime.now().difference(startedAt).inSeconds;
+        _elapsedSeconds.value = diff > 0 ? diff : 0;
+      } else {
+        _elapsedSeconds.value++;
+      }
+    }
+
+    updateDuration();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       final currentStatus = FloatingChatBubble.chatStatus.value;
       if (currentStatus == 'ongoing') {
-        final actualStartedAtStr = widget.startedAt ?? WebSocketService.sessionStartTimes[widget.sessionId];
-        if (actualStartedAtStr != null && actualStartedAtStr.isNotEmpty) {
-          try {
-            final startedAt = DateTime.tryParse(actualStartedAtStr)?.toLocal();
-            if (startedAt != null) {
-              final diff = DateTime.now().difference(startedAt).inSeconds;
-              _elapsedSeconds.value = diff > 0 ? diff : 0;
-            } else {
-              _elapsedSeconds.value++;
-            }
-          } catch (_) {
-            _elapsedSeconds.value++;
-          }
-        } else {
-          _elapsedSeconds.value++;
-        }
+        updateDuration();
       }
     });
   }
@@ -192,12 +190,18 @@ class _FloatingChatBubbleWidgetState extends State<FloatingChatBubbleWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
-    
-    // Constraints to keep bubble inside screen bounds
     return Container(
       width: double.infinity,
-      color: const Color(0xFF1E1E2C),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFFE65100), Color(0xFFFF6F00)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(color: Colors.black26, blurRadius: 8, offset: Offset(0, 3)),
+        ],
+      ),
       child: SafeArea(
         bottom: false,
         child: GestureDetector(
@@ -206,16 +210,15 @@ class _FloatingChatBubbleWidgetState extends State<FloatingChatBubbleWidget> {
           },
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            color: const Color(0xFF1E1E2C),
             child: Row(
               children: [
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.greenAccent.withValues(alpha: 0.15),
+                    color: Colors.white.withOpacity(0.18),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.chat_bubble_rounded, color: Colors.greenAccent, size: 18),
+                  child: const Icon(Icons.chat_bubble_rounded, color: Colors.white, size: 18),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -225,28 +228,30 @@ class _FloatingChatBubbleWidgetState extends State<FloatingChatBubbleWidget> {
                     children: [
                       Row(
                         children: [
-                          Text(
-                            widget.name,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
+                          Flexible(
+                            child: Text(
+                              widget.name,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFFF6F00).withValues(alpha: 0.2),
+                              color: Colors.white.withOpacity(0.25),
                               borderRadius: BorderRadius.circular(6),
-                              border: Border.all(color: const Color(0xFFFF6F00).withValues(alpha: 0.5), width: 0.8),
+                              border: Border.all(color: Colors.white.withOpacity(0.4), width: 0.8),
                             ),
                             child: const Text(
                               'CHAT',
                               style: TextStyle(
-                                color: Color(0xFFFF6F00),
+                                color: Colors.white,
                                 fontSize: 10,
                                 fontWeight: FontWeight.w700,
                                 letterSpacing: 0.5,
@@ -269,45 +274,35 @@ class _FloatingChatBubbleWidgetState extends State<FloatingChatBubbleWidget> {
                           );
                         }
                         return Text(
-                          _formatDuration(_elapsedSeconds.value),
+                          'Active Chat • ${_formatDuration(_elapsedSeconds.value)}',
                           style: const TextStyle(
-                            color: Colors.white70,
+                            color: Colors.white,
                             fontSize: 12,
+                            fontWeight: FontWeight.w600,
                           ),
                         );
                       }),
                     ],
                   ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    FloatingChatBubble.dismiss();
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: const BoxDecoration(
-                      color: Colors.redAccent,
-                      shape: BoxShape.circle,
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Text(
+                    'Return',
+                    style: TextStyle(
+                      color: Color(0xFFE65100),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
                     ),
-                    child: const Icon(Icons.call_end, color: Colors.white, size: 18),
                   ),
                 ),
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInitials() {
-    final String initial = widget.name.isNotEmpty ? widget.name[0].toUpperCase() : 'A';
-    return Container(
-      color: const Color(0xFFFF6F00),
-      child: Center(
-        child: Text(
-          initial,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
         ),
       ),
     );
