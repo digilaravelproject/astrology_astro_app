@@ -34,6 +34,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     _requestPermissions();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.checkCurrentActiveSession();
+      if (Get.isRegistered<CallController>()) {
+        Get.find<CallController>().checkCurrentActiveCallSession();
+      }
+    });
   }
 
   Future<void> _requestPermissions() async {

@@ -18,49 +18,63 @@ class DashboardController extends GetxController {
   }
 
   @override
+  void onInit() {
+    super.onInit();
+    final isLoggedIn = SharedPrefs.getBool(AppConstants.isLoggedIn) ?? false;
+    if (isLoggedIn) {
+      checkCurrentActiveSession();
+    }
+  }
+
+  @override
   void onReady() {
     super.onReady();
     final isLoggedIn = SharedPrefs.getBool(AppConstants.isLoggedIn) ?? false;
     if (isLoggedIn) {
-      _checkCurrentActiveSession();
+      checkCurrentActiveSession();
       Get.find<CallController>().checkCurrentActiveCallSession();
     }
   }
 
-  Future<void> _checkCurrentActiveSession() async {
+  Future<void> checkCurrentActiveSession() async {
     try {
       final response = await Get.find<ApiClient>().get(AppUrls.getCurrentSession);
-      if (response.isSuccess && response.body != null && response.body['data'] != null) {
-        final session = response.body['data'];
-        final sessionId = session['id'];
-        final status = session['status'];
-        final startedAt = session['started_at'] ?? session['accepted_at'] ?? session['created_at'];
-        // For astrologer app, other person is consumer
-        final name = session['consumer']?['name'] ?? 'User';
-        
-        if (status == 'ongoing' || status == 'initiated' || status == 'accepted') {
-          FloatingChatBubble.show(
-             context: Get.context!,
-             sessionId: sessionId,
-             name: name,
-             imageUrl: '', // We don't have the image in this payload
-             status: status,
-             startedAt: startedAt,
-             onTap: () {
-               final currentStatus = FloatingChatBubble.chatStatus.value;
-               FloatingChatBubble.dismiss();
-               Get.to(
-                 () => ChatScreen(
-                   userName: name,
-                   userImage: '',
-                   sessionId: sessionId,
-                   initialStatus: currentStatus,
-                   startedAtString: startedAt,
-                 ),
-                 binding: ChatBinding(),
-               );
-             }
-          );
+      if (response.isSuccess && response.body != null) {
+        final data = response.body;
+        final session = (data is Map)
+            ? (data['session'] ?? data['data']?['session'] ?? data['data'] ?? data)
+            : null;
+        if (session != null && session is Map) {
+          final sessionId = session['id'];
+          final status = session['status'];
+          final startedAt = session['started_at'] ?? session['accepted_at'] ?? session['created_at'];
+          final name = session['consumer']?['name'] ?? session['user']?['name'] ?? 'User';
+          final imageUrl = session['consumer']?['image'] ?? session['user']?['image'] ?? session['consumer']?['avatar'] ?? '';
+
+          if (sessionId != null && (status == 'ongoing' || status == 'initiated' || status == 'accepted')) {
+            FloatingChatBubble.show(
+              context: Get.context!,
+              sessionId: sessionId,
+              name: name,
+              imageUrl: imageUrl,
+              status: status,
+              startedAt: startedAt,
+              onTap: () {
+                final currentStatus = FloatingChatBubble.chatStatus.value;
+                FloatingChatBubble.dismiss(stopForegroundService: false);
+                Get.to(
+                  () => ChatScreen(
+                    userName: name,
+                    userImage: imageUrl,
+                    sessionId: sessionId,
+                    initialStatus: currentStatus,
+                    startedAtString: startedAt,
+                  ),
+                  binding: ChatBinding(),
+                );
+              },
+            );
+          }
         }
       }
     } catch (e) {
