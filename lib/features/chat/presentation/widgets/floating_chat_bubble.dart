@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/services/network/websocket_service.dart';
 import 'package:astro_astrologer/core/services/local_notification_service.dart';
+import 'package:astro_astrologer/core/services/foreground_task_service.dart';
 
 
 class FloatingChatBubble {
@@ -78,6 +79,10 @@ class FloatingChatBubble {
         title: status == 'ongoing' ? 'Active Chat with $name' : 'Incoming Chat Request from $name',
         body: 'Tap to return to chat session',
       );
+      ForegroundTaskService.startService(
+        title: status == 'ongoing' ? 'Active Chat with $name' : 'Incoming Chat Request',
+        text: 'Tap to return to chat session',
+      );
     } catch (e) {
       debugPrint("FloatingChatBubble show notification error: $e");
     }
@@ -90,6 +95,9 @@ class FloatingChatBubble {
         LocalNotificationService.cancelOngoingChatNotification(sessionId!);
       } catch (_) {}
     }
+    try {
+      await ForegroundTaskService.stopService();
+    } catch (_) {}
     sessionId = null;
     onTapCallback = null;
     unreadCount.value = 0;

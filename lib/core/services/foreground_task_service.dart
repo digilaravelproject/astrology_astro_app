@@ -43,7 +43,7 @@ class ForegroundTaskService {
         autoRunOnBoot: false,
         allowWakeLock: true,
         allowWifiLock: true,
-        stopWithTask: true,
+        stopWithTask: false,
       ),
     );
   }

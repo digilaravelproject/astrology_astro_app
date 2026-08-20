@@ -40,6 +40,13 @@
 
         <!-- Dynamic Icon Service -->
         <service android:name="com.solusibejo.flutter_dynamic_icon_plus.FlutterDynamicIconPlusService" android:stopWithTask="false"/>
+
+        <!-- Foreground Task Service -->
+        <service
+            android:name="com.pravera.flutter_foreground_task.service.ForegroundService"
+            android:foregroundServiceType="phoneCall|microphone|dataSync"
+            android:stopWithTask="false"
+            android:exported="false" />
         
 
 
