@@ -96,21 +96,23 @@ class FloatingChatBubble {
     }
   }
 
-  static Future<void> dismiss({bool stopForegroundService = false}) async {
+  static Future<void> dismiss({bool stopForegroundService = true}) async {
     _isActive.value = false;
-    if (stopForegroundService && sessionId != null) {
-      try {
-        LocalNotificationService.cancelOngoingChatNotification(sessionId!);
-      } catch (_) {}
-      try {
-        await ForegroundTaskService.stopService();
-      } catch (_) {}
-    }
+    final int? idToCancel = sessionId;
     sessionId = null;
     onTapCallback = null;
     unreadCount.value = 0;
     _overlaySub?.cancel();
     _overlaySub = null;
+
+    if (stopForegroundService) {
+      try {
+        await LocalNotificationService.cancelOngoingChatNotification(idToCancel);
+      } catch (_) {}
+      try {
+        await ForegroundTaskService.stopService();
+      } catch (_) {}
+    }
   }
 
   static void incrementUnreadCount() {

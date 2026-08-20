@@ -19,6 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:astro_astrologer/features/chat/presentation/widgets/chat_summary_dialog.dart';
 import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
 import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
+import 'package:astro_astrologer/features/call/presentation/widgets/floating_call_bubble.dart';
 import 'package:astro_astrologer/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:astro_astrologer/features/chat/domain/usecases/sync_message_status_usecase.dart';
 import 'package:astro_astrologer/features/live/presentation/controllers/live_controller.dart';
@@ -705,19 +706,14 @@ class WebSocketService extends GetxService {
 
       Logger.d('WebSocketService: ChatEnded for sessionId=$sessionId, active=$activeSessionId');
 
-      // Cancel notification
+      // Cancel notification & floating bubble immediately
       LocalNotificationService.cancelOngoingChatNotification(sessionId);
+      FloatingChatBubble.dismiss(stopForegroundService: true);
 
-      // If the chat screen is open (active), signal it to close
       if (activeSessionId == sessionId) {
         activeSessionId = null;
-        // Emit signal — ChatScreen listens and closes itself
-        chatEndedSessionId.value = sessionId;
-      } else if (FloatingChatBubble.isActive && FloatingChatBubble.sessionId == sessionId) {
-        // Chat is minimized as a bubble
-        FloatingChatBubble.dismiss();
-        chatEndedSessionId.value = sessionId;
       }
+      chatEndedSessionId.value = sessionId;
     } catch (e) {
       Logger.e('WebSocketService: error handling ChatEnded -> $e');
     }
@@ -738,13 +734,9 @@ class WebSocketService extends GetxService {
       final int sessionId = session['id'];
       Logger.d('WebSocketService: ChatDismissed for sessionId=$sessionId');
 
-      // Cancel notification
+      // Cancel notification & floating bubble immediately
       LocalNotificationService.cancelOngoingChatNotification(sessionId);
-
-      // Dismiss floating bubble if active
-      if (FloatingChatBubble.isActive && FloatingChatBubble.sessionId == sessionId) {
-        FloatingChatBubble.dismiss();
-      }
+      FloatingChatBubble.dismiss(stopForegroundService: true);
 
       // Propagate the ended/dismissed status so ChatScreen / ChatController can react
       sessionStatusUpdates[sessionId] = 'ended';
@@ -946,10 +938,15 @@ class WebSocketService extends GetxService {
         eventData = Map<String, dynamic>.from(rawData);
       }
       final session = eventData['session'];
-      if (session != null) {
-        final int sessionId = session['id'] is int 
-            ? session['id'] 
-            : (int.tryParse(session['id']?.toString() ?? '') ?? 0);
+      final int sessionId = session != null && session['id'] != null
+          ? (session['id'] is int ? session['id'] : (int.tryParse(session['id']?.toString() ?? '') ?? 0))
+          : 0;
+
+      // Cancel call notifications & bubbles immediately
+      LocalNotificationService.cancelOngoingCallNotification(sessionId);
+      FloatingCallBubble.dismiss(stopForegroundService: true);
+
+      if (sessionId != 0) {
         callSessionStatusUpdates[sessionId] = 'completed';
         callSessionStatusUpdates.refresh();
         callEndedSessionId.value = sessionId;
