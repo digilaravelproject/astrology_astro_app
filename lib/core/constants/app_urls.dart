@@ -19,6 +19,9 @@ class AppUrls {
   static const String getNotices = "/user/notices";
   static const String getFollowers = "/astrologer/community/followers";
   static const String getFavorites = "/astrologer/community/favorites";
+  static String blockUser(int id) => "/astrologer/users/$id/block";
+  static String unblockUser(int id) => "/astrologer/users/$id/unblock";
+  static const String blockedUsers = "/astrologer/blocked-users";
   static const String getAstroSkills = "/astrologer/profile/skills";
   static const String registerDeviceToken = "/astrologer/device-token";
   static const String removeDeviceToken = "/astrologer/remove-token";
