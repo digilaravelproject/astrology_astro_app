@@ -28,7 +28,7 @@ class _SkillDetailsScreenState extends State<SkillDetailsScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
       appBar: CustomAppBar(
-        title: 'Skill Details',
+        title: 'Skill Details'.tr,
         actions: const [
           // Obx(() => controller.isLoading.value 
           //   ? const Center(child: Padding(padding: EdgeInsets.all(16), child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))))
@@ -151,7 +151,7 @@ class _SkillDetailsScreenState extends State<SkillDetailsScreen> {
 
   Widget _buildSectionTitle(String title) {
     return AppText(
-      title,
+      title.tr,
       fontSize: 18,
       fontWeight: FontWeight.w800,
       color: const Color(0xFF2E1A47),
@@ -203,14 +203,14 @@ class _SkillDetailsScreenState extends State<SkillDetailsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AppText(
-                        label,
+                        label.tr,
                         fontSize: 12,
                         color: Colors.grey.shade500,
                         fontWeight: FontWeight.w500,
                       ),
                       const SizedBox(height: 4),
                       AppText(
-                        value,
+                        value.isEmpty ? 'Not set'.tr : value.split(', ').map((e) => e.trim().tr).join(', '),
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: const Color(0xFF2E1A47),
