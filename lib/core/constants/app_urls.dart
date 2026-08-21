@@ -51,6 +51,11 @@ class AppUrls {
   static const String toggleOnline = "/astrologer/toggle-online";
   static const String updateOtherDetails = "/astrologer/profile/other-details";
 
+  static const String packageSpawnChannel = '/astrologer/packages/session/spawn-channel';
+  static const String packageTerminateChannel = '/astrologer/packages/session/terminate-channel';
+  static const String packageHeartbeat = '/astrologer/packages/session/heartbeat';
+  static const String packageActiveBanner = '/astrologer/packages/active-banner';
+
   // Gallery
   static const String uploadGallery = "/astrologer/gallery/upload";
   static const String galleryList = "/astrologer/gallery";
