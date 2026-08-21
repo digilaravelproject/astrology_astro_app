@@ -313,16 +313,13 @@ class LocalNotificationService {
     required String body,
     int? startedAtMillis,
   }) async {
-    await _notificationsPlugin.cancel(ACTIVE_CALL_NOTIFICATION_ID);
-    await _notificationsPlugin.cancel(sessionId + 100000);
-
     final int startTime = startedAtMillis ?? DateTime.now().millisecondsSinceEpoch;
     final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
       'active_consultation_foreground_channel_v3',
       'Active Consultation Service',
       channelDescription: 'Ongoing active call and chat consultation status',
-      importance: Importance.max,
-      priority: Priority.max,
+      importance: Importance.low,
+      priority: Priority.low,
       ongoing: true,
       autoCancel: false,
       onlyAlertOnce: true,
@@ -337,19 +334,21 @@ class LocalNotificationService {
     final NotificationDetails notificationDetails = NotificationDetails(
       android: androidDetails,
       iOS: const DarwinNotificationDetails(
-        presentAlert: true,
-        presentBadge: true,
-        presentSound: true,
+        presentAlert: false,
+        presentBadge: false,
+        presentSound: false,
       ),
     );
 
-    await _notificationsPlugin.show(
-      ACTIVE_CALL_NOTIFICATION_ID,
-      title,
-      body,
-      notificationDetails,
-      payload: 'call_$sessionId',
-    );
+    try {
+      await _notificationsPlugin.show(
+        ACTIVE_CALL_NOTIFICATION_ID,
+        title,
+        body,
+        notificationDetails,
+        payload: 'call_$sessionId',
+      );
+    } catch (_) {}
   }
 
   static Future<void> cancelOngoingCallNotification(int? sessionId) async {

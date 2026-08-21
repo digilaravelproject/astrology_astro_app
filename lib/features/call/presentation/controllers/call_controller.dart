@@ -383,21 +383,19 @@ class CallController extends GetxController with WidgetsBindingObserver {
     _callTimer?.cancel();
     _callTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       durationSeconds.value++;
-      _showOngoingNotification();
     });
   }
 
-  void _showOngoingNotification() {
+  void _showOngoingNotification({int? startedAtMillis}) {
     if (sessionId != null) {
-      final minutes = (durationSeconds.value ~/ 60).toString().padLeft(2, '0');
-      final seconds = (durationSeconds.value % 60).toString().padLeft(2, '0');
       final title = 'Active Call in Progress';
-      final body = 'Talking with $consumerName - $minutes:$seconds';
+      final body = 'Talking with $consumerName';
 
       LocalNotificationService.showOngoingCallNotification(
         sessionId: sessionId!,
         title: title,
         body: body,
+        startedAtMillis: startedAtMillis,
       );
     }
   }
