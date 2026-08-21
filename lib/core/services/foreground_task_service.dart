@@ -58,9 +58,6 @@ class ForegroundTaskService {
 
   static Future<void> requestPermissions() async {
     if (Platform.isAndroid) {
-      if (!await FlutterForegroundTask.isIgnoringBatteryOptimizations) {
-        await FlutterForegroundTask.requestIgnoreBatteryOptimization();
-      }
       final NotificationPermission notificationPermissionStatus = await FlutterForegroundTask.checkNotificationPermission();
       if (notificationPermissionStatus != NotificationPermission.granted) {
         await FlutterForegroundTask.requestNotificationPermission();
@@ -76,18 +73,22 @@ class ForegroundTaskService {
         text: 'Hang up',
       ),
     ];
-    if (await FlutterForegroundTask.isRunningService) {
-      FlutterForegroundTask.updateService(
-        notificationTitle: title,
-        notificationText: text,
-      );
-    } else {
-      await FlutterForegroundTask.startService(
-        notificationTitle: title,
-        notificationText: text,
-        callback: startCallback,
-        notificationButtons: buttons,
-      );
+    try {
+      if (await FlutterForegroundTask.isRunningService) {
+        FlutterForegroundTask.updateService(
+          notificationTitle: title,
+          notificationText: text,
+        );
+      } else {
+        await FlutterForegroundTask.startService(
+          notificationTitle: title,
+          notificationText: text,
+          callback: startCallback,
+          notificationButtons: buttons,
+        );
+      }
+    } catch (e) {
+      Logger.d("ForegroundTaskService startService failed/ignored: $e");
     }
   }
 
