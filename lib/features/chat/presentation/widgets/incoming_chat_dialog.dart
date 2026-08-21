@@ -447,6 +447,7 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
                     child: ElevatedButton(
                       onPressed: () async {
                         _stopRingtone();
+                        LocalNotificationService.cancelIncomingCallNotification(sessionId);
                         try {
                           final response = await Get.find<ApiClient>()
                               .post(AppUrls.acceptChatSession(sessionId));
