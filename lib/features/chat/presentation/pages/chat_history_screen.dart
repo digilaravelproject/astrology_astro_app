@@ -481,7 +481,7 @@ class ChatHistoryScreen extends StatelessWidget {
       color: Colors.white,
       child: Center(
         child: AppText(
-          "Data shown for last 3 days only",
+          "Data shown for last 3 days only".tr,
           fontSize: 13,
           fontWeight: FontWeight.w500,
           color: Colors.red.shade200,
@@ -503,7 +503,7 @@ class ChatHistoryScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: CustomButton(
-            text: "Create default message",
+            text: "Create default message".tr,
             onPressed: () => Get.to(() => const CreateDefaultMessageScreen(), binding: ChatBinding()),
             height: 42,
             backgroundColor: AppColors.primaryColor,

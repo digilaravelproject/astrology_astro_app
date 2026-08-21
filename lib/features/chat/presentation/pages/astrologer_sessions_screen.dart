@@ -110,7 +110,7 @@ class AstrologerSessionsScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 8),
             color: Colors.white,
             child: Center(
-              child: AppText('Data shown for last 3 days only', fontSize: 13, fontWeight: FontWeight.w500, color: Colors.red.shade200),
+              child: AppText('Data shown for last 3 days only'.tr, fontSize: 13, fontWeight: FontWeight.w500, color: Colors.red.shade200),
             ),
           ),
 
@@ -125,7 +125,7 @@ class AstrologerSessionsScreen extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: CustomButton(
-                  text: "Create default message",
+                  text: "Create default message".tr,
                   onPressed: () => Get.to(() => const CreateDefaultMessageScreen(), binding: ChatBinding()),
                   height: 48,
                   backgroundColor: AppColors.primaryColor,

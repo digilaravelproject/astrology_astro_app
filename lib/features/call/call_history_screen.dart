@@ -534,7 +534,7 @@ class CallHistoryScreen extends StatelessWidget {
       color: Colors.white,
       child: Center(
         child: AppText(
-          "Data shown for last 3 days only",
+          "Data shown for last 3 days only".tr,
           fontSize: 13,
           fontWeight: FontWeight.w500,
           color: Colors.red.shade200,

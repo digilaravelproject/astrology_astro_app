@@ -53,7 +53,7 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AppText(
-                    messageToEdit != null ? "Edit Default Message" : "New Default Message",
+                    messageToEdit != null ? "Edit Default Message".tr : "New Default Message".tr,
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF2E1A47),
@@ -70,7 +70,7 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
                       autofocus: true,
                       style: const TextStyle(fontSize: 14, color: Color(0xFF2E1A47), fontWeight: FontWeight.w600),
                       decoration: InputDecoration(
-                        hintText: "Enter message title...",
+                        hintText: "Enter message title...".tr,
                         hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
                         border: InputBorder.none,
                         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -89,7 +89,7 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
                       maxLines: 4,
                       style: const TextStyle(fontSize: 14, color: Color(0xFF2E1A47)),
                       decoration: InputDecoration(
-                        hintText: "Enter your predefined message here... You can use placeholders like {{user_name}}",
+                        hintText: "Enter your predefined message here... You can use placeholders like {{user_name}}".tr,
                         hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
                         border: InputBorder.none,
                         contentPadding: const EdgeInsets.all(16),
@@ -98,7 +98,7 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
                   ),
                   const SizedBox(height: 12),
                   CheckboxListTile(
-                    title: const AppText("Set as Active Default", fontSize: 14),
+                    title: AppText("Set as Active Default".tr, fontSize: 14),
                     value: _isDefaultChecked,
                     onChanged: (bool? value) {
                       setModalState(() {
@@ -111,7 +111,7 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
                   ),
                   const SizedBox(height: 16),
                   Obx(() => CustomButton(
-                        text: "Save Message",
+                        text: "Save Message".tr,
                         isLoading: controller.isLoading.value,
                         onPressed: () async {
                           if (_titleController.text.trim().isEmpty || _messageController.text.trim().isEmpty) {
@@ -161,8 +161,8 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(
-        title: 'Default Messages',
+      appBar: CustomAppBar(
+        title: 'Default Messages'.tr,
       ),
       body: Obx(() {
         if (controller.isLoading.value && controller.messages.isEmpty) {
@@ -197,7 +197,7 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(24),
         child: CustomButton(
-          text: "+ Add New Message",
+          text: "+ Add New Message".tr,
           onPressed: () => _showAddEditMessageSheet(),
         ),
       ),
@@ -211,15 +211,15 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
         children: [
           Icon(Iconsax.message_copy, size: 80, color: Colors.grey.shade200),
           const SizedBox(height: 24),
-          const AppText(
-            "No Default Messages",
+          AppText(
+            "No Default Messages".tr,
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF2E1A47),
+            color: const Color(0xFF2E1A47),
           ),
           const SizedBox(height: 8),
           AppText(
-            "Add quick responses to save time during chat.",
+            "Add quick responses to save time during chat.".tr,
             fontSize: 14,
             color: Colors.grey.shade500,
           ),
@@ -272,8 +272,8 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
                           color: AppColors.primaryColor.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: const AppText(
-                          "Active",
+                        child: AppText(
+                          "Active".tr,
                           fontSize: 10,
                           color: AppColors.primaryColor,
                           fontWeight: FontWeight.w600,
@@ -332,21 +332,21 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
   void _confirmDelete(int id) {
     Get.dialog(
       AlertDialog(
-        title: const Text('Delete Message'),
-        content: const Text('Are you sure you want to delete this default message?'),
+        title: Text('Delete Message'.tr),
+        content: Text('Are you sure you want to delete this default message?'.tr),
         actions: [
           TextButton(
             onPressed: () {
               if (context.mounted) Navigator.of(context).pop();
             },
-            child: const Text('Cancel'),
+            child: Text('Cancel'.tr),
           ),
           TextButton(
             onPressed: () {
               if (context.mounted) Navigator.of(context).pop();
               controller.deleteMessage(id);
             },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: Text('Delete'.tr, style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
