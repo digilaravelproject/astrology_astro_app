@@ -502,6 +502,6 @@ class ProfileScreen extends StatelessWidget {
         ? 'https://play.google.com/store/apps/details?id=$appId' 
         : 'https://apps.apple.com/app/$appId';
     
-    await Share.share('Check out the Astro Astrologer app! $url');
+    await Share.share('${"Check out the Astro Astrologer app!".tr} $url');
   }
 }

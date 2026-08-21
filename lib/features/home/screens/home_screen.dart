@@ -868,12 +868,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 1.4,
                       ),
                       children: [
-                        const TextSpan(text: 'Only '),
+                        TextSpan(text: 'Only '.tr),
                         TextSpan(
-                          text: '${remainingHours.toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '')} hours',
+                          text: '${remainingHours.toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '')} ${"hours".tr}',
                           style: const TextStyle(fontWeight: FontWeight.w700, color: Colors.black87),
                         ),
-                        TextSpan(text: ' left to complete your ${targetHours.toStringAsFixed(0)} hours online target.'),
+                        TextSpan(text: ' ${"left to complete your".tr} ${targetHours.toStringAsFixed(0)} ${"hours online target.".tr}'),
                       ],
                     ),
                   ),
