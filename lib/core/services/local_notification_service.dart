@@ -13,6 +13,7 @@ import 'package:astro_astrologer/features/live/presentation/pages/live_schedule_
 import 'package:astro_astrologer/core/constants/app_constants.dart';
 import 'package:astro_astrologer/features/live/presentation/pages/live_room_screen.dart';
 import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
+import 'package:astro_astrologer/features/chat/presentation/bindings/chat_binding.dart';
 
 class LocalNotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =

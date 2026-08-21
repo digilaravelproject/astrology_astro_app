@@ -15,6 +15,7 @@ import 'package:astro_astrologer/features/chat/presentation/widgets/floating_cha
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
 import 'package:astro_astrologer/features/kundli/create_kundli_screen.dart';
+import 'package:astro_astrologer/features/chat/presentation/bindings/chat_binding.dart';
 
 class ChatScreen extends StatefulWidget {
   final String userName;
