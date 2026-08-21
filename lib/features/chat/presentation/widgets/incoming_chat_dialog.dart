@@ -13,6 +13,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:vibration/vibration.dart';
 import '../../../../core/constants/app_constants.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
+import 'package:astro_astrologer/core/services/local_notification_service.dart';
 
 class IncomingChatDialog extends StatefulWidget {
   final Map<String, dynamic> sessionData;
