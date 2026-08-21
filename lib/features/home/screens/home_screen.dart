@@ -1221,7 +1221,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: AppText(
-                item.title,
+                item.title.tr,
                 fontSize: 12,
                 fontWeight: FontWeight.w800,
                 color: const Color(0xFF2E1A47),
