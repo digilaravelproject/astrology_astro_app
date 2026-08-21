@@ -210,8 +210,8 @@ class LocalNotificationService {
       'Active Consultation Service',
       channelDescription: 'Ongoing active call and chat consultation status',
       icon: '@mipmap/ic_launcher',
-      importance: Importance.max,
-      priority: Priority.max,
+      importance: Importance.high,
+      priority: Priority.high,
       ongoing: true,
       autoCancel: false,
       onlyAlertOnce: true,
@@ -219,9 +219,8 @@ class LocalNotificationService {
       usesChronometer: true,
       when: startTime,
       subText: 'Ongoing Session',
-      category: AndroidNotificationCategory.call,
+      category: AndroidNotificationCategory.service,
       visibility: NotificationVisibility.public,
-      additionalFlags: Int32List.fromList([2, 32, 64]),
     );
 
     final NotificationDetails notificationDetails = NotificationDetails(
