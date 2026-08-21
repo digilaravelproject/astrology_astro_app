@@ -9,6 +9,9 @@ import '../../../../core/services/network/api_client.dart';
 import '../../../../core/services/network/websocket_service.dart';
 import '../pages/chat_screen.dart';
 import '../bindings/chat_binding.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:vibration/vibration.dart';
+import '../../../../core/constants/app_constants.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class IncomingChatDialog extends StatefulWidget {
@@ -120,10 +123,38 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
         curve: const Interval(0.5, 1.0, curve: Curves.easeOut),
       ),
     );
+    // Ringtone and vibration for incoming ringing request
+    _startRingtone();
+  }
+
+  AudioPlayer? _audioPlayer;
+
+  Future<void> _startRingtone() async {
+    try {
+      _audioPlayer = AudioPlayer();
+      await _audioPlayer?.setReleaseMode(ReleaseMode.loop);
+      await _audioPlayer?.play(AssetSource(AppConstants.incomingRingPath));
+
+      if (await Vibration.hasVibrator() == true) {
+        Vibration.vibrate(pattern: [500, 1000, 500, 1000], repeat: 0);
+      }
+    } catch (e) {
+      debugPrint("Error starting incoming chat ringtone: $e");
+    }
+  }
+
+  void _stopRingtone() {
+    try {
+      _audioPlayer?.stop();
+      _audioPlayer?.dispose();
+      _audioPlayer = null;
+      Vibration.cancel();
+    } catch (_) {}
   }
 
   @override
   void dispose() {
+    _stopRingtone();
     _dismissSub?.cancel();
     _dismissWorker?.dispose();
     _scaleController.dispose();
@@ -389,6 +420,7 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () async {
+                        _stopRingtone();
                         try {
                           await Get.find<ApiClient>()
                               .post(AppUrls.rejectChatSession(sessionId));
@@ -414,6 +446,7 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () async {
+                        _stopRingtone();
                         try {
                           final response = await Get.find<ApiClient>()
                               .post(AppUrls.acceptChatSession(sessionId));
