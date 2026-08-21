@@ -146,7 +146,7 @@ class _PriceIncreaseHistoryScreenState extends State<PriceIncreaseHistoryScreen>
                       Row(
                         children: [
                           AppText(
-                            '$type Rate • ',
+                            '${type.tr} ${'Rate'.tr} • ',
                             fontSize: 13,
                             color: AppColors.primaryColor,
                             fontWeight: FontWeight.w600,
@@ -176,7 +176,7 @@ class _PriceIncreaseHistoryScreenState extends State<PriceIncreaseHistoryScreen>
                       Icon(statusIcon, color: statusColor, size: 16),
                       const SizedBox(width: 6),
                       AppText(
-                        status.capitalizeFirst ?? status,
+                        status.capitalizeFirst?.tr ?? status.tr,
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
                         color: statusColor,
