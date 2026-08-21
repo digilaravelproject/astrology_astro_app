@@ -242,11 +242,15 @@ class LocalNotificationService {
   }
 
   static Future<void> cancelOngoingChatNotification(int? sessionId) async {
-    await _notificationsPlugin.cancel(ACTIVE_CHAT_NOTIFICATION_ID);
-    if (sessionId != null) {
-      await _notificationsPlugin.cancel(sessionId);
-      await _notificationsPlugin.cancel(sessionId + 100);
-      await _notificationsPlugin.cancel(sessionId + 50000);
+    try {
+      await _notificationsPlugin.cancel(ACTIVE_CHAT_NOTIFICATION_ID);
+      if (sessionId != null) {
+        await _notificationsPlugin.cancel(sessionId);
+        await _notificationsPlugin.cancel(sessionId + 100);
+        await _notificationsPlugin.cancel(sessionId + 50000);
+      }
+    } catch (e) {
+      debugPrint("LocalNotificationService cancel exception (handled): $e");
     }
     try {
       await ForegroundTaskService.stopService();
