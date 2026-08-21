@@ -25,8 +25,8 @@ class WeeklyRankingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(
-        title: 'Weekly Ranking',
+      appBar: CustomAppBar(
+        title: 'Weekly Ranking'.tr,
         centerTitle: true,
       ),
       body: Obx(() {
@@ -46,7 +46,7 @@ class WeeklyRankingScreen extends StatelessWidget {
                 ElevatedButton(
                   onPressed: controller.fetchRankings,
                   style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryColor),
-                  child: const AppText('Retry', color: Colors.white),
+                  child: AppText('Retry'.tr, color: Colors.white),
                 ),
               ],
             ),
@@ -55,7 +55,7 @@ class WeeklyRankingScreen extends StatelessWidget {
 
         final data = controller.rankingData.value;
         if (data == null) {
-          return const Center(child: AppText('No ranking data available'));
+          return Center(child: AppText('No ranking data available'.tr));
         }
 
         return Column(
@@ -65,8 +65,8 @@ class WeeklyRankingScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
               color: const Color(0xFFF8F8F8),
-              child: const AppText(
-                'Earnings in this week (Monday to Sunday)',
+              child: AppText(
+                'Earnings in this week (Monday to Sunday)'.tr,
                 textAlign: TextAlign.center,
                 fontSize: 13,
                 color: Colors.black87,
@@ -80,11 +80,11 @@ class WeeklyRankingScreen extends StatelessWidget {
                 color: Colors.white,
                 border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  AppText('Rank', fontSize: 16, color: Colors.black54, fontWeight: FontWeight.w500),
-                  AppText('Earning', fontSize: 16, color: Colors.black54, fontWeight: FontWeight.w500),
+                  AppText('Rank'.tr, fontSize: 16, color: Colors.black54, fontWeight: FontWeight.w500),
+                  AppText('Earning'.tr, fontSize: 16, color: Colors.black54, fontWeight: FontWeight.w500),
                 ],
               ),
             ),
@@ -261,8 +261,8 @@ class WeeklyRankingScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const AppText('Your Weekly Earning', fontSize: 12, fontWeight: FontWeight.bold),
-                AppText('Your Rank', fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.goldAccent),
+                AppText('Your Weekly Earning'.tr, fontSize: 12, fontWeight: FontWeight.bold),
+                AppText('Your Rank'.tr, fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.goldAccent),
               ],
             ),
             const SizedBox(height: 12),

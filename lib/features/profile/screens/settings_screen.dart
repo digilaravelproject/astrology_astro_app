@@ -27,8 +27,8 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F7),
-      appBar: const CustomAppBar(
-        title: 'Settings',
+      appBar: CustomAppBar(
+        title: 'Settings'.tr,
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 40),
@@ -237,7 +237,7 @@ class SettingsScreen extends StatelessWidget {
           Icon(icon, size: 16, color: AppColors.primaryColor),
           const SizedBox(width: 8),
           AppText(
-            title,
+            title.tr,
             fontSize: 14,
             fontWeight: FontWeight.w800,
             color: const Color(0xFF2E1A47),
@@ -302,14 +302,14 @@ class SettingsScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AppText(
-                        title,
+                        title.tr,
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: const Color(0xFF1C1C1E),
                       ),
                       const SizedBox(height: 2),
                       AppText(
-                        subtitle,
+                        subtitle.tr,
                         fontSize: 12,
                         color: Colors.grey.shade500,
                       ),
