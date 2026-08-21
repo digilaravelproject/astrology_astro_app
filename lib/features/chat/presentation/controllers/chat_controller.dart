@@ -351,11 +351,15 @@ class ChatController extends GetxController with WidgetsBindingObserver {
           timer.cancel();
           return;
         }
-        final nowDiff = DateTime.now().difference(startedAt).inSeconds;
-        if (nowDiff >= 0) {
-          elapsedSeconds.value = nowDiff;
+        if (st == 'ongoing' || st == 'accepted') {
+          final nowDiff = DateTime.now().difference(startedAt).inSeconds;
+          if (nowDiff >= 0) {
+            elapsedSeconds.value = nowDiff;
+          } else {
+            elapsedSeconds.value++;
+          }
         } else {
-          elapsedSeconds.value++;
+          elapsedSeconds.value = 0;
         }
       });
     } else {
