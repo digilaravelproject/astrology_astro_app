@@ -408,7 +408,7 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildTabButton('Earnings'),
-          _buildTabButton('Withdrawals'),
+          // _buildTabButton('Withdrawals'), // Disabled as settlements are processed directly by admin
         ],
       ),
     );
