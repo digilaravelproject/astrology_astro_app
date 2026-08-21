@@ -64,14 +64,14 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(
-        title: 'Update Phone Number',
+      appBar: CustomAppBar(
+        title: 'Update Phone Number'.tr,
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => showAddPhoneBottomSheet(context),
         backgroundColor: AppColors.primaryColor,
         icon: const Icon(Icons.add, color: Colors.white),
-        label: const AppText('Add New', color: Colors.white, fontWeight: FontWeight.w600),
+        label: AppText('Add New'.tr, color: Colors.white, fontWeight: FontWeight.w600),
       ),
       body: Obx(() {
         if (_controller.isLoading.value && _controller.phoneNumbers.isEmpty) {
@@ -92,7 +92,7 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
                     // Existing Phone Numbers
                     if (_controller.phoneNumbers.isNotEmpty) ...[
                       AppText(
-                        'Your Phone Numbers',
+                        'Your Phone Numbers'.tr,
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                         color: const Color(0xFF2E1A47),
@@ -114,7 +114,7 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
                               Icon(Iconsax.mobile_copy, size: 60, color: Colors.grey.shade300),
                               const SizedBox(height: 16),
                               AppText(
-                                'No phone numbers added yet',
+                                'No phone numbers added yet'.tr,
                                 fontSize: 16,
                                 color: Colors.grey.shade500,
                               ),
@@ -137,8 +137,8 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       color: AppColors.lightPink,
-      child: const AppText(
-        'You will receive calls and chat alerts on your verified phone numbers.',
+      child: AppText(
+        'You will receive calls and chat alerts on your verified phone numbers.'.tr,
         fontSize: 12,
         color: Colors.black87,
         textAlign: TextAlign.center,

@@ -53,15 +53,15 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const AppText(
-                    'Set as Default?',
+                  AppText(
+                    'Set as Default?'.tr,
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF2E1A47),
+                    color: const Color(0xFF2E1A47),
                   ),
                   const SizedBox(height: 12),
                   AppText(
-                    'Are you sure you want to set this as your default bank account?',
+                    'Are you sure you want to set this as your default bank account?'.tr,
                     fontSize: 14,
                     color: Colors.grey.shade600,
                     textAlign: TextAlign.center,
@@ -87,11 +87,11 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
                                 side: BorderSide(color: Colors.grey.shade300),
                               ),
                             ),
-                            child: const AppText(
-                              'Cancel',
+                            child: AppText(
+                              'Cancel'.tr,
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: Color(0xFF2E1A47),
+                              color: const Color(0xFF2E1A47),
                             ),
                           ),
                         ),
@@ -111,8 +111,8 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            child: const AppText(
-                              'Set Default',
+                            child: AppText(
+                              'Set Default'.tr,
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                               color: Colors.white,
@@ -134,8 +134,8 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
-      appBar: const CustomAppBar(
-        title: 'Bank Details',
+      appBar: CustomAppBar(
+        title: 'Bank Details'.tr,
       ),
       body: Obx(() {
         if (_controller.isLoading.value) {
@@ -184,15 +184,15 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
             child: Icon(Iconsax.bank_copy, color: AppColors.primaryColor.withOpacity(0.2), size: 64),
           ),
           const SizedBox(height: 24),
-          const AppText(
-            'No Bank Accounts Found',
+          AppText(
+            'No Bank Accounts Found'.tr,
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF2E1A47),
+            color: const Color(0xFF2E1A47),
           ),
           const SizedBox(height: 8),
           AppText(
-            'Add an account to receive your payouts.',
+            'Add an account to receive your payouts.'.tr,
             fontSize: 14,
             color: Colors.grey.shade500,
           ),

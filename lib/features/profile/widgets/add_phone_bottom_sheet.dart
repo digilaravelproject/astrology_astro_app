@@ -114,14 +114,14 @@ class _AddPhoneBottomSheetState extends State<AddPhoneBottomSheet> {
           ),
           const SizedBox(height: 16),
           AppText(
-            'Add New Phone Number',
+            'Add New Phone Number'.tr,
             fontSize: 18,
             fontWeight: FontWeight.w800,
             color: const Color(0xFF2E1A47),
           ),
           const SizedBox(height: 8),
           AppText(
-            'Please enter the phone number you want to add.',
+            'Please enter the phone number you want to add.'.tr,
             fontSize: 14,
             textAlign: TextAlign.center,
             color: Colors.grey.shade500,
@@ -162,7 +162,7 @@ class _AddPhoneBottomSheetState extends State<AddPhoneBottomSheet> {
                   autofocus: true,
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, letterSpacing: 1.5),
                   decoration: InputDecoration(
-                    hintText: 'Phone number',
+                    hintText: 'Phone number'.tr,
                     hintStyle: TextStyle(color: Colors.grey.shade300, letterSpacing: 1),
                     enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5)),
                     focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.primaryColor, width: 2)),
@@ -174,7 +174,7 @@ class _AddPhoneBottomSheetState extends State<AddPhoneBottomSheet> {
           ),
           const SizedBox(height: 32),
           Obx(() => CustomButton(
-            text: _controller.isAdding.value ? 'Adding...' : 'Add New',
+            text: _controller.isAdding.value ? 'Adding...'.tr : 'Add New'.tr,
             onPressed: _controller.isAdding.value ? () {} : _addNewPhoneNumber,
             backgroundColor: AppColors.primaryColor,
             borderRadius: 100,

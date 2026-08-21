@@ -67,8 +67,8 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
-      appBar: const CustomAppBar(
-        title: 'Add Bank Account',
+      appBar: CustomAppBar(
+        title: 'Add Bank Account'.tr,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -78,31 +78,31 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildTextField(
-                label: 'Account Holder Name',
+                label: 'Account Holder Name'.tr,
                 controller: _holderNameController,
-                hint: 'Enter holder name',
+                hint: 'Enter holder name'.tr,
                 icon: Iconsax.user_copy,
               ),
               const SizedBox(height: 20),
               _buildTextField(
-                label: 'Bank Name',
+                label: 'Bank Name'.tr,
                 controller: _bankNameController,
-                hint: 'Enter your bank name',
+                hint: 'Enter your bank name'.tr,
                 icon: Iconsax.bank_copy,
               ),
               const SizedBox(height: 20),
               _buildTextField(
-                label: 'Account Number',
+                label: 'Account Number'.tr,
                 controller: _accountNumberController,
-                hint: 'Enter account number',
+                hint: 'Enter account number'.tr,
                 icon: Iconsax.card_copy,
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 20),
               _buildTextField(
-                label: 'IFSC Code',
+                label: 'IFSC Code'.tr,
                 controller: _ifscController,
-                hint: 'Enter 11-digit IFSC code',
+                hint: 'Enter 11-digit IFSC code'.tr,
                 icon: Iconsax.code_copy,
                 textCapitalization: TextCapitalization.characters,
               ),
@@ -110,7 +110,7 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
 
               // Image Upload Section
               AppText(
-                'Upload Passbook / Cancelled Cheque (Optional)',
+                'Upload Passbook / Cancelled Cheque (Optional)'.tr,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
                 color: const Color(0xFF2E1A47),
@@ -147,7 +147,7 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
                       ),
                       const SizedBox(height: 12),
                       AppText(
-                        'Tap to upload image',
+                        'Tap to upload image'.tr,
                         fontSize: 13,
                         color: Colors.grey.shade400,
                         fontWeight: FontWeight.w500,
@@ -159,7 +159,7 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
 
               const SizedBox(height: 48),
               Obx(() => CustomButton(
-                text: _controller.isAddingAccount.value ? 'Adding...' : 'Save Account',
+                text: _controller.isAddingAccount.value ? 'Adding...'.tr : 'Save Account'.tr,
                 onPressed: _controller.isAddingAccount.value ? () {} : _submitForm,
               )),
               const SizedBox(height: 20),

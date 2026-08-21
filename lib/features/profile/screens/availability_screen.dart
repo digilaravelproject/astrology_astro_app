@@ -107,8 +107,8 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
-      appBar: const CustomAppBar(
-        title: 'Availability Settings',
+      appBar: CustomAppBar(
+        title: 'Availability Settings'.tr,
       ),
       body: Obx(() {
         if (_controller.isLoading.value) {
@@ -133,14 +133,14 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AppText(
-                      'Weekly Schedule',
+                      'Weekly Schedule'.tr,
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFF2E1A47),
                     ),
                     const SizedBox(height: 8),
                     AppText(
-                      'Manage your working hours for each day of the week.',
+                      'Manage your working hours for each day of the week.'.tr,
                       fontSize: 13,
                       color: Colors.grey.shade600,
                     ),
@@ -292,7 +292,7 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
               ),
               const SizedBox(height: 32),
               Obx(() => CustomButton(
-                text: _controller.isSaving.value ? 'Saving...' : 'Save Availability',
+                text: _controller.isSaving.value ? 'Saving...'.tr : 'Save Availability'.tr,
                 onPressed: _controller.isSaving.value ? () {} : _saveAvailability,
                 backgroundColor: AppColors.primaryColor,
                 borderRadius: 100,
