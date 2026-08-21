@@ -295,7 +295,7 @@ class ProfileScreen extends StatelessWidget {
       child: Align(
         alignment: Alignment.centerLeft,
         child: AppText(
-          title,
+          title.tr,
           fontSize: 12,
           fontWeight: FontWeight.w600,
           color: Colors.grey[500],
@@ -322,7 +322,7 @@ class ProfileScreen extends StatelessWidget {
         child: Icon(icon, color: AppColors.primaryColor, size: 20),
       ),
       title: AppText(
-        title,
+        title.tr,
         fontSize: 15,
         fontWeight: FontWeight.w500,
         color: const Color(0xFF2E1A47),

@@ -1111,15 +1111,15 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: 25),
-            const AppText(
-              'Go Live',
+            AppText(
+              'Go Live'.tr,
               fontSize: 20,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF2E1A47),
+              color: const Color(0xFF2E1A47),
             ),
             const SizedBox(height: 12),
             AppText(
-              'Would you like to go live instantly or schedule it for later?',
+              'Would you like to go live instantly or schedule it for later?'.tr,
               fontSize: 14,
               fontWeight: FontWeight.w500,
               color: Colors.grey[600],
@@ -1144,8 +1144,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: const AppText(
-                  'Go Live Instantly',
+                child: AppText(
+                  'Go Live Instantly'.tr,
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
@@ -1153,7 +1153,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             
             // Schedule for Later Button
             SizedBox(
@@ -1165,16 +1165,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   Get.toNamed(AppRoutes.liveSchedule);
                 },
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Color(0xFF2196F3), width: 1.5), // Blue for Schedule
+                  foregroundColor: const Color(0xFF1E88E5), // Blue for Schedule
+                  elevation: 0,
+                  side: const BorderSide(color: Color(0xFF1E88E5), width: 1.5),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: const AppText(
-                  'Schedule for Later',
+                child: AppText(
+                  'Schedule for Later'.tr,
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF2196F3),
+                  color: const Color(0xFF2196F3),
                 ),
               ),
             ),

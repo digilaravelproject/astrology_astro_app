@@ -69,7 +69,7 @@ class _OrdersScreenState extends State<OrdersScreen>
               }
             },
             icon: const Icon(Icons.refresh_rounded, color: Colors.black87, size: 18),
-            label: const AppText('Refresh', fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black87),
+            label: AppText('Refresh'.tr, fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black87),
           ),
           const SizedBox(width: 8),
         ],
@@ -89,9 +89,9 @@ class _OrdersScreenState extends State<OrdersScreen>
               indicatorSize: TabBarIndicatorSize.tab,
               labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, fontFamily: 'Poppins'),
               unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 15, fontFamily: 'Poppins'),
-              tabs: const [
-                Tab(text: 'Chat'),
-                Tab(text: 'Call'),
+              tabs: [
+                Tab(text: 'Chat'.tr),
+                Tab(text: 'Call'.tr),
               ],
             ),
           ),
