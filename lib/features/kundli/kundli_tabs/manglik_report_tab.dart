@@ -32,7 +32,7 @@ class ManglikReportTab extends StatelessWidget {
       }
 
       bool isManglik = manglikData.isPresent;
-      String resultText = isManglik ? "YES" : "NO";
+      String resultText = isManglik ? "YES".tr : "NO".tr;
       Color statusColor = isManglik ? const Color(0xFFEA4335) : const Color(0xFF2EBD59);
 
       return SingleChildScrollView(
@@ -50,15 +50,15 @@ class ManglikReportTab extends StatelessWidget {
               _buildConclusionCard(manglikData.manglikReport),
             if (manglikData.basedOnHouse.isNotEmpty) ...[
               const SizedBox(height: 16),
-              _buildRulesCard("House Placements", manglikData.basedOnHouse, Icons.home_outlined),
+              _buildRulesCard("House Placements".tr, manglikData.basedOnHouse, Icons.home_outlined),
             ],
             if (manglikData.basedOnAspect.isNotEmpty) ...[
               const SizedBox(height: 16),
-              _buildRulesCard("Planetary Aspects", manglikData.basedOnAspect, Icons.remove_red_eye_outlined),
+              _buildRulesCard("Planetary Aspects".tr, manglikData.basedOnAspect, Icons.remove_red_eye_outlined),
             ],
             if (manglikData.cancelRules.isNotEmpty) ...[
               const SizedBox(height: 16),
-              _buildRulesCard("Cancellation Factors", manglikData.cancelRules, Icons.check_circle_outline),
+              _buildRulesCard("Cancellation Factors".tr, manglikData.cancelRules, Icons.check_circle_outline),
             ],
           ],
         ),
@@ -89,8 +89,8 @@ class ManglikReportTab extends StatelessWidget {
               color: AppColors.primaryColor,
               borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
             ),
-            child: const Center(
-              child: AppText("Manglik Analysis", fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+            child: Center(
+              child: AppText("Manglik Analysis".tr, fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
             ),
           ),
           Padding(
@@ -115,13 +115,13 @@ class ManglikReportTab extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 AppText(
-                  "Manglik Status: ${statusText.replaceAll('_', ' ')}",
+                  "${"Manglik Status:".tr} ${statusText.replaceAll('_', ' ').tr}",
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
                 const SizedBox(height: 6),
                 AppText(
-                  "Dosha Intensity: ${percentage.toStringAsFixed(1)}%",
+                  "${"Dosha Intensity:".tr} ${percentage.toStringAsFixed(1)}%",
                   fontSize: 14,
                   color: Colors.grey.shade700,
                   fontWeight: FontWeight.w500,
@@ -153,8 +153,8 @@ class ManglikReportTab extends StatelessWidget {
               color: AppColors.primaryColor,
               borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
             ),
-            child: const Center(
-              child: AppText("Conclusion", fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+            child: Center(
+              child: AppText("Conclusion".tr, fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
             ),
           ),
           Padding(
@@ -163,14 +163,14 @@ class ManglikReportTab extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AppText(
-                  reportText,
+                  reportText.tr,
                   fontSize: 14,
                   height: 1.4,
                   color: Colors.black87,
                 ),
                 const SizedBox(height: 12),
                 AppText(
-                  "[This is a computer generated result based on planetary positions. Please consult an Astrologer to confirm & understand this in detail.]",
+                  "[This is a computer generated result based on planetary positions. Please consult an Astrologer to confirm & understand this in detail.]".tr,
                   fontSize: 12,
                   color: Colors.grey.shade600,
                   height: 1.3,
@@ -222,7 +222,7 @@ class ManglikReportTab extends StatelessWidget {
                     children: [
                       const AppText("• ", fontWeight: FontWeight.bold, fontSize: 14),
                       Expanded(
-                        child: AppText(rule, fontSize: 13, height: 1.3, color: Colors.black87),
+                        child: AppText(rule.tr, fontSize: 13, height: 1.3, color: Colors.black87),
                       ),
                     ],
                   ),
