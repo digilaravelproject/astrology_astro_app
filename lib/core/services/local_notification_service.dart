@@ -247,7 +247,9 @@ class LocalNotificationService {
         title: title,
         text: body,
       );
-    } catch (_) {}
+    } catch (e) {
+      debugPrint("ForegroundTaskService start ignored due to OS policy: $e");
+    }
   }
 
   static Future<void> cancelOngoingChatNotification(int? sessionId) async {
