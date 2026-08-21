@@ -596,7 +596,11 @@ class ChatController extends GetxController with WidgetsBindingObserver {
   }
 
   void minimizeToBubble(BuildContext context, String name, String image, {bool shouldPop = true}) {
-    if (_sessionId == null || (status.value != 'ongoing' && status.value != 'initiated')) return;
+    debugPrint("==== [FLOATING_CHAT_DEBUG] Astrologer ChatController.minimizeToBubble called! sessionId=$_sessionId, status=${status.value}, shouldPop=$shouldPop ====");
+    if (_sessionId == null || (status.value != 'ongoing' && status.value != 'initiated')) {
+      debugPrint("==== [FLOATING_CHAT_DEBUG] Astrologer minimizeToBubble SKIPPED because sessionId is null or status invalid ====");
+      return;
+    }
     WebSocketService.activeSessionId = null;
     final startStr = _startedAt ?? WebSocketService.sessionStartTimes[_sessionId!] ?? DateTime.now().subtract(Duration(seconds: elapsedSeconds.value)).toIso8601String();
     WebSocketService.sessionStartTimes[_sessionId!] = startStr;
@@ -610,6 +614,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       status: status.value,
       onTap: () {
         final currentStatus = FloatingChatBubble.chatStatus.value;
+        debugPrint("==== [FLOATING_CHAT_DEBUG] Astrologer FloatingChatBubble tapped! Navigating back to ChatScreen for sessionId=$_sessionId ====");
         FloatingChatBubble.dismiss(stopForegroundService: false);
         Get.to(
           () => ChatScreen(
@@ -642,6 +647,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
 
   @override
   void onClose() {
+    debugPrint("==== [FLOATING_CHAT_DEBUG] Astrologer ChatController.onClose invoked! sessionId=$_sessionId, status=${status.value} ====");
     WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel();
     _msgSub?.cancel();
@@ -651,6 +657,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     
     // Only dismiss notification & bubble if session is actually ended/completed
     if (status.value == 'ended' || status.value == 'completed' || status.value == 'cancelled' || status.value == 'rejected') {
+      debugPrint("==== [FLOATING_CHAT_DEBUG] Astrologer Session is TERMINATED (${status.value}). Dismissing bubble & cancelling ongoing notification for sessionId=$_sessionId ====");
       if (_sessionId != null) {
         LocalNotificationService.cancelOngoingChatNotification(_sessionId!);
       } else {
@@ -660,6 +667,8 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       if (WebSocketService.activeSessionId == _sessionId) {
         WebSocketService.activeSessionId = null;
       }
+    } else {
+      debugPrint("==== [FLOATING_CHAT_DEBUG] Astrologer ChatController closed while session active (${status.value}). PRESERVING BUBBLE AND NOTIFICATION! ====");
     }
     messageController.dispose();
     scrollController.dispose();
