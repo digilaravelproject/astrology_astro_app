@@ -261,15 +261,28 @@ class ChatController extends GetxController with WidgetsBindingObserver {
         if (newStatus != null && status.value != newStatus) {
           status.value = newStatus;
           if (newStatus == 'ongoing') {
-            elapsedSeconds.value = 0;
-            _startedAt = DateTime.now().toIso8601String();
+            final startedAtStr = WebSocketService.sessionStartTimes[_sessionId];
+            DateTime? serverStartTime;
+            if (startedAtStr != null && startedAtStr.isNotEmpty) {
+              String isoUtc = startedAtStr.trim().replaceAll(' ', 'T');
+              if (!isoUtc.endsWith('Z') && !isoUtc.contains('+') && !isoUtc.contains('-')) {
+                isoUtc += 'Z';
+              }
+              serverStartTime = DateTime.tryParse(isoUtc)?.toLocal();
+            }
+            
+            final effectiveStart = serverStartTime ?? DateTime.now();
+            _startedAt = effectiveStart.toIso8601String();
             if (_sessionId != null) {
               WebSocketService.sessionStartTimes[_sessionId!] = _startedAt!;
             }
+            final diff = DateTime.now().difference(effectiveStart).inSeconds;
+            elapsedSeconds.value = diff >= 0 ? diff : 0;
+
             _setupTimer(_startedAt);
             FlutterBackgroundService().startService();
             
-            final startedAtMillis = DateTime.now().millisecondsSinceEpoch;
+            final startedAtMillis = effectiveStart.millisecondsSinceEpoch;
             LocalNotificationService.showOngoingChatNotification(
               sessionId: _sessionId!,
               title: 'Chat in progress',
