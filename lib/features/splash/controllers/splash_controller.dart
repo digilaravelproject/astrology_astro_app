@@ -1,3 +1,4 @@
+import 'package:permission_handler/permission_handler.dart';
 import 'dart:async';
 import 'package:get/get.dart';
 import '../../../core/services/storage/shared_prefs.dart';
@@ -37,15 +38,20 @@ class SplashController extends GetxController {
 
         print('[SPLASH] isLoggedIn: $isLoggedIn, hasUserData: ${userData != null && userData.isNotEmpty}');
 
-        if (isLoggedIn && userData != null && userData.isNotEmpty) {
-          print('[SPLASH] User is logged in, navigating to dashboard');
-          // Connect WebSocket now that user is logged in
-          Get.find<WebSocketService>().connect();
-          FCMNotificationService.registerDeviceToken(null);
-          Get.offAllNamed(RouteHelper.getDashboardRoute());
+        bool cameraGranted = await Permission.camera.isGranted;
+        bool micGranted = await Permission.microphone.isGranted;
+        bool notifGranted = await Permission.notification.isGranted;
+
+        if (cameraGranted && micGranted && notifGranted) {
+          if (isLoggedIn && userData != null && userData.isNotEmpty) {
+            Get.find<WebSocketService>().connect();
+            FCMNotificationService.registerDeviceToken(null);
+            Get.offAllNamed(RouteHelper.getDashboardRoute());
+          } else {
+            Get.offAllNamed(RouteHelper.getLoginRoute());
+          }
         } else {
-          print('[SPLASH] User is not logged in, navigating to login');
-          Get.offAllNamed(RouteHelper.getLoginRoute());
+          Get.offAllNamed(RouteHelper.getPermissionRoute());
         }
       } else {
         // Handle maintenance or version issues

@@ -1,3 +1,4 @@
+import '../features/splash/screens/permission_screen.dart';
 import 'package:astro_astrologer/features/profile/screens/skill_details_screen.dart';
 import 'package:astro_astrologer/features/profile/screens/other_details_screen.dart';
 import 'package:astro_astrologer/features/training/training_videos_list_screen.dart';
@@ -34,6 +35,7 @@ import '../features/panchang/panchang_screen.dart';
 import '../features/panchang/bindings/panchang_binding.dart';
 
 class RouteHelper {
+  static String getPermissionRoute() => AppRoutes.permission;
   static String getSplashRoute() => AppRoutes.splash;
   static String getLoginRoute() => AppRoutes.login;
   static String getOtpRoute() => AppRoutes.otp;
@@ -43,6 +45,10 @@ class RouteHelper {
   static String getPanchangRoute() => AppRoutes.panchangScreen;
 
   static List<GetPage> routes = [
+    GetPage(
+      name: AppRoutes.permission,
+      page: () => const PermissionScreen(),
+    ),
     GetPage(
       name: AppRoutes.splash,
       page: () => const SplashScreen(),
