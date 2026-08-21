@@ -139,7 +139,7 @@ class AstrologerSkillsController extends GetxController {
                   child: Container(width: 50, height: 5, decoration: BoxDecoration(color: Colors.grey.shade200, borderRadius: BorderRadius.circular(10))),
                 ),
                 const SizedBox(height: 24),
-                AppText('Select $title', fontSize: 20, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
+                AppText('Select ${title.tr}'.tr, fontSize: 20, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
                 const SizedBox(height: 16),
                 Container(
                   height: 50,
@@ -148,7 +148,7 @@ class AstrologerSkillsController extends GetxController {
                     onChanged: (val) => setModalState(() => searchQuery = val),
                     style: const TextStyle(fontSize: 14, color: Color(0xFF2E1A47)),
                     decoration: InputDecoration(
-                      hintText: 'Search $title...',
+                      hintText: 'Search ${title.tr}...'.tr,
                       prefixIcon: const Icon(Iconsax.search_normal_copy, size: 20),
                       suffixIcon: searchQuery.isNotEmpty
                           ? IconButton(icon: const Icon(Icons.close, size: 18), onPressed: () => setModalState(() => searchQuery = ''))
@@ -161,7 +161,7 @@ class AstrologerSkillsController extends GetxController {
                 const SizedBox(height: 20),
                 Expanded(
                   child: filteredOptions.isEmpty
-                      ? const Center(child: AppText('No results found', color: Colors.grey))
+                      ? Center(child: AppText('No results found'.tr, color: Colors.grey))
                       : SingleChildScrollView(
                     child: Wrap(
                       spacing: 12,
@@ -181,7 +181,7 @@ class AstrologerSkillsController extends GetxController {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                AppText(option, fontSize: 14, fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500, color: isSelected ? AppColors.primaryColor : const Color(0xFF2E1A47)),
+                                AppText(option.tr, fontSize: 14, fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500, color: isSelected ? AppColors.primaryColor : const Color(0xFF2E1A47)),
                                 if (isSelected) ...[
                                   const SizedBox(width: 8),
                                   const Icon(Icons.check_circle, size: 16, color: AppColors.primaryColor),
@@ -196,7 +196,7 @@ class AstrologerSkillsController extends GetxController {
                 ),
                 const SizedBox(height: 24),
                 Obx(() => CustomButton(
-                  text: 'Save Selection',
+                  text: 'Save Selection'.tr,
                   onPressed: () async {
                     isLoadingSheet.value = true;
                     // Update the value temporarily to send to API

@@ -77,19 +77,19 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
                     ),
                   ),
                   const SizedBox(height: 24),
-                  AppText(session != null ? 'Update Live Session' : 'Schedule Live Session', fontSize: 20, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
+                  AppText(session != null ? 'Update Live Session'.tr : 'Schedule Live Session'.tr, fontSize: 20, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
                   const SizedBox(height: 24),
                   
                   // Topic Input
-                  _buildLabel('Session Topic'),
+                  _buildLabel('Session Topic'.tr),
                   const SizedBox(height: 8),
-                  _buildTextField(titleController, 'Enter session topic...'),
+                  _buildTextField(titleController, 'Enter session topic...'.tr),
                   const SizedBox(height: 16),
 
                   // Description Input
-                  _buildLabel('Description'),
+                  _buildLabel('Description'.tr),
                   const SizedBox(height: 8),
-                  _buildTextField(descriptionController, 'Enter session description...', maxLines: 3),
+                  _buildTextField(descriptionController, 'Enter session description...'.tr, maxLines: 3),
                   const SizedBox(height: 16),
 
                   // Instant toggle (Only for new sessions)
@@ -100,9 +100,9 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildLabel('Go Live Instantly'),
+                            _buildLabel('Go Live Instantly'.tr),
                             const SizedBox(height: 4),
-                            AppText('Start streaming immediately', fontSize: 11, color: Colors.grey.shade500),
+                            AppText('Start streaming immediately'.tr, fontSize: 11, color: Colors.grey.shade500),
                           ],
                         ),
                         Switch(
@@ -126,7 +126,7 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildLabel('Duration (Mins)'),
+                            _buildLabel('Duration (Mins)'.tr),
                             const SizedBox(height: 8),
                             _buildTextField(durationController, '60', isNumeric: true),
                           ],
@@ -137,7 +137,7 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildLabel('Max Participants'),
+                            _buildLabel('Max Participants'.tr),
                             const SizedBox(height: 8),
                             _buildTextField(participantsController, '100', isNumeric: true),
                           ],
@@ -155,7 +155,7 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _buildLabel('Date'),
+                              _buildLabel('Date'.tr),
                               const SizedBox(height: 8),
                               _buildPickerTrigger(
                                 text: selectedDateText,
@@ -187,7 +187,7 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _buildLabel('Time'),
+                              _buildLabel('Time'.tr),
                               const SizedBox(height: 8),
                               _buildPickerTrigger(
                                 text: selectedTimeText,
@@ -230,8 +230,8 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
                   
                   Obx(() => CustomButton(
                     text: session != null 
-                        ? 'Update Now' 
-                        : (isInstant ? 'Go Live Now' : 'Schedule Now'),
+                        ? 'Update Now'.tr 
+                        : (isInstant ? 'Go Live Now'.tr : 'Schedule Now'.tr),
                     isLoading: _controller.isCreating.value,
                     onPressed: () {
                       if (titleController.text.trim().isEmpty) {
@@ -374,8 +374,8 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
-      appBar: const CustomAppBar(
-        title: 'Live Schedule',
+      appBar: CustomAppBar(
+        title: 'Live Schedule'.tr,
       ),
       body: Column(
         children: [
@@ -392,9 +392,9 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
               indicatorSize: TabBarIndicatorSize.tab,
               labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, fontFamily: 'Poppins'),
               unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 13, fontFamily: 'Poppins'),
-              tabs: const [
-                Tab(text: "Upcoming"),
-                Tab(text: "Completed"),
+              tabs: [
+                Tab(text: "Upcoming".tr),
+                Tab(text: "Completed".tr),
               ],
             ),
           ),
@@ -413,7 +413,7 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
         onPressed: _showAddSessionSheet,
         backgroundColor: AppColors.primaryColor,
         icon: const Icon(Icons.add, color: Colors.white),
-        label: const AppText('Schedule Live', color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14),
+        label: AppText('Schedule Live'.tr, color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
       ),
     );
@@ -425,7 +425,7 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
         return const Center(child: CircularProgressIndicator());
       }
       if (_controller.upcomingSessions.isEmpty) {
-        return _buildEmptyState('No upcoming live sessions');
+        return _buildEmptyState('No upcoming live sessions'.tr);
       }
       return RefreshIndicator(
         onRefresh: () => _controller.getSessions(),
@@ -446,7 +446,7 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
         return const Center(child: CircularProgressIndicator());
       }
       if (_controller.completedSessions.isEmpty) {
-        return _buildEmptyState('No past live sessions');
+        return _buildEmptyState('No past live sessions'.tr);
       }
       return RefreshIndicator(
         onRefresh: () => _controller.getSessions(),
@@ -517,7 +517,7 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
                             children: [
                               Expanded(
                                 child: AppText(
-                                  session.title,
+                                  session.title.tr,
                                   fontSize: 17,
                                   fontWeight: FontWeight.w800,
                                   color: const Color(0xFF2E1A47),

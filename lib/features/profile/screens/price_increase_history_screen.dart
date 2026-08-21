@@ -37,8 +37,8 @@ class _PriceIncreaseHistoryScreenState extends State<PriceIncreaseHistoryScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
-      appBar: const CustomAppBar(
-        title: 'Increase History',
+      appBar: CustomAppBar(
+        title: 'Increase History'.tr,
       ),
       body: Obx(() {
         if (_controller.isLoadingHistory.value) {
@@ -46,9 +46,9 @@ class _PriceIncreaseHistoryScreenState extends State<PriceIncreaseHistoryScreen>
         }
 
         if (_controller.historyList.isEmpty) {
-          return const Center(
+          return Center(
             child: AppText(
-              "No price increase history found.",
+              "No price increase history found.".tr,
               fontSize: 14,
               color: Colors.grey,
             ),

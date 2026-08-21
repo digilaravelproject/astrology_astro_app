@@ -372,7 +372,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
               children: [
                 Expanded(
                   child: AppText(
-                    'Check Last 30 Days Availability',
+                    'Check Last 30 Days Availability'.tr,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: Colors.grey.shade700,
@@ -394,7 +394,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AppText(
-          "Loyal User Conversion",
+          "Loyal User Conversion".tr,
           fontSize: 16,
           fontWeight: FontWeight.w700,
           color: const Color(0xFF2E1A47),
@@ -419,7 +419,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
                     fontWeight: FontWeight.w700,
                     color: Colors.amber.shade700,
                   ),
-                  _buildStatusBadge('Average', Colors.amber),
+                  _buildStatusBadge('Average'.tr, Colors.amber),
                 ],
               ),
               const SizedBox(height: 20),
@@ -429,9 +429,9 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
               const SizedBox(height: 16),
               Row(
                 children: [
-                  _buildStatItem('Total users', '${conversion?.totalUsers ?? 0}'),
-                  _buildStatItem('Loyal Users', '${conversion?.loyalUsers ?? 0}'),
-                  _buildStatItem('Loyal user level', '${conversion?.loyalUserLevel ?? 0}'),
+                  _buildStatItem('Total users'.tr, '${conversion?.totalUsers ?? 0}'),
+                  _buildStatItem('Loyal Users'.tr, '${conversion?.loyalUsers ?? 0}'),
+                  _buildStatItem('Loyal user level'.tr, '${conversion?.loyalUserLevel ?? 0}'),
                 ],
               ),
             ],
@@ -439,7 +439,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
         ),
         const SizedBox(height: 12),
         AppText(
-          'Loyal user conversion means if Astrotalk provides you with 500 new customers then how many of them became your loyal customers',
+          'Loyal user conversion means if Astrotalk provides you with 500 new customers then how many of them became your loyal customers'.tr,
           fontSize: 12,
           color: Colors.grey.shade500,
           height: 1.5,

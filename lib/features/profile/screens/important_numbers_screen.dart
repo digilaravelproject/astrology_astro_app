@@ -11,8 +11,8 @@ class ImportantNumbersScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
-      appBar: const CustomAppBar(
-        title: 'Important Numbers',
+      appBar: CustomAppBar(
+        title: 'Important Numbers'.tr,
       ),
       body: Column(
         children: [
@@ -52,8 +52,8 @@ class ImportantNumbersScreen extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       color: AppColors.lightPink,
-      child: const AppText(
-        'You will get call and chat alerts from these numbers. Save these numbers to avoid any confusion',
+      child: AppText(
+        'You will get call and chat alerts from these numbers. Save these numbers to avoid any confusion'.tr,
         fontSize: 12,
         color: Colors.black87,
         textAlign: TextAlign.center,
@@ -70,7 +70,7 @@ class ImportantNumbersScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AppText(title, fontSize: 16, fontWeight: FontWeight.bold, color: const Color(0xFF2E1A47), overflow: TextOverflow.ellipsis),
+              AppText(title.tr, fontSize: 16, fontWeight: FontWeight.bold, color: const Color(0xFF2E1A47), overflow: TextOverflow.ellipsis),
               const SizedBox(height: 8),
               AppText(
                 numbers.join('\n'),

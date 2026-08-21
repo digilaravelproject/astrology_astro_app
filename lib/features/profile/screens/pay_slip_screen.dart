@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import '../../../core/theme/app_colors.dart';
@@ -22,8 +23,8 @@ class _PaySlipScreenState extends State<PaySlipScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(
-        title: 'Pay Slip',
+      appBar: CustomAppBar(
+        title: 'Pay Slip'.tr,
       ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -31,19 +32,19 @@ class _PaySlipScreenState extends State<PaySlipScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildMonthField(
-              label: 'Select start date',
+              label: 'Select start date'.tr,
               controller: _startMonthController,
               onTap: () => _selectDate(context, _startMonthController),
             ),
             const SizedBox(height: 24),
             _buildMonthField(
-              label: 'Select end date',
+              label: 'Select end date'.tr,
               controller: _endMonthController,
               onTap: () => _selectDate(context, _endMonthController),
             ),
             const Spacer(),
             CustomButton(
-              text: 'Send on Email',
+              text: 'Send on Email'.tr,
               onPressed: () {
                 if (_startMonthController.text.isEmpty || _endMonthController.text.isEmpty) {
                   CustomSnackBar.showError('Please select both start and end dates');

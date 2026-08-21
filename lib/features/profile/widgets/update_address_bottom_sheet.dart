@@ -84,14 +84,14 @@ class _UpdateAddressBottomSheetState extends State<UpdateAddressBottomSheet> {
                 ),
                 const SizedBox(height: 16),
                 AppText(
-                  'Add Your Address',
+                  'Add Your Address'.tr,
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFF2E1A47),
                 ),
                 const SizedBox(height: 8),
                 AppText(
-                  'Please share your address for invoice and compliance purposes.',
+                  'Please share your address for invoice and compliance purposes.'.tr,
                   fontSize: 14,
                   textAlign: TextAlign.center,
                   color: Colors.grey.shade500,
@@ -100,13 +100,13 @@ class _UpdateAddressBottomSheetState extends State<UpdateAddressBottomSheet> {
                 const SizedBox(height: 24),
                 _buildTextField(
                   controller: _controller.addressController,
-                  placeholder: 'Enter Address',
+                  placeholder: 'Enter Address'.tr,
                   maxLines: 2,
                 ),
                 const SizedBox(height: 16),
                 _buildTextField(
                   controller: _controller.nameController,
-                  placeholder: 'Enter Name for invoice',
+                  placeholder: 'Enter Name for invoice'.tr,
                 ),
                 const SizedBox(height: 16),
                 Row(
@@ -114,14 +114,14 @@ class _UpdateAddressBottomSheetState extends State<UpdateAddressBottomSheet> {
                     Expanded(
                       child: _buildTextField(
                         controller: _controller.pincodeController,
-                        placeholder: 'Pincode',
+                        placeholder: 'Pincode'.tr,
                       ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: _buildTextField(
                         controller: _controller.cityController,
-                        placeholder: 'City',
+                        placeholder: 'City'.tr,
                       ),
                     ),
                   ],
@@ -132,14 +132,14 @@ class _UpdateAddressBottomSheetState extends State<UpdateAddressBottomSheet> {
                     Expanded(
                       child: _buildTextField(
                         controller: _controller.stateController,
-                        placeholder: 'State',
+                        placeholder: 'State'.tr,
                       ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: _buildTextField(
                         controller: _controller.countryController,
-                        placeholder: 'Country',
+                        placeholder: 'Country'.tr,
                       ),
                     ),
                   ],
@@ -147,7 +147,7 @@ class _UpdateAddressBottomSheetState extends State<UpdateAddressBottomSheet> {
                 const SizedBox(height: 32),
                 
                 Obx(() => CustomButton(
-                  text: 'Submit',
+                  text: 'Submit'.tr,
                   isLoading: _controller.isLoading.value,
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
@@ -184,7 +184,7 @@ class _UpdateAddressBottomSheetState extends State<UpdateAddressBottomSheet> {
         return null;
       },
       decoration: InputDecoration(
-        hintText: placeholder,
+        hintText: placeholder.tr,
         hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         filled: true,

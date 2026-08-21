@@ -48,6 +48,29 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _loadUserData();
   }
 
+  String _formatDob(String? rawDob) {
+    if (rawDob == null || rawDob.isEmpty) return '';
+    try {
+      final dt = DateTime.parse(rawDob);
+      return '${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')}/${dt.year}';
+    } catch (_) {
+      if (rawDob.contains('T')) {
+        return rawDob.split('T')[0];
+      }
+      return rawDob;
+    }
+  }
+
+  String _getApiDob(String formattedDob) {
+    if (formattedDob.contains('/')) {
+      final parts = formattedDob.split('/');
+      if (parts.length == 3) {
+        return '${parts[2]}-${parts[1]}-${parts[0]}';
+      }
+    }
+    return formattedDob;
+  }
+
   void _loadUserData() {
     final user = authController.currentUser.value;
     if (user != null) {
@@ -60,7 +83,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       final astro = user.astrologer;
       if (astro != null) {
         _docNumberController.text = astro.idProofNumber ?? '';
-        _dobController.text = astro.dateOfBirth?.substring(0, 10) ?? '';
+        _dobController.text = _formatDob(astro.dateOfBirth);
         // Other fields could be mapped if they exist in the response
       }
     }
@@ -97,7 +120,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       'city': _cityController.text.trim(),
       'country': _countryController.text.trim(),
       'id_proof_number': _docNumberController.text.trim(),
-      'date_of_birth': _dobController.text.trim(),
+      'date_of_birth': _getApiDob(_dobController.text.trim()),
     };
 
     if (_profileImage != null) {
@@ -495,7 +518,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
     if (result != null) {
       setState(() => _dobController.text =
-      '${result.year}-${result.month.toString().padLeft(2, '0')}-${result.day.toString().padLeft(2, '0')}');
+      '${result.day.toString().padLeft(2, '0')}/${result.month.toString().padLeft(2, '0')}/${result.year}');
     }
   }
 

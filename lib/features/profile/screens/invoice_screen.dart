@@ -52,7 +52,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6FA),
-      appBar: const CustomAppBar(title: 'Invoice'),
+      appBar: CustomAppBar(title: 'Invoice'.tr),
       body: Obx(() {
         if (_invoiceController.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
@@ -63,7 +63,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
         
         final summary = _invoiceController.summary.value;
         if (summary == null) {
-          return const Center(child: Text('No invoices found.'));
+          return Center(child: Text('No invoices found.'.tr));
         }
 
         return Column(
@@ -120,7 +120,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Total Earnings',
+                'Total Earnings'.tr,
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.8),
                   fontSize: 13,
@@ -144,7 +144,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                '${summary.totalInvoices} Invoices',
+                '${summary.totalInvoices} ${'Invoices'.tr}',
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.8),
                   fontSize: 12,
@@ -160,7 +160,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  summary.status.isNotEmpty ? summary.status : 'All Paid',
+                  summary.status.isNotEmpty ? summary.status.tr : 'All Paid'.tr,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12,
@@ -253,7 +253,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    invoice.status,
+                    invoice.status.tr,
                     style: const TextStyle(
                       color: AppColors.primaryColor,
                       fontSize: 11,
@@ -293,7 +293,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                             children: [
                               Expanded(
                                 child: _buildDetailItem(
-                                  label: 'Gross Earnings',
+                                  label: 'Gross Earnings'.tr,
                                   value: '₹${invoice.grossEarnings.toStringAsFixed(2)}',
                                   icon: Iconsax.money_recive,
                                 ),
@@ -306,8 +306,8 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                               Expanded(
                                 child: _buildDetailItem(
                                   label: invoice.tdsPercent > 0 
-                                      ? 'TDS (${invoice.tdsPercent.toStringAsFixed(0)}%)' 
-                                      : 'TDS Deducted',
+                                      ? 'TDS (${invoice.tdsPercent.toStringAsFixed(0)}%)'.tr 
+                                      : 'TDS Deducted'.tr,
                                   value: '-₹${invoice.tdsAmount.toStringAsFixed(2)}',
                                   icon: Iconsax.receipt_text_copy,
                                   isRight: true,
@@ -326,8 +326,8 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                             children: [
                               Expanded(
                                 child: _buildDetailItem(
-                                  label: 'GST on Payout',
-                                  value: '0% (Exempt)',
+                                  label: 'GST on Payout'.tr,
+                                  value: '0% (Exempt)'.tr,
                                   icon: Iconsax.verify,
                                   valueColor: Colors.green.shade700,
                                 ),
@@ -339,7 +339,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                               ),
                               Expanded(
                                 child: _buildDetailItem(
-                                  label: 'Net Payable',
+                                  label: 'Net Payable'.tr,
                                   value: '₹${invoice.netPayable.toStringAsFixed(2)}',
                                   icon: Iconsax.wallet_check,
                                   isRight: true,
@@ -425,7 +425,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                                 Obx(() {
                                   final isDownloading = _invoiceController.isDownloading[invoice.monthName] == true;
                                   return Text(
-                                    isDownloading ? 'Downloading...' : 'Download Invoice',
+                                    isDownloading ? 'Downloading...'.tr : 'Download Invoice'.tr,
                                     style: const TextStyle(
                                       color: AppColors.primaryColor,
                                       fontSize: 14,

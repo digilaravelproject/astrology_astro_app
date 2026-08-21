@@ -17,8 +17,8 @@ class HelpSupportScreen extends GetView<SupportController> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(
-        title: 'Customer Support',
+      appBar: CustomAppBar(
+        title: 'Customer Support'.tr,
       ),
       body: Obx(() {
         if (controller.isCustomerSupportLoading.value) {
@@ -44,11 +44,11 @@ class HelpSupportScreen extends GetView<SupportController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const AppText(
-                        "Contact Information",
+                      AppText(
+                        'Contact Information'.tr,
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF2E1A47),
+                        color: const Color(0xFF2E1A47),
                       ),
                       const SizedBox(height: 12),
                       AppText(
@@ -67,15 +67,15 @@ class HelpSupportScreen extends GetView<SupportController> {
 
               _buildSupportOption(
                 icon: Iconsax.sms_copy,
-                title: "Email Support",
-                subtitle: "Send us an email for support",
+                title: 'Email Support'.tr,
+                subtitle: 'Send us an email for support'.tr,
                 onTap: () => _launchURL("mailto:support@yourcompany.com"),
               ),
               const SizedBox(height: 16),
               _buildSupportOption(
                 icon: Iconsax.call_copy,
-                title: "Call Us",
-                subtitle: "Call us for immediate assistance",
+                title: 'Call Us'.tr,
+                subtitle: 'Call us for immediate assistance'.tr,
                 onTap: () => _launchURL("tel:+919876543210"),
               ),
             ],
