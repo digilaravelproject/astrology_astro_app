@@ -84,7 +84,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 maxLines: 6,
                 style: const TextStyle(fontSize: 14, color: Color(0xFF2E1A47)),
                 decoration: InputDecoration(
-                  hintText: "Tell us what you liked or how we can improve...",
+                  hintText: "Tell us what you liked or how we can improve...".tr,
                   hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.all(20),
