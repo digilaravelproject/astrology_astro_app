@@ -309,7 +309,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                                       ? 'TDS (${invoice.tdsPercent.toStringAsFixed(0)}%)' 
                                       : 'TDS Deducted',
                                   value: '-₹${invoice.tdsAmount.toStringAsFixed(2)}',
-                                  icon: Iconsax.receipt_dissect,
+                                  icon: Iconsax.receipt_text_copy,
                                   isRight: true,
                                   valueColor: Colors.red.shade700,
                                 ),
@@ -459,6 +459,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
     required String value,
     required IconData icon,
     bool isRight = false,
+    Color? valueColor,
   }) {
     return Padding(
       padding: EdgeInsets.only(
@@ -492,10 +493,10 @@ class _InvoiceScreenState extends State<InvoiceScreen>
           const SizedBox(height: 6),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w800,
-              color: AppColors.primaryColor,
+              color: valueColor ?? AppColors.primaryColor,
               letterSpacing: -0.3,
             ),
           ),
