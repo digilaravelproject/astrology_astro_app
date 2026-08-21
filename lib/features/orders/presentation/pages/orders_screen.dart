@@ -57,7 +57,7 @@ class _OrdersScreenState extends State<OrdersScreen>
     return Scaffold(
       backgroundColor: const Color(0xFFFDF9F5),
       appBar: CustomAppBar(
-        title: 'Orders',
+        title: 'Orders'.tr,
         showLeading: false,
         actions: [
           TextButton.icon(

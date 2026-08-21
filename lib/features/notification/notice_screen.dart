@@ -16,8 +16,8 @@ class NoticeScreen extends GetView<NoticeController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9FAFB),
-      appBar: const CustomAppBar(
-        title: 'Notice Board',
+      appBar: CustomAppBar(
+        title: 'Notice Board'.tr,
         showLeading: false,
         centerTitle: true,
       ),
