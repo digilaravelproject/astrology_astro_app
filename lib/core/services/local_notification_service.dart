@@ -426,6 +426,12 @@ class LocalNotificationService {
       soundName = AppConstants.chatNotificationSound;
     }
 
+    bool shouldPlaySound = (notificationType == 'CALL_REQUEST' || 
+                            notificationType == 'CHAT_REQUEST' || 
+                            notificationType == 'initiated' || 
+                            notificationType == 'call' ||
+                            notificationType == 'chat');
+
     final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
       channelId,
       channelId == 'calls_channel'
@@ -435,8 +441,8 @@ class LocalNotificationService {
       icon: '@mipmap/ic_launcher',
       importance: Importance.max,
       priority: Priority.high,
-      sound: RawResourceAndroidNotificationSound(soundName),
-      playSound: true,
+      sound: shouldPlaySound ? RawResourceAndroidNotificationSound(soundName) : null,
+      playSound: shouldPlaySound,
       showWhen: true,
     );
 
@@ -445,8 +451,8 @@ class LocalNotificationService {
       iOS: DarwinNotificationDetails(
         presentAlert: true,
         presentBadge: true,
-        presentSound: true,
-        sound: '$soundName.caf',
+        presentSound: shouldPlaySound,
+        sound: shouldPlaySound ? '$soundName.caf' : null,
       ),
     );
 
