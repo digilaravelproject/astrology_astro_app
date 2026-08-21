@@ -38,7 +38,7 @@ class _KundliChartWidgetState extends State<KundliChartWidget> {
 
     Get.to(
       () => FullScreenChartScreen(
-        title: "${widget.title} (${isNorthIndian ? 'North Indian' : 'South Indian'})",
+        title: "${widget.title.tr} (${(isNorthIndian ? 'North Indian' : 'South Indian').tr})",
         svgString: svgString,
         isNorthIndian: isNorthIndian,
         fallbackPlanetData: fallbackData,
@@ -62,9 +62,9 @@ class _KundliChartWidgetState extends State<KundliChartWidget> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _buildToggleItem("North Indian", isNorthIndian, () => setState(() => isNorthIndian = true)),
+                _buildToggleItem("North Indian".tr, isNorthIndian, () => setState(() => isNorthIndian = true)),
                 const SizedBox(width: 4),
-                _buildToggleItem("South Indian", !isNorthIndian, () => setState(() => isNorthIndian = false)),
+                _buildToggleItem("South Indian".tr, !isNorthIndian, () => setState(() => isNorthIndian = false)),
               ],
             ),
           ),
@@ -120,7 +120,7 @@ class _KundliChartWidgetState extends State<KundliChartWidget> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 AppText(
-                  widget.title,
+                  widget.title.tr,
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
                   decoration: TextDecoration.underline,
