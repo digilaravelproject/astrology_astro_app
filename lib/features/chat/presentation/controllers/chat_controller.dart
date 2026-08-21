@@ -24,6 +24,7 @@ import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/features/auth/controllers/auth_controller.dart';
 import 'package:astro_astrologer/core/services/foreground_task_service.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
@@ -583,7 +584,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     }
 
     try {
-      await _rejectChatSessionUseCase.execute(targetId);
+      await Get.find<ApiClient>().post(AppUrls.rejectChatSession(targetId));
     } catch (e) {
       debugPrint("Error rejecting/cancelling chat session: $e");
     } finally {
