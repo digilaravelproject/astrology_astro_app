@@ -274,6 +274,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 context,
                 widget.userName,
                 widget.userImage,
+                shouldPop: true,
               );
             } else {
               Navigator.of(context).pop();
