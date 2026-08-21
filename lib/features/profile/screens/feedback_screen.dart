@@ -29,23 +29,23 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(
-        title: 'Feedback',
+      appBar: CustomAppBar(
+        title: 'Feedback'.tr,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
             const SizedBox(height: 16),
-            const AppText(
-              "How was your experience?",
+            AppText(
+              "How was your experience?".tr,
               fontSize: 22,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF2E1A47),
+              color: const Color(0xFF2E1A47),
             ),
             const SizedBox(height: 8),
             AppText(
-              "Your feedback helps us improve our platform for everyone.",
+              "Your feedback helps us improve our platform for everyone.".tr,
               fontSize: 14,
               color: Colors.grey.shade500,
               textAlign: TextAlign.center,
@@ -93,7 +93,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
             ),
             const SizedBox(height: 48),
             Obx(() => CustomButton(
-              text: "Submit Feedback",
+              text: "Submit Feedback".tr,
               isLoading: controller.isFeedbackSubmitting.value,
               onPressed: () async {
                 if (_rating == 0) {
