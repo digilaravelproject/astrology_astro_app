@@ -633,21 +633,24 @@ class _RegistrationScreenState extends State<RegistrationScreen>
   // ── BOTTOM BAR ────────────────────────────────────────────────────────────
   Widget _buildBottomBar() {
     final isLast = _currentStep == _totalSteps - 1;
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 16, offset: const Offset(0, -4))],
-      ),
-      child: CustomButton(
-        text: isLast ? 'Submit Application' : 'Continue',
-        onPressed: _onNext,
-        suffixIcon: Icon(
-          isLast ? Icons.check_circle_outline_rounded : Icons.arrow_forward_rounded,
-          color: Colors.white, size: 20,
+    return SafeArea(
+      top: false,
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 16, offset: const Offset(0, -4))],
         ),
-        backgroundColor: AppColors.primaryColor,
-        borderRadius: 100,
+        child: CustomButton(
+          text: isLast ? 'Submit Application' : 'Continue',
+          onPressed: _onNext,
+          suffixIcon: Icon(
+            isLast ? Icons.check_circle_outline_rounded : Icons.arrow_forward_rounded,
+            color: Colors.white, size: 20,
+          ),
+          backgroundColor: AppColors.primaryColor,
+          borderRadius: 100,
+        ),
       ),
     );
   }

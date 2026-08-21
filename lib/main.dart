@@ -2,6 +2,8 @@ import 'package:astro_astrologer/core/constants/app_constants.dart';
 import 'package:astro_astrologer/core/theme/dark_theme.dart';
 import 'package:astro_astrologer/core/theme/light_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'core/theme/theme_controller.dart';
 import 'features/language/controllers/localization_controller.dart';
@@ -46,6 +48,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [
+    SystemUiOverlay.top,
+    SystemUiOverlay.bottom,
+  ]);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await initApp();
   runApp(const MyApp());
@@ -83,6 +89,14 @@ class MyApp extends StatelessWidget {
       ),
       fallbackLocale: const Locale('en', 'US'),
       translations: Get.find<Translations>(),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: localizationController.languages
+          .map((lang) => Locale(lang.languageCode, lang.countryCode))
+          .toList(),
     ));
   }
 }

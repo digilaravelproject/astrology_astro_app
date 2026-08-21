@@ -55,12 +55,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
     const ProfileScreen(),
   ];
 
-  final List<NavItem> _navItems = [
-    NavItem(icon: Iconsax.home_2_copy, label: 'Home'),
-    NavItem(icon: Iconsax.message_question_copy, label: 'Orders'),
-    NavItem(icon: Iconsax.video_play_copy, label: 'Go Live'),
-    NavItem(icon: Iconsax.notification_bing_copy, label: 'Notice'),
-    NavItem(icon: Iconsax.user_copy, label: 'Profile'),
+  List<NavItem> get _navItems => [
+    NavItem(icon: Iconsax.home_2_copy, label: 'home'.tr),
+    NavItem(icon: Iconsax.message_question_copy, label: 'orders'.tr),
+    NavItem(icon: Iconsax.video_play_copy, label: 'go_live'.tr),
+    NavItem(icon: Iconsax.notification_bing_copy, label: 'notice'.tr),
+    NavItem(icon: Iconsax.user_copy, label: 'profile'.tr),
   ];
 
   @override

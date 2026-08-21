@@ -455,10 +455,23 @@ class LocalNotificationService {
       ),
     );
 
+    String translatedTitle = title;
+    String translatedBody = body;
+    try {
+      if (Get.keys.containsKey(Get.locale?.toString()) &&
+          Get.keys[Get.locale?.toString()]?.containsKey(title) == true) {
+        translatedTitle = title.tr;
+      }
+      if (Get.keys.containsKey(Get.locale?.toString()) &&
+          Get.keys[Get.locale?.toString()]?.containsKey(body) == true) {
+        translatedBody = body.tr;
+      }
+    } catch (_) {}
+
     await _notificationsPlugin.show(
       id,
-      title,
-      body,
+      translatedTitle,
+      translatedBody,
       notificationDetails,
       payload: payload,
     );
