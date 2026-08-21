@@ -1,3 +1,4 @@
+import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -48,6 +49,21 @@ class FCMNotificationService {
       debugPrint('Foreground Message Received: ${message.notification?.title}');
       if (message.notification != null) {
         final type = message.data['type']?.toString();
+        final title = message.notification?.title ?? '';
+
+        if (title.contains('Chat Ended') ||
+            type == 'chat_ended' ||
+            type == 'CHAT_ENDED' ||
+            type == 'session_ended' ||
+            type == 'chat_summary') {
+          LocalNotificationService.cancelOngoingChatNotification(null);
+          FloatingChatBubble.dismiss(stopForegroundService: true);
+        } else if (title.contains('Call Ended') ||
+            type == 'call_ended' ||
+            type == 'CALL_ENDED') {
+          LocalNotificationService.cancelOngoingCallNotification(null);
+        }
+
         LocalNotificationService.showNotification(
           id: message.hashCode,
           title: message.notification?.title ?? 'Notification',

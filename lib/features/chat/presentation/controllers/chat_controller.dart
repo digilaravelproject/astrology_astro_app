@@ -646,6 +646,12 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     _endSub?.cancel();
     _statusSub?.cancel();
     _dismissSub?.cancel();
+    if (_sessionId != null) {
+      LocalNotificationService.cancelOngoingChatNotification(_sessionId!);
+    } else {
+      LocalNotificationService.cancelOngoingChatNotification(null);
+    }
+    FloatingChatBubble.dismiss(stopForegroundService: true);
     if (WebSocketService.activeSessionId == _sessionId) {
       WebSocketService.activeSessionId = null;
     }
