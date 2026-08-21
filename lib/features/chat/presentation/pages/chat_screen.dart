@@ -59,10 +59,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    // Dismiss floating bubble if active
-    if (FloatingChatBubble.isActive) {
-      FloatingChatBubble.dismiss();
-    }
     // Retrieve or instantiate controller
     _controller = Get.find<ChatController>();
     WidgetsBinding.instance.addPostFrameCallback((_) {

@@ -84,7 +84,6 @@ class LocalNotificationService {
                   ? FloatingChatBubble.chatStatus.value
                   : 'ongoing';
 
-              FloatingChatBubble.dismiss(stopForegroundService: false);
               Get.to(() => ChatScreen(
                     userName: uName,
                     userImage: '',
