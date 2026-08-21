@@ -96,13 +96,13 @@ class PanchangScreen extends GetView<PanchangController> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         AppText(
-                          DateFormat('MMMM yyyy').format(controller.selectedDate.value),
+                          "${DateFormat('MMMM').format(controller.selectedDate.value).tr} ${DateFormat('yyyy').format(controller.selectedDate.value)}",
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFF2E1A47),
                         ),
                         AppText(
-                          DateFormat('EEEE, dd MMM').format(controller.selectedDate.value),
+                          "${DateFormat('EEEE').format(controller.selectedDate.value).tr}, ${DateFormat('dd').format(controller.selectedDate.value)} ${DateFormat('MMM').format(controller.selectedDate.value).tr}",
                           fontSize: 13,
                           color: Colors.grey.shade500,
                           fontWeight: FontWeight.w500,
@@ -179,7 +179,7 @@ class PanchangScreen extends GetView<PanchangController> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   AppText(
-                    DateFormat('EEE').format(date).toUpperCase(),
+                    DateFormat('EEE').format(date).toUpperCase().tr,
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
                     color: isSelected ? Colors.white70 : Colors.grey.shade400,
@@ -558,7 +558,7 @@ class PanchangScreen extends GetView<PanchangController> {
                       Icon(cardIcon, size: 14, color: themeColor),
                       const SizedBox(width: 6),
                       AppText(
-                        title,
+                        title.tr,
                         fontSize: 11,
                         color: themeColor,
                         fontWeight: FontWeight.bold,
@@ -576,7 +576,7 @@ class PanchangScreen extends GetView<PanchangController> {
                       border: Border.all(color: Colors.grey.shade100),
                     ),
                     child: AppText(
-                      subtitle,
+                      subtitle.tr,
                       fontSize: 11,
                       color: Colors.grey.shade600,
                       fontWeight: FontWeight.bold,
@@ -593,7 +593,7 @@ class PanchangScreen extends GetView<PanchangController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AppText(
-                  name,
+                  name.tr,
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFF2E1A47),
@@ -647,11 +647,11 @@ class PanchangScreen extends GetView<PanchangController> {
                           style: const TextStyle(fontFamily: 'Outfit', fontSize: 13),
                           children: [
                             TextSpan(
-                              text: "Deity/Lord: ",
+                              text: "${"Deity/Lord:".tr} ",
                               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey.shade700),
                             ),
                             TextSpan(
-                              text: deity,
+                              text: deity.tr,
                               style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
                             ),
                           ],
@@ -672,7 +672,7 @@ class PanchangScreen extends GetView<PanchangController> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: AppText(
-                      meaning,
+                      meaning.tr,
                       fontSize: 13,
                       fontStyle: FontStyle.italic,
                       color: Colors.grey.shade800,
@@ -695,11 +695,11 @@ class PanchangScreen extends GetView<PanchangController> {
                             text: TextSpan(
                               style: const TextStyle(fontFamily: 'Outfit', fontSize: 13, color: Colors.black87, height: 1.4),
                               children: [
-                                const TextSpan(
-                                  text: "Energy: ",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                TextSpan(
+                                  text: "${"Energy:".tr} ",
+                                  style: const TextStyle(fontWeight: FontWeight.bold),
                                 ),
-                                TextSpan(text: energy),
+                                TextSpan(text: energy.tr),
                               ],
                             ),
                           ),
