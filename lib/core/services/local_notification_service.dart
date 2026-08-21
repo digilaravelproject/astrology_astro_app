@@ -429,9 +429,7 @@ class LocalNotificationService {
 
     bool shouldPlaySound = (notificationType == 'CALL_REQUEST' || 
                             notificationType == 'CHAT_REQUEST' || 
-                            notificationType == 'initiated' || 
-                            notificationType == 'call' ||
-                            notificationType == 'chat');
+                            notificationType == 'initiated');
 
     final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
       channelId,
