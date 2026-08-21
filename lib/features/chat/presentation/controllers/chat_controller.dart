@@ -585,6 +585,8 @@ class ChatController extends GetxController with WidgetsBindingObserver {
 
   Future<void> rejectChat(int incomingSessionId) async {
     try {
+      LocalNotificationService.cancelOngoingChatNotification(incomingSessionId);
+      FloatingChatBubble.dismiss(stopForegroundService: true);
       await Get.find<ApiClient>().post(
         AppUrls.rejectChatSession(incomingSessionId),
       );
