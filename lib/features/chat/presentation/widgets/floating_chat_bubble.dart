@@ -90,9 +90,9 @@ class FloatingChatBubble {
 
       LocalNotificationService.showOngoingChatNotification(
         sessionId: sessionId,
-        title: status == 'ongoing' ? '$name • Chat' : 'Incoming Chat Request from $name',
+        title: status == 'ongoing' ? '$name • Chat' : 'Waiting for acceptance with $name...',
         body: 'Tap to return to chat session',
-        startedAtMillis: startedAtMillis,
+        startedAtMillis: status == 'ongoing' ? startedAtMillis : null,
       );
     } catch (e) {
       debugPrint("FloatingChatBubble show notification error: $e");

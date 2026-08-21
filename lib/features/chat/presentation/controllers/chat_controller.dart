@@ -140,9 +140,9 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     if (status.value == 'ongoing' || status.value == 'initiated' || status.value == 'ringing') {
       LocalNotificationService.showOngoingChatNotification(
         sessionId: sessionId,
-        title: status.value == 'ongoing' ? 'Active Chat with $userName' : 'Incoming Chat Request from $userName',
-        body: 'Tap to return to chat session',
-        startedAtMillis: startedAtMillis,
+        title: status.value == 'ongoing' ? 'Chat in progress' : 'Waiting for acceptance...',
+        body: 'Active chat with $userName',
+        startedAtMillis: status.value == 'ongoing' ? startedAtMillis : null,
       );
     }
 
