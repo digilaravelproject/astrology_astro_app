@@ -12,6 +12,7 @@ import '../../../core/services/fcm_notification_service.dart';
 import '../../profile/screens/profile_screen.dart';
 import '../widgets/home_greeting.dart';
 import '../controllers/dashboard_controller.dart';
+import '../../call/presentation/controllers/call_controller.dart';
 import '../../call/call_history_screen.dart';
 import '../../chat/presentation/pages/chat_history_screen.dart';
 import '../../chat/presentation/pages/astrologer_sessions_screen.dart';
@@ -110,9 +111,23 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _onRefresh() async {
-    // Refresh wallet summary
+    // Refresh wallet summary & performance
     await _walletController.fetchWalletSummary();
     await _performanceController.getPerformanceData();
+
+    // Refresh active chat & call sessions
+    try {
+      if (Get.isRegistered<DashboardController>()) {
+        await Get.find<DashboardController>().checkCurrentActiveSession();
+      }
+    } catch (_) {}
+
+    try {
+      if (Get.isRegistered<CallController>()) {
+        await Get.find<CallController>().checkCurrentActiveCallSession();
+      }
+    } catch (_) {}
+
     // Force UI refresh for anything else if needed
     setState(() {});
   }
