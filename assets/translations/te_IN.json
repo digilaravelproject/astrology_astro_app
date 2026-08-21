@@ -511,7 +511,7 @@
   "Prashana": "ప్రశ్న",
   "Premium Plan": "ప్రీమియం ప్లాన్",
   "Premium coverage with full protection and benefits.": "పూర్తి రక్షణ మరియు ప్రయోజనాలతో ప్రీమియం కవరేజ్.",
-  "Price Increase": "ధర పెరుగుదల",
+  "Price Increase": "ధర పెంపు",
   "Price Increase Request": "ధర పెంపు అభ్యర్థన",
   "Price Range": "ధర పరిధి",
   "Price: High to Low": "ధర: ఎక్కువ నుండి తక్కువ",
@@ -680,7 +680,7 @@
   "Tell us a bit about yourself": "మీ గురించి కొంచెం మాకు చెప్పండి",
   "Tell us what you liked or how we can improve...": "మీకు ఏమి నచ్చిందో లేదా మేము ఎలా మెరుగుపరచవచ్చో మాకు చెప్పండి...",
   "Telugu": "తెలుగు",
-  "Terms & Conditions": "నిబంధనలు మరియు షరతులు",
+  "Terms & Conditions": "నిబంధనలు & షరతులు",
   "Terms and Conditions": "నిబంధనలు మరియు షరతులు",
   "Terms of Service": "సేవా నిబంధనలు",
   "This app was created with a sincere purpose: to provide honest, ethical, and practical astrological guidance. Our mission is to offer clear predictions based on authentic principles—not to say what people want to hear, but to help them make informed decisions with confidence and integrity.": "ఈ యాప్ ఒక లక్ష్యంతో సృష్టించబడింది: నిజాయితీగల, నైతిక మరియు ఆచరణాత్మక జ్యోతిష్య మార్గదర్శకత్వాన్ని అందించడం. మా లక్ష్యం ప్రామాణిక సూత్రాల ఆధారంగా స్పష్టమైన అంచనాలను అందించడం—ప్రజలు వినాలనుకుంటున్నది చెప్పడం కాదు, విశ్వాసం మరియు సమగ్రతతో సమాచార నిర్ణయాలు తీసుకోవడంలో వారికి సహాయపడటం.",
@@ -912,5 +912,12 @@
   "Required Time": "అవసరమైన సమయం",
   "Increase History": "పెంపు చరిత్ర",
   "No price increase history found.": "ధర పెంపు చరిత్ర కనుగొనబడలేదు.",
-  "No call history available.": "కాల్ చరిత్ర అందుబాటులో లేదు."
+  "No call history available.": "కాల్ చరిత్ర అందుబాటులో లేదు.",
+  "Only": "మాత్రమే",
+  "mins more to be eligible for price increase.": "నిమిషాలు మాత్రమే ధర పెంపునకు అర్హత పొందాలి.",
+  "You can increase your price based on level thresholds and performance parameters.": "మీరు స్థాయి పరిమితులు మరియు పనితీరు పారామితుల ఆధారంగా మీ ధరను పెంచవచ్చు.",
+  "Price increase offers will be applied on your profile after admin review.": "అడ్మిన్ సమీక్ష తర్వాత మీ ప్రొఫైల్‌లో ధర పెంపు ఆఫర్‌లు వర్తింపజేయబడతాయి.",
+  "If you don’t want to increase your price now, you can do it later — once your profile meets the required parameters.": "మీరు ఇప్పుడు మీ ధరను పెంచకూడదనుకుంటే, మీ ప్రొఫైల్ అవసరమైన పారామితులను తీర్చిన తర్వాత మీరు దీన్ని తర్వాత చేయవచ్చు.",
+  "**Other normalised parameters are also considered.": "**ఇతర సాధారణీకరించిన పారామితులు కూడా పరిగణించబడతాయి.",
+  "/ min": "/ నిమిషానికి"
 }

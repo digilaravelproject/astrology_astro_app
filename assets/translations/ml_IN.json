@@ -680,7 +680,7 @@
   "Tell us a bit about yourself": "നിങ്ങളെക്കുറിച്ച് അൽപ്പം പറയൂ",
   "Tell us what you liked or how we can improve...": "നിങ്ങൾക്ക് എന്താണ് ഇഷ്ടപ്പെട്ടതെന്നും ഞങ്ങൾക്ക് എങ്ങനെ മെച്ചപ്പെടാമെന്നും പറയൂ...",
   "Telugu": "തെലുങ്ക്",
-  "Terms & Conditions": "നിബന്ധനകളും വ്യവസ്ഥകളും",
+  "Terms & Conditions": "വ്യവസ്ഥകളും നിബന്ധനകളും",
   "Terms and Conditions": "വ്യവസ്ഥകളും നിബന്ധനകളും",
   "Terms of Service": "സേവന നിബന്ധനകൾ",
   "This app was created with a sincere purpose: to provide honest, ethical, and practical astrological guidance. Our mission is to offer clear predictions based on authentic principles—not to say what people want to hear, but to help them make informed decisions with confidence and integrity.": "സത്യസന്ധവും ധാർമ്മികവും പ്രായോഗികവുമായ ജ്യോതിഷ മാർഗ്ഗനിർദ്ദേശം നൽകുക എന്ന ആത്മാർത്ഥമായ ലക്ഷ്യത്തോടെയാണ് ഈ ആപ്പ് സൃഷ്ടിച്ചത്. ആധികാരിക തത്ത്വങ്ങളെ അടിസ്ഥാനമാക്കി വ്യക്തമായ പ്രവചനങ്ങൾ വാഗ്ദാനം ചെയ്യുക എന്നതാണ് ഞങ്ങളുടെ ദൗത്യം-ആളുകൾ കേൾക്കാൻ ആഗ്രഹിക്കുന്നത് പറയലല്ല, മറിച്ച് ആത്മവിശ്വാസത്തോടെ ശരിയായ തീരുമാനങ്ങൾ എടുക്കാൻ അവരെ സഹായിക്കുകയാണ്.",
@@ -912,5 +912,12 @@
   "Required Time": "ആവശ്യമായ സമയം",
   "Increase History": "വർദ്ധനവ് ചരിത്രം",
   "No price increase history found.": "വില വർദ്ധനവ് ചരിത്രമൊന്നും കണ്ടെത്തിയില്ല.",
-  "No call history available.": "കോൾ ചരിത്രമൊന്നും ലഭ്യമല്ല."
+  "No call history available.": "കോൾ ചരിത്രമൊന്നും ലഭ്യമല്ല.",
+  "Only": "മാത്രം",
+  "mins more to be eligible for price increase.": "മിനിറ്റുകൾ കൂടി വില വർദ്ധനവിന് അർഹത നേടാൻ ആവശ്യമാണ്.",
+  "You can increase your price based on level thresholds and performance parameters.": "ലെവൽ പരിധികളും പ്രകടന പാരാമീറ്ററുകളും അടിസ്ഥാനമാക്കി നിങ്ങൾക്ക് വില വർദ്ധിപ്പിക്കാം.",
+  "Price increase offers will be applied on your profile after admin review.": "അഡ്മിൻ അവലോകനത്തിന് ശേഷം നിങ്ങളുടെ പ്രൊഫൈലിൽ വില വർദ്ധനവ് ഓഫറുകൾ ബാധകമാകും.",
+  "If you don’t want to increase your price now, you can do it later — once your profile meets the required parameters.": "ഇപ്പോൾ വില വർദ്ധിപ്പിക്കാൻ ആഗ്രഹിക്കുന്നില്ലെങ്കിൽ, ആവശ്യമായ പാരാമീറ്ററുകൾ പ്രൊഫൈൽ പൂർത്തിയാക്കിയ ശേഷം പിന്നീട് ചെയ്യാം.",
+  "**Other normalised parameters are also considered.": "**മറ്റ് സാധാരണ പാരാമീറ്ററുകളും കണക്കിലെടുക്കുന്നു.",
+  "/ min": "/ മിനിറ്റ്"
 }

@@ -912,5 +912,12 @@
   "Required Time": "প্রয়োজনীয় সময়",
   "Increase History": "বৃদ্ধির ইতিহাস",
   "No price increase history found.": "কোনো মূল্য বৃদ্ধির ইতিহাস পাওয়া যায়নি।",
-  "No call history available.": "কোনো কল ইতিহাস উপলব্ধ নেই।"
+  "No call history available.": "কোনো কল ইতিহাস উপলব্ধ নেই।",
+  "Only": "কেবলমাত্র",
+  "mins more to be eligible for price increase.": "মিনিট বাকি মূল্য বৃদ্ধির যোগ্য হতে।",
+  "You can increase your price based on level thresholds and performance parameters.": "আপনি লেভেল থ্রেশহোল্ড এবং পারফরম্যান্স প্যারামিটারের উপর ভিত্তি করে আপনার মূল্য বৃদ্ধি করতে পারেন।",
+  "Price increase offers will be applied on your profile after admin review.": "এডমিন পর্যালোচনার পর আপনার প্রোফাইলে মূল্য বৃদ্ধির অফার প্রয়োগ করা হবে।",
+  "If you don’t want to increase your price now, you can do it later — once your profile meets the required parameters.": "আপনি যদি এখন আপনার মূল্য বাড়াতে না চান, তবে আপনার প্রোফাইল প্রয়োজনীয় প্যারামিটারগুলি পূরণ করলে আপনি পরবর্তীতে এটি করতে পারেন।",
+  "**Other normalised parameters are also considered.": "**অন্যান্য স্বাভাবিক পরামিতি বিবেচনা করা হয়।",
+  "/ min": "/ মিনিট"
 }

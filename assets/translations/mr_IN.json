@@ -680,7 +680,7 @@
   "Tell us a bit about yourself": "तुमच्याबद्दल थोडे सांगा",
   "Tell us what you liked or how we can improve...": "तुम्हाला काय आवडले किंवा आम्ही कशी सुधारणा करू शकतो ते आम्हाला सांगा...",
   "Telugu": "तेलगू",
-  "Terms & Conditions": "नियम व अटी",
+  "Terms & Conditions": "नियम आणि अटी",
   "Terms and Conditions": "अटी आणि शर्ती",
   "Terms of Service": "सेवेच्या अटी",
   "This app was created with a sincere purpose: to provide honest, ethical, and practical astrological guidance. Our mission is to offer clear predictions based on authentic principles—not to say what people want to hear, but to help them make informed decisions with confidence and integrity.": "हे ॲप प्रामाणिक, नैतिक आणि व्यावहारिक ज्योतिषीय मार्गदर्शन प्रदान करण्याच्या हेतूने तयार केले गेले आहे. आमचे ध्येय अस्सल तत्त्वांवर आधारित स्पष्ट भाकिते देणे हे आहे—लोकांना काय ऐकायचे आहे ते सांगणे नाही, तर त्यांना आत्मविश्वासाने माहितीपूर्ण निर्णय घेण्यास मदत करणे.",
@@ -804,7 +804,7 @@
   "matching": "मिलान",
   "matrimony": "विवाह",
   "min": "मिनिटे",
-  "mins": "मिनीत",
+  "mins": "मिनिटे",
   "mumbai": "मुंबई",
   "notice": "सूचना",
   "orders": "ऑर्डर",
@@ -912,5 +912,12 @@
   "Required Time": "आवश्यक वेळ",
   "Increase History": "वाढ इतिहास",
   "No price increase history found.": "किंमत वाढीचा कोणताही इतिहास आढळला नाही.",
-  "No call history available.": "कोणताही कॉल इतिहास उपलब्ध नाही."
+  "No call history available.": "कोणताही कॉल इतिहास उपलब्ध नाही.",
+  "Only": "फक्त",
+  "mins more to be eligible for price increase.": "मिनिटे किंमत वाढीसाठी पात्र असणे आवश्यक आहे.",
+  "You can increase your price based on level thresholds and performance parameters.": "तुम्ही पातळी उंबरठे आणि कार्यप्रदर्शन पॅरामीटर्सच्या आधारे तुमची किंमत वाढवू शकता.",
+  "Price increase offers will be applied on your profile after admin review.": "ॲडमिन पुनरावलोकनानंतर तुमच्या प्रोफाईलवर किंमत वाढीच्या ऑफर लागू केल्या जातील.",
+  "If you don’t want to increase your price now, you can do it later — once your profile meets the required parameters.": "तुम्हाला आता किंमत वाढवायची नसेल, तर तुमचे प्रोफाईल आवश्यक पॅरामीटर्स पूर्ण झाल्यावर तुम्ही नंतर करू शकता.",
+  "**Other normalised parameters are also considered.": "**इतर सामान्यीकृत पॅरामीटर्सचा देखील विचार केला जातो.",
+  "/ min": "/ मिनिट"
 }

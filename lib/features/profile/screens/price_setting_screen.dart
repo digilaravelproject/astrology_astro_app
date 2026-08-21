@@ -253,14 +253,14 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AppText(
-                  'Consultation Rates',
+                  'Consultation Rates'.tr,
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFF2E1A47),
                 ),
                 const SizedBox(height: 8),
                 AppText(
-                  'Set your per-minute charges for different consultation modes.',
+                  'Set your per-minute charges for different consultation modes.'.tr,
                   fontSize: 13,
                   color: Colors.grey.shade600,
                   fontWeight: FontWeight.w400,
@@ -283,11 +283,11 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const AppText(
-                                'Price Increase Request Pending',
+                              AppText(
+                                'Price Increase Request Pending'.tr,
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF855B00),
+                                color: const Color(0xFF855B00),
                               ),
                               const SizedBox(height: 4),
                               AppText(
@@ -306,7 +306,7 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
                 
                 _buildPriceCard(
                   icon: Iconsax.message_copy,
-                  title: 'Chat Rate',
+                  title: 'Chat Rate'.tr,
                   rate: chatRate,
                   iconColor: const Color(0xFF2196F3),
                   backgroundColor: const Color(0xFFE3F2FD),
@@ -316,7 +316,7 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
                 
                 _buildPriceCard(
                   icon: Iconsax.call_copy,
-                  title: 'Call Rate',
+                  title: 'Call Rate'.tr,
                   rate: callRate,
                   iconColor: const Color(0xFF4CAF50),
                   backgroundColor: const Color(0xFFE8F5E9),
@@ -326,7 +326,7 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
                 
                 _buildPriceCard(
                   icon: Iconsax.video_copy,
-                  title: 'Video Rate',
+                  title: 'Video Rate'.tr,
                   rate: videoRate,
                   iconColor: AppColors.primaryColor,
                   backgroundColor: AppColors.primaryColor.withOpacity(0.1),
@@ -340,7 +340,7 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
                 
                 // Price Increase Criteria Section
                 AppText(
-                  'Price Increase Criteria',
+                  'Price Increase Criteria'.tr,
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFF2E1A47),
@@ -364,11 +364,11 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
                             topRight: Radius.circular(20),
                           ),
                         ),
-                        child: const Row(
+                        child: Row(
                           children: [
-                            Expanded(child: Center(child: AppText('My Busy Time', fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF2E1A47)))),
-                            Expanded(child: Center(child: AppText('Required Time', fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF2E1A47)))),
-                            Expanded(child: Center(child: AppText('Price Increase', fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF2E1A47)))),
+                            Expanded(child: Center(child: AppText('My Busy Time'.tr, fontSize: 13, fontWeight: FontWeight.w600, color: const Color(0xFF2E1A47)))),
+                            Expanded(child: Center(child: AppText('Required Time'.tr, fontSize: 13, fontWeight: FontWeight.w600, color: const Color(0xFF2E1A47)))),
+                            Expanded(child: Center(child: AppText('Price Increase'.tr, fontSize: 13, fontWeight: FontWeight.w600, color: const Color(0xFF2E1A47)))),
                           ],
                         ),
                       ),
@@ -378,8 +378,8 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 20),
                         child: Row(
                           children: [
-                            Expanded(child: Center(child: AppText('${totalBusy.toStringAsFixed(0)} mins', fontSize: 15, fontWeight: FontWeight.w500, color: Colors.grey.shade700))),
-                            Expanded(child: Center(child: AppText('${targetRequired.toStringAsFixed(0)} mins', fontSize: 15, fontWeight: FontWeight.w500, color: Colors.grey.shade700))),
+                            Expanded(child: Center(child: AppText('${totalBusy.toStringAsFixed(0)} ${"mins".tr}', fontSize: 15, fontWeight: FontWeight.w500, color: Colors.grey.shade700))),
+                            Expanded(child: Center(child: AppText('${targetRequired.toStringAsFixed(0)} ${"mins".tr}', fontSize: 15, fontWeight: FontWeight.w500, color: Colors.grey.shade700))),
                             Expanded(
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -409,8 +409,8 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
                         child: Center(
                           child: AppText(
                             diff > 0
-                                ? 'Only ${diff.toStringAsFixed(0)} mins more to be eligible for price increase.'
-                                : 'You are eligible for a price increase request!',
+                                ? '${"Only".tr} ${diff.toStringAsFixed(0)} ${"mins more to be eligible for price increase.".tr}'
+                                : 'You are eligible for a price increase request!'.tr,
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                             color: diff > 0 ? const Color(0xFF855B00) : const Color(0xFF1B5E20),
@@ -425,7 +425,7 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
                 
                 // Terms & Conditions Section
                 AppText(
-                  'Terms & Conditions',
+                  'Terms & Conditions'.tr,
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFF2E1A47),
@@ -443,26 +443,26 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
                       _buildTermItem(
                         icon: Iconsax.repeat_copy,
                         color: Colors.red.shade100,
-                        text: 'You can increase your price based on level thresholds and performance parameters.',
+                        text: 'You can increase your price based on level thresholds and performance parameters.'.tr,
                       ),
                       const SizedBox(height: 20),
                       _buildTermItem(
                         icon: Iconsax.status_up_copy,
                         color: Colors.red.shade50.withOpacity(0.5),
-                        text: 'Price increase offers will be applied on your profile after admin review.',
+                        text: 'Price increase offers will be applied on your profile after admin review.'.tr,
                       ),
                       const SizedBox(height: 20),
                       _buildTermItem(
                         icon: Iconsax.clock_copy,
                         color: Colors.red.shade50.withOpacity(0.5),
-                        text: 'If you don’t want to increase your price now, you can do it later — once your profile meets the required parameters.',
+                        text: 'If you don’t want to increase your price now, you can do it later — once your profile meets the required parameters.'.tr,
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 16),
-                const AppText(
-                  '**Other normalised parameters are also considered.',
+                AppText(
+                  '**Other normalised parameters are also considered.'.tr,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: AppColors.primaryColor,
@@ -563,7 +563,7 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
                           ),
                           const SizedBox(width: 4),
                           AppText(
-                            '/ min',
+                            '/ min'.tr,
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
                             color: Colors.grey.shade400,

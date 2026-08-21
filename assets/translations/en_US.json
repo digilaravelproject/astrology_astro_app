@@ -918,5 +918,12 @@
   "Required Time": "Required Time",
   "Increase History": "Increase History",
   "No price increase history found.": "No price increase history found.",
-  "No call history available.": "No call history available."
+  "No call history available.": "No call history available.",
+  "Only": "Only",
+  "mins more to be eligible for price increase.": "mins more to be eligible for price increase.",
+  "You can increase your price based on level thresholds and performance parameters.": "You can increase your price based on level thresholds and performance parameters.",
+  "Price increase offers will be applied on your profile after admin review.": "Price increase offers will be applied on your profile after admin review.",
+  "If you don’t want to increase your price now, you can do it later — once your profile meets the required parameters.": "If you don’t want to increase your price now, you can do it later — once your profile meets the required parameters.",
+  "**Other normalised parameters are also considered.": "**Other normalised parameters are also considered.",
+  "/ min": "/ min"
 }

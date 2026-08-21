@@ -903,7 +903,7 @@
   "AstroTalk Chat Alert": "ચેટ અલર્ટ",
   "AstroTalk Admin Support": "એડમિન સપોર્ટ",
   "Consultation Rates": "સલાહકાર દરો",
-  "Set your per-minute charges for different consultation modes.": "વિવિધ સલાહકારી મોડ्स માટે તમારા પ્રતિ-મિનિટ ચાર્જ સેટ કરો.",
+  "Set your per-minute charges for different consultation modes.": "વિવિધ સલાહકારી મોડસ માટે તમારા પ્રતિ-મિનિટ ચાર્જ સેટ કરો.",
   "Chat Rate": "ચેટ દર",
   "Call Rate": "કોલ દર",
   "Video Rate": "વીડિયો દર",
@@ -912,5 +912,12 @@
   "Required Time": "જરૂરી સમય",
   "Increase History": "વધારાનો ઇતિહાસ",
   "No price increase history found.": "કોઈ કિંમતમાં વધારાનો ઇતિહાસ મળ્યો નથી.",
-  "No call history available.": "કોઈ કોલ ઇતિહાસ ઉપલબ્ધ નથી."
+  "No call history available.": "કોઈ કોલ ઇતિહાસ ઉપલબ્ધ નથી.",
+  "Only": "માત્ર",
+  "mins more to be eligible for price increase.": "મિનિટ કિંમતમાં વધારા માટે પાત્ર બનવા માટે જરૂરી છે.",
+  "You can increase your price based on level thresholds and performance parameters.": "તમે સ્તર થ્રેશોલ્ડ અને કાર્યક્ષમતા પરિમાણો પર આધાર રાખીને તમારી કિંમત વધારી શકો છો.",
+  "Price increase offers will be applied on your profile after admin review.": "એડમિન સમીક્ષા પછી તમારી પ્રોફાઇલ પર કિંમતમાં વધારાની ઓફર્સ લાગુ કરવામાં આવશે.",
+  "If you don’t want to increase your price now, you can do it later — once your profile meets the required parameters.": "જો તમે અત્યારે તમારી કિંમત વધારવા માંગતા નથી, તો તમારી પ્રોફાઇલ જરૂરી પરિમાણો પૂરા કરે પછી તમે તે પછીથી કરી શકો છો.",
+  "**Other normalised parameters are also considered.": "**અન્ય સામાન્યકૃત પરિમાણો પણ ધ્યાનમાં લેવામાં આવે છે.",
+  "/ min": "/ મિનિટ"
 }

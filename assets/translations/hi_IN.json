@@ -517,7 +517,7 @@
   "Prashana": "प्रश्न कुंडली",
   "Premium Plan": "प्रीमियम प्लान",
   "Premium coverage with full protection and benefits.": "पूर्ण सुरक्षा और लाभों के साथ प्रीमियम कवरेज।",
-  "Price Increase": "कीमत वृद्धि",
+  "Price Increase": "मूल्य वृद्धि",
   "Price Increase Request": "मूल्य वृद्धि अनुरोध",
   "Price Range": "मूल्य सीमा",
   "Price: High to Low": "कीमत: अधिक से कम",
@@ -918,5 +918,12 @@
   "Required Time": "आवश्यक समय",
   "Increase History": "वृद्धि इतिहास",
   "No price increase history found.": "कोई मूल्य वृद्धि इतिहास नहीं मिला।",
-  "No call history available.": "कोई कॉल इतिहास उपलब्ध नहीं है।"
+  "No call history available.": "कोई कॉल इतिहास उपलब्ध नहीं है।",
+  "Only": "केवल",
+  "mins more to be eligible for price increase.": "मिनट और मूल्य वृद्धि के लिए पात्र होने के लिए चाहिए।",
+  "You can increase your price based on level thresholds and performance parameters.": "आप स्तर थ्रेशोल्ड और प्रदर्शन मापदंडों के आधार पर अपनी कीमत बढ़ा सकते हैं।",
+  "Price increase offers will be applied on your profile after admin review.": "व्यवस्थापक समीक्षा के बाद आपकी प्रोफ़ाइल पर मूल्य वृद्धि ऑफ़र लागू किए जाएंगे।",
+  "If you don’t want to increase your price now, you can do it later — once your profile meets the required parameters.": "यदि आप अभी अपनी कीमत नहीं बढ़ाना चाहते हैं, तो आप इसे बाद में कर सकते हैं - जब आपकी प्रोफ़ाइल आवश्यक मापदंडों को पूरा करती है।",
+  "**Other normalised parameters are also considered.": "**अन्य सामान्यीकृत मापदंडों पर भी विचार किया जाता है।",
+  "/ min": "/ मिनट"
 }

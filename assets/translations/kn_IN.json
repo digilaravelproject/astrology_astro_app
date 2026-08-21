@@ -511,7 +511,7 @@
   "Prashana": "ಪ್ರಶ್ನೆ",
   "Premium Plan": "ಪ್ರೀಮಿಯಂ ಪ್ಲಾನ್",
   "Premium coverage with full protection and benefits.": "ಪೂರ್ಣ ರಕ್ಷಣೆ ಮತ್ತು ಪ್ರಯೋಜನಗಳೊಂದಿಗೆ ಪ್ರೀಮಿಯಂ ಕವರೇಜ್.",
-  "Price Increase": "ಬೆಲೆ ಏರಿಕೆ",
+  "Price Increase": "ಬೆಲೆ ಹೆಚ್ಚಳ",
   "Price Increase Request": "ಬೆಲೆ ಹೆಚ್ಚಳ ವಿನಂತಿ",
   "Price Range": "ಬೆಲೆ ಶ್ರೇಣಿ",
   "Price: High to Low": "ಬೆಲೆ: ಹೆಚ್ಚಿನಿಂದ ಕಡಿಮೆ",
@@ -912,5 +912,12 @@
   "Required Time": "ಅಗತ್ಯವಿರುವ ಸಮಯ",
   "Increase History": "ಹೆಚ್ಚಳದ ಇತಿಹಾಸ",
   "No price increase history found.": "ಯಾವುದೇ ಬೆಲೆ ಹೆಚ್ಚಳದ ಇತಿಹಾಸ ಕಂಡುಬಂದಿಲ್ಲ.",
-  "No call history available.": "ಯಾವುದೇ ಕರೆ ಇತಿಹಾಸ ಲಭ್ಯವಿಲ್ಲ."
+  "No call history available.": "ಯಾವುದೇ ಕರೆ ಇತಿಹಾಸ ಲಭ್ಯವಿಲ್ಲ.",
+  "Only": "ಮಾತ್ರ",
+  "mins more to be eligible for price increase.": "ನಿಮಿಷಗಳು ಬೆಲೆ ಹೆಚ್ಚಳಕ್ಕೆ ಅರ್ಹತೆ ಪಡೆಯಲು ಬೇಕಾಗಿದೆ.",
+  "You can increase your price based on level thresholds and performance parameters.": "ಹಂತದ ಮಿತಿಗಳು ಮತ್ತು ಕಾರ್ಯಕ್ಷಮತೆಯ ನಿಯತಾಂಕಗಳ ಆಧಾರದ ಮೇಲೆ ನಿಮ್ಮ ಬೆಲೆಯನ್ನು ಹೆಚ್ಚಿಸಬಹುದು.",
+  "Price increase offers will be applied on your profile after admin review.": "ಅಡ್ಮಿನ್ ಪರಿಶೀಲನೆಯ ನಂತರ ನಿಮ್ಮ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಬೆಲೆ ಹೆಚ್ಚಳದ ಕೊಡುಗೆಗಳನ್ನು ಅನ್ವಯಿಸಲಾಗುತ್ತದೆ.",
+  "If you don’t want to increase your price now, you can do it later — once your profile meets the required parameters.": "ನೀವು ಈಗ ಬೆಲೆಯನ್ನು ಹೆಚ್ಚಿಸಲು ಬಯಸದಿದ್ದರೆ, ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಅಗತ್ಯವಿರುವ ನಿಯತಾಂಕಗಳನ್ನು ಪೂರೈಸಿದ ನಂತರ ನೀವು ಅದನ್ನು ನಂತರ ಮಾಡಬಹುದು.",
+  "**Other normalised parameters are also considered.": "**ಇತರ ಸಾಮಾನ್ಯೀಕರಿಸಿದ ನಿಯತಾಂಕಗಳನ್ನು ಸಹ ಪರಿಗಣಿಸಲಾಗುತ್ತದೆ.",
+  "/ min": "/ ನಿಮಿಷ"
 }
