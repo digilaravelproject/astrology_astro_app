@@ -100,13 +100,13 @@ class _UpdateAddressBottomSheetState extends State<UpdateAddressBottomSheet> {
                 const SizedBox(height: 24),
                 _buildTextField(
                   controller: _controller.addressController,
-                  placeholder: 'Enter Address'.tr,
+                  placeholder: 'Enter Address',
                   maxLines: 2,
                 ),
                 const SizedBox(height: 16),
                 _buildTextField(
                   controller: _controller.nameController,
-                  placeholder: 'Enter Name for invoice'.tr,
+                  placeholder: 'Enter Name for invoice',
                 ),
                 const SizedBox(height: 16),
                 Row(
@@ -114,14 +114,14 @@ class _UpdateAddressBottomSheetState extends State<UpdateAddressBottomSheet> {
                     Expanded(
                       child: _buildTextField(
                         controller: _controller.pincodeController,
-                        placeholder: 'Pincode'.tr,
+                        placeholder: 'Pincode',
                       ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: _buildTextField(
                         controller: _controller.cityController,
-                        placeholder: 'City'.tr,
+                        placeholder: 'City',
                       ),
                     ),
                   ],
@@ -132,14 +132,14 @@ class _UpdateAddressBottomSheetState extends State<UpdateAddressBottomSheet> {
                     Expanded(
                       child: _buildTextField(
                         controller: _controller.stateController,
-                        placeholder: 'State'.tr,
+                        placeholder: 'State',
                       ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: _buildTextField(
                         controller: _controller.countryController,
-                        placeholder: 'Country'.tr,
+                        placeholder: 'Country',
                       ),
                     ),
                   ],
