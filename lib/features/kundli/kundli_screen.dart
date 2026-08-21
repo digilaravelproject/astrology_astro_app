@@ -516,9 +516,9 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
 
         final dashaDataList = _dashaController.dashaModel.value?.data?.mahaDasha;
         if (dashaDataList == null || dashaDataList.isEmpty) {
-          return const Padding(
-            padding: EdgeInsets.all(20.0),
-            child: Center(child: AppText("Failed to load Dasha details.")),
+          return Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Center(child: AppText("Failed to load Dasha details.".tr)),
           );
         }
 
@@ -526,7 +526,7 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              AppText(title, fontSize: 16, fontWeight: FontWeight.w700, textAlign: TextAlign.center),
+              AppText(title.tr, fontSize: 16, fontWeight: FontWeight.w700, textAlign: TextAlign.center),
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -540,20 +540,20 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
                 ),
                 child: Column(
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
                       child: Row(
                         children: [
-                          Expanded(child: AppText("Planet", fontWeight: FontWeight.bold, fontSize: 12)),
-                          Expanded(child: AppText("Start Date", fontWeight: FontWeight.bold, fontSize: 12)),
-                          Expanded(child: AppText("End Date", fontWeight: FontWeight.bold, fontSize: 12)),
-                          SizedBox(width: 20),
+                          Expanded(child: AppText("Planet".tr, fontWeight: FontWeight.bold, fontSize: 12)),
+                          Expanded(child: AppText("Start Date".tr, fontWeight: FontWeight.bold, fontSize: 12)),
+                          Expanded(child: AppText("End Date".tr, fontWeight: FontWeight.bold, fontSize: 12)),
+                          const SizedBox(width: 20),
                         ],
                       ),
                     ),
                     ...dashaDataList.map((data) {
                       return _buildDashaRow(
-                        data.planet ?? "N/A",
+                        (data.planet ?? "N/A").tr,
                         data.startDate ?? "N/A",
                         data.endDate ?? "N/A",
                       );
