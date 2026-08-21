@@ -206,7 +206,7 @@ class LocalNotificationService {
 
     final int startTime = startedAtMillis ?? DateTime.now().millisecondsSinceEpoch;
     final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'active_consultation_foreground_channel_v3',
+      'active_consultation_foreground_channel_v4',
       'Active Consultation Service',
       channelDescription: 'Ongoing active call and chat consultation status',
       icon: '@mipmap/ic_launcher',
@@ -218,6 +218,7 @@ class LocalNotificationService {
       showWhen: true,
       usesChronometer: true,
       when: startTime,
+      subText: 'Ongoing Session',
       category: AndroidNotificationCategory.call,
       visibility: NotificationVisibility.public,
       additionalFlags: Int32List.fromList([2, 32, 64]),
