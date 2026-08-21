@@ -300,41 +300,25 @@ class ChatController extends GetxController with WidgetsBindingObserver {
 
   DateTime? _parseSmartDate(dynamic input) {
     if (input == null) return null;
-    if (input is DateTime) return input;
+    if (input is DateTime) return input.toLocal();
     final dateStr = input.toString().trim();
     if (dateStr.isEmpty) return null;
 
-    DateTime? parsed;
-    try {
-      parsed = DateTime.tryParse(dateStr.replaceAll(' ', 'T'));
-    } catch (_) {}
-
-    if (parsed == null) {
-      try {
-        parsed = DateTime.tryParse(dateStr);
-      } catch (_) {}
+    String isoUtc = dateStr.replaceAll(' ', 'T');
+    if (!isoUtc.endsWith('Z') && !isoUtc.contains('+') && !isoUtc.contains('-')) {
+      isoUtc += 'Z';
     }
-
-    if (parsed == null) return null;
-
-    final now = DateTime.now();
-
-    if (parsed.isAfter(now)) {
-      String isoUtc = dateStr.replaceAll(' ', 'T');
-      if (!isoUtc.endsWith('Z') && !isoUtc.contains('+')) {
-        isoUtc += 'Z';
-      }
-      final utcDate = DateTime.tryParse(isoUtc)?.toLocal();
-      if (utcDate != null && !utcDate.isAfter(now)) {
+    final utcDate = DateTime.tryParse(isoUtc)?.toLocal();
+    if (utcDate != null) {
+      final now = DateTime.now();
+      if (!utcDate.isAfter(now)) {
         return utcDate;
       }
-      final offsetDate = parsed.subtract(now.timeZoneOffset);
-      if (!offsetDate.isAfter(now)) {
-        return offsetDate;
-      }
     }
 
-    return parsed;
+    DateTime? parsed = DateTime.tryParse(dateStr.replaceAll(' ', 'T')) ?? DateTime.tryParse(dateStr);
+    if (parsed == null) return null;
+    return parsed.toLocal();
   }
 
   String _formatDuration(int totalSeconds) {
