@@ -44,28 +44,57 @@ class InvoiceSummaryModel {
 class InvoiceItemModel {
   final String monthName;
   final double grossEarnings;
+  final double tdsAmount;
+  final double tdsPercent;
   final double netPayable;
   final double totalWithdrawn;
   final String status;
+  final String? payoutNumber;
+  final String? paymentMode;
+  final String? utrNumber;
   final String? downloadUrl;
 
   InvoiceItemModel({
     required this.monthName,
     required this.grossEarnings,
+    this.tdsAmount = 0.0,
+    this.tdsPercent = 0.0,
     required this.netPayable,
     required this.totalWithdrawn,
     required this.status,
+    this.payoutNumber,
+    this.paymentMode,
+    this.utrNumber,
     this.downloadUrl,
   });
 
   factory InvoiceItemModel.fromJson(Map<String, dynamic> json) {
+    double gross = InvoiceSummaryModel._parseDouble(json['gross_earnings'] ?? json['gross_amount']);
+    double tds = InvoiceSummaryModel._parseDouble(json['tds_amount']);
+    double tdsPct = InvoiceSummaryModel._parseDouble(json['tds_percent']);
+    
+    // Calculate tds_percent dynamically if missing but tds_amount is provided
+    if (tdsPct == 0.0 && gross > 0 && tds > 0) {
+      tdsPct = (tds / gross) * 100.0;
+    }
+    
+    double net = InvoiceSummaryModel._parseDouble(json['net_payable'] ?? json['net_paid_amount']);
+    if (net == 0.0 && gross > 0) {
+      net = gross - tds;
+    }
+
     return InvoiceItemModel(
-      monthName: json['month_name']?.toString() ?? '',
-      grossEarnings: InvoiceSummaryModel._parseDouble(json['gross_earnings']),
-      netPayable: InvoiceSummaryModel._parseDouble(json['net_payable']),
-      totalWithdrawn: InvoiceSummaryModel._parseDouble(json['total_withdrawn']),
-      status: json['status']?.toString() ?? '',
-      downloadUrl: json['download_url']?.toString(),
+      monthName: json['month_name']?.toString() ?? json['payout_number']?.toString() ?? json['payment_date']?.toString() ?? '',
+      grossEarnings: gross,
+      tdsAmount: tds,
+      tdsPercent: tdsPct,
+      netPayable: net,
+      totalWithdrawn: InvoiceSummaryModel._parseDouble(json['total_withdrawn'] ?? json['net_paid_amount']),
+      status: json['status']?.toString() ?? 'completed',
+      payoutNumber: json['payout_number']?.toString(),
+      paymentMode: json['payment_mode']?.toString(),
+      utrNumber: json['utr_number']?.toString(),
+      downloadUrl: json['download_url']?.toString() ?? json['invoice_url']?.toString() ?? json['receipt_proof_url']?.toString(),
     );
   }
 }

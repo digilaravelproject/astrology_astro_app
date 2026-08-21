@@ -284,31 +284,104 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Earnings Detail Row
+                    // Earnings Detail Row (Gross, TDS, GST, Net Payable)
                     Padding(
                       padding: const EdgeInsets.all(16),
-                      child: Row(
+                      child: Column(
                         children: [
-                          Expanded(
-                            child: _buildDetailItem(
-                              label: 'Gross Earnings',
-                              value: '₹${invoice.grossEarnings.toStringAsFixed(2)}',
-                              icon: Iconsax.money_recive,
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildDetailItem(
+                                  label: 'Gross Earnings',
+                                  value: '₹${invoice.grossEarnings.toStringAsFixed(2)}',
+                                  icon: Iconsax.money_recive,
+                                ),
+                              ),
+                              Container(
+                                width: 1,
+                                height: 40,
+                                color: AppColors.primaryColor.withOpacity(0.15),
+                              ),
+                              Expanded(
+                                child: _buildDetailItem(
+                                  label: invoice.tdsPercent > 0 
+                                      ? 'TDS (${invoice.tdsPercent.toStringAsFixed(0)}%)' 
+                                      : 'TDS Deducted',
+                                  value: '-₹${invoice.tdsAmount.toStringAsFixed(2)}',
+                                  icon: Iconsax.receipt_dissect,
+                                  isRight: true,
+                                  valueColor: Colors.red.shade700,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Divider(
+                            height: 1,
+                            color: AppColors.primaryColor.withOpacity(0.1),
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildDetailItem(
+                                  label: 'GST on Payout',
+                                  value: '0% (Exempt)',
+                                  icon: Iconsax.verify,
+                                  valueColor: Colors.green.shade700,
+                                ),
+                              ),
+                              Container(
+                                width: 1,
+                                height: 40,
+                                color: AppColors.primaryColor.withOpacity(0.15),
+                              ),
+                              Expanded(
+                                child: _buildDetailItem(
+                                  label: 'Net Payable',
+                                  value: '₹${invoice.netPayable.toStringAsFixed(2)}',
+                                  icon: Iconsax.wallet_check,
+                                  isRight: true,
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (invoice.utrNumber != null && invoice.utrNumber!.isNotEmpty) ...[
+                            const SizedBox(height: 12),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade100,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Iconsax.bank, size: 14, color: Colors.grey.shade700),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'UTR: ${invoice.utrNumber}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.grey.shade800,
+                                    ),
+                                  ),
+                                  if (invoice.paymentMode != null) ...[
+                                    const Spacer(),
+                                    Text(
+                                      'Via ${invoice.paymentMode}',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.grey.shade600,
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
                             ),
-                          ),
-                          Container(
-                            width: 1,
-                            height: 40,
-                            color: AppColors.primaryColor.withOpacity(0.15),
-                          ),
-                          Expanded(
-                            child: _buildDetailItem(
-                              label: 'Net Payable',
-                              value: '₹${invoice.netPayable.toStringAsFixed(2)}',
-                              icon: Iconsax.wallet_check,
-                              isRight: true,
-                            ),
-                          ),
+                          ],
                         ],
                       ),
                     ),
