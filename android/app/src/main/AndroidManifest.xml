@@ -44,7 +44,7 @@
         <!-- Foreground Task Service -->
         <service
             android:name="com.pravera.flutter_foreground_task.service.ForegroundService"
-            android:foregroundServiceType="dataSync|microphone"
+            android:foregroundServiceType="dataSync"
             android:stopWithTask="false"
             android:exported="false" />
         
