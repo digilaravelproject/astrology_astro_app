@@ -233,13 +233,12 @@ class LocalNotificationService {
       ),
     );
 
-    await _notificationsPlugin.show(
-      ACTIVE_CHAT_NOTIFICATION_ID,
-      title,
-      body,
-      notificationDetails,
-      payload: sessionId.toString(),
-    );
+    try {
+      await ForegroundTaskService.startService(
+        title: title,
+        text: body,
+      );
+    } catch (_) {}
   }
 
   static Future<void> cancelOngoingChatNotification(int? sessionId) async {
