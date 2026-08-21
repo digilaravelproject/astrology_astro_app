@@ -59,7 +59,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    // Retrieve or instantiate controller
+    // Retrieve or instantiate controller safely
+    if (!Get.isRegistered<ChatController>()) {
+      ChatBinding().dependencies();
+    }
     _controller = Get.find<ChatController>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _controller.initSession(

@@ -89,7 +89,7 @@ class LocalNotificationService {
                     userImage: '',
                     sessionId: sId,
                     initialStatus: uStatus,
-                  ));
+                  ), binding: ChatBinding());
             }
           }
         }
