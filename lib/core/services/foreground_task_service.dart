@@ -41,12 +41,6 @@ class ForegroundTaskService {
         channelImportance: NotificationChannelImportance.MAX,
         priority: NotificationPriority.MAX,
         visibility: NotificationVisibility.VISIBILITY_PUBLIC,
-        iconData: const NotificationIconData(
-          resType: ResourceType.mipmap,
-          resPrefix: ResourcePrefix.ic,
-          name: 'launcher',
-        ),
-        isSticky: true,
       ),
       iosNotificationOptions: const IOSNotificationOptions(
         showNotification: true,
