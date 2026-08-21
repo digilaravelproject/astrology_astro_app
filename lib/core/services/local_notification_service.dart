@@ -178,7 +178,7 @@ class LocalNotificationService {
       );
       await androidPlugin.createNotificationChannel(
         const AndroidNotificationChannel(
-          'active_consultation_foreground_channel',
+          'active_consultation_foreground_channel_v4',
           'Active Consultation Service',
           description: 'Ongoing active call and chat consultation status',
           importance: Importance.max,
