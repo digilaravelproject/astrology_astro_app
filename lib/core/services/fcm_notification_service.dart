@@ -126,7 +126,7 @@ class FCMNotificationService {
 
       debugPrint('[FCM_SERVICE] Sending POST to ${AppUrls.registerDeviceToken} with full payload: $payload');
       final apiClient = Get.find<ApiClient>();
-      final response = await apiClient.post(AppUrls.registerDeviceToken, data: payload);
+      final response = await apiClient.post(AppUrls.registerDeviceToken, data: payload, handleError: false, showToaster: false);
       debugPrint('[FCM_SERVICE] Device token registered response | Status: ${response.statusCode} | Success: ${response.isSuccess} | Message: ${response.message} | Body: ${response.body}');
     } catch (e, stackTrace) {
       debugPrint('[FCM_SERVICE] Failed to register device token error: $e\n$stackTrace');
