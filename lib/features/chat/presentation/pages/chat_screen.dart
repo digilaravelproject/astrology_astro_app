@@ -336,7 +336,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
               String statusText = "Chat has ended";
               if (status == 'ongoing') {
-                statusText = "Chat in progress • ${_formatDuration(seconds)} mins";
+                statusText = "Chat in progress • ${_formatDuration(seconds)}";
               } else if (status == 'cancelled') {
                 statusText = "Chat Cancelled";
               } else if (status == 'rejected') {
