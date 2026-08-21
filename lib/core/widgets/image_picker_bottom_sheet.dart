@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import '../theme/app_colors.dart';
@@ -51,14 +52,14 @@ class ImagePickerBottomSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          AppText('Upload From', fontSize: 18, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
+          AppText('Upload From'.tr, fontSize: 18, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
           const SizedBox(height: 24),
           Row(
             children: [
               Expanded(
                 child: _buildUploadOption(
                   icon: Iconsax.camera_copy,
-                  label: 'Camera',
+                  label: 'Camera'.tr,
                   onTap: () async {
                     Navigator.pop(context);
                     await _pickImage(ImageSource.camera);
@@ -69,7 +70,7 @@ class ImagePickerBottomSheet extends StatelessWidget {
               Expanded(
                 child: _buildUploadOption(
                   icon: Iconsax.gallery_copy,
-                  label: 'Gallery',
+                  label: 'Gallery'.tr,
                   onTap: () async {
                     Navigator.pop(context);
                     await _pickImage(ImageSource.gallery);
@@ -103,7 +104,7 @@ class ImagePickerBottomSheet extends StatelessWidget {
           children: [
             Icon(icon, color: AppColors.primaryColor, size: 32),
             const SizedBox(height: 12),
-            AppText(label, fontSize: 14, fontWeight: FontWeight.w600, color: const Color(0xFF2E1A47)),
+            AppText(label.tr, fontSize: 14, fontWeight: FontWeight.w600, color: const Color(0xFF2E1A47)),
           ],
         ),
       ),
