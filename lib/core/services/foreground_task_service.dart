@@ -41,6 +41,7 @@ class ForegroundTaskService {
         channelImportance: NotificationChannelImportance.MAX,
         priority: NotificationPriority.MAX,
         visibility: NotificationVisibility.VISIBILITY_PUBLIC,
+        foregroundServiceType: ForegroundServiceType.DATA_SYNC,
       ),
       iosNotificationOptions: const IOSNotificationOptions(
         showNotification: true,
