@@ -58,10 +58,13 @@ class FCMNotificationService {
             type == 'chat_summary') {
           LocalNotificationService.cancelOngoingChatNotification(null);
           FloatingChatBubble.dismiss(stopForegroundService: true);
+          return;
         } else if (title.contains('Call Ended') ||
             type == 'call_ended' ||
-            type == 'CALL_ENDED') {
+            type == 'CALL_ENDED' ||
+            type == 'session_completed') {
           LocalNotificationService.cancelOngoingCallNotification(null);
+          return;
         }
 
         LocalNotificationService.showNotification(
