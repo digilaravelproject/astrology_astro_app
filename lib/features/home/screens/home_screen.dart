@@ -115,16 +115,16 @@ class _HomeScreenState extends State<HomeScreen> {
     await _walletController.fetchWalletSummary();
     await _performanceController.getPerformanceData();
 
-    // Refresh active chat & call sessions
+    // Refresh active chat & call sessions (non-blocking)
     try {
       if (Get.isRegistered<DashboardController>()) {
-        await Get.find<DashboardController>().checkCurrentActiveSession();
+        Get.find<DashboardController>().checkCurrentActiveSession();
       }
     } catch (_) {}
 
     try {
       if (Get.isRegistered<CallController>()) {
-        await Get.find<CallController>().checkCurrentActiveCallSession();
+        Get.find<CallController>().checkCurrentActiveCallSession();
       }
     } catch (_) {}
 
