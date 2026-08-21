@@ -21,12 +21,6 @@ class ChatRepositoryImpl implements IChatRepository {
     required int sessionId,
     required int currentUserId,
   }) async {
-    final cached = _localDataSource.getCachedMessages(sessionId);
-    if (cached.isNotEmpty) {
-      // Find peer ID from cache if possible
-      return (messages: cached, startedAt: null, peerId: null);
-    }
-
     final response = await _remoteDataSource.getChatHistory(sessionId);
     if (response.isSuccess && response.body != null) {
       final body = response.body;
