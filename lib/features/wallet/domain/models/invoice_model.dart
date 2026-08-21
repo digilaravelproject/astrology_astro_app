@@ -57,8 +57,8 @@ class InvoiceItemModel {
   InvoiceItemModel({
     required this.monthName,
     required this.grossEarnings,
-    this.tdsAmount = 0.0,
-    this.tdsPercent = 0.0,
+    required this.tdsAmount,
+    required this.tdsPercent,
     required this.netPayable,
     required this.totalWithdrawn,
     required this.status,
