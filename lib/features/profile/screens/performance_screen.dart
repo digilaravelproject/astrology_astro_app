@@ -36,8 +36,8 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
-      appBar: const CustomAppBar(
-        title: 'My Performance',
+      appBar: CustomAppBar(
+        title: 'My Performance'.tr,
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
@@ -47,7 +47,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
         final data = controller.performanceData.value;
         if (data == null) {
           return Center(
-            child: AppText('Failed to load performance data', color: Colors.grey),
+            child: AppText('Failed to load performance data'.tr, color: Colors.grey),
           );
         }
 
@@ -125,7 +125,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
         ),
         const SizedBox(height: 4),
         AppText(
-          label,
+          label.tr,
           fontSize: 12,
           fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
           color: isActive ? AppColors.primaryColor : Colors.grey.shade400,
@@ -162,7 +162,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
           children: [
             Expanded(
               child: AppText(
-                "Today's Profile Health",
+                "Today's Profile Health".tr,
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
                 color: const Color(0xFF2E1A47),
@@ -228,7 +228,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
               children: [
                 Flexible(
                   child: AppText(
-                    label,
+                    label.tr,
                     fontSize: 14,
                     color: Colors.grey.shade700,
                     fontWeight: FontWeight.w500,
@@ -257,7 +257,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AppText(
-          "My Availability",
+          "My Availability".tr,
           fontSize: 18,
           fontWeight: FontWeight.w800,
           color: const Color(0xFF2E1A47),
@@ -282,25 +282,25 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
               Row(
                 children: [
                   const Expanded(flex: 3, child: SizedBox()),
-                  Expanded(flex: 2, child: _buildColHeader('Today')),
-                  Expanded(flex: 2, child: _buildColHeader('7 Days')),
-                  Expanded(flex: 2, child: _buildColHeader('30 days')),
+                  Expanded(flex: 2, child: _buildColHeader('Today'.tr)),
+                  Expanded(flex: 2, child: _buildColHeader('7 Days'.tr)),
+                  Expanded(flex: 2, child: _buildColHeader('30 days'.tr)),
                 ],
               ),
               const SizedBox(height: 20),
-              _buildAvailabilityRow('Available Mins', 
-                '${availability?.availableMins?.today ?? 0} mins', 
-                '${availability?.availableMins?.sevenDays ?? 0} mins', 
-                '${availability?.availableMins?.thirtyDays ?? 0} mins'
+              _buildAvailabilityRow('Available Mins'.tr, 
+                '${availability?.availableMins?.today ?? 0} ${"mins".tr}', 
+                '${availability?.availableMins?.sevenDays ?? 0} ${"mins".tr}', 
+                '${availability?.availableMins?.thirtyDays ?? 0} ${"mins".tr}'
               ),
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 16),
                 child: Divider(height: 1),
               ),
-              _buildAvailabilityRow('Busy Mins', 
-                '${availability?.busyMins?.today ?? 0} mins', 
-                '${availability?.busyMins?.sevenDays ?? 0} mins', 
-                '${availability?.busyMins?.thirtyDays ?? 0} mins'
+              _buildAvailabilityRow('Busy Mins'.tr, 
+                '${availability?.busyMins?.today ?? 0} ${"mins".tr}', 
+                '${availability?.busyMins?.sevenDays ?? 0} ${"mins".tr}', 
+                '${availability?.busyMins?.thirtyDays ?? 0} ${"mins".tr}'
               ),
             ],
           ),

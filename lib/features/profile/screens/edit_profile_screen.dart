@@ -112,12 +112,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppBar(
-        title: 'Edit Profile',
+        title: 'Edit Profile'.tr,
         actions: [
           TextButton(
             onPressed: () => _saveProfile(),
-            child: const AppText(
-              'Save',
+            child: AppText(
+              'Save'.tr,
               fontSize: 15,
               fontWeight: FontWeight.w700,
               color: AppColors.primaryColor,
@@ -186,7 +186,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             const SizedBox(height: 16),
             _buildInputField(controller: _emailController, label: 'Email ID', hint: 'Enter email address', icon: Iconsax.sms_copy),
             const SizedBox(height: 16),
-            const AppText('Date of Birth', fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF2E1A47)),
+            AppText('Date of Birth'.tr, fontSize: 13, fontWeight: FontWeight.w600, color: const Color(0xFF2E1A47)),
             const SizedBox(height: 8),
             GestureDetector(
               onTap: _selectDate,
@@ -207,7 +207,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             const SizedBox(height: 20),
             
             // Read-only document previews
-            const AppText('Uploaded Documents', fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF2E1A47)),
+            AppText('Uploaded Documents'.tr, fontSize: 13, fontWeight: FontWeight.w600, color: const Color(0xFF2E1A47)),
             const SizedBox(height: 12),
             Obx(() {
               final astro = authController.currentUser.value?.astrologer;
@@ -216,16 +216,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
               return Row(
                 children: [
-                  _buildDocPreview('ID Proof', Iconsax.document_text_copy, idProof),
+                  _buildDocPreview('ID Proof'.tr, Iconsax.document_text_copy, idProof),
                   const SizedBox(width: 16),
-                  _buildDocPreview('Certificate', Iconsax.teacher_copy, certificate),
+                  _buildDocPreview('Certificate'.tr, Iconsax.teacher_copy, certificate),
                 ],
               );
             }),
             
             const SizedBox(height: 40),
             CustomButton(
-              text: 'Save Changes',
+              text: 'Save Changes'.tr,
               onPressed: () => _saveProfile(),
               backgroundColor: AppColors.primaryColor,
               borderRadius: 100,
@@ -241,7 +241,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: AppText(
-        title,
+        title.tr,
         fontSize: 12,
         fontWeight: FontWeight.w800,
         color: AppColors.primaryColor.withValues(alpha: 0.8),
@@ -261,7 +261,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AppText(label, fontSize: 13, fontWeight: FontWeight.w600, color: const Color(0xFF2E1A47)),
+        AppText(label.tr, fontSize: 13, fontWeight: FontWeight.w600, color: const Color(0xFF2E1A47)),
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
@@ -279,7 +279,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               fontWeight: readOnly ? FontWeight.w500 : FontWeight.w400,
             ),
             decoration: InputDecoration(
-              hintText: hint,
+              hintText: hint.tr,
               prefixIcon: Icon(icon, size: 20, color: readOnly ? Colors.grey.shade400 : AppColors.primaryColor.withValues(alpha: 0.7)),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
