@@ -24,7 +24,6 @@ import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/features/auth/controllers/auth_controller.dart';
 import 'package:astro_astrologer/core/services/foreground_task_service.dart';
-import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
@@ -281,7 +280,10 @@ class ChatController extends GetxController with WidgetsBindingObserver {
             elapsedSeconds.value = diff >= 0 ? diff : 0;
 
             _setupTimer(_startedAt);
-            FlutterBackgroundService().startService();
+            ForegroundTaskService.startService(
+              title: 'Chat in progress',
+              text: 'Active chat with ${_userName ?? 'User'}',
+            );
             
             final startedAtMillis = effectiveStart.millisecondsSinceEpoch;
             LocalNotificationService.showOngoingChatNotification(
@@ -574,7 +576,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     final targetId = _sessionId!;
     status.value = 'ended';
     _timer?.cancel();
-    FlutterBackgroundService().invoke('stopService');
+    ForegroundTaskService.stopService();
     LocalNotificationService.cancelOngoingChatNotification(targetId);
     FloatingChatBubble.dismiss();
     
