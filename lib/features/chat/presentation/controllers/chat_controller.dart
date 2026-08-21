@@ -390,7 +390,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       );
       messages.assignAll(result.messages);
       _peerId = result.peerId;
-      if (result.startedAt != null) {
+      if (result.startedAt != null && (status.value == 'ongoing' || status.value == 'accepted')) {
         _startedAt = result.startedAt;
         _setupTimer(result.startedAt);
       }
