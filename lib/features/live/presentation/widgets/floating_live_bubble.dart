@@ -71,10 +71,7 @@ class FloatingLiveBubble {
     _isActive = true;
 
     try {
-      final bool isGranted = await FlutterOverlayWindow.isPermissionGranted();
-      if (!isGranted) {
-        await FlutterOverlayWindow.requestPermission();
-      }
+
 
       if (await FlutterOverlayWindow.isActive()) {
         await FlutterOverlayWindow.shareData({
