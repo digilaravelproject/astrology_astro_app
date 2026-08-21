@@ -97,6 +97,8 @@ class LocalizationController extends GetxController {
         language.countryCode,
       ));
 
+      Get.forceAppUpdate();
+
       SharedPrefs.setString(AppConstants.language, language.languageCode);
       
       // Refresh APIs when language changes
