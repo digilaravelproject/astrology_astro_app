@@ -57,10 +57,11 @@ class FloatingChatBubble {
     required String status,
     required VoidCallback onTap,
   }) async {
+    debugPrint("==== [DEBUG LOG ASTRO] FloatingChatBubble.show called for sessionId=$sessionId, status=$status ====");
     _setupIsolatePort();
     
     if (_isActive.value && FloatingChatBubble.sessionId == sessionId) {
-      // Just update status if already active
+      debugPrint("==== [DEBUG LOG ASTRO] FloatingChatBubble already active for sessionId=$sessionId. Updating status to $status ====");
       chatStatus.value = status;
       return;
     }
@@ -71,6 +72,7 @@ class FloatingChatBubble {
     onTapCallback = onTap;
     chatStatus.value = status;
     _isActive.value = true;
+    debugPrint("==== [DEBUG LOG ASTRO] FloatingChatBubble set _isActive = true for sessionId=$sessionId ====");
 
     try {
       // Kill any old foreground task service to prevent 2 notifications
@@ -97,6 +99,7 @@ class FloatingChatBubble {
   }
 
   static Future<void> dismiss({bool stopForegroundService = true}) async {
+    debugPrint("==== [DEBUG LOG ASTRO] FloatingChatBubble.dismiss called! stopForegroundService=$stopForegroundService, currentSessionId=$sessionId, caller trace: ${StackTrace.current} ====");
     _isActive.value = false;
     final int? idToCancel = sessionId;
     sessionId = null;

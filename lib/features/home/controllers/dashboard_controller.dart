@@ -84,7 +84,6 @@ class DashboardController extends GetxController {
               startedAt: startedAt,
               onTap: () {
                 final currentStatus = FloatingChatBubble.chatStatus.value;
-                FloatingChatBubble.dismiss(stopForegroundService: false);
                 Get.to(
                   () => ChatScreen(
                     userName: name,
