@@ -338,7 +338,7 @@ class PanchangScreen extends GetView<PanchangController> {
           AppText(guidance.summary, fontSize: 13, color: Colors.black87, height: 1.4),
           if (guidance.bestActivities.isNotEmpty) ...[
             const SizedBox(height: 16),
-            const AppText("Best Activities Today:", fontSize: 12, fontWeight: FontWeight.bold, color: Colors.green),
+            AppText("Best Activities Today:".tr, fontSize: 12, fontWeight: FontWeight.bold, color: Colors.green),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -355,7 +355,7 @@ class PanchangScreen extends GetView<PanchangController> {
           ],
           if (guidance.activitiesToAvoid.isNotEmpty) ...[
             const SizedBox(height: 16),
-            const AppText("Activities to Avoid:", fontSize: 12, fontWeight: FontWeight.bold, color: Colors.red),
+            AppText("Activities to Avoid:".tr, fontSize: 12, fontWeight: FontWeight.bold, color: Colors.red),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -372,7 +372,7 @@ class PanchangScreen extends GetView<PanchangController> {
           ],
           if (guidance.tips.isNotEmpty) ...[
             const SizedBox(height: 16),
-            const AppText("Daily Tips:", fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey),
+            AppText("Daily Tips:".tr, fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey),
             const SizedBox(height: 8),
             ...guidance.tips.map((tip) => Padding(
               padding: const EdgeInsets.only(bottom: 6),
@@ -400,9 +400,9 @@ class PanchangScreen extends GetView<PanchangController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.only(left: 4, bottom: 12),
-          child: AppText('Panchang Components', fontSize: 16, fontWeight: FontWeight.bold),
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 12),
+          child: AppText('Panchang Components'.tr, fontSize: 16, fontWeight: FontWeight.bold),
         ),
         
         // Tithi Card
@@ -1380,7 +1380,7 @@ class PanchangScreen extends GetView<PanchangController> {
                 ),
                 const SizedBox(height: 2),
                 AppText(
-                  value,
+                  value.tr,
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                   color: const Color(0xFF2E1A47),

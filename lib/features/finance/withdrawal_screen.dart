@@ -83,7 +83,7 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AppText('Available Balance', fontSize: 13, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
+                      AppText('Available Balance'.tr, fontSize: 13, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
                       const SizedBox(height: 4),
                       Obx(() {
                         final val = _walletController.summary.value;
@@ -101,7 +101,7 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
             ),
             
             const SizedBox(height: 32),
-            AppText('Enter Amount', fontSize: 15, fontWeight: FontWeight.w700, color: const Color(0xFF2E1A47)),
+            AppText('Enter Amount'.tr, fontSize: 15, fontWeight: FontWeight.w700, color: const Color(0xFF2E1A47)),
             const SizedBox(height: 16),
             
             // Amount Input
@@ -152,7 +152,7 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
             ),
             
             const SizedBox(height: 40),
-            AppText('Withdrawal To', fontSize: 15, fontWeight: FontWeight.w700, color: const Color(0xFF2E1A47)),
+            AppText('Withdrawal To'.tr, fontSize: 15, fontWeight: FontWeight.w700, color: const Color(0xFF2E1A47)),
             const SizedBox(height: 16),
             
             // Bank Card Preview
