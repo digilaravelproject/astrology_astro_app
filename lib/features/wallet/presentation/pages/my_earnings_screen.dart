@@ -46,8 +46,8 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.fieldBackground,
-      appBar: const CustomAppBar(
-        title: 'My Earnings',
+      appBar: CustomAppBar(
+        title: 'My Earnings'.tr,
       ),
       body: RefreshIndicator(
         onRefresh: () async {
@@ -427,7 +427,7 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
           boxShadow: isActive ? [BoxShadow(color: AppColors.primaryColor.withOpacity(0.2), blurRadius: 4)] : [],
         ),
         child: AppText(
-          title,
+          title.tr,
           fontSize: 12,
           fontWeight: FontWeight.w700,
           color: isActive ? Colors.white : Colors.grey.shade500,
@@ -443,9 +443,9 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
           _walletController.fetchEarnings(filter: value, isRefresh: true);
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-          const PopupMenuItem<String>(value: 'Today', child: AppText('Today', fontSize: 13)),
-          const PopupMenuItem<String>(value: 'Weekly', child: AppText('Weekly', fontSize: 13)),
-          const PopupMenuItem<String>(value: 'Monthly', child: AppText('Monthly', fontSize: 13)),
+          PopupMenuItem<String>(value: 'Today', child: AppText('Today'.tr, fontSize: 13)),
+          PopupMenuItem<String>(value: 'Weekly', child: AppText('Weekly'.tr, fontSize: 13)),
+          PopupMenuItem<String>(value: 'Monthly', child: AppText('Monthly'.tr, fontSize: 13)),
         ],
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -456,7 +456,7 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
           ),
           child: Row(
             children: [
-              AppText(_walletController.selectedEarningFilter.value, fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.primaryColor),
+              AppText(_walletController.selectedEarningFilter.value.tr, fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.primaryColor),
               const SizedBox(width: 4),
               const Icon(Icons.keyboard_arrow_down_rounded, size: 14, color: AppColors.primaryColor),
             ],

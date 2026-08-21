@@ -38,48 +38,19 @@ class GalleryScreen extends StatelessWidget {
     //   child: 
       return Scaffold(
         backgroundColor: const Color(0xFFF9F9F9),
-        appBar: const CustomAppBar(
-          title: 'Gallery',
+        appBar: CustomAppBar(
+          title: 'Gallery'.tr,
         ),
         body: Column(
           children: [
-            /*
-            Container(
-              color: Colors.white,
-              width: double.infinity,
-              child: const TabBar(
-                isScrollable: false,
-                dividerColor: Color(0xFFEEEEEE),
-                labelColor: Colors.black,
-                unselectedLabelColor: Colors.grey,
-                indicatorColor: AppColors.primaryColor,
-                indicatorSize: TabBarIndicatorSize.tab,
-                labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, fontFamily: 'Poppins'),
-                unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal, fontSize: 13, fontFamily: 'Poppins'),
-                tabs: [
-                  Tab(text: 'Profile Gallery'),
-                  Tab(text: 'Live event DP'),
-                ],
-              ),
-            ),
-            */
             _buildNoticeBanner(),
             const Expanded(
               child: GalleryGridView(tabType: 'profile'),
-              /*
-              child: TabBarView(
-                children: [
-                  GalleryGridView(tabType: 'profile'),
-                  GalleryGridView(tabType: 'live'),
-                ],
-              ),
-              */
             ),
             _buildUploadButton(context, controller),
           ],
         ),
       );
-    // );
   }
 
   Widget _buildNoticeBanner() {
@@ -97,11 +68,11 @@ class GalleryScreen extends StatelessWidget {
         children: [
           const Icon(Iconsax.info_circle_copy, color: Color(0xFFB88E00), size: 20),
           const SizedBox(width: 12),
-          const Expanded(
+          Expanded(
             child: AppText(
-              'Admin takes upto 7 days to approve the image. Your image shall be visible to customers when you enable at least 3 images.',
+              'Admin takes upto 7 days to approve the image. Your image shall be visible to customers when you enable at least 3 images.'.tr,
               fontSize: 13,
-              color: Color(0xFF856404),
+              color: const Color(0xFF856404),
               height: 1.4,
             ),
           ),
@@ -130,7 +101,7 @@ class GalleryScreen extends StatelessWidget {
               children: [
                 const Icon(Iconsax.add_square_copy, size: 20),
                 const SizedBox(width: 8),
-                AppText('Upload Image', fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
+                AppText('Upload Image'.tr, fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
               ],
             ),
       )),
@@ -256,7 +227,7 @@ class GalleryGridView extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     AppText(
-                      isVerified ? 'verified' : 'Pending',
+                      isVerified ? 'Approved'.tr : 'Pending'.tr,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: isVerified ? Colors.green : Colors.orange,

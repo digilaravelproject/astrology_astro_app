@@ -342,7 +342,7 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
 
   Widget _buildSectionTitle(String title) {
     return AppText(
-      title,
+      title.tr,
       fontSize: 18,
       fontWeight: FontWeight.w800,
       color: const Color(0xFF2E1A47),
@@ -394,14 +394,14 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AppText(
-                        label,
+                        label.tr,
                         fontSize: 12,
                         color: Colors.grey.shade500,
                         fontWeight: FontWeight.w500,
                       ),
                       const SizedBox(height: 4),
                       AppText(
-                        value,
+                        value.isEmpty ? 'Not set'.tr : value.trim().tr,
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: const Color(0xFF2E1A47),

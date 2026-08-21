@@ -26,8 +26,8 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(
-        title: 'My Reviews',
+      appBar: CustomAppBar(
+        title: 'My Reviews'.tr,
       ),
       body: RefreshIndicator(
         onRefresh: () => controller.fetchReviews(),
@@ -44,7 +44,7 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                   return ListView(
                     children: [
                       SizedBox(height: Get.height * 0.2),
-                      Center(child: AppText(_selectedRating == 0 ? 'No reviews found' : 'No $_selectedRating star reviews found', color: Colors.grey)),
+                      Center(child: AppText(_selectedRating == 0 ? 'No reviews found'.tr : 'No $_selectedRating star reviews found'.tr, color: Colors.grey)),
                     ],
                   );
                 }
@@ -96,7 +96,7 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                   ),
                   const SizedBox(width: 6),
                   AppText(
-                    isAll ? 'All' : '$index Star',
+                    isAll ? 'All'.tr : '$index ${"Star".tr}',
                     fontSize: 13,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                     color: isSelected ? AppColors.primaryColor : Colors.black87,
@@ -257,8 +257,8 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                           children: [
                             Icon(Iconsax.message_text_copy, size: 14, color: AppColors.primaryColor.withOpacity(0.7)),
                             const SizedBox(width: 8),
-                            const AppText(
-                              'Your Response', 
+                            AppText(
+                              'Your Response'.tr, 
                               fontSize: 12, 
                               fontWeight: FontWeight.w800, 
                               color: AppColors.primaryColor,
@@ -299,7 +299,7 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                             ),
                             const SizedBox(width: 6),
                             AppText(
-                              review.reply == null ? 'Reply to review' : 'Edit Response', 
+                              review.reply == null ? 'Reply to review'.tr : 'Edit Response'.tr, 
                               fontSize: 13, 
                               color: AppColors.successColor, 
                               fontWeight: FontWeight.w700,

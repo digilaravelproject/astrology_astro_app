@@ -71,8 +71,8 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(
-        title: 'My Community',
+      appBar: CustomAppBar(
+        title: 'My Community'.tr,
       ),
       body: Column(
         children: [
@@ -112,7 +112,7 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('Followers'),
+                Text('Followers'.tr),
                 const SizedBox(width: 2),
                 Obx(() => _buildCircularBadge(followerController.followerCount.value.toString())),
               ],
@@ -123,7 +123,7 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('Favourites'),
+                Text('Favourites'.tr),
                 const SizedBox(width: 2),
                 Obx(() => _buildCircularBadge(followerController.favoriteCount.value.toString())),
               ],
@@ -365,7 +365,7 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
         controller: controller,
         onChanged: onChanged,
         decoration: InputDecoration(
-          hintText: 'Search by Name',
+        hintText: 'Search by Name'.tr,
           hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
           prefixIcon: null,
           suffixIcon: Icon(Icons.search, color: Colors.grey.shade400),
@@ -484,7 +484,7 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
   Widget _buildSearchInputPaddingFree() {
     return TextField(
       decoration: InputDecoration(
-        hintText: 'Search by Name',
+        hintText: 'Search by Name'.tr,
         hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
         suffixIcon: Icon(Icons.search, color: Colors.grey.shade400, size: 18),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
