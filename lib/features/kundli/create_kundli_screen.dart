@@ -142,7 +142,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFFDF9F5), // Premium Ivory
       appBar: CustomAppBar(
-        title: isMatching ? 'Horoscope Matching' : 'Kundli',
+        title: isMatching ? 'Horoscope Matching'.tr : 'Kundli'.tr,
       ),
       body: Column(
         children: [
