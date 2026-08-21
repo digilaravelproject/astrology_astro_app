@@ -105,9 +105,11 @@ class AppUrls {
 
   // Wallet
   static const String walletSummary = "/astrologer/wallet";
+  static const String walletWithdrawalConfig = "/astrologer/wallet/withdrawal-config";
   static const String walletEarnings = "/astrologer/wallet/earnings";
   static const String walletWithdrawals = "/astrologer/wallet/withdrawals";
   static const String walletWithdraw = "/astrologer/wallet/withdraw";
+  static String downloadWithdrawalReceipt(int id) => "/astrologer/wallet/withdrawals/$id/receipt";
   static const String walletWeeklyRankings = "/astrologer/wallet/weekly-rankings";
   static const String walletInvoices = "/astrologer/wallet/invoices";
   static String downloadInvoice(int year, int month) => "/astrologer/wallet/invoices/$year/${month.toString().padLeft(2, '0')}/download";
