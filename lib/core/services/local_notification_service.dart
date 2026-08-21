@@ -221,6 +221,7 @@ class LocalNotificationService {
       subText: 'Ongoing Session',
       category: AndroidNotificationCategory.service,
       visibility: NotificationVisibility.public,
+      audioAttributesUsage: AudioAttributesUsage.notification,
     );
 
     final NotificationDetails notificationDetails = NotificationDetails(
