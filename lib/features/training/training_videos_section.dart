@@ -33,7 +33,7 @@ class TrainingVideosSection extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: AppText(
-                  'Training Videos',
+                  'Training Videos'.tr,
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: Colors.black.withOpacity(0.8),
@@ -42,7 +42,7 @@ class TrainingVideosSection extends StatelessWidget {
               TextButton(
                 onPressed: () => Get.toNamed(AppRoutes.trainingVideosScreen),
                 child: AppText(
-                  'View All',
+                  'View All'.tr,
                   fontSize: 14,
                   color: Colors.grey.shade500,
                   fontWeight: FontWeight.w500,

@@ -637,7 +637,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AppText(
-                    'My sleep Time',
+                    'My sleep Time'.tr,
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: const Color(0xFF2C2C2C),
@@ -647,14 +647,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     final sleepHours = scheduleController.sleepHours.value;
                     if (sleepHours != null) {
                       return AppText(
-                        'Sleep Time: ${_formatDisplayTime(sleepHours.sleepStartTime)} - ${_formatDisplayTime(sleepHours.sleepEndTime)}',
+                        '${"Sleep Time:".tr} ${_formatDisplayTime(sleepHours.sleepStartTime)} - ${_formatDisplayTime(sleepHours.sleepEndTime)}',
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                         color: Colors.grey.shade500,
                       );
                     } else {
                       return AppText(
-                        'Sleep Time: Not set',
+                        '${"Sleep Time:".tr} ${"Not set".tr}',
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                         color: Colors.grey.shade500,
