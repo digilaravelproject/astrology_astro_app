@@ -81,6 +81,91 @@ class ChatController extends GetxController with WidgetsBindingObserver {
   StreamSubscription? _statusUpdateSub;
 
   int? get sessionId => _sessionId;
+  int? get peerId => _peerId;
+  
+  // Prepaid Package session info
+  bool isPackageChat = false;
+  bool isCallAlsoActive = false;
+  int? subSessionId;
+
+  // ─── Hybrid Package: Granular Channel Termination (Astrologer Chat Screen)
+
+  /// End Chat Only — terminates chat channel but keeps call active
+  Future<void> terminateChannelOnly() async {
+    final subId = subSessionId;
+    if (subId == null) {
+      Logger.e('ChatController: terminateChannelOnly — no active subSessionId found');
+      return;
+    }
+    try {
+      isLoading.value = true;
+      await Get.find<ApiClient>().post(
+        AppUrls.packageTerminateChannel,
+        data: {
+          'sub_session_id': subId,
+          'channel_type': 'chat',
+          'action': 'channel_only',
+        },
+      );
+      Logger.d('ChatController: terminateChannelOnly success.');
+      
+      // Update local state to show chat is ended/completed
+      status.value = 'ended';
+      _timer?.cancel();
+      if (_sessionId != null) {
+        LocalNotificationService.cancelOngoingChatNotification(_sessionId!);
+      }
+      FloatingChatBubble.dismiss();
+      WebSocketService.activeSessionId = null;
+      
+      // Navigate back
+      Get.back();
+    } catch (e) {
+      Logger.e('ChatController: Error in terminateChannelOnly -> $e');
+      CustomSnackBar.showError('Failed to end chat. Please try again.');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /// End Entire Session — terminates both chat and call channels
+  Future<void> terminateEntireSession() async {
+    final subId = subSessionId;
+    if (subId == null) {
+      // Fallback
+      await endChatSession();
+      return;
+    }
+    try {
+      isLoading.value = true;
+      await Get.find<ApiClient>().post(
+        AppUrls.packageTerminateChannel,
+        data: {
+          'sub_session_id': subId,
+          'channel_type': 'chat',
+          'action': 'complete_session',
+        },
+      );
+      Logger.d('ChatController: terminateEntireSession success.');
+      
+      status.value = 'ended';
+      _timer?.cancel();
+      if (_sessionId != null) {
+        LocalNotificationService.cancelOngoingChatNotification(_sessionId!);
+      }
+      FloatingChatBubble.dismiss();
+      WebSocketService.activeSessionId = null;
+      
+      Get.back();
+    } catch (e) {
+      Logger.e('ChatController: Error in terminateEntireSession -> $e');
+      await endChatSession();
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // ──────────────────────────────────────────────────────────────────────────
 
   @override
   void onInit() {
@@ -109,7 +194,12 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     required String initialStatus,
     required String userName,
     String? startedAtString,
+    bool isPackage = false,
+    int? activeSubSessionId,
   }) {
+    isPackageChat = isPackage;
+    subSessionId = activeSubSessionId;
+
     if (_sessionId != sessionId) {
       messages.clear();
       _sessionId = sessionId;

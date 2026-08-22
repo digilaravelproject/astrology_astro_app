@@ -9,9 +9,10 @@ import 'package:astro_astrologer/core/theme/app_colors.dart';
 import 'package:astro_astrologer/core/widgets/app_text.dart';
 import 'package:astro_astrologer/core/widgets/custom_app_bar.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
+import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
+import 'package:astro_astrologer/core/services/network/websocket_service.dart';
 import 'package:astro_astrologer/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:astro_astrologer/features/chat/domain/entities/chat_message.dart';
-import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
 import 'package:astro_astrologer/features/kundli/create_kundli_screen.dart';
@@ -730,27 +731,167 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   void _showEndChatConfirmation(BuildContext context) {
-    showDialog(
+    if (_controller.isPackageChat && _controller.isCallAlsoActive) {
+      _showGranularEndModal(context);
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("End Chat"),
+          content: const Text("Are you sure you want to end this chat session?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _controller.terminateEntireSession();
+              },
+              child: const Text("End Chat", style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  void _showGranularEndModal(BuildContext context) {
+    final rem = WebSocketService.packageRemainingSeconds.value;
+    final m = (rem ~/ 60).toString().padLeft(2, '0');
+    final s = (rem % 60).toString().padLeft(2, '0');
+
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("End Chat"),
-        content: const Text("Are you sure you want to end this chat session?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text("Cancel"),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              _controller.endChatSession();
-            },
-            child: const Text("End Chat", style: TextStyle(color: Colors.red)),
-          ),
-        ],
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle bar
+            Container(
+              width: 40, height: 4,
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            // Title
+            const Row(
+              children: [
+                Icon(Icons.help_outline_rounded, color: Color(0xFF6B21A8), size: 22),
+                SizedBox(width: 8),
+                Text(
+                  'End Consultation Options',
+                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Color(0xFF1A1A2E)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Package time remaining: $m:$s',
+                style: TextStyle(fontSize: 13, color: Colors.orange.shade700, fontWeight: FontWeight.w500),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Option 1: End Chat Only
+            _buildEndOption(
+              icon: Icons.chat_bubble_outline_rounded,
+              iconColor: Colors.blue.shade700,
+              bgColor: Colors.blue.shade50,
+              title: 'End Chat Only (Continue Calling)',
+              subtitle: 'Closes chat window and returns you to the call.',
+              onTap: () {
+                Navigator.of(ctx).pop();
+                _controller.terminateChannelOnly();
+              },
+            ),
+            const SizedBox(height: 12),
+
+            // Option 2: End Entire Session
+            _buildEndOption(
+              icon: Icons.cancel_rounded,
+              iconColor: Colors.red,
+              bgColor: Colors.red.shade50,
+              title: 'End Entire Session',
+              subtitle: 'Completes consultation and finalises package time.',
+              onTap: () {
+                Navigator.of(ctx).pop();
+                _controller.terminateEntireSession();
+              },
+            ),
+            const SizedBox(height: 12),
+
+            // Option 3: Cancel
+            SizedBox(
+              width: double.infinity,
+              child: TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text('Cancel', style: TextStyle(color: Colors.grey, fontSize: 15)),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+
+  Widget _buildEndOption({
+    required IconData icon,
+    required Color iconColor,
+    required Color bgColor,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: iconColor.withValues(alpha: 0.2)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: iconColor.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: iconColor, size: 20),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Color(0xFF1A1A2E))),
+                  const SizedBox(height: 2),
+                  Text(subtitle, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right_rounded, color: Colors.grey.shade400),
+          ],
+        ),
+      ),
+    );
+  }
+
 
   Future<void> _pickImage(ImageSource source) async {
     final ImagePicker picker = ImagePicker();

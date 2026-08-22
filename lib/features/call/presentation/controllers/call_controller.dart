@@ -17,6 +17,7 @@ import 'package:astro_astrologer/core/services/storage/token_manger.dart';
 import 'package:flutter/material.dart';
 import 'package:astro_astrologer/features/call/presentation/widgets/floating_call_bubble.dart';
 import 'package:astro_astrologer/features/call/presentation/pages/call_screen.dart';
+import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
 
 class CallController extends GetxController with WidgetsBindingObserver {
   final ApiClient _apiClient = Get.find<ApiClient>();
@@ -27,6 +28,15 @@ class CallController extends GetxController with WidgetsBindingObserver {
   final RxBool isMuted = false.obs;
   final RxBool isSpeakerOn = false.obs;
   bool isCallScreenVisible = false;
+
+  // Prepaid Package session info
+  bool isPackageCall = false;
+  int? subSessionId;
+  bool isChatAlsoActive = false;
+  int? activeChatSessionId;
+
+  /// Expose master package countdown countdown to CallScreen
+  int get packageMasterSeconds => WebSocketService.packageRemainingSeconds.value;
 
   int? sessionId;
   int? consumerId;
@@ -60,6 +70,9 @@ class CallController extends GetxController with WidgetsBindingObserver {
           consumerId = int.tryParse(callerData['id']?.toString() ?? '') ?? 0;
           consumerName = callerData['name']?.toString() ?? 'User';
           consumerImage = callerData['profile_photo']?.toString();
+          
+          isPackageCall = session['is_package'] == true || int.tryParse(session['sub_session_id']?.toString() ?? '') != null;
+          subSessionId = int.tryParse(session['sub_session_id']?.toString() ?? '');
           
           final offerSdp = callerData['offer']?.toString();
           if (offerSdp != null) {
@@ -281,6 +294,85 @@ class CallController extends GetxController with WidgetsBindingObserver {
     }
   }
 
+  // ─── Hybrid Package: Granular Channel Termination (Astrologer) ───────────
+
+  /// End Call Only — keeps chat alive, navigates back to chat screen
+  Future<void> terminateChannelOnly() async {
+    final subId = subSessionId;
+    if (subId == null) {
+      Logger.e('CallController: terminateChannelOnly — no active subSessionId found');
+      return;
+    }
+    try {
+      await _apiClient.post(
+        AppUrls.packageTerminateChannel,
+        data: {
+          'sub_session_id': subId,
+          'channel_type': 'call',
+          'action': 'channel_only',
+        },
+      );
+      Logger.d('CallController: terminateChannelOnly success. Returning to chat...');
+
+      final chatSessId = activeChatSessionId ?? 0;
+      final cName = consumerName ?? 'User';
+      final cImage = consumerImage ?? '';
+
+      // Reset call without ending the package sub-session
+      cleanUp();
+
+      if (isCallScreenVisible) {
+        Get.back();
+      }
+
+      // Navigate back to chat screen
+      if (chatSessId > 0) {
+        Get.to(
+          () => ChatScreen(
+            userName: cName,
+            userImage: cImage,
+            sessionId: chatSessId,
+            initialStatus: 'ongoing',
+          ),
+        );
+      }
+    } catch (e) {
+      Logger.e('CallController: Error in terminateChannelOnly -> $e');
+      CustomSnackBar.showError('Failed to end call. Please try again.');
+    }
+  }
+
+  /// End Entire Session — terminates both call and chat, closes consultation
+  Future<void> terminateEntireSession() async {
+    final subId = subSessionId;
+    if (subId == null) {
+      // Fallback
+      await endCall();
+      return;
+    }
+    try {
+      await _apiClient.post(
+        AppUrls.packageTerminateChannel,
+        data: {
+          'sub_session_id': subId,
+          'channel_type': 'call',
+          'action': 'complete_session',
+        },
+      );
+      Logger.d('CallController: terminateEntireSession success.');
+      status.value = 'completed';
+      cleanUp();
+      if (isCallScreenVisible) {
+        Get.back();
+      }
+    } catch (e) {
+      Logger.e('CallController: Error in terminateEntireSession -> $e');
+      await endCall();
+    }
+  }
+
+  // ──────────────────────────────────────────────────────────────────────────
+
   Future<void> endCall() async {
     if (sessionId == null) return;
     try {
@@ -436,6 +528,14 @@ class CallController extends GetxController with WidgetsBindingObserver {
     consumerName = null;
     consumerImage = null;
     incomingOfferSdp = null;
+    isPackageCall = false;
+    subSessionId = null;
+    isChatAlsoActive = false;
+    activeChatSessionId = null;
+
+    if (isCallScreenVisible) {
+      isCallScreenVisible = false;
+    }
   }
 
   @override
