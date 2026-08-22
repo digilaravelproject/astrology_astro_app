@@ -528,6 +528,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                         icon: const Icon(Icons.add_circle_outline, color: Colors.grey),
                         onPressed: _showAttachmentBottomSheet,
                       ),
+                      IconButton(
+                        icon: const Icon(Icons.auto_awesome, color: AppColors.primaryColor),
+                        tooltip: "Kundli",
+                        onPressed: () => _openKundli(context),
+                      ),
                       Expanded(
                         child: TextField(
                           controller: _controller.messageController,
