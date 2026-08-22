@@ -185,18 +185,50 @@ class ChatController extends GetxController with WidgetsBindingObserver {
         if (msgSessionId == _sessionId || isSameUserPair) {
           final bool isMe = senderId == _currentUserId;
 
-          // Don't add if it's sent by me since we already added local/sending state or handle duplicates
           final int msgId = int.tryParse(lastMsg['id']?.toString() ?? '') ?? 0;
-          final alreadyExists = messages.any((m) => m.id == msgId);
-          if (!alreadyExists) {
+          final String msgText = lastMsg['message']?.toString() ?? '';
+          final String msgType = lastMsg['type']?.toString() ?? 'text';
+
+          // Guard: already in list with the real server id → skip
+          if (messages.any((m) => m.id == msgId)) return;
+
+          if (isMe) {
+            // ── My own message echoed back from WebSocket ──────────────────
+            // Find the optimistic placeholder (status='sending...', same text)
+            // and upgrade it in-place to prevent duplicate.
+            final pendingIndex = messages.indexWhere(
+              (m) => m.isMe && m.status == 'sending...' && m.text == msgText,
+            );
+            if (pendingIndex != -1) {
+              messages[pendingIndex] = messages[pendingIndex].copyWith(
+                id: msgId,
+                status: 'sent',
+                time: DateTime.tryParse(lastMsg['created_at']?.toString() ?? '') ?? messages[pendingIndex].time,
+              );
+              messages.refresh();
+            } else {
+              // No placeholder (e.g. sent from another device) — add normally
+              messages.add(ChatMessage(
+                id: msgId,
+                text: msgText,
+                isMe: true,
+                time: DateTime.tryParse(lastMsg['created_at']?.toString() ?? '') ?? DateTime.now(),
+                status: 'sent',
+                type: msgType,
+                attachmentUrl: lastMsg['attachment_url']?.toString(),
+              ));
+              _scrollToBottom();
+            }
+          } else {
+            // ── Message from the other side ────────────────────────────────
             messages.add(ChatMessage(
               id: msgId,
-              text: lastMsg['message']?.toString() ?? '',
-              isMe: isMe,
+              text: msgText,
+              isMe: false,
               time: DateTime.tryParse(lastMsg['created_at']?.toString() ?? '') ?? DateTime.now(),
               status: 'seen',
-              image: lastMsg['type'] == 'image' ? lastMsg['attachment_url']?.toString() : null,
-              type: lastMsg['type']?.toString() ?? 'text',
+              image: msgType == 'image' ? lastMsg['attachment_url']?.toString() : null,
+              type: msgType,
               attachmentUrl: lastMsg['attachment_url']?.toString(),
             ));
             _scrollToBottom();
