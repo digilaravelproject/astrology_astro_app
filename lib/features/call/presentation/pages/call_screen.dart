@@ -7,6 +7,8 @@ import 'package:astro_astrologer/core/theme/app_colors.dart';
 import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 import 'package:astro_astrologer/core/services/network/websocket_service.dart';
 import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
+import 'package:astro_astrologer/core/services/network/api_client.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 import 'package:astro_astrologer/features/call/presentation/widgets/floating_call_bubble.dart';
 
@@ -294,6 +296,43 @@ class _CallScreenState extends State<CallScreen> {
       ],
     );
   }
+
+  Widget _buildEndCallButton({required VoidCallback onPressed}) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        GestureDetector(
+          onTap: onPressed,
+          child: Container(
+            width: 75,
+            height: 75,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.red,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.red.withValues(alpha: 0.4),
+                  blurRadius: 15,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.call_end,
+              color: Colors.white,
+              size: 36,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          'End',
+          style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
+
 
   /// Decides which end dialog to show based on session state
   void _onEndTapped() {

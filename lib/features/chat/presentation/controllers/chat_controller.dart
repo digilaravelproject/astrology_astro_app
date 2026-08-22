@@ -27,6 +27,7 @@ import 'package:astro_astrologer/features/auth/controllers/auth_controller.dart'
 import 'package:astro_astrologer/core/services/foreground_task_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
+import 'package:astro_astrologer/core/utils/logger.dart';
 
 class ChatController extends GetxController with WidgetsBindingObserver {
   final LoadChatHistoryUseCase _loadChatHistoryUseCase;
