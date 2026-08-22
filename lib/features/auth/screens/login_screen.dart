@@ -115,7 +115,7 @@ class LoginScreen extends StatelessWidget {
                       // Send OTP Button
                       Obx(() => CustomButton(
                         text: 'Send OTP',
-                        isLoading: authController.isLoading.value,
+                        isLoading: authController.isSendingOtp.value,
                         borderRadius: 100,
                         onPressed: () {
                           // Validate mobile number before proceeding

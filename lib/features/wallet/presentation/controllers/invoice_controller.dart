@@ -57,18 +57,33 @@ class InvoiceController extends GetxController {
         return;
       }
 
-      // Get temporary directory (safer for FileProvider sharing across apps)
-      final Directory dir = await getTemporaryDirectory();
-      // Parse year and month from URL or use a safe filename
+      // Safe year/month extraction
       final uri = Uri.parse(url);
       final pathSegments = uri.pathSegments;
-      String year = '0000';
-      String month = '00';
-      if (pathSegments.length >= 2) {
-        month = pathSegments[pathSegments.length - 2];
-        year = pathSegments[pathSegments.length - 3];
+      String year = '2026';
+      String month = '08';
+      
+      if (pathSegments.isNotEmpty) {
+        if (pathSegments.length >= 3) {
+          month = pathSegments[pathSegments.length - 2];
+          year = pathSegments[pathSegments.length - 3];
+        } else if (pathSegments.length >= 2) {
+          month = pathSegments[pathSegments.length - 1];
+          year = pathSegments[pathSegments.length - 2];
+        } else {
+          month = pathSegments[pathSegments.length - 1];
+        }
       }
+      
       final String fileName = 'invoice_${year}_$month.pdf';
+      
+      // Determine safe directory - external storage is safer for user visibility
+      Directory? dir;
+      if (Platform.isAndroid) {
+        dir = await getExternalStorageDirectory();
+      }
+      dir ??= await getTemporaryDirectory();
+      
       final String savePath = '${dir.path}/$fileName';
 
       // Download file with Auth header
@@ -85,10 +100,20 @@ class InvoiceController extends GetxController {
       );
 
       if (response.statusCode == 200) {
-        // Open the file using open_filex
-        final result = await OpenFilex.open(savePath);
-        if (result.type != ResultType.done) {
-          CustomSnackBar.showError('Could not open file: ${result.message}');
+        // Safe check file exists
+        final file = File(savePath);
+        if (await file.exists()) {
+          try {
+            final result = await OpenFilex.open(savePath);
+            if (result.type != ResultType.done) {
+              CustomSnackBar.showInfo('Downloaded to: $fileName. Opening manually is recommended.');
+            }
+          } catch (openEx) {
+            // Fallback snackbar if default PDF handler crashes
+            CustomSnackBar.showInfo('Invoice saved to Downloads directory.');
+          }
+        } else {
+          CustomSnackBar.showError('Downloaded file not found.');
         }
       } else {
         CustomSnackBar.showError('Failed to download invoice');

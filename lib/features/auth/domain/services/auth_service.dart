@@ -91,6 +91,8 @@ class AuthService implements AuthServiceInterface {
   @override
   Future<void> saveUserInfo(UserModel user) async {
     await SharedPrefs.setString(AppConstants.userData, user.toJsonString());
+    // isLoggedIn ensure karo — release build mein missing tha
+    await SharedPrefs.setBool(AppConstants.isLoggedIn, true);
   }
 
   @override

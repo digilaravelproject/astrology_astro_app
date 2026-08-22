@@ -5,7 +5,7 @@ import 'package:astro_astrologer/core/services/network/multipart.dart';
 import 'package:astro_astrologer/core/services/network/response_model.dart';
 
 abstract class IChatRemoteDataSource {
-  Future<ResponseModel> getChatHistory(int sessionId);
+  Future<ResponseModel> getChatHistory(int sessionId, {int perPage = 50});
   Future<ResponseModel> sendTextMessage(int sessionId, String text);
   Future<ResponseModel> uploadImageAttachment(int sessionId, dynamic xFile);
   Future<ResponseModel> uploadDocumentAttachment(int sessionId, String fileName, dynamic pickerResult);
@@ -35,9 +35,11 @@ class ChatRemoteDataSourceImpl implements IChatRemoteDataSource {
   ChatRemoteDataSourceImpl({required ApiClient apiClient}) : _apiClient = apiClient;
 
   @override
-  Future<ResponseModel> getChatHistory(int sessionId) async {
+  Future<ResponseModel> getChatHistory(int sessionId, {int perPage = 50}) async {
+    // per_page limit: prevents OOM crash on low-memory devices (32-bit ARM)
+    final url = '${AppUrls.getChatMessages(sessionId)}?per_page=$perPage';
     return await _apiClient.get(
-      AppUrls.getChatMessages(sessionId),
+      url,
       handleError: false,
       showToaster: false,
     );

@@ -57,11 +57,21 @@ class _PermissionScreenState extends State<PermissionScreen> with WidgetsBinding
   void _navigateToNext() {
     final isLoggedIn = SharedPrefs.getBool(AppConstants.isLoggedIn) ?? false;
     final userData = SharedPrefs.getString(AppConstants.userData);
-    if (isLoggedIn && userData != null && userData.isNotEmpty) {
-      Get.find<WebSocketService>().connect();
-      FCMNotificationService.registerDeviceToken(null);
-      Get.offAllNamed(RouteHelper.getDashboardRoute());
-    } else {
+    debugPrint('[PERMISSION_SCREEN] _navigateToNext. isLoggedIn: $isLoggedIn, userData exists: ${userData != null}');
+    
+    try {
+      if (isLoggedIn && userData != null && userData.isNotEmpty) {
+        if (Get.isRegistered<WebSocketService>()) {
+          Get.find<WebSocketService>().connect();
+        }
+        FCMNotificationService.registerDeviceToken(null);
+        Get.offAllNamed(RouteHelper.getDashboardRoute());
+      } else {
+        Get.offAllNamed(RouteHelper.getLoginRoute());
+      }
+    } catch (e, s) {
+      debugPrint('[PERMISSION_SCREEN] Error in _navigateToNext: $e\n$s');
+      // Fallback redirection to avoid screen stuck
       Get.offAllNamed(RouteHelper.getLoginRoute());
     }
   }

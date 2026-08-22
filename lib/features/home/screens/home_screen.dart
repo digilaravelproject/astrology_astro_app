@@ -5,6 +5,7 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:astro_astrologer/features/wallet/presentation/pages/my_earnings_screen.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/logger.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../auth/controllers/auth_controller.dart';
@@ -106,7 +107,24 @@ class _HomeScreenState extends State<HomeScreen> {
     _performanceController = Get.find<PerformanceController>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      FCMNotificationService.registerDeviceToken(null);
+      Future.microtask(() async {
+        try {
+          FCMNotificationService.registerDeviceToken(null);
+          // Fetch data first time when HomeScreen is mounted safely
+          _walletController.fetchWalletSummary();
+          _performanceController.getPerformanceData();
+          if (authController.currentUser.value != null) {
+            authController.getProfile(authController.currentUser.value!.id);
+          }
+        } catch (e) {
+
+
+
+          Logger.e('HomeScreen: Init post frame calls error: $e');
+
+
+        }
+      });
     });
   }
 
@@ -178,15 +196,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ],
-        ),
-      ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 20),
-        child: FloatingActionButton(
-          mini: true,
-          onPressed: () {},
-          backgroundColor: AppColors.primaryColor,
-          child: const Icon(Icons.add, color: Colors.white),
         ),
       ),
     );
@@ -420,8 +429,8 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             _buildServiceRow(
               'Chat', 
-              '₹${astro.chatRate}/min', 
-              activeOffer?.calculatedPricing?.chat != null ? '₹${activeOffer!.calculatedPricing!.chat!.discountedRatePerMinute}/min' : null,
+              '', 
+              null,
               astro.isChatEnabled ? 'Online' : 'Offline', 
               'chat',
               astro.isChatEnabled, 
@@ -430,8 +439,8 @@ class _HomeScreenState extends State<HomeScreen> {
             _divider(),
             _buildServiceRow(
               'Call', 
-              '₹${astro.callRate}/min', 
-              activeOffer?.calculatedPricing?.call != null ? '₹${activeOffer!.calculatedPricing!.call!.discountedRatePerMinute}/min' : null,
+              '', 
+              null,
               astro.isCallEnabled ? 'Online' : 'Offline', 
               'call',
               astro.isCallEnabled, 

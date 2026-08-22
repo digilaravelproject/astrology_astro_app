@@ -89,51 +89,69 @@ class FCMNotificationService {
 
   /// Register or Refresh FCM Device Token on Backend with full real metadata
   static Future<void> registerDeviceToken(String? fcmToken) async {
-    try {
-      debugPrint('[FCM_SERVICE] registerDeviceToken called. token: $fcmToken');
-      if (!Get.isRegistered<ApiClient>()) {
-        debugPrint('[FCM_SERVICE] ApiClient is NOT registered in GetX container!');
-        return;
+    // Run completely in background thread context to prevent UI block (ANR)
+    Future.microtask(() async {
+      try {
+        debugPrint('[FCM_SERVICE] registerDeviceToken background execution started.');
+        if (!Get.isRegistered<ApiClient>()) {
+          debugPrint('[FCM_SERVICE] ApiClient is NOT registered in GetX container!');
+          return;
+        }
+
+        // Safe getToken timeout helper to prevent freeze
+        String? tokenToRegister = fcmToken;
+        if (tokenToRegister == null) {
+          try {
+            tokenToRegister = await _firebaseMessaging.getToken().timeout(
+              const Duration(seconds: 4),
+              onTimeout: () {
+                debugPrint('[FCM_SERVICE] _firebaseMessaging.getToken timed out.');
+                return null;
+              },
+            );
+          } catch (tokEx) {
+            debugPrint('[FCM_SERVICE] Error fetching token with timeout: $tokEx');
+          }
+        }
+
+        if (tokenToRegister == null || tokenToRegister.isEmpty) {
+          debugPrint('[FCM_SERVICE] FCM token is null or empty, skipping API call.');
+          return;
+        }
+
+        final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+        final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
+        String deviceId = '';
+        String deviceModel = '';
+        String deviceType = Platform.isAndroid ? 'android' : (Platform.isIOS ? 'ios' : 'unknown');
+
+        if (Platform.isAndroid) {
+          AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+          deviceId = androidInfo.id;
+          deviceModel = '${androidInfo.manufacturer} ${androidInfo.model}';
+        } else if (Platform.isIOS) {
+          IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+          deviceId = iosInfo.identifierForVendor ?? '';
+          deviceModel = '${iosInfo.name} ${iosInfo.model}';
+        }
+
+        final payload = {
+          'fcm_token': tokenToRegister,
+          'device_type': deviceType,
+          'device_id': deviceId,
+          'device_model': deviceModel,
+          'app_version': packageInfo.version,
+        };
+
+        debugPrint('[FCM_SERVICE] Sending POST to ${AppUrls.registerDeviceToken} with full payload: $payload');
+        final apiClient = Get.find<ApiClient>();
+        final response = await apiClient.post(AppUrls.registerDeviceToken, data: payload, handleError: false, showToaster: false);
+        debugPrint('[FCM_SERVICE] Device token registered response | Status: ${response.statusCode} | Success: ${response.isSuccess}');
+      } catch (e, stackTrace) {
+        debugPrint('[FCM_SERVICE] Failed to register device token error: $e\n$stackTrace');
       }
-
-      final tokenToRegister = fcmToken ?? await getToken();
-      if (tokenToRegister == null || tokenToRegister.isEmpty) {
-        debugPrint('[FCM_SERVICE] FCM token is null or empty, skipping API call.');
-        return;
-      }
-
-      final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-      final PackageInfo packageInfo = await PackageInfo.fromPlatform();
-
-      String deviceId = '';
-      String deviceModel = '';
-      String deviceType = Platform.isAndroid ? 'android' : (Platform.isIOS ? 'ios' : 'unknown');
-
-      if (Platform.isAndroid) {
-        AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-        deviceId = androidInfo.id;
-        deviceModel = '${androidInfo.manufacturer} ${androidInfo.model}';
-      } else if (Platform.isIOS) {
-        IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-        deviceId = iosInfo.identifierForVendor ?? '';
-        deviceModel = '${iosInfo.name} ${iosInfo.model}';
-      }
-
-      final payload = {
-        'fcm_token': tokenToRegister,
-        'device_type': deviceType,
-        'device_id': deviceId,
-        'device_model': deviceModel,
-        'app_version': packageInfo.version,
-      };
-
-      debugPrint('[FCM_SERVICE] Sending POST to ${AppUrls.registerDeviceToken} with full payload: $payload');
-      final apiClient = Get.find<ApiClient>();
-      final response = await apiClient.post(AppUrls.registerDeviceToken, data: payload, handleError: false, showToaster: false);
-      debugPrint('[FCM_SERVICE] Device token registered response | Status: ${response.statusCode} | Success: ${response.isSuccess} | Message: ${response.message} | Body: ${response.body}');
-    } catch (e, stackTrace) {
-      debugPrint('[FCM_SERVICE] Failed to register device token error: $e\n$stackTrace');
-    }
+    });
   }
 
   /// Remove Device Token on Logout

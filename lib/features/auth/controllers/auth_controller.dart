@@ -62,6 +62,7 @@ class AuthController extends GetxController {
 
 
   final isLoading = false.obs;
+  final isSendingOtp = false.obs; // sirf OTP button ke liye — kabhi kabhi click nahi hota tha
   final togglingServices = <String>{}.obs;
   final currentMobile = ''.obs;
   Rx<UserModel?> currentUser = Rx<UserModel?>(null);
@@ -96,9 +97,48 @@ class AuthController extends GetxController {
       final user = await _getUserInfoUseCase.execute();
       if (user != null) {
         currentUser.value = user;
-        // Refresh profile data from network to get latest rates/status
-        getProfile(user.id);
+        // Silent background refresh — isLoading touch nahi hoga
+        _refreshProfileSilently(user.id);
       }
+    }
+  }
+
+  /// Background profile refresh — login screen pe loading spinner nahi dikhega
+  Future<void> _refreshProfileSilently(int id) async {
+    try {
+      final response = await _getProfileUseCase.execute(id);
+      if (response.isSuccess && response.body != null) {
+        final Map<String, dynamic> body =
+            response.body is Map ? Map<String, dynamic>.from(response.body) : {};
+        final Map<String, dynamic> data =
+            body['data'] is Map ? Map<String, dynamic>.from(body['data']) : body;
+        final userData = data['user'];
+        if (userData != null) {
+          UserModel user = UserModel.fromJson(userData);
+          if (user.astrologer != null) {
+            final otherData = user.astrologer?.otherDetails ??
+                data['other_details'] ??
+                data['other-details'];
+            if (otherData != null) {
+              final otherModel = otherData is OtherDetailsModel
+                  ? otherData
+                  : OtherDetailsModel.fromJson(
+                      otherData is Map
+                          ? Map<String, dynamic>.from(otherData)
+                          : {});
+              user = user.copyWith(
+                astrologer: user.astrologer!.copyWith(otherDetails: otherModel),
+              );
+            }
+          }
+          currentUser.value = user;
+          await Get.find<AuthService>().saveUserInfo(user);
+          Logger.d('AuthController: Silent profile refresh done.');
+        }
+      }
+    } catch (e) {
+      // Silent — user ko dikhane ki zaroorat nahi
+      Logger.e('AuthController: _refreshProfileSilently error: $e');
     }
   }
 
@@ -170,7 +210,7 @@ class AuthController extends GetxController {
 
   Future<void> sendOtp() async {
     try {
-      isLoading.value = true;
+      isSendingOtp.value = true;   // sirf OTP button disable hoga
       final response = await _sendOtpUseCase.execute(
         mobileController.text.trim(),
         '1234',
@@ -191,14 +231,15 @@ class AuthController extends GetxController {
       }
     } catch (e) {
       Logger.e('AuthController: sendOtp caught exception: $e');
+      CustomSnackBar.showError('Something went wrong. Please try again.');
     } finally {
-      isLoading.value = false;
+      isSendingOtp.value = false;
     }
   }
 
   Future<void> resendOtp() async {
     try {
-      isLoading.value = true;
+      isSendingOtp.value = true;
       final response = await _resendOtpUseCase.execute(
         currentMobile.value,
         '1234',
@@ -213,7 +254,7 @@ class AuthController extends GetxController {
       Logger.e('AuthController: resendOtp error: $e');
       CustomSnackBar.showError(e.toString());
     } finally {
-      isLoading.value = false;
+      isSendingOtp.value = false;
     }
   }
 

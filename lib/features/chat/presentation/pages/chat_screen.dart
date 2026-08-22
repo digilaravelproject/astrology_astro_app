@@ -260,11 +260,15 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     : null,
               ),
               const SizedBox(width: 8),
-              AppText(
-                widget.userName,
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: const Color(0xFF2E1A47),
+              Flexible(
+                child: AppText(
+                  widget.userName,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF2E1A47),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ],
           ),
@@ -316,12 +320,12 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             Obx(() {
               if (_controller.status.value == 'ongoing') {
                 return Padding(
-                  padding: const EdgeInsets.only(right: 8),
+                  padding: const EdgeInsets.only(right: 16), // Adjusted right margin to 16
                   child: InkWell(
                     onTap: () => _showEndChatConfirmation(context),
                     borderRadius: BorderRadius.circular(16),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         color: Colors.red.withOpacity(0.08),
                         borderRadius: BorderRadius.circular(16),

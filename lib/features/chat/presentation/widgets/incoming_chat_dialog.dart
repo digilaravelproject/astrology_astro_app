@@ -335,45 +335,7 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
               ),
               const SizedBox(height: 10),
 
-              // ── Rate Badge ──
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                decoration: BoxDecoration(
-                  color: _orange.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: _orange.withOpacity(0.35)),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      height: 20,
-                      width: 20,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: _orange,
-                      ),
-                      child: const Center(
-                        child: Text('₹',
-                            style: TextStyle(
-                                fontSize: 11,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold)),
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      '₹$ratePerMin / min',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: _orange,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              const SizedBox(height: 10),
 
               // ── User Details Card ──
               Container(

@@ -224,39 +224,52 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             const SizedBox(height: 30),
             
-            // Go Live Instantly Button
-            SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: ElevatedButton(
-                onPressed: () {
-                  Get.back();
-                  final liveController = Get.find<LiveController>();
-                  liveController.createSession(
-                    title: "Instant Live Session",
-                    description: "Broadcasting Live",
-                    sessionType: "public",
-                    duration: 60,
-                    maxParticipants: 100,
-                    isInstant: true,
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF4CAF50), // Green for Go Live
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+            Obx(() {
+              final liveController = Get.find<LiveController>();
+              final isCreating = liveController.isCreating.value;
+              
+              return SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  onPressed: isCreating
+                      ? null
+                      : () {
+                          liveController.createSession(
+                            title: "Instant Live Session",
+                            description: "Broadcasting Live",
+                            sessionType: "public",
+                            duration: 60,
+                            maxParticipants: 100,
+                            isInstant: true,
+                          );
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF4CAF50), // Green for Go Live
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
+                  child: isCreating
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : const AppText(
+                          'Go Live Instantly',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
                 ),
-                child: const AppText(
-                  'Go Live Instantly',
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
-              ),
-            ),
+              );
+            }),
             
             const SizedBox(height: 12),
             
