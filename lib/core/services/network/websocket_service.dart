@@ -772,6 +772,11 @@ class WebSocketService extends GetxService {
         final int senderId = int.tryParse(map['sender_id']?.toString() ?? '') ?? 0;
         final int sessionId = int.tryParse(map['chat_assistance_session_id']?.toString() ?? map['chat_session_id']?.toString() ?? '') ?? 0;
 
+        // Auto-refresh the assistant chat list if a new message arrives
+        if (Get.isRegistered<AssistantChatListController>()) {
+          Get.find<AssistantChatListController>().fetchSessions();
+        }
+
         if (senderId != currentUserId && activeSessionId != sessionId) {
           if (FloatingChatBubble.isActive && FloatingChatBubble.sessionId == sessionId) {
             FloatingChatBubble.incrementUnreadCount();

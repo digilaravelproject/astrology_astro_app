@@ -1,3 +1,5 @@
+  import 'dart:async';
+import 'package:astro_astrologer/core/services/network/websocket_service.dart';
 import 'package:get/get.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
@@ -13,10 +15,23 @@ class AssistantChatListController extends GetxController {
   final RxString searchQuery = ''.obs;
   final RxString selectedFilter = 'All'.obs; // 'All', 'Unread', 'Read'
 
+  StreamSubscription? _msgSub;
+
   @override
   void onInit() {
     super.onInit();
     fetchSessions();
+    
+    // Listen to incoming messages to auto-update list data in real-time
+    _msgSub = WebSocketService.incomingMessages.listen((_) {
+      fetchSessions();
+    });
+  }
+
+  @override
+  void onClose() {
+    _msgSub?.cancel();
+    super.onClose();
   }
 
   Future<void> fetchSessions() async {
