@@ -1045,5 +1045,17 @@
   "Yes, Save": "हाँ, सहेजें",
   "This field is required": "यह फ़ील्ड आवश्यक है",
   "Account number must be at least 9 digits": "खाता संख्या कम से कम 9 अंकों की होनी चाहिए",
-  "IFSC code must be 11 characters": "आईएफएससी कोड 11 वर्णों का होना चाहिए"
+  "IFSC code must be 11 characters": "आईएफएससी कोड 11 वर्णों का होना चाहिए",
+  "Blocked Astrologers": "ब्लॉक किए गए ज्योतिषी",
+  "No Blocked Astrologers": "कोई ब्लॉक किया गया ज्योतिषी नहीं",
+  "You have not blocked any astrologer yet.": "आपने अभी तक किसी ज्योतिषी को ब्लॉक नहीं किया है।",
+  "Block @name?": "@name को ब्लॉक करें?",
+  "Unblock @name?": "@name को अनब्लॉक करें?",
+  "You won't be able to message or call this astrologer anymore.": "अब आप इस ज्योतिषी को संदेश या कॉल नहीं कर पाएंगे।",
+  "You will be able to message and call this astrologer again.": "आप इस ज्योतिषी को फिर से संदेश और कॉल कर पाएंगे।",
+  "Blocked Users": "ब्लॉक किए गए उपयोगकर्ता",
+  "No Blocked Users": "कोई ब्लॉक किया गया उपयोगकर्ता नहीं",
+  "You have not blocked any user yet.": "आपने अभी तक किसी उपयोगकर्ता को ब्लॉक नहीं किया है।",
+  "You won't be able to message or call this user anymore.": "अब आप इस उपयोगकर्ता को संदेश या कॉल नहीं कर पाएंगे।",
+  "You will be able to message and call this user again.": "आप इस उपयोगकर्ता को फिर से संदेश और कॉल कर पाएंगे।"
 }

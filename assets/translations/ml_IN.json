@@ -1013,5 +1013,17 @@
   "Save Sleep Schedule": "Save Sleep Schedule",
   "Choose your Sleep Time for up to 8 hours. Emergency sessions will be paused during your selected time.": "Choose your Sleep Time for up to 8 hours. Emergency sessions will be paused during your selected time.",
   "Select Gender": "Select Gender",
-  "Search...": "Search..."
+  "Search...": "Search...",
+  "Blocked Astrologers": "ബ്ലോക്ക് ചെയ്ത ജ്യോതിഷികൾ",
+  "No Blocked Astrologers": "ബ്ലോക്ക് ചെയ്ത ജ്യോതിഷികൾ ആരുമില്ല",
+  "You have not blocked any astrologer yet.": "നിങ്ങൾ ഇതുവരെ ജ്യോതിഷികളെ ആരെയും ബ്ലോക്ക് ചെയ്തിട്ടില്ല.",
+  "Block @name?": "@name ചെയ്യണോ?",
+  "Unblock @name?": "@name അൺബ്ലോക്ക് ചെയ്യണോ?",
+  "You won't be able to message or call this astrologer anymore.": "നിങ്ങൾക്ക് ഇനി ഈ ജ്യോതിഷിയുമായി സന്ദേശമയയ്ക്കാനോ വിളിക്കാനോ കഴിയില്ല.",
+  "You will be able to message and call this astrologer again.": "നിങ്ങൾക്ക് ഈ ജ്യോതിഷിയുമായി വീണ്ടും സന്ദേശമയയ്ക്കാനും വിളിക്കാനും കഴിയും.",
+  "Blocked Users": "ബ്ലോക്ക് ചെയ്ത ഉപയോക്താക്കൾ",
+  "No Blocked Users": "ബ്ലോക്ക് ചെയ്ത ഉപയോക്താക്കൾ ആരുമില്ല",
+  "You have not blocked any user yet.": "നിങ്ങൾ ഇതുവരെ ഉപയോക്താക്കളെ ആരെയും ബ്ലോക്ക് ചെയ്തിട്ടില്ല.",
+  "You won't be able to message or call this user anymore.": "നിങ്ങൾക്ക് ഇനി ഈ ഉപയോക്താവുമായി സന്ദേശമയയ്ക്കാനോ വിളിക്കാനോ കഴിയില്ല.",
+  "You will be able to message and call this user again.": "നിങ്ങൾക്ക് ഈ ഉപയോക്താവുമായി വീണ്ടും സന്ദേശമയയ്ക്കാനും വിളിക്കാനും കഴിയും."
 }

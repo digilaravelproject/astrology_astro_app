@@ -36,6 +36,12 @@ class AssistanceChatRoomController extends GetxController {
     fetchMessages();
     fetchAstrologerStatus();
     _setupWebsocketListeners();
+    // Subscribe to dedicated chat room channel
+    try {
+      Get.find<WebSocketService>().subscribeToChannel('private-chat-assistance.$sessionId');
+    } catch (e) {
+      debugPrint('Error subscribing to chat assistance channel: $e');
+    }
   }
 
   Future<void> fetchAstrologerStatus() async {
@@ -320,11 +326,13 @@ class AssistanceChatRoomController extends GetxController {
     _statusUpdateSub = WebSocketService.messageStatusUpdates.listen((list) {
       if (list.isNotEmpty) {
         final lastUpdate = list.last;
-        final updateSessionId = int.tryParse(lastUpdate['sessionId']?.toString() ?? '') ?? 0;
+        final updateSessionId = int.tryParse(lastUpdate['sessionId']?.toString() ?? 
+                                             lastUpdate['session_id']?.toString() ?? 
+                                             lastUpdate['chat_assistance_session_id']?.toString() ?? '') ?? 0;
         if (updateSessionId == _sessionId) {
           final newStatus = lastUpdate['status']?.toString();
           final mappedStatus = newStatus == 'seen' ? 'seen' : (newStatus ?? 'sent');
-          final messageIdsList = lastUpdate['messageIds'] as List<dynamic>?;
+          final messageIdsList = (lastUpdate['messageIds'] ?? lastUpdate['message_ids']) as List<dynamic>?;
           if (messageIdsList != null && messageIdsList.isNotEmpty) {
             final messageIds = messageIdsList.map((e) => int.tryParse(e.toString()) ?? 0).toList();
             bool changed = false;
@@ -361,6 +369,9 @@ class AssistanceChatRoomController extends GetxController {
     _statusUpdateSub?.cancel();
     messageController.dispose();
     scrollController.dispose();
+    try {
+      Get.find<WebSocketService>().unsubscribeFromChannel('private-chat-assistance.$_sessionId');
+    } catch (_) {}
     super.onClose();
   }
 }

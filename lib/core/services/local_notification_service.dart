@@ -108,8 +108,7 @@ class LocalNotificationService {
           'Incoming Calls',
           description: 'Incoming Call Ringing (User & Astrologer)',
           importance: Importance.max,
-          sound: RawResourceAndroidNotificationSound(AppConstants.callNotificationSound),
-          playSound: true,
+          playSound: false,
         ),
       );
       await androidPlugin.createNotificationChannel(
@@ -118,8 +117,7 @@ class LocalNotificationService {
           'Chat Messages & Requests',
           description: 'New Chat Requests and Chat Room messages',
           importance: Importance.high,
-          sound: RawResourceAndroidNotificationSound(AppConstants.chatNotificationSound),
-          playSound: true,
+          playSound: false,
         ),
       );
       await androidPlugin.createNotificationChannel(
@@ -128,8 +126,7 @@ class LocalNotificationService {
           'Consultations & Billing',
           description: 'Session Lifecycle, Acceptance, Ending & Billing Notifications',
           importance: Importance.high,
-          sound: RawResourceAndroidNotificationSound(AppConstants.generalNotificationSound),
-          playSound: true,
+          playSound: false,
         ),
       );
       await androidPlugin.createNotificationChannel(
@@ -174,7 +171,7 @@ class LocalNotificationService {
           'Incoming Calls Alert',
           description: 'Alert for incoming call notifications',
           importance: Importance.max,
-          playSound: true,
+          playSound: false,
         ),
       );
       await androidPlugin.createNotificationChannel(
@@ -440,18 +437,16 @@ class LocalNotificationService {
       icon: '@mipmap/ic_launcher',
       importance: Importance.max,
       priority: Priority.high,
-      sound: shouldPlaySound ? RawResourceAndroidNotificationSound(soundName) : null,
-      playSound: shouldPlaySound,
+      playSound: false,
       showWhen: true,
     );
 
     final NotificationDetails notificationDetails = NotificationDetails(
       android: androidDetails,
-      iOS: DarwinNotificationDetails(
+      iOS: const DarwinNotificationDetails(
         presentAlert: true,
         presentBadge: true,
-        presentSound: shouldPlaySound,
-        sound: shouldPlaySound ? '$soundName.caf' : null,
+        presentSound: false,
       ),
     );
 

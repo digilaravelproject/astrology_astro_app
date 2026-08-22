@@ -1013,5 +1013,17 @@
   "Save Sleep Schedule": "Save Sleep Schedule",
   "Choose your Sleep Time for up to 8 hours. Emergency sessions will be paused during your selected time.": "Choose your Sleep Time for up to 8 hours. Emergency sessions will be paused during your selected time.",
   "Select Gender": "Select Gender",
-  "Search...": "Search..."
+  "Search...": "Search...",
+  "Blocked Astrologers": "ব্লক করা জ্যোতিষী",
+  "No Blocked Astrologers": "কোনো ব্লক করা জ্যোতিষী নেই",
+  "You have not blocked any astrologer yet.": "আপনি এখনও কোনও জ্যোতিষীকে ব্লক করেননি।",
+  "Block @name?": "@name কে ব্লক করবেন?",
+  "Unblock @name?": "@name কে আনব্লক করবেন?",
+  "You won't be able to message or call this astrologer anymore.": "আপনি আর এই জ্যোতিষীকে বার্তা পাঠাতে বা কল করতে পারবেন না।",
+  "You will be able to message and call this astrologer again.": "আপনি আবার এই জ্যোতিষীকে বার্তা পাঠাতে এবং কল করতে সক্ষম হবেন।",
+  "Blocked Users": "ব্লক করা ব্যবহারকারী",
+  "No Blocked Users": "কোনো ব্লক করা ব্যবহারকারী নেই",
+  "You have not blocked any user yet.": "আপনি এখনও কোনও ব্যবহারকারীকে ব্লক করেননি।",
+  "You won't be able to message or call this user anymore.": "আপনি আর এই ব্যবহারকারীকে বার্তা পাঠাতে বা কল করতে পারবেন না।",
+  "You will be able to message and call this user again.": "আপনি আবার এই ব্যবহারকারীকে বার্তা পাঠাতে এবং কল করতে সক্ষম হবেন।"
 }

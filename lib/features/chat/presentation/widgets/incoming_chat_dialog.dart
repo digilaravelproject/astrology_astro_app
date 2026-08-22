@@ -9,8 +9,6 @@ import '../../../../core/services/network/api_client.dart';
 import '../../../../core/services/network/websocket_service.dart';
 import '../pages/chat_screen.dart';
 import '../bindings/chat_binding.dart';
-import 'package:audioplayers/audioplayers.dart';
-import 'package:vibration/vibration.dart';
 import '../../../../core/constants/app_constants.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 import 'package:astro_astrologer/core/services/local_notification_service.dart';
@@ -128,35 +126,12 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
     _startRingtone();
   }
 
-  AudioPlayer? _audioPlayer;
-
-  Future<void> _startRingtone() async {
-    // Sound & vibration play disabled
-    /*
-    try {
-      _audioPlayer = AudioPlayer();
-      await _audioPlayer?.setReleaseMode(ReleaseMode.loop);
-      await _audioPlayer?.play(AssetSource(AppConstants.incomingRingPath));
-
-      if (await Vibration.hasVibrator() == true) {
-        Vibration.vibrate(pattern: [500, 1000, 500, 1000], repeat: 0);
-      }
-    } catch (e) {
-      debugPrint("Error starting incoming chat ringtone: $e");
-    }
-    */
+  void _startRingtone() {
+    // Sound play disabled
   }
 
   void _stopRingtone() {
-    // Sound & vibration stop disabled
-    /*
-    try {
-      _audioPlayer?.stop();
-      _audioPlayer?.dispose();
-      _audioPlayer = null;
-      Vibration.cancel();
-    } catch (_) {}
-    */
+    // Sound stop disabled
   }
 
   @override

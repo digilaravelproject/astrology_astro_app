@@ -701,7 +701,7 @@
   "Transit Chart": "ಟ್ರಾನ್ಸಿಟ್ ಚಾರ್ಟ್",
   "Try searching with a different name": "ವಿಭಿನ್ನ ಹೆಸರಿನೊಂದಿಗೆ ಹುಡುಕಲು ಪ್ರಯತ್ನಿಸಿ",
   "Type your comment...": "ನಿಮ್ಮ ಕಾಮೆಂಟ್ ಅನ್ನು ಟೈಪ್ ಮಾಡಿ...",
-  "Unblock": "ಅನ್‌ಬ್ಲಾಕ್ ಮಾಡಿ",
+  "Unblock": "ನಿರ್ಬಂಧ ತೆಗೆದುಹಾಕಿ",
   "Unblock User": "ಬಳಕೆದಾರರನ್ನು ಅನ್‌ಬ್ಲಾಕ್ ಮಾಡಿ",
   "Under Development": "ಅಭಿವೃದ್ಧಿ ಹಂತದಲ್ಲಿದೆ",
   "Update Billing Address": "ಬಿಲ್ಲಿಂಗ್ ವಿಳಾಸ ನವೀಕರಿಸಿ",
@@ -1013,5 +1013,17 @@
   "Save Sleep Schedule": "Save Sleep Schedule",
   "Choose your Sleep Time for up to 8 hours. Emergency sessions will be paused during your selected time.": "Choose your Sleep Time for up to 8 hours. Emergency sessions will be paused during your selected time.",
   "Select Gender": "Select Gender",
-  "Search...": "Search..."
+  "Search...": "Search...",
+  "Blocked Astrologers": "ನಿರ್ಬಂಧಿಸಿದ ಜ್ಯೋತಿಷಿಗಳು",
+  "No Blocked Astrologers": "ಯಾವುದೇ ನಿರ್ಬಂಧಿಸಿದ ಜ್ಯೋತಿಷಿಗಳು ಇಲ್ಲ",
+  "You have not blocked any astrologer yet.": "ನೀವು ಇನ್ನೂ ಯಾವುದೇ ಜ್ಯೋತಿಷಿಯನ್ನು ನಿರ್ಬಂಧಿಸಿಲ್ಲ.",
+  "Block @name?": "@name ಅನ್ನು ನಿರ್ಬಂಧಿಸಬೇಕೆ?",
+  "Unblock @name?": "@name ನಿರ್ಬಂಧವನ್ನು ತೆಗೆದುಹಾಕಬೇಕೆ?",
+  "You won't be able to message or call this astrologer anymore.": "ನಿಮಗೆ ಇನ್ನು ಮುಂದೆ ಈ ಜ್ಯೋತಿಷಿಗೆ ಸಂದೇಶ ಕಳುಹಿಸಲು ಅಥವಾ ಕರೆ ಮಾಡಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.",
+  "You will be able to message and call this astrologer again.": "ನೀವು ಈ ಜ್ಯೋತಿಷಿಗೆ ಮತ್ತೆ ಸಂದೇಶ ಕಳುಹಿಸಲು ಮತ್ತು ಕರೆ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ.",
+  "Blocked Users": "ನಿರ್ಬಂಧಿಸಿದ ಬಳಕೆದಾರರು",
+  "No Blocked Users": "ಯಾವುದೇ ನಿರ್ಬಂಧಿಸಿದ ಬಳಕೆದಾರರು ಇಲ್ಲ",
+  "You have not blocked any user yet.": "ನೀವು ಇನ್ನೂ ಯಾವುದೇ ಬಳಕೆದಾರರನ್ನು ನಿರ್ಬಂಧಿಸಿಲ್ಲ.",
+  "You won't be able to message or call this user anymore.": "ನಿಮಗೆ ಇನ್ನು ಮುಂದೆ ಈ ಬಳಕೆದಾರರಿಗೆ ಸಂದೇಶ ಕಳುಹಿಸಲು ಅಥವಾ ಕರೆ ಮಾಡಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.",
+  "You will be able to message and call this user again.": "ನೀವು ಈ ಬಳಕೆದಾರರಿಗೆ ಮತ್ತೆ ಸಂದೇಶ ಕಳುಹಿಸಲು & ಕರೆ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ."
 }

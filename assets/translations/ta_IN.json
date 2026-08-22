@@ -701,7 +701,7 @@
   "Transit Chart": "டிரான்சிட் விளக்கப்படம்",
   "Try searching with a different name": "வேறு பெயரில் தேட முயற்சிக்கவும்",
   "Type your comment...": "உங்கள் கருத்தைத் தட்டச்சு செய்யவும்...",
-  "Unblock": "தடையை நீக்கு",
+  "Unblock": "முடக்கத்தை நீக்கு",
   "Unblock User": "பயனரை விடுவி",
   "Under Development": "வளர்ச்சியில் உள்ளது",
   "Update Billing Address": "பில்லிங் முகவரியைப் புதுப்பிக்கவும்",
@@ -1013,5 +1013,17 @@
   "Save Sleep Schedule": "Save Sleep Schedule",
   "Choose your Sleep Time for up to 8 hours. Emergency sessions will be paused during your selected time.": "Choose your Sleep Time for up to 8 hours. Emergency sessions will be paused during your selected time.",
   "Select Gender": "Select Gender",
-  "Search...": "Search..."
+  "Search...": "Search...",
+  "Blocked Astrologers": "முடக்கப்பட்ட ஜோதிடர்கள்",
+  "No Blocked Astrologers": "முடக்கப்பட்ட ஜோதிடர்கள் யாரும் இல்லை",
+  "You have not blocked any astrologer yet.": "நீங்கள் இன்னும் எந்த ஜோதிடரையும் முடக்கவில்லை.",
+  "Block @name?": "@name ஐ முடக்கவா?",
+  "Unblock @name?": "@name இன் முடக்கத்தை நீக்கவா?",
+  "You won't be able to message or call this astrologer anymore.": "இனி இந்த ஜோதிடருக்கு உங்களால் செய்தி அனுப்பவோ அல்லது அழைக்கவோ முடியாது.",
+  "You will be able to message and call this astrologer again.": "நீங்கள் மீண்டும் இந்த ஜோதிடருக்கு செய்தி அனுப்பவும் அழைக்கவும் முடியும்.",
+  "Blocked Users": "முடக்கப்பட்ட பயனர்கள்",
+  "No Blocked Users": "முடக்கப்பட்ட பயனர்கள் யாரும் இல்லை",
+  "You have not blocked any user yet.": "நீங்கள் இன்னும் எந்த பயனரையும் முடக்கவில்லை.",
+  "You won't be able to message or call this user anymore.": "இனி இந்த பயனருக்கு உங்களால் செய்தி அனுப்பவோ அல்லது அழைக்கவோ முடியாது.",
+  "You will be able to message and call this user again.": "நீங்கள் மீண்டும் இந்த பயனருக்கு செய்தி அனுப்பவும் அழைக்கவும் முடியும்."
 }

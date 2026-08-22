@@ -701,7 +701,7 @@
   "Transit Chart": "ట్రాన్సిట్ చార్ట్",
   "Try searching with a different name": "వేరే పేరుతో శోధించడానికి ప్రయత్నించండి",
   "Type your comment...": "మీ వ్యాఖ్యను టైప్ చేయండి...",
-  "Unblock": "అన్‌బ్లాక్ చేయండి",
+  "Unblock": "అన్ బ్లాక్ చేయి",
   "Unblock User": "వినియోగదారుని అన్‌బ్లాక్ చేయండి",
   "Under Development": "అభివృద్ధిలో ఉంది",
   "Update Billing Address": "బిల్లింగ్ చిరునామాను నవీకరించండి",
@@ -1013,5 +1013,17 @@
   "Save Sleep Schedule": "Save Sleep Schedule",
   "Choose your Sleep Time for up to 8 hours. Emergency sessions will be paused during your selected time.": "Choose your Sleep Time for up to 8 hours. Emergency sessions will be paused during your selected time.",
   "Select Gender": "Select Gender",
-  "Search...": "Search..."
+  "Search...": "Search...",
+  "Blocked Astrologers": "బ్లాక్ చేయబడిన జ్యోతిష్యులు",
+  "No Blocked Astrologers": "బ్లాక్ చేయబడిన జ్యోతిష్యులు ఎవరూ లేరు",
+  "You have not blocked any astrologer yet.": "మీరు ఇంకా ఏ జ్యోతిష్యుడిని బ్లాక్ చేయలేదు.",
+  "Block @name?": "@name ని బ్లాక్ చేయాలా?",
+  "Unblock @name?": "@name ని అన్‌బ్లాక్ చేయాలా?",
+  "You won't be able to message or call this astrologer anymore.": "మీరు ఇకపై ఈ జ్యోతిష్యుడికి సందేశం పంపలేరు లేదా కాల్ చేయలేరు.",
+  "You will be able to message and call this astrologer again.": "మీరు మళ్లీ ఈ జ్యోతిష్యుడికి సందేశం పంపవచ్చు మరియు కాల్ చేయవచ్చు.",
+  "Blocked Users": "బ్లాక్ చేయబడిన వినియోగదారులు",
+  "No Blocked Users": "బ్లాక్ చేయబడిన వినియోగదారులు ఎవరూ లేరు",
+  "You have not blocked any user yet.": "మీరు ఇంకా ఏ వినియోగదారుని బ్లాక్ చేయలేదు.",
+  "You won't be able to message or call this user anymore.": "మీరు ఇకపై ఈ వినియోగదారునికి సందేశం పంపలేరు లేదా కాల్ చేయలేరు.",
+  "You will be able to message and call this user again.": "మీరు మళ్లీ ఈ వినియోగదారునికి సందేశం పంపవచ్చు మరియు కాల్ చేయవచ్చు."
 }

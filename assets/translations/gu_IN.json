@@ -1013,5 +1013,17 @@
   "Save Sleep Schedule": "Save Sleep Schedule",
   "Choose your Sleep Time for up to 8 hours. Emergency sessions will be paused during your selected time.": "Choose your Sleep Time for up to 8 hours. Emergency sessions will be paused during your selected time.",
   "Select Gender": "Select Gender",
-  "Search...": "Search..."
+  "Search...": "Search...",
+  "Blocked Astrologers": "બ્લોક કરેલા જ્યોતિષીઓ",
+  "No Blocked Astrologers": "કોઈ બ્લોક કરેલા જ્યોતિષીઓ નથી",
+  "You have not blocked any astrologer yet.": "તમે હજી સુધી કોઈ જ્યોતિષીને બ્લોક કર્યા નથી.",
+  "Block @name?": "@name ને બ્લોક કરીએ?",
+  "Unblock @name?": "@name ને અનબ્લોક કરીએ?",
+  "You won't be able to message or call this astrologer anymore.": "તમે હવે આ જ્યોતિષીને સંદેશ મોકલી શકશો નહીં કે કૉલ કરી શકશો નહીં.",
+  "You will be able to message and call this astrologer again.": "તમે ફરીથી આ જ્યોતિષીને સંદેશ મોકલી શકશો અને કૉલ કરી શકશો.",
+  "Blocked Users": "બ્લોક કરેલા વપરાશકર્તાઓ",
+  "No Blocked Users": "કોઈ બ્લોક કરેલા વપરાશકર્તાઓ નથી",
+  "You have not blocked any user yet.": "તમે હજી સુધી કોઈ વપરાશકર્તાને બ્લોક કર્યા નથી.",
+  "You won't be able to message or call this user anymore.": "તમે હવે આ વપરાશકર્તાને સંદેશ મોકલી શકશો નહીં કે કૉલ કરી શકશો નહીં.",
+  "You will be able to message and call this user again.": "તમે ફરીથી આ વપરાશકર્તાને સંદેશ મોકલી શકશો અને કૉલ કરી શકશો."
 }

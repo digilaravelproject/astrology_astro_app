@@ -1025,5 +1025,17 @@
   "Yes, Save": "Yes, Save",
   "This field is required": "This field is required",
   "Account number must be at least 9 digits": "Account number must be at least 9 digits",
-  "IFSC code must be 11 characters": "IFSC code must be 11 characters"
+  "IFSC code must be 11 characters": "IFSC code must be 11 characters",
+  "Blocked Astrologers": "Blocked Astrologers",
+  "No Blocked Astrologers": "No Blocked Astrologers",
+  "You have not blocked any astrologer yet.": "You have not blocked any astrologer yet.",
+  "Block @name?": "Block @name?",
+  "Unblock @name?": "Unblock @name?",
+  "You won't be able to message or call this astrologer anymore.": "You won't be able to message or call this astrologer anymore.",
+  "You will be able to message and call this astrologer again.": "You will be able to message and call this astrologer again.",
+  "Blocked Users": "Blocked Users",
+  "No Blocked Users": "No Blocked Users",
+  "You have not blocked any user yet.": "You have not blocked any user yet.",
+  "You won't be able to message or call this user anymore.": "You won't be able to message or call this user anymore.",
+  "You will be able to message and call this user again.": "You will be able to message and call this user again."
 }
