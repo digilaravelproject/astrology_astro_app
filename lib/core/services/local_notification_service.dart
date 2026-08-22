@@ -227,7 +227,7 @@ class LocalNotificationService {
       iOS: const DarwinNotificationDetails(
         presentAlert: true,
         presentBadge: true,
-        presentSound: true,
+        presentSound: false,
       ),
     );
 
@@ -289,7 +289,7 @@ class LocalNotificationService {
       iOS: const DarwinNotificationDetails(
         presentAlert: true,
         presentBadge: true,
-        presentSound: true,
+        presentSound: false,
       ),
     );
 
@@ -386,10 +386,10 @@ class LocalNotificationService {
 
     final NotificationDetails notificationDetails = NotificationDetails(
       android: androidDetails,
-      iOS: DarwinNotificationDetails(
+      iOS: const DarwinNotificationDetails(
         presentAlert: true,
         presentBadge: true,
-        presentSound: true,
+        presentSound: false,
       ),
     );
 
