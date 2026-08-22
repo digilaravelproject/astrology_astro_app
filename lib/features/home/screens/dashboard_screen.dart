@@ -56,11 +56,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   ];
 
   List<NavItem> get _navItems => [
-    NavItem(icon: Iconsax.home_2_copy, label: 'home'.tr),
-    NavItem(icon: Iconsax.message_question_copy, label: 'orders'.tr),
-    NavItem(icon: Iconsax.video_play_copy, label: 'go_live'.tr),
-    NavItem(icon: Iconsax.notification_bing_copy, label: 'notice'.tr),
-    NavItem(icon: Iconsax.user_copy, label: 'profile'.tr),
+    NavItem(icon: Iconsax.home_2_copy, label: 'Home'.tr),
+    NavItem(icon: Iconsax.message_question_copy, label: 'Orders'.tr),
+    NavItem(icon: Iconsax.video_play_copy, label: 'Go Live'.tr),
+    NavItem(icon: Iconsax.notification_bing_copy, label: 'Notice Board'.tr),
+    NavItem(icon: Iconsax.user_copy, label: 'My Profile'.tr),
   ];
 
   @override

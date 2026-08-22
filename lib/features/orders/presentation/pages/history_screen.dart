@@ -39,9 +39,9 @@ class HistoryScreen extends StatelessWidget {
                   indicatorSize: TabBarIndicatorSize.label,
                   labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                   unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 13),
-                  tabs: const [
-                    Tab(text: 'Call'),
-                    Tab(text: 'Chat'),
+                  tabs: [
+                    Tab(text: 'Call'.tr),
+                    Tab(text: 'Chat'.tr),
                   ],
                 ),
               ),
