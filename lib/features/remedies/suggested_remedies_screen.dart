@@ -34,12 +34,14 @@ class _SuggestedRemediesScreenState extends State<SuggestedRemediesScreen> {
       appBar: const CustomAppBar(
         title: 'Suggested Remedies',
       ),
-      body: Obx(() {
-        if (_controller.isLoading.value) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
+      body: SafeArea(
+        top: false,
+        child: Obx(() {
+          if (_controller.isLoading.value) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
 
         if (_controller.remedies.isEmpty) {
           return Center(
@@ -76,7 +78,7 @@ class _SuggestedRemediesScreenState extends State<SuggestedRemediesScreen> {
             );
           },
         );
-      }),
+      })),
     );
   }
 }
