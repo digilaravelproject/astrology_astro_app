@@ -248,31 +248,35 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     _statusUpdateSub?.cancel();
     _statusUpdateSub = WebSocketService.messageStatusUpdates.listen((list) {
       if (list.isNotEmpty) {
-        final lastUpdate = list.last;
-        final updateSessionId = int.tryParse(
-          lastUpdate['session_id']?.toString() ?? 
-          lastUpdate['chat_session_id']?.toString() ?? 
-          lastUpdate['chat_assistance_session_id']?.toString() ?? 
-          lastUpdate['sessionId']?.toString() ?? ''
-        ) ?? 0;
-        if (updateSessionId == _sessionId) {
-          final newStatus = lastUpdate['status']?.toString();
-          final messageIdsList = (lastUpdate['message_ids'] ?? lastUpdate['messageIds']) as List<dynamic>?;
-          if (newStatus != null && messageIdsList != null && messageIdsList.isNotEmpty) {
-            final messageIds = messageIdsList.map((e) => int.tryParse(e.toString()) ?? 0).toList();
-            bool changed = false;
-            for (int i = 0; i < messages.length; i++) {
-              if (messageIds.contains(messages[i].id)) {
-                if (messages[i].status != 'seen') {
-                   messages[i] = messages[i].copyWith(status: newStatus);
-                   changed = true;
+        bool changed = false;
+        for (var lastUpdate in list) {
+          final updateSessionId = int.tryParse(
+            lastUpdate['session_id']?.toString() ?? 
+            lastUpdate['chat_session_id']?.toString() ?? 
+            lastUpdate['chat_assistance_session_id']?.toString() ?? 
+            lastUpdate['sessionId']?.toString() ?? ''
+          ) ?? 0;
+          if (updateSessionId == _sessionId) {
+            final newStatus = lastUpdate['status']?.toString();
+            final messageIdsList = (lastUpdate['message_ids'] ?? lastUpdate['messageIds']) as List<dynamic>?;
+            if (newStatus != null && messageIdsList != null && messageIdsList.isNotEmpty) {
+              final messageIds = messageIdsList.map((e) => int.tryParse(e.toString()) ?? 0).toList();
+              for (int i = 0; i < messages.length; i++) {
+                if (messageIds.contains(messages[i].id)) {
+                  if (newStatus == 'seen' && messages[i].status != 'seen') {
+                    messages[i] = messages[i].copyWith(status: 'seen');
+                    changed = true;
+                  } else if (newStatus == 'delivered' && messages[i].status == 'sent') {
+                    messages[i] = messages[i].copyWith(status: 'delivered');
+                    changed = true;
+                  }
                 }
               }
             }
-            if (changed) {
-              messages.refresh();
-            }
           }
+        }
+        if (changed) {
+          messages.refresh();
         }
       }
     });
