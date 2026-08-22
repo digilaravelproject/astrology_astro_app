@@ -85,12 +85,12 @@ class ChatHistoryScreen extends StatelessWidget {
                       }
 
                       final Map<String, String> details = {
-                          "Name": session.consumer?.name ?? "User (AT-${session.consumerId})",
-                          "Gender": session.consumer?.gender?.capitalizeFirst ?? "N/A",
-                          "DOB": dobStr,
-                          "Duration": "$durationMinutes minutes",
-                          "Rate": "₹ ${session.ratePerMinute}/min",
-                          "POB": session.consumer?.placeOfBirth ?? "N/A",
+                          "Name".tr: session.consumer?.name ?? "User (AT-${session.consumerId})",
+                          "Gender".tr: session.consumer?.gender?.capitalizeFirst ?? "N/A",
+                          "DOB".tr: dobStr,
+                          "Duration".tr: "$durationMinutes ${'minutes'.tr}",
+                          "Rate".tr: "₹ ${session.ratePerMinute}/min",
+                          "POB".tr: session.consumer?.placeOfBirth ?? "N/A",
                         };
 
                         return _buildHistoryCard(
@@ -132,8 +132,8 @@ class ChatHistoryScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
-      appBar: const CustomAppBar(
-        title: 'Chat History',
+      appBar: CustomAppBar(
+        title: 'Chat History'.tr,
       ),
       body: content,
     );
@@ -166,14 +166,14 @@ class ChatHistoryScreen extends StatelessWidget {
           GestureDetector(
             onTap: () {
               Get.to(() => CallDetailsScreen(
-                    title: 'Chat Details',
-                    name: details["Name"]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "N/A",
-                    dateOfBirth: details["DOB"] ?? "N/A",
-                    placeOfBirth: details["POB"] ?? "N/A",
-                    gender: details["Gender"] ?? "N/A",
+                    title: 'Chat Details'.tr,
+                    name: details["Name".tr]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "N/A",
+                    dateOfBirth: details["DOB".tr] ?? "N/A",
+                    placeOfBirth: details["POB".tr] ?? "N/A",
+                    gender: details["Gender".tr] ?? "N/A",
                     schedule: date,
-                    duration: details["Duration"] ?? "N/A",
-                    rating: details["Rating"] ?? "N/A",
+                    duration: details["Duration".tr] ?? "N/A",
+                    rating: details["Rating".tr] ?? "N/A",
                   ));
             },
             child: Container(
@@ -283,7 +283,7 @@ class ChatHistoryScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          AppText(details["Name"]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "User", fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+                          AppText(details["Name".tr]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "User", fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
                           const SizedBox(height: 2),
                           AppText(
                             "ID: $id",
@@ -314,7 +314,7 @@ class ChatHistoryScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            AppText("Session Date", fontSize: 12, color: Colors.grey.shade500),
+                            AppText("Session Date".tr, fontSize: 12, color: Colors.grey.shade500),
                             const SizedBox(height: 2),
                             AppText(date, fontSize: 14, fontWeight: FontWeight.w700, color: Colors.black87, overflow: TextOverflow.ellipsis),
                           ],
@@ -324,7 +324,7 @@ class ChatHistoryScreen extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          AppText("Total Amount", fontSize: 12, color: Colors.grey.shade500),
+                          AppText("Total Amount".tr, fontSize: 12, color: Colors.grey.shade500),
                           const SizedBox(height: 2),
                           Row(
                             children: [
@@ -374,13 +374,13 @@ class ChatHistoryScreen extends StatelessWidget {
                                         color: isOffer ? const Color(0xFFD4A66A) : Colors.grey.shade700,
                                       ),
                                     ),
-                                    if (entry.key == "Name" || entry.key == "POB")
+                                    if (entry.key == "Name".tr || entry.key == "POB".tr)
                                       GestureDetector(
                                         onTap: () {
                                           Clipboard.setData(ClipboardData(text: entry.value));
                                           CustomSnackBar.disabledSnackbar(
-                                            'Copied',
-                                            '${entry.key} copied to clipboard',
+                                            'Copied'.tr,
+                                            '${entry.key} copied to clipboard'.tr,
                                             snackPosition: SnackPosition.BOTTOM,
                                             duration: const Duration(seconds: 2),
                                             backgroundColor: Colors.black87,
@@ -407,7 +407,7 @@ class ChatHistoryScreen extends StatelessWidget {
                           if (showSuggestRemedy) ...[
                             Expanded(
                               child: CustomButton(
-                                text: "Suggest Remedy",
+                                text: "Suggest Remedy".tr,
                                 onPressed: () {},
                                 height: 42,
                                 padding: EdgeInsets.zero,
@@ -420,13 +420,13 @@ class ChatHistoryScreen extends StatelessWidget {
                           ],
                           Expanded(
                               child: CustomButton(
-                                text: "Open Kundli",
+                                text: "Open Kundli".tr,
                                   onPressed: () => Get.to(() => KundliScreen(
-                                    fullName: details["Name"]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "",
-                                    gender: details["Gender"] ?? "",
+                                    fullName: details["Name".tr]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "",
+                                    gender: details["Gender".tr] ?? "",
                                     dob: dobVal ?? "",
                                     tob: tobVal ?? "",
-                                    place: details["POB"] ?? "",
+                                    place: details["POB".tr] ?? "",
                                     latitude: latitude ?? 0.0,
                                     longitude: longitude ?? 0.0,
                                   )),
@@ -440,13 +440,13 @@ class ChatHistoryScreen extends StatelessWidget {
                           const SizedBox(width: 8),
                           Expanded(
                             child: CustomButton(
-                              text: "Chat Assistant",
+                              text: "Chat Assistant".tr,
                               onPressed: () {
                                 debugPrint("Chat History: Chat Assistant clicked! chatAssistanceSessionId: $chatAssistanceSessionId");
                                 if (chatAssistanceSessionId != null) {
                                   Get.to(() => AssistanceChatRoomScreen(
                                     sessionId: chatAssistanceSessionId,
-                                    userName: details["Name"]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "User",
+                                    userName: details["Name".tr]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "User",
                                     userImage: imageUrl,
                                   ));
                                 } else {

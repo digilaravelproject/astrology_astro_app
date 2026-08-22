@@ -159,12 +159,12 @@ class AstrologerSessionsScreen extends StatelessWidget {
 
     // Build detail map
     final details = <String, String>{
-      'Name': name,
-      'Gender': gender,
-      'DOB': dob,
-      'Duration': duration,
-      'Rate': rate,
-      'POB': pob,
+      'Name'.tr: name,
+      'Gender'.tr: gender,
+      'DOB'.tr: dob,
+      'Duration'.tr: duration,
+      'Rate'.tr: rate,
+      'POB'.tr: pob,
     };
 
     String? dobPart;
@@ -271,7 +271,7 @@ class AstrologerSessionsScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              AppText('Session Date', fontSize: 12, color: Colors.grey.shade500),
+                              AppText('Session Date'.tr, fontSize: 12, color: Colors.grey.shade500),
                               const SizedBox(height: 2),
                               AppText(date, fontSize: 14, fontWeight: FontWeight.w700, color: Colors.black87, overflow: TextOverflow.ellipsis),
                             ],
@@ -281,7 +281,7 @@ class AstrologerSessionsScreen extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            AppText('Total Amount', fontSize: 12, color: Colors.grey.shade500),
+                            AppText('Total Amount'.tr, fontSize: 12, color: Colors.grey.shade500),
                             const SizedBox(height: 2),
                             AppText('₹ $totalCost', fontSize: 16, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
                           ],
@@ -312,7 +312,7 @@ class AstrologerSessionsScreen extends StatelessWidget {
                                 Expanded(
                                   child: AppText(entry.value, fontSize: 13, fontWeight: FontWeight.w600, color: Colors.grey.shade700),
                                 ),
-                                 if (entry.key == 'Name' || entry.key == 'POB')
+                                 if (entry.key == 'Name'.tr || entry.key == 'POB'.tr)
                                    GestureDetector(
                                      onTap: () {
                                        Clipboard.setData(ClipboardData(text: entry.value));
@@ -345,7 +345,7 @@ class AstrologerSessionsScreen extends StatelessWidget {
                     children: [
                       Expanded(
                         child: CustomButton(
-                          text: 'Open Kundli',
+                          text: 'Open Kundli'.tr,
                           onPressed: () => Get.to(() => KundliScreen(
                             fullName: name,
                             gender: consumer?.gender ?? "",
@@ -365,7 +365,7 @@ class AstrologerSessionsScreen extends StatelessWidget {
                       const SizedBox(width: 8),
                       Expanded(
                         child: CustomButton(
-                          text: 'Chat Assistant',
+                          text: 'Chat Assistant'.tr,
                           onPressed: () {
                             if (session.chatAssistanceSessionId != null) {
                               Get.to(() => AssistanceChatRoomScreen(
