@@ -344,6 +344,7 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
 
     switch (status) {
       case 'sending':
+      case 'sending...':
         return const SizedBox(
           width: 12,
           height: 12,
@@ -361,6 +362,7 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
         iconColor = Colors.white70;
         break;
       case 'read':
+      case 'seen':
         iconData = Icons.done_all;
         iconColor = Colors.blue.shade200;
         break;

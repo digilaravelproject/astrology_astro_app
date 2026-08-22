@@ -33,6 +33,7 @@ class AssistanceChatRoomController extends GetxController {
   void initSession(int sessionId) {
     _sessionId = sessionId;
     _currentUserId = WebSocketService.currentUserId ?? 0;
+    WebSocketService.activeSessionId = sessionId;
     fetchMessages();
     fetchAstrologerStatus();
     _setupWebsocketListeners();
@@ -408,6 +409,9 @@ class AssistanceChatRoomController extends GetxController {
     _statusUpdateSub?.cancel();
     messageController.dispose();
     scrollController.dispose();
+    if (WebSocketService.activeSessionId == _sessionId) {
+      WebSocketService.activeSessionId = null;
+    }
     try {
       Get.find<WebSocketService>().unsubscribeFromChannel('private-chat-assistance.$_sessionId');
     } catch (_) {}
