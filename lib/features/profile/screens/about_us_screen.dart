@@ -23,7 +23,7 @@ class AboutUsScreen extends GetView<SupportController> {
 
         final data = controller.aboutUsData.value;
         if (data == null) {
-          return const Center(child: AppText("No data available"));
+          return Center(child: AppText("No data available".tr));
         }
 
         // Simple formatting for HTML content to avoid external dependencies

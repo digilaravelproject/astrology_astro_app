@@ -57,8 +57,8 @@ class InvoiceController extends GetxController {
         return;
       }
 
-      // Get document directory
-      final Directory dir = await getApplicationDocumentsDirectory();
+      // Get temporary directory (safer for FileProvider sharing across apps)
+      final Directory dir = await getTemporaryDirectory();
       // Parse year and month from URL or use a safe filename
       final uri = Uri.parse(url);
       final pathSegments = uri.pathSegments;

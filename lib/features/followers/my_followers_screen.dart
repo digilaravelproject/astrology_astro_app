@@ -267,7 +267,7 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
                     AppText(
                       followerController.searchQuery.isNotEmpty 
                         ? 'No favorites match "${followerController.searchQuery.value}"' 
-                        : 'No Data Available', 
+                        : 'No Data Available'.tr, 
                       color: Colors.grey.shade700, fontSize: 16
                     ),
                   ],

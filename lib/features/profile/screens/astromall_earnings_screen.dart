@@ -36,9 +36,9 @@ class _AstromallEarningsScreenState extends State<AstromallEarningsScreen> {
               const SizedBox(height: 12),
               _buildPerformanceGrid(),
               const SizedBox(height: 40),
-              const Center(
+              Center(
                 child: AppText(
-                  'No Data Available',
+                  'No Data Available'.tr,
                   fontSize: 16,
                   color: AppColors.accentColor,
                   fontWeight: FontWeight.w500,

@@ -98,16 +98,16 @@ class CallHistoryScreen extends StatelessWidget {
 
                     final Map<String, String> details = {
                       "Name": session.consumer?.name ?? "User (AT-${session.consumerId})",
-                      "Gender": session.consumer?.gender?.capitalizeFirst ?? "N/A",
+                      "Gender": (session.consumer?.gender?.capitalizeFirst ?? "N/A").tr,
                       "DOB": dobStr,
-                      "Duration": "$durationMinutes minutes",
-                      "Rate": "₹ ${session.ratePerMinute}/min",
+                      "Duration": "$durationMinutes ${"minutes".tr}",
+                      "Rate": "₹ ${session.ratePerMinute}/${"min".tr}",
                       "POB": session.consumer?.placeOfBirth ?? "N/A",
                     };
 
                     return _buildHistoryCard(
                       context,
-                      type: "New (indian)",
+                      type: "New (indian)".tr,
                       status: session.status.capitalizeFirst ?? "Completed",
                       id: "${session.id}",
                       price: session.totalCost.toString(),
@@ -132,8 +132,8 @@ class CallHistoryScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
-      appBar: const CustomAppBar(
-        title: 'Call History',
+      appBar: CustomAppBar(
+        title: 'Call History'.tr,
       ),
       body: content,
     );
@@ -200,7 +200,7 @@ class CallHistoryScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: AppText(
-                          type,
+                          type.tr,
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                           color: Colors.blue.shade400,
@@ -216,7 +216,7 @@ class CallHistoryScreen extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             AppText(
-                              status,
+                              status.tr,
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
                               color: Colors.green.shade700,
@@ -279,10 +279,10 @@ class CallHistoryScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            AppText(details["Name"]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "User", fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+                            AppText(details["Name"]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "User".tr, fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
                             const SizedBox(height: 2),
                             AppText(
-                              "ID: $id",
+                              "${"ID:".tr} $id",
                               fontSize: 13,
                               color: Colors.grey.shade500,
                               fontWeight: FontWeight.w500,
@@ -332,8 +332,8 @@ class CallHistoryScreen extends StatelessWidget {
                               onSelected: (value) {
                                 if (value == 'block') {
                                   CustomSnackBar.disabledSnackbar(
-                                    'Block User',
-                                    'Block user action triggered for ${details["Name"]}',
+                                    'Block User'.tr,
+                                    'Block user action triggered for ${details["Name"]}'.tr,
                                     snackPosition: SnackPosition.BOTTOM,
                                     backgroundColor: Colors.black87,
                                     colorText: Colors.white,
@@ -341,9 +341,9 @@ class CallHistoryScreen extends StatelessWidget {
                                 }
                               },
                               itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                                const PopupMenuItem<String>(
+                                PopupMenuItem<String>(
                                   value: 'block',
-                                  child: AppText('Block User', fontSize: 14),
+                                  child: AppText('Block User'.tr, fontSize: 14),
                                 ),
                               ],
                             ),
@@ -372,7 +372,7 @@ class CallHistoryScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              AppText("Session Date", fontSize: 12, color: Colors.grey.shade500),
+                              AppText("Session Date".tr, fontSize: 12, color: Colors.grey.shade500),
                               const SizedBox(height: 2),
                               AppText(date, fontSize: 14, fontWeight: FontWeight.w700, color: Colors.black87, overflow: TextOverflow.ellipsis),
                             ],
@@ -382,7 +382,7 @@ class CallHistoryScreen extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            AppText("Total Amount", fontSize: 12, color: Colors.grey.shade500),
+                            AppText("Total Amount".tr, fontSize: 12, color: Colors.grey.shade500),
                             const SizedBox(height: 2),
                             AppText("₹ $price", fontSize: 16, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
                           ],
@@ -405,7 +405,7 @@ class CallHistoryScreen extends StatelessWidget {
                           SizedBox(
                             width: 100,
                             child: AppText(
-                              entry.key,
+                              entry.key.tr,
                               fontSize: 14,
                               color: Colors.black87,
                               fontWeight: FontWeight.w600,
@@ -417,7 +417,7 @@ class CallHistoryScreen extends StatelessWidget {
                               children: [
                                 Expanded(
                                   child: AppText(
-                                    entry.value,
+                                    entry.value.tr,
                                     fontSize: 13,
                                     color: entry.key == "Rating" ? Colors.amber : Colors.grey.shade700,
                                     fontWeight: FontWeight.w600,
@@ -444,7 +444,7 @@ class CallHistoryScreen extends StatelessWidget {
                       if (showSuggestRemedy) ...[
                         Expanded(
                           child: CustomButton(
-                            text: "Suggest Remedy",
+                            text: "Suggest Remedy".tr,
                             onPressed: () {},
                             height: 42,
                             padding: EdgeInsets.zero,
@@ -457,10 +457,10 @@ class CallHistoryScreen extends StatelessWidget {
                       ],
                       Expanded(
                         child: CustomButton(
-                          text: "Open Kundli",
+                          text: "Open Kundli".tr,
                           onPressed: () => Get.to(() => KundliScreen(
-                            fullName: details["Name"] ?? "Unknown",
-                            gender: details["Gender"] ?? "Male",
+                            fullName: details["Name"] ?? "Unknown".tr,
+                            gender: details["Gender"] ?? "Male".tr,
                             dob: details["DOB"] ?? "",
                             tob: "",
                             place: details["POB"] ?? "",
@@ -477,12 +477,12 @@ class CallHistoryScreen extends StatelessWidget {
                       const SizedBox(width: 8),
                       Expanded(
                         child: CustomButton(
-                          text: "Chat Assistant",
+                          text: "Chat Assistant".tr,
                           onPressed: () {
                             if (chatAssistanceSessionId != null) {
                               Get.to(() => AssistanceChatRoomScreen(
                                 sessionId: chatAssistanceSessionId,
-                                userName: details["Name"]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "User",
+                                userName: details["Name"]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "User".tr,
                                 userImage: imageUrl,
                               ));
                             } else {

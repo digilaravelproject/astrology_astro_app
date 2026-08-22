@@ -656,7 +656,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                   Icon(titleIcon, size: 20, color: AppColors.primaryColor),
                   const SizedBox(width: 8),
                 ],
-                Text(title, style: TextStyle(fontSize: 16, color: AppColors.textColorPrimary.withOpacity(0.8))),
+                Text(title.tr, style: TextStyle(fontSize: 16, color: AppColors.textColorPrimary.withOpacity(0.8))),
               ],
             ),
             const SizedBox(height: 8),
@@ -675,7 +675,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.only(bottom: 4, top: 8),
-          child: AppText(label, fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textColorPrimary.withOpacity(0.6)),
+          child: AppText(label.tr, fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textColorPrimary.withOpacity(0.6)),
         ),
         GestureDetector(
           onTap: isPicker ? (onTap ?? () {}) : null,
@@ -707,7 +707,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                     style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.textColorPrimary),
                     onTap: isPicker ? (onTap ?? () {}) : null,
                     decoration: InputDecoration(
-                      hintText: hint,
+                      hintText: hint.tr,
                       hintStyle: TextStyle(color: AppColors.textColorHint.withOpacity(0.6), fontSize: 12),
                       filled: false,
                       fillColor: Colors.transparent,
@@ -805,10 +805,10 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
                     child: Text(
-                      'Select Birth Date',
+                      'Select Birth Date'.tr,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -847,9 +847,9 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                       width: double.infinity,
                       alignment: Alignment.center,
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      child: const Text(
-                        'Done',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primaryColor),
+                      child: Text(
+                        'Done'.tr,
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primaryColor),
                       ),
                     ),
                   ),
@@ -895,10 +895,10 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
                     child: Text(
-                      'Select Birth Time',
+                      'Select Birth Time'.tr,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -935,9 +935,9 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                       width: double.infinity,
                       alignment: Alignment.center,
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      child: const Text(
-                        'Done',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primaryColor),
+                      child: Text(
+                        'Done'.tr,
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primaryColor),
                       ),
                     ),
                   ),
@@ -999,7 +999,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                   padding: const EdgeInsets.all(24),
                   child: Row(
                     children: [
-                      AppText(title, fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.textColorPrimary),
+                      AppText(title.tr, fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.textColorPrimary),
                       const Spacer(),
                       IconButton(
                         icon: const Icon(Icons.close_rounded),
@@ -1019,11 +1019,11 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                     ),
                     child: TextField(
                       onChanged: (val) => setSheetState(() => searchQuery = val),
-                      decoration: const InputDecoration(
-                        hintText: 'Search...',
-                        prefixIcon: Icon(Icons.search_rounded, color: AppColors.primaryColor),
+                      decoration: InputDecoration(
+                        hintText: 'Search...'.tr,
+                        prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primaryColor),
                         border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(vertical: 14),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                     ),
                   ),
@@ -1036,7 +1036,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                     itemBuilder: (context, index) {
                       return ListTile(
                         leading: const Icon(Icons.location_on_outlined, color: AppColors.primaryColor, size: 20),
-                        title: AppText(filteredItems[index], fontSize: 16),
+                        title: AppText(filteredItems[index].tr, fontSize: 16),
                         onTap: () {
                           onSelect(filteredItems[index]);
                           Navigator.pop(context);

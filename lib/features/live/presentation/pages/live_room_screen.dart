@@ -565,161 +565,164 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
             bottom: 0,
             left: 0,
             right: 0,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.transparent, Colors.black.withOpacity(0.9)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
+            child: SafeArea(
+              top: false,
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.transparent, Colors.black.withOpacity(0.9)],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
                 ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Title of live stream
-                  AppText(
-                    widget.session.title,
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  const SizedBox(height: 4),
-                  AppText(
-                    widget.session.description ?? 'Broadcasting Live',
-                    color: Colors.white70,
-                    fontSize: 12,
-                  ),
-                  const SizedBox(height: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title of live stream
+                    AppText(
+                      widget.session.title,
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    const SizedBox(height: 4),
+                    AppText(
+                      widget.session.description ?? 'Broadcasting Live',
+                      color: Colors.white70,
+                      fontSize: 12,
+                    ),
+                    const SizedBox(height: 16),
 
-                  // Real-time Comments List
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxHeight: 180),
-                    child: ShaderMask(
-                      shaderCallback: (Rect bounds) {
-                        return const LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [Colors.transparent, Colors.white],
-                          stops: [0.0, 0.25],
-                        ).createShader(bounds);
-                      },
-                      blendMode: BlendMode.dstIn,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        controller: _scrollController,
-                        itemCount: _comments.length,
-                        itemBuilder: (context, index) {
-                          final c = _comments[index];
+                    // Real-time Comments List
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 180),
+                      child: ShaderMask(
+                        shaderCallback: (Rect bounds) {
+                          return const LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [Colors.transparent, Colors.white],
+                            stops: [0.0, 0.25],
+                          ).createShader(bounds);
+                        },
+                        blendMode: BlendMode.dstIn,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          controller: _scrollController,
+                          itemCount: _comments.length,
+                          itemBuilder: (context, index) {
+                            final c = _comments[index];
 
 
-                          final avatarUrl = (c.userAvatar != null && c.userAvatar!.isNotEmpty)
-                              ? (c.userAvatar!.startsWith('http')
-                                  ? c.userAvatar!
-                                  : '${AppUrls.baseImageUrl}${c.userAvatar}')
-                              : null;
+                            final avatarUrl = (c.userAvatar != null && c.userAvatar!.isNotEmpty)
+                                ? (c.userAvatar!.startsWith('http')
+                                    ? c.userAvatar!
+                                    : '${AppUrls.baseImageUrl}${c.userAvatar}')
+                                : null;
 
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ClipOval(
-                                  child: Container(
-                                    width: 24,
-                                    height: 24,
-                                    color: Colors.grey.shade800,
-                                    child: avatarUrl != null
-                                        ? CachedNetworkImage(
-                                            imageUrl: avatarUrl,
-                                            fit: BoxFit.cover,
-                                            placeholder: (context, url) => const Icon(Icons.person, size: 12, color: Colors.white),
-                                            errorWidget: (context, url, error) => const Icon(Icons.person, size: 12, color: Colors.white),
-                                          )
-                                        : const Icon(Icons.person, size: 12, color: Colors.white),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: RichText(
-                                    text: TextSpan(
-                                      children: [
-                                        TextSpan(
-                                          text: c.isSystem ? '${c.user} ' : '${c.user}: ',
-                                          style: const TextStyle(
-                                            color: Colors.amber,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 13,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: c.message,
-                                          style: TextStyle(
-                                            color: c.isSystem ? Colors.white70 : Colors.white,
-                                            fontSize: 13,
-                                            fontStyle: c.isSystem ? FontStyle.italic : FontStyle.normal,
-                                          ),
-                                        ),
-                                        if (c.giftIconUrl != null)
-                                          WidgetSpan(
-                                            alignment: PlaceholderAlignment.middle,
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(left: 4),
-                                              child: CachedNetworkImage(
-                                                imageUrl: c.giftIconUrl!,
-                                                width: 24,
-                                                height: 24,
-                                                placeholder: (context, url) => const SizedBox(width: 24, height: 24),
-                                                errorWidget: (context, url, error) => const Icon(Icons.card_giftcard, size: 20, color: Colors.orange),
-                                              ),
-                                            ),
-                                          ),
-                                      ],
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ClipOval(
+                                    child: Container(
+                                      width: 24,
+                                      height: 24,
+                                      color: Colors.grey.shade800,
+                                      child: avatarUrl != null
+                                          ? CachedNetworkImage(
+                                              imageUrl: avatarUrl,
+                                              fit: BoxFit.cover,
+                                              placeholder: (context, url) => const Icon(Icons.person, size: 12, color: Colors.white),
+                                              errorWidget: (context, url, error) => const Icon(Icons.person, size: 12, color: Colors.white),
+                                            )
+                                          : const Icon(Icons.person, size: 12, color: Colors.white),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: RichText(
+                                      text: TextSpan(
+                                        children: [
+                                          TextSpan(
+                                            text: c.isSystem ? '${c.user} ' : '${c.user}: ',
+                                            style: const TextStyle(
+                                              color: Colors.amber,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text: c.message,
+                                            style: TextStyle(
+                                              color: c.isSystem ? Colors.white70 : Colors.white,
+                                              fontSize: 13,
+                                              fontStyle: c.isSystem ? FontStyle.italic : FontStyle.normal,
+                                            ),
+                                          ),
+                                          if (c.giftIconUrl != null)
+                                            WidgetSpan(
+                                              alignment: PlaceholderAlignment.middle,
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(left: 4),
+                                                child: CachedNetworkImage(
+                                                  imageUrl: c.giftIconUrl!,
+                                                  width: 24,
+                                                  height: 24,
+                                                  placeholder: (context, url) => const SizedBox(width: 24, height: 24),
+                                                  errorWidget: (context, url, error) => const Icon(Icons.card_giftcard, size: 20, color: Colors.orange),
+                                                ),
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
-                  // Controls Area
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      // Camera on/off
-                      _buildControlButton(
-                        icon: _isCameraOn ? Icons.videocam : Icons.videocam_off,
-                        color: _isCameraOn ? Colors.white24 : Colors.red,
-                        onPressed: _toggleCamera,
-                      ),
+                    // Controls Area
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        // Camera on/off
+                        _buildControlButton(
+                          icon: _isCameraOn ? Icons.videocam : Icons.videocam_off,
+                          color: _isCameraOn ? Colors.white24 : Colors.red,
+                          onPressed: _toggleCamera,
+                        ),
 
-                      // Flip Camera
-                      _buildControlButton(
-                        icon: Icons.switch_camera_rounded,
-                        color: Colors.white24,
-                        onPressed: () {
-                          final track = _localVideoTrack;
-                          if (track != null) {
-                            Helper.switchCamera(track.mediaStreamTrack);
-                          }
-                        },
-                      ),
-                      
-                      // Mute microphone
-                      _buildControlButton(
-                        icon: _isMuted ? Icons.mic_off : Icons.mic,
-                        color: _isMuted ? Colors.red : Colors.white24,
-                        onPressed: _toggleMic,
-                      ),
+                        // Flip Camera
+                        _buildControlButton(
+                          icon: Icons.switch_camera_rounded,
+                          color: Colors.white24,
+                          onPressed: () {
+                            final track = _localVideoTrack;
+                            if (track != null) {
+                              Helper.switchCamera(track.mediaStreamTrack);
+                            }
+                          },
+                        ),
+                        
+                        // Mute microphone
+                        _buildControlButton(
+                          icon: _isMuted ? Icons.mic_off : Icons.mic,
+                          color: _isMuted ? Colors.red : Colors.white24,
+                          onPressed: _toggleMic,
+                        ),
 
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

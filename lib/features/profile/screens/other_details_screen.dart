@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import '../../../core/theme/app_colors.dart';
@@ -57,7 +58,7 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
             ),
             const SizedBox(height: 24),
             AppText(
-              'Select $title',
+              '${'Select'.tr} ${title.tr}',
               fontSize: 20,
               fontWeight: FontWeight.w800,
               color: const Color(0xFF2E1A47),
@@ -100,7 +101,7 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
                         children: [
                           Expanded(
                             child: AppText(
-                              option,
+                              option.tr,
                               fontSize: 14,
                               fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                               color: isSelected ? AppColors.primaryColor : const Color(0xFF2E1A47),
@@ -161,7 +162,7 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
               ),
               const SizedBox(height: 24),
               AppText(
-                'Edit $title',
+                '${'Edit'.tr} ${title.tr}',
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
                 color: const Color(0xFF2E1A47),
@@ -180,7 +181,7 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
                   autofocus: true,
                   style: const TextStyle(fontSize: 14, color: Color(0xFF2E1A47)),
                   decoration: InputDecoration(
-                    hintText: hint,
+                    hintText: hint.tr,
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
                     hintStyle: TextStyle(fontSize: 13, color: Colors.grey.shade400),
@@ -189,7 +190,7 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
               ),
               const SizedBox(height: 24),
               Obx(() => CustomButton(
-                text: 'Save Changes',
+                text: 'Save Changes'.tr,
                 onPressed: () async {
                   controller.isLoadingSheet.value = true;
                   final oldValue = currentValue.value;
@@ -238,12 +239,88 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
               backgroundColor: const Color(0xFFE3F2FD),
               onTap: () async {
                 final eighteenYearsAgo = DateTime(DateTime.now().year - 18, DateTime.now().month, DateTime.now().day);
-                final date = await showDatePicker(
+                DateTime tempDate = eighteenYearsAgo;
+                
+                // Parse existing date if not empty
+                if (controller.dateOfBirth.value.isNotEmpty) {
+                  try {
+                    tempDate = DateTime.parse(controller.dateOfBirth.value);
+                  } catch (_) {}
+                }
+
+                final date = await showModalBottomSheet<DateTime>(
                   context: context,
-                  initialDate: eighteenYearsAgo,
-                  firstDate: DateTime(1950),
-                  lastDate: eighteenYearsAgo,
+                  backgroundColor: Colors.transparent,
+                  builder: (BuildContext context) {
+                    return Container(
+                      height: 320,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                      ),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 12),
+                          Container(
+                            width: 40,
+                            height: 4,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade300,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            child: AppText(
+                              'Select Birth Date'.tr,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.primaryColor,
+                            ),
+                          ),
+                          Expanded(
+                            child: CupertinoTheme(
+                              data: const CupertinoThemeData(
+                                textTheme: CupertinoTextThemeData(
+                                  dateTimePickerTextStyle: TextStyle(
+                                    color: AppColors.primaryColor,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                              child: CupertinoDatePicker(
+                                mode: CupertinoDatePickerMode.date,
+                                initialDateTime: tempDate,
+                                minimumDate: DateTime(1900),
+                                maximumDate: DateTime.now(),
+                                onDateTimeChanged: (DateTime newDate) {
+                                  tempDate = newDate;
+                                },
+                              ),
+                            ),
+                          ),
+                          const Divider(height: 1, color: Colors.black12),
+                          InkWell(
+                            onTap: () => Navigator.of(context).pop(tempDate),
+                            child: Container(
+                              width: double.infinity,
+                              alignment: Alignment.center,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              child: AppText(
+                                'Done'.tr,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primaryColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 );
+
                 if (date != null) {
                   final formattedDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
                   final oldValue = controller.dateOfBirth.value;

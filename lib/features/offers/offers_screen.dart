@@ -70,7 +70,7 @@ class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderSt
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       color: Colors.white,
       child: AppText(
-        'Loyal - Customers who have spoken with you for more than 15 minutes (including both call and chat)',
+        'Loyal - Customers who have spoken with you for more than 15 minutes (including both call and chat)'.tr,
         fontSize: 12,
         color: Colors.grey.shade600,
         fontWeight: FontWeight.w400,
@@ -90,9 +90,9 @@ class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderSt
         indicatorSize: TabBarIndicatorSize.tab,
         labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, fontFamily: 'Poppins'),
         unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 13, fontFamily: 'Poppins'),
-        tabs: const [
-          Tab(text: 'ALL OFFERS'),
-          Tab(text: 'HISTORY'),
+        tabs: [
+          Tab(child: Text('ALL OFFERS'.tr)),
+          Tab(child: Text('HISTORY'.tr)),
         ],
       ),
     );
@@ -104,7 +104,7 @@ class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderSt
         return const Center(child: CircularProgressIndicator());
       }
       if (_controller.offers.isEmpty) {
-        return const Center(child: AppText('No offers available.'));
+        return Center(child: AppText('No offers available.'.tr));
       }
       return RefreshIndicator(
         onRefresh: () => _controller.fetchOffers(),
@@ -300,7 +300,7 @@ class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderSt
             }).toList();
 
             if (filteredHistory.isEmpty) {
-              return const Center(child: AppText('No history available.'));
+              return Center(child: AppText('No history available.'.tr));
             }
 
             return RefreshIndicator(

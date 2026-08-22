@@ -142,7 +142,7 @@ class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
           onPressed: () => Get.back(),
         ),
         title: AppText(
-          'Set Sleep Hours',
+          'Set Sleep Hours'.tr,
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: Colors.white,
@@ -158,14 +158,14 @@ class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
                   children: [
                     const SizedBox(height: 10),
                     AppText(
-                      'When do you want to rest?',
+                      'When do you want to rest?'.tr,
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
                       color: const Color(0xFF2C2C2C),
                     ),
                     const SizedBox(height: 12),
                     AppText(
-                      'Choose your Sleep Time for up to 8 hours.\nEmergency sessions will be paused during your\nselected time.',
+                      'Choose your Sleep Time for up to 8 hours. Emergency sessions will be paused during your selected time.'.tr,
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
                       color: Colors.grey.shade600,
@@ -187,7 +187,7 @@ class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             AppText(
-                              'START SLEEP TIME',
+                              'START SLEEP TIME'.tr,
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
                               color: Colors.grey.shade500,
@@ -252,7 +252,7 @@ class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             AppText(
-                              'END SLEEP TIME',
+                              'END SLEEP TIME'.tr,
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
                               color: Colors.grey.shade500,
@@ -301,7 +301,7 @@ class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
                           Icon(Icons.schedule, size: 14, color: Colors.grey.shade600),
                           const SizedBox(width: 6),
                           AppText(
-                            'Total Rest: ',
+                            'Total Rest: '.tr,
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
                             color: Colors.grey.shade600,
@@ -325,7 +325,7 @@ class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
                         Icon(Icons.refresh, size: 16, color: Colors.grey.shade500),
                         const SizedBox(width: 6),
                         AppText(
-                          'Remove sleep time',
+                          'Remove sleep time'.tr,
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                           color: Colors.grey.shade500,
@@ -340,14 +340,14 @@ class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         AppText(
-                          'Repeat Daily',
+                          'Repeat Daily'.tr,
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                           color: const Color(0xFF2C2C2C),
                         ),
                         const SizedBox(height: 6),
                         AppText(
-                          'The Sleep Time you set will be automatically repeated daily.',
+                          'The Sleep Time you set will be automatically repeated daily.'.tr,
                           fontSize: 13,
                           fontWeight: FontWeight.w400,
                           color: Colors.grey.shade500,
@@ -397,7 +397,7 @@ class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
                           ),
                         )
                       : AppText(
-                          'Save Sleep Schedule',
+                          'Save Sleep Schedule'.tr,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: Colors.white,

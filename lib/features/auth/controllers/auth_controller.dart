@@ -485,8 +485,6 @@ class AuthController extends GetxController {
       updatedAstro = updatedAstro.copyWith(isChatEnabled: isOnline);
     } else if (type == 'call') {
       updatedAstro = updatedAstro.copyWith(isCallEnabled: isOnline);
-    } else if (type == 'video_call') {
-      updatedAstro = updatedAstro.copyWith(isVideoCallEnabled: isOnline);
     }
 
     currentUser.value = originalUser.copyWith(astrologer: updatedAstro);

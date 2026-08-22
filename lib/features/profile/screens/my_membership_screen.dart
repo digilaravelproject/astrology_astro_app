@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 
@@ -7,14 +8,14 @@ class MyMembershipScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: Color(0xFFF9F9F9),
       appBar: CustomAppBar(
         title: 'My Membership',
       ),
       body: Center(
         child: AppText(
-          'No Data Available',
+          'No Data Available'.tr,
           fontSize: 16,
           fontWeight: FontWeight.w500,
           color: Colors.grey,

@@ -40,7 +40,7 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: CustomAppBar(
-        title: 'Assistant Chat Requests',
+        title: 'Assistant Chat Requests'.tr,
       ),
       body: Column(
         children: [
@@ -58,7 +58,7 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
                   },
                   textAlignVertical: TextAlignVertical.center,
                   decoration: InputDecoration(
-                    hintText: 'Search chats...',
+                    hintText: 'Search chats...'.tr,
                     hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
                     prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primaryColor, size: 20),
                     suffixIcon: Obx(() => controller.searchQuery.value.isNotEmpty
@@ -210,7 +210,7 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
           ),
         ),
         child: AppText(
-          filterName,
+          filterName.tr,
           fontSize: 13,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
           color: isSelected ? Colors.white : Colors.black87,

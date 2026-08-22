@@ -131,6 +131,8 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
   AudioPlayer? _audioPlayer;
 
   Future<void> _startRingtone() async {
+    // Sound & vibration play disabled
+    /*
     try {
       _audioPlayer = AudioPlayer();
       await _audioPlayer?.setReleaseMode(ReleaseMode.loop);
@@ -142,15 +144,19 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
     } catch (e) {
       debugPrint("Error starting incoming chat ringtone: $e");
     }
+    */
   }
 
   void _stopRingtone() {
+    // Sound & vibration stop disabled
+    /*
     try {
       _audioPlayer?.stop();
       _audioPlayer?.dispose();
       _audioPlayer = null;
       Vibration.cancel();
     } catch (_) {}
+    */
   }
 
   @override

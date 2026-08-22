@@ -139,7 +139,7 @@ class AstrologerSkillsController extends GetxController {
                   child: Container(width: 50, height: 5, decoration: BoxDecoration(color: Colors.grey.shade200, borderRadius: BorderRadius.circular(10))),
                 ),
                 const SizedBox(height: 24),
-                AppText('Select ${title.tr}'.tr, fontSize: 20, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
+                AppText('${'Select'.tr} ${title.tr}', fontSize: 20, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
                 const SizedBox(height: 16),
                 Container(
                   height: 50,
@@ -148,7 +148,7 @@ class AstrologerSkillsController extends GetxController {
                     onChanged: (val) => setModalState(() => searchQuery = val),
                     style: const TextStyle(fontSize: 14, color: Color(0xFF2E1A47)),
                     decoration: InputDecoration(
-                      hintText: 'Search ${title.tr}...'.tr,
+                      hintText: '${'Search'.tr} ${title.tr}...',
                       prefixIcon: const Icon(Iconsax.search_normal_copy, size: 20),
                       suffixIcon: searchQuery.isNotEmpty
                           ? IconButton(icon: const Icon(Icons.close, size: 18), onPressed: () => setModalState(() => searchQuery = ''))
@@ -251,7 +251,7 @@ class AstrologerSkillsController extends GetxController {
                 child: Container(width: 50, height: 5, decoration: BoxDecoration(color: Colors.grey.shade200, borderRadius: BorderRadius.circular(10))),
               ),
               const SizedBox(height: 24),
-              AppText('Edit $title', fontSize: 20, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
+              AppText('${'Edit'.tr} ${title.tr}', fontSize: 20, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
               const SizedBox(height: 20),
               Container(
                 decoration: BoxDecoration(
@@ -265,7 +265,7 @@ class AstrologerSkillsController extends GetxController {
                   autofocus: true,
                   style: const TextStyle(fontSize: 14, color: Color(0xFF2E1A47)),
                   decoration: InputDecoration(
-                    hintText: 'Enter $title',
+                    hintText: '${'Enter'.tr} ${title.tr}',
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
                   ),
@@ -273,7 +273,7 @@ class AstrologerSkillsController extends GetxController {
               ),
               const SizedBox(height: 24),
               Obx(() => CustomButton(
-                text: 'Save Changes',
+                text: 'Save Changes'.tr,
                 onPressed: () async {
                   isLoadingSheet.value = true;
                   final oldValue = currentValue.value;
@@ -319,7 +319,7 @@ class AstrologerSkillsController extends GetxController {
           children: [
             Center(child: Container(width: 50, height: 5, decoration: BoxDecoration(color: Colors.grey.shade200, borderRadius: BorderRadius.circular(10)))),
             const SizedBox(height: 24),
-            AppText('Select $title', fontSize: 20, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
+            AppText('${'Select'.tr} ${title.tr}', fontSize: 20, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
             const SizedBox(height: 20),
             Flexible(
               child: ListView.separated(
@@ -354,7 +354,7 @@ class AstrologerSkillsController extends GetxController {
                       ),
                       child: Row(
                         children: [
-                          Expanded(child: AppText(option, fontSize: 14, fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400, color: isSelected ? AppColors.primaryColor : const Color(0xFF2E1A47))),
+                          Expanded(child: AppText(option.tr, fontSize: 14, fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400, color: isSelected ? AppColors.primaryColor : const Color(0xFF2E1A47))),
                           if (isSelected) const Icon(Icons.check_circle, color: AppColors.primaryColor, size: 20),
                         ],
                       ),

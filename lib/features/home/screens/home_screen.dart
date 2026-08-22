@@ -144,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             SliverAppBar(
-              pinned: true,
+              pinned: false,
               floating: false,
               elevation: 0,
               backgroundColor: Colors.white,
@@ -1036,14 +1036,14 @@ class _HomeScreenState extends State<HomeScreen> {
         textColor: const Color(0xFFE65100),
         onTap: () => Get.toNamed(AppRoutes.panchangScreen),
       ),
-      _MenuData(
+      /*_MenuData(
         title: 'Astrology Blog',
         icon: Iconsax.book_1_copy,
         bgColor: const Color(0xFFE8F5E9),
         iconBgColor: const Color(0xFFC8E6C9),
         textColor: const Color(0xFF2E7D32),
         onTap: () => Get.to(() => const BlogScreen()),
-      ),
+      ),*/
       // Commerce
       /*_MenuData(
         title: 'Astromall',

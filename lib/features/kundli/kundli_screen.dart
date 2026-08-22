@@ -306,7 +306,7 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
         indicatorSize: TabBarIndicatorSize.label,
         labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
         unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 13),
-        tabs: _tabs.map((tab) => Tab(text: tab)).toList(),
+        tabs: _tabs.map((tab) => Tab(child: Text(tab.tr))).toList(),
       ),
     );
   }
@@ -482,7 +482,7 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
         ),
         child: Center(
           child: AppText(
-            label,
+            label.tr,
             fontSize: 12,
             fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
             color: isActive ? Colors.white : AppColors.textColorSecondary,

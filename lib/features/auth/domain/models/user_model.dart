@@ -156,7 +156,6 @@ class AstrologerModel {
   final String status;
   final bool isChatEnabled;
   final bool isCallEnabled;
-  final bool isVideoCallEnabled;
   final String chatRate;
   final String callRate;
   final String videoCallRate;
@@ -185,7 +184,6 @@ class AstrologerModel {
     required this.status,
     required this.isChatEnabled,
     required this.isCallEnabled,
-    required this.isVideoCallEnabled,
     required this.chatRate,
     required this.callRate,
     required this.videoCallRate,
@@ -220,7 +218,6 @@ class AstrologerModel {
       status: json['status'] ?? '',
       isChatEnabled: json['is_chat_enabled'] == 1 || json['is_chat_enabled'] == true,
       isCallEnabled: json['is_call_enabled'] == 1 || json['is_call_enabled'] == true,
-      isVideoCallEnabled: json['is_video_call_enabled'] == 1 || json['is_video_call_enabled'] == true,
       chatRate: json['chat_rate_per_minute']?.toString() ?? '0.00',
       callRate: json['call_rate_per_minute']?.toString() ?? '0.00',
       videoCallRate: json['video_call_rate_per_minute']?.toString() ?? '0.00',
@@ -254,7 +251,6 @@ class AstrologerModel {
     String? status,
     bool? isChatEnabled,
     bool? isCallEnabled,
-    bool? isVideoCallEnabled,
     String? chatRate,
     String? callRate,
     String? videoCallRate,
@@ -283,7 +279,6 @@ class AstrologerModel {
       status: status ?? this.status,
       isChatEnabled: isChatEnabled ?? this.isChatEnabled,
       isCallEnabled: isCallEnabled ?? this.isCallEnabled,
-      isVideoCallEnabled: isVideoCallEnabled ?? this.isVideoCallEnabled,
       chatRate: chatRate ?? this.chatRate,
       callRate: callRate ?? this.callRate,
       videoCallRate: videoCallRate ?? this.videoCallRate,
@@ -315,7 +310,6 @@ class AstrologerModel {
       'status': status,
       'is_chat_enabled': isChatEnabled ? 1 : 0,
       'is_call_enabled': isCallEnabled ? 1 : 0,
-      'is_video_call_enabled': isVideoCallEnabled ? 1 : 0,
       'chat_rate': chatRate,
       'call_rate': callRate,
       'video_call_rate': videoCallRate,

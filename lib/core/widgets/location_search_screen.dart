@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart' as sax;
 import '../theme/app_colors.dart';
 import '../constants/app_constants.dart';
@@ -165,7 +166,7 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
           onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
         ),
         title: Text(
-          widget.title,
+          widget.title.tr,
           style: const TextStyle(
             color: AppColors.textColorPrimary,
             fontWeight: FontWeight.bold,
@@ -185,7 +186,7 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
               autofocus: true,
               style: const TextStyle(color: AppColors.textColorPrimary, fontSize: 15),
               decoration: InputDecoration(
-                hintText: 'Search city or birth place...',
+                hintText: 'Search city or birth place...'.tr,
                 hintStyle: const TextStyle(color: AppColors.textColorHint, fontSize: 14),
                 prefixIcon: const Icon(sax.Iconsax.location_copy, color: AppColors.primaryColor, size: 20),
                 suffixIcon: _searchController.text.isNotEmpty
@@ -224,23 +225,21 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
               ),
             ),
 
-          if (!_isLoading && _searchController.text.trim().isNotEmpty && _searchResults.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(30),
+            Padding(
+              padding: const EdgeInsets.all(30),
               child: Text(
-                'No matching location found. Please try another search.',
+                'No matching location found. Please try another search.'.tr,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.textColorSecondary, fontSize: 14),
+                style: const TextStyle(color: AppColors.textColorSecondary, fontSize: 14),
               ),
             ),
 
-          if (_searchController.text.trim().isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(30),
+            Padding(
+              padding: const EdgeInsets.all(30),
               child: Text(
-                'Type city or place name to search location via Google Maps API.',
+                'Type city or place name to search location via Google Maps API.'.tr,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.textColorSecondary, fontSize: 14),
+                style: const TextStyle(color: AppColors.textColorSecondary, fontSize: 14),
               ),
             ),
 

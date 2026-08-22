@@ -41,10 +41,10 @@ class AssistanceChatRoomController extends GetxController {
   Future<void> fetchAstrologerStatus() async {
     try {
       final response = await _apiClient.get(AppUrls.getAstrologerChatAssistanceStatus);
-      if (response.isSuccess) {
+      if (response.isSuccess && response.body['data'] != null) {
         final data = response.body['data'];
-        limitReached.value = data['limit_reached'] ?? false;
-        remainingMessages.value = data['remaining_messages'] ?? 0;
+        limitReached.value = (data['remaining'] ?? 0) <= 0;
+        remainingMessages.value = data['remaining'] ?? 0;
       }
     } catch (e) {
       debugPrint('Error fetching astrologer status: $e');
@@ -73,12 +73,14 @@ class AssistanceChatRoomController extends GetxController {
         messages.assignAll(dataList.map((msg) {
           final int senderId = int.tryParse(msg['sender_id']?.toString() ?? '') ?? 0;
           final bool isMe = senderId == _currentUserId;
+          final bool isRead = msg['is_read'] == true || msg['is_read'] == 1 || msg['is_read']?.toString() == '1' || msg['is_read']?.toString() == 'true';
+          final bool isDelivered = msg['is_delivered'] == true || msg['is_delivered'] == 1 || msg['is_delivered']?.toString() == '1' || msg['is_delivered']?.toString() == 'true';
           return ChatMessage(
             id: int.tryParse(msg['id']?.toString() ?? '') ?? 0,
             text: msg['message']?.toString() ?? '',
             isMe: isMe,
             time: DateTime.tryParse(msg['created_at']?.toString() ?? '') ?? DateTime.now(),
-            status: msg['is_read'] == true ? 'seen' : (msg['is_delivered'] == true ? 'delivered' : 'sent'),
+            status: isRead ? 'seen' : (isDelivered ? 'delivered' : 'sent'),
             type: msg['type']?.toString() ?? 'text',
             image: msg['type'] == 'image' ? msg['attachment_url']?.toString() : null,
             attachmentUrl: msg['attachment_url']?.toString(),

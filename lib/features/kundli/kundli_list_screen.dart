@@ -74,7 +74,7 @@ class _KundliListScreenState extends State<KundliListScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFFDF9F5), // Premium Ivory
       appBar: CustomAppBar(
-        title: widget.isMatchingMode ? 'Match Making' : 'Kundli',
+        title: widget.isMatchingMode ? 'Match Making'.tr : 'Kundli'.tr,
       ),
       body: Column(
         children: [
@@ -124,7 +124,7 @@ class _KundliListScreenState extends State<KundliListScreen> {
         onChanged: _onSearchChanged,
         style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
         decoration: InputDecoration(
-          hintText: "Search by name...",
+          hintText: "Search by name...".tr,
           hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
           prefixIcon: Icon(sax.Iconsax.search_normal_1_copy, size: 18, color: AppColors.primaryColor.withOpacity(0.6)),
           suffixIcon: _searchController.text.isNotEmpty
@@ -151,14 +151,14 @@ class _KundliListScreenState extends State<KundliListScreen> {
           Icon(sax.Iconsax.search_status_copy, size: 64, color: AppColors.primaryColor.withOpacity(0.1)),
           const SizedBox(height: 16),
           AppText(
-            "No Kundli Found",
+            "No Saved Kundlis".tr,
             fontSize: 18,
             fontWeight: FontWeight.bold,
             color: AppColors.textColorPrimary.withOpacity(0.5),
           ),
           const SizedBox(height: 8),
           AppText(
-            "Try searching with a different name",
+            "Try searching with a different name".tr,
             fontSize: 14,
             color: AppColors.textColorSecondary.withOpacity(0.5),
           ),
@@ -306,11 +306,11 @@ class _KundliListScreenState extends State<KundliListScreen> {
                           color: AppColors.primaryColor.withOpacity(0.05),
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             AppText(
-                              "View Kundli",
+                              "View Kundli".tr,
                               fontSize: 12,
                               color: AppColors.primaryColor,
                               fontWeight: FontWeight.w700,
@@ -417,7 +417,7 @@ class _KundliListScreenState extends State<KundliListScreen> {
                           Icon(sax.Iconsax.heart_copy, size: 18, color: canMatch ? AppColors.primaryColor : Colors.grey),
                           const SizedBox(width: 8),
                           AppText(
-                            "Match Making",
+                            "Match Making".tr,
                             color: canMatch ? AppColors.primaryColor : Colors.grey,
                             fontWeight: FontWeight.bold,
                             fontSize: 15,
@@ -450,9 +450,9 @@ class _KundliListScreenState extends State<KundliListScreen> {
                     ),
                   ],
                 ),
-                child: const Center(
+                child: Center(
                   child: AppText(
-                    "Create New",
+                    "Create New".tr,
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 15,

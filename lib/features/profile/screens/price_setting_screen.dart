@@ -53,19 +53,21 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
 
           return AlertDialog(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            title: AppText("Request Price Increase", fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF2E1A47)),
+            title: AppText("Request Price Increase".tr, fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF2E1A47)),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AppText(
-                  "Submit price increase request for ${priceType.toUpperCase()} rate.",
+                  priceType.toLowerCase() == 'chat'
+                      ? "Submit price increase request for CHAT rate.".tr
+                      : "Submit price increase request for CALL rate.".tr,
                   fontSize: 14,
                   color: Colors.grey.shade700,
                 ),
                 const SizedBox(height: 12),
                 AppText(
-                  "Current Rate: ₹${currentRate.toStringAsFixed(0)}/min",
+                  "${"Current Rate:".tr} ₹${currentRate.toStringAsFixed(0)}/${"min".tr}",
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: Colors.grey.shade600,
@@ -75,8 +77,8 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
                   controller: amountController,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   decoration: InputDecoration(
-                    labelText: "Desired Increase Amount (₹)",
-                    helperText: "Max limit: ₹${maxIncrease.toStringAsFixed(0)}",
+                    labelText: "Desired Increase Amount (₹)".tr,
+                    helperText: "${"Max limit:".tr} ₹${maxIncrease.toStringAsFixed(0)}",
                     errorText: errorText,
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -100,7 +102,7 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text("Cancel"),
+                child: Text("Cancel".tr),
               ),
               Obx(() {
                 return TextButton(
@@ -114,7 +116,7 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
                         },
                   child: _controller.isSubmitting.value
                       ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                      : const Text("Submit", style: TextStyle(color: AppColors.primaryColor)),
+                      : Text("Submit".tr, style: const TextStyle(color: AppColors.primaryColor)),
                 );
               }),
             ],

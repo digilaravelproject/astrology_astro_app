@@ -37,7 +37,7 @@ class _TrainingVideosListScreenState extends State<TrainingVideosListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFDF9F5), // Premium Ivory
-      appBar: const CustomAppBar(title: 'Training Videos'),
+      appBar: CustomAppBar(title: 'Training Videos'.tr),
       body: Column(
         children: [
           _buildFilterBar(),
@@ -58,7 +58,7 @@ class _TrainingVideosListScreenState extends State<TrainingVideosListScreen> {
                     children: [
                       Icon(Icons.video_library_outlined, size: 64, color: Colors.grey.shade300),
                       const SizedBox(height: 16),
-                      AppText('No videos found for $_selectedFilter', color: Colors.grey),
+                      AppText('${"No videos found for".tr} ${_selectedFilter.tr}', color: Colors.grey),
                     ],
                   ),
                 );
@@ -115,7 +115,7 @@ class _TrainingVideosListScreenState extends State<TrainingVideosListScreen> {
               ),
               child: Center(
                 child: AppText(
-                  filter,
+                  filter.tr,
                   fontSize: 13,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                   color: isSelected ? AppColors.primaryColor : Colors.black87,

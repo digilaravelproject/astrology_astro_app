@@ -42,7 +42,7 @@ class PanchangScreen extends GetView<PanchangController> {
                 return Center(
                   child: AppText(
                     controller.errorMessage.value.isEmpty
-                        ? 'No data available'
+                        ? 'No data available'.tr
                         : controller.errorMessage.value,
                     fontSize: 14,
                     color: Colors.grey,

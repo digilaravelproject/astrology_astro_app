@@ -43,8 +43,8 @@ class _BlogScreenState extends State<BlogScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFDF9F5),
-      appBar: const CustomAppBar(
-        title: 'Astrology Blogs',
+      appBar: CustomAppBar(
+        title: 'Astrology Blogs'.tr,
       ),
       body: Obx(() {
         if (_controller.isLoading.value && _controller.allBlogs.isEmpty) {
@@ -86,7 +86,7 @@ class _BlogScreenState extends State<BlogScreen> {
       child: TextField(
         controller: _searchController,
         decoration: InputDecoration(
-          hintText: 'Search blogs...',
+          hintText: 'Search blogs...'.tr,
           hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
           prefixIcon: const Icon(Iconsax.search_normal_1_copy, size: 20, color: AppColors.primaryColor),
           filled: true,
@@ -124,7 +124,7 @@ class _BlogScreenState extends State<BlogScreen> {
               ),
               child: Center(
                 child: AppText(
-                  category,
+                  category.tr,
                   fontSize: 12,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                   color: isSelected ? Colors.white : Colors.grey.shade600,
@@ -185,7 +185,7 @@ class _BlogScreenState extends State<BlogScreen> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: AppText(
-                      blog.type ?? 'General',
+                      (blog.type ?? 'General').tr,
                       fontSize: 9,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
@@ -289,7 +289,7 @@ class _BlogScreenState extends State<BlogScreen> {
         children: [
           Icon(Iconsax.document_text_1_copy, size: 64, color: Colors.grey.shade300),
           const SizedBox(height: 16),
-          AppText('No blogs found', fontSize: 16, color: Colors.grey.shade500),
+          AppText('No blogs found'.tr, fontSize: 16, color: Colors.grey.shade500),
         ],
       ),
     );
