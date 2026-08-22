@@ -97,6 +97,13 @@ class MyApp extends StatelessWidget {
       supportedLocales: localizationController.languages
           .map((lang) => Locale(lang.languageCode, lang.countryCode))
           .toList(),
+      builder: (context, child) {
+        return SafeArea(
+          top: false,
+          bottom: true,
+          child: child ?? const SizedBox(),
+        );
+      },
     ));
   }
 }
