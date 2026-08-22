@@ -39,13 +39,15 @@ class _SkillDetailsScreenState extends State<SkillDetailsScreen> {
           // ),
         ],
       ),
-      body: Obx(() => SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildSectionTitle('Professional Skills'),
-            const SizedBox(height: 16),
+      body: Obx(() => SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSectionTitle('Professional Skills'),
+              const SizedBox(height: 16),
             _buildSkillCard(
               icon: Iconsax.category_copy,
               label: 'Astrologer category',
@@ -145,8 +147,8 @@ class _SkillDetailsScreenState extends State<SkillDetailsScreen> {
             const SizedBox(height: 40),
           ],
         ),
-      )),
-    );
+      ),
+    )));
   }
 
   Widget _buildSectionTitle(String title) {

@@ -149,11 +149,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           const SizedBox(width: 10),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      body: SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             // Profile Photo
             Center(
               child: Stack(
@@ -257,8 +259,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildSectionHeader(String title) {
     return Padding(
