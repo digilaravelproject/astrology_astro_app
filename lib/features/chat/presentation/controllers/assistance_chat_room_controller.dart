@@ -303,16 +303,49 @@ class AssistanceChatRoomController extends GetxController {
           final bool isMe = senderId == _currentUserId;
 
           final int msgId = int.tryParse(lastMsg['id']?.toString() ?? '') ?? 0;
-          final alreadyExists = messages.any((m) => m.id == msgId);
-          if (!alreadyExists) {
+          final String msgText = lastMsg['message']?.toString() ?? '';
+          final String msgType = lastMsg['type']?.toString() ?? 'text';
+
+          // Guard: already in list with the real server id → skip
+          if (messages.any((m) => m.id == msgId)) return;
+
+          if (isMe) {
+            // ── My own message echoed back from WebSocket ──────────────────
+            // Find the optimistic placeholder and upgrade it in-place
+            // to prevent the duplicate (race: echo arrives before API updates tempId).
+            final pendingIndex = messages.indexWhere(
+              (m) => m.isMe && m.status == 'sending...' && m.text == msgText,
+            );
+            if (pendingIndex != -1) {
+              messages[pendingIndex] = messages[pendingIndex].copyWith(
+                id: msgId,
+                status: 'sent',
+                time: DateTime.tryParse(lastMsg['created_at']?.toString() ?? '') ?? messages[pendingIndex].time,
+              );
+              messages.refresh();
+            } else {
+              // No placeholder found (another device or late echo) — add normally
+              messages.insert(0, ChatMessage(
+                id: msgId,
+                text: msgText,
+                isMe: true,
+                time: DateTime.tryParse(lastMsg['created_at']?.toString() ?? '') ?? DateTime.now(),
+                status: 'sent',
+                type: msgType,
+                attachmentUrl: lastMsg['attachment_url']?.toString(),
+              ));
+              _scrollToBottom();
+            }
+          } else {
+            // ── Message from the other side ─────────────────────────────
             messages.insert(0, ChatMessage(
               id: msgId,
-              text: lastMsg['message']?.toString() ?? '',
-              isMe: isMe,
+              text: msgText,
+              isMe: false,
               time: DateTime.tryParse(lastMsg['created_at']?.toString() ?? '') ?? DateTime.now(),
               status: 'delivered',
-              type: lastMsg['type']?.toString() ?? 'text',
-              image: lastMsg['type'] == 'image' ? lastMsg['attachment_url']?.toString() : null,
+              type: msgType,
+              image: msgType == 'image' ? lastMsg['attachment_url']?.toString() : null,
               attachmentUrl: lastMsg['attachment_url']?.toString(),
             ));
             _scrollToBottom();
