@@ -173,7 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   _buildSleepTimeCard(),
                   const SizedBox(height: 20),
                   const TrainingVideosSection(),
-                  const SizedBox(height: 80), // Space for bottom bar
+                  const SizedBox(height: 140), // Space for bottom bar
                 ]),
               ),
             ),
