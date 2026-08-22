@@ -24,34 +24,37 @@ class HistoryScreen extends StatelessWidget {
         appBar: const CustomAppBar(
           title: 'History',
         ),
-        body: Column(
-          children: [
-            Container(
-              color: Colors.white,
-              child: TabBar(
-                isScrollable: true,
-                dividerColor: Colors.transparent,
-                labelColor: Colors.black,
-                unselectedLabelColor: Colors.grey,
-                indicatorColor: AppColors.primaryColor,
-                indicatorSize: TabBarIndicatorSize.label,
-                labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 13),
-                tabs: const [
-                  Tab(text: 'Call'),
-                  Tab(text: 'Chat'),
-                ],
+        body: SafeArea(
+          top: false,
+          child: Column(
+            children: [
+              Container(
+                color: Colors.white,
+                child: TabBar(
+                  isScrollable: true,
+                  dividerColor: Colors.transparent,
+                  labelColor: Colors.black,
+                  unselectedLabelColor: Colors.grey,
+                  indicatorColor: AppColors.primaryColor,
+                  indicatorSize: TabBarIndicatorSize.label,
+                  labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                  unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 13),
+                  tabs: const [
+                    Tab(text: 'Call'),
+                    Tab(text: 'Chat'),
+                  ],
+                ),
               ),
-            ),
-            Expanded(
-              child: TabBarView(
-                children:  [
-                  CallHistoryScreen(isFromTab: true),
-                  ChatHistoryScreen(isFromTab: true),
-                ],
+              Expanded(
+                child: TabBarView(
+                  children:  [
+                    CallHistoryScreen(isFromTab: true),
+                    ChatHistoryScreen(isFromTab: true),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
