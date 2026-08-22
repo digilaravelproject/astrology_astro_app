@@ -15,6 +15,7 @@ import 'package:astro_astrologer/features/chat/presentation/widgets/floating_cha
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
 import 'package:astro_astrologer/features/kundli/create_kundli_screen.dart';
+import 'package:astro_astrologer/features/kundli/kundli_list_screen.dart';
 import 'package:astro_astrologer/features/chat/presentation/bindings/chat_binding.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -285,7 +286,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               child: Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: InkWell(
-                  onTap: () => _openKundli(context),
+                  onTap: () => Get.to(() => const KundliListScreen()),
                   borderRadius: BorderRadius.circular(20),
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -297,7 +298,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.auto_awesome, size: 14, color: AppColors.primaryColor),
+                        Icon(Icons.add, size: 14, color: AppColors.primaryColor),
                         SizedBox(width: 4),
                         AppText(
                           'Kundli',
