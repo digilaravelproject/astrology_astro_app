@@ -20,7 +20,11 @@ class ChatMessageModel extends ChatMessage {
       text: json['message']?.toString() ?? '',
       isMe: senderId == currentUserId,
       time: DateTime.tryParse(json['created_at']?.toString() ?? '') ?? DateTime.now(),
-      status: json['is_read'] == true ? 'seen' : 'sent',
+      status: (json['is_read'] == true || json['is_read'] == 1 || json['is_read']?.toString() == '1' || json['is_read']?.toString() == 'true')
+          ? 'seen'
+          : ((json['is_delivered'] == true || json['is_delivered'] == 1 || json['is_delivered']?.toString() == '1' || json['is_delivered']?.toString() == 'true')
+              ? 'delivered'
+              : 'sent'),
       type: json['type']?.toString() ?? 'text',
       attachmentUrl: json['attachment_url']?.toString(),
       image: json['type'] == 'image' ? json['attachment_url']?.toString() : null,
