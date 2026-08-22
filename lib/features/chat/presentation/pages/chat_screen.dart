@@ -314,13 +314,25 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             ),
             Obx(() {
               if (_controller.status.value == 'ongoing') {
-                return TextButton(
-                  onPressed: () => _showEndChatConfirmation(context),
-                  child: const AppText(
-                    "End Chat",
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: InkWell(
+                    onTap: () => _showEndChatConfirmation(context),
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.red.withOpacity(0.3)),
+                      ),
+                      child: const AppText(
+                        "End Chat",
+                        color: Colors.red,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12,
+                      ),
+                    ),
                   ),
                 );
               }
