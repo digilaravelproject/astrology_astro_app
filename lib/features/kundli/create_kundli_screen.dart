@@ -153,10 +153,12 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
               child: isMatching ? _buildMatchingForm() : _buildKundliForm(),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
-            child: GestureDetector(
-              onTap: () async {
+          SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
+              child: GestureDetector(
+                onTap: () async {
                 if (isMatching) {
                   // --- Validate Matching Fields ---
                   if (_boysNameController.text.trim().isEmpty ||
@@ -478,6 +480,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
               ),
             ),
           ),
+        ),
         ],
       ),
     );
