@@ -329,7 +329,8 @@ class WebSocketService extends GetxService {
             } else if (data['data'] is Map) {
               eventData = Map<String, dynamic>.from(data['data'] as Map);
             }
-            packageRemainingSeconds.value = int.tryParse(eventData['remaining_duration']?.toString() ?? '') ?? 0;
+            final secs = eventData['remainingDuration'] ?? eventData['remaining_duration'] ?? eventData['subSession']?['purchase']?['remaining_duration'];
+            packageRemainingSeconds.value = int.tryParse(secs?.toString() ?? '') ?? 0;
             isPackageSessionTerminated.value = false;
           } catch (e) {
             Logger.e('Error handling PackageSubSessionStarted -> $e');
@@ -343,7 +344,8 @@ class WebSocketService extends GetxService {
             } else if (data['data'] is Map) {
               eventData = Map<String, dynamic>.from(data['data'] as Map);
             }
-            packageRemainingSeconds.value = int.tryParse(eventData['remaining_duration']?.toString() ?? '') ?? 0;
+            final secs = eventData['remainingDuration'] ?? eventData['remaining_duration'] ?? eventData['subSession']?['purchase']?['remaining_duration'];
+            packageRemainingSeconds.value = int.tryParse(secs?.toString() ?? '') ?? 0;
           } catch (e) {
             Logger.e('Error handling PackageSubSessionEnded -> $e');
           }
