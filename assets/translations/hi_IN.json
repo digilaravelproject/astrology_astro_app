@@ -1045,5 +1045,8 @@
   "Yes, Save": "हाँ, सहेजें",
   "This field is required": "यह फ़ील्ड आवश्यक है",
   "Account number must be at least 9 digits": "खाता संख्या कम से कम 9 अंकों की होनी चाहिए",
-  "IFSC code must be 11 characters": "आईएफएससी कोड 11 वर्णों का होना चाहिए"
+  "IFSC code must be 11 characters": "आईएफएससी कोड 11 वर्णों का होना चाहिए",
+  "Facebook": "फेसबुक",
+  "Friend Referral": "मित्र रेफ़रल",
+  "Google Ad": "गूगल विज्ञापन"
 }

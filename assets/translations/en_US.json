@@ -1025,5 +1025,8 @@
   "Yes, Save": "Yes, Save",
   "This field is required": "This field is required",
   "Account number must be at least 9 digits": "Account number must be at least 9 digits",
-  "IFSC code must be 11 characters": "IFSC code must be 11 characters"
+  "IFSC code must be 11 characters": "IFSC code must be 11 characters",
+  "Facebook": "Facebook",
+  "Friend Referral": "Friend Referral",
+  "Google Ad": "Google Ad"
 }
