@@ -179,7 +179,7 @@ class _UpdateAddressBottomSheetState extends State<UpdateAddressBottomSheet> {
       style: const TextStyle(fontSize: 15, color: Color(0xFF2E1A47), fontWeight: FontWeight.w500),
       validator: (value) {
         if (isRequired && (value == null || value.isEmpty)) {
-          return 'This field is required';
+          return 'This field is required'.tr;
         }
         return null;
       },

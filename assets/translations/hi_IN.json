@@ -1039,5 +1039,11 @@
   "Save Sleep Schedule": "नींद की समय-सारणी सहेजें",
   "Choose your Sleep Time for up to 8 hours. Emergency sessions will be paused during your selected time.": "8 घंटे तक के लिए अपनी नींद का समय चुनें। आपके चुने हुए समय के दौरान आपातकालीन सत्र रोक दिए जाएंगे।",
   "Select Gender": "लिंग चुनें",
-  "Search...": "खोजें..."
+  "Search...": "खोजें...",
+  "Save Changes?": "बदलाव सहेजें?",
+  "Are you sure you want to update your availability schedule?": "क्या आप वाकई अपना उपलब्धता शेड्यूल अपडेट करना चाहते हैं?",
+  "Yes, Save": "हाँ, सहेजें",
+  "This field is required": "यह फ़ील्ड आवश्यक है",
+  "Account number must be at least 9 digits": "खाता संख्या कम से कम 9 अंकों की होनी चाहिए",
+  "IFSC code must be 11 characters": "आईएफएससी कोड 11 वर्णों का होना चाहिए"
 }

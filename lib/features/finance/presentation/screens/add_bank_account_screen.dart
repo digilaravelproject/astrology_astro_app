@@ -212,13 +212,13 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'This field is required';
+                return 'This field is required'.tr;
               }
               if (label == 'Account Number' && value.trim().length < 9) {
-                return 'Account number must be at least 9 digits';
+                return 'Account number must be at least 9 digits'.tr;
               }
               if (label == 'IFSC Code' && value.trim().length != 11) {
-                return 'IFSC code must be 11 characters';
+                return 'IFSC code must be 11 characters'.tr;
               }
               return null;
             },

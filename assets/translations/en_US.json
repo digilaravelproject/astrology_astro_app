@@ -1019,5 +1019,11 @@
   "Save Sleep Schedule": "Save Sleep Schedule",
   "Choose your Sleep Time for up to 8 hours. Emergency sessions will be paused during your selected time.": "Choose your Sleep Time for up to 8 hours. Emergency sessions will be paused during your selected time.",
   "Select Gender": "Select Gender",
-  "Search...": "Search..."
+  "Search...": "Search...",
+  "Save Changes?": "Save Changes?",
+  "Are you sure you want to update your availability schedule?": "Are you sure you want to update your availability schedule?",
+  "Yes, Save": "Yes, Save",
+  "This field is required": "This field is required",
+  "Account number must be at least 9 digits": "Account number must be at least 9 digits",
+  "IFSC code must be 11 characters": "IFSC code must be 11 characters"
 }
