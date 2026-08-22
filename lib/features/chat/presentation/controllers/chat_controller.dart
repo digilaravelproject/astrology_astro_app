@@ -194,16 +194,22 @@ class ChatController extends GetxController with WidgetsBindingObserver {
 
           if (isMe) {
             // ── My own message echoed back from WebSocket ──────────────────
-            // Find the optimistic placeholder (status='sending...', same text)
+            // Find the optimistic placeholder (status='sending...', same text, or same type if image/file)
             // and upgrade it in-place to prevent duplicate.
             final pendingIndex = messages.indexWhere(
-              (m) => m.isMe && m.status == 'sending...' && m.text == msgText,
+              (m) => m.isMe && m.status == 'sending...' && 
+                     (m.text == msgText || 
+                      (m.type == 'image' && msgType == 'image') || 
+                      (m.type == 'file' && msgType == 'file')),
             );
             if (pendingIndex != -1) {
               messages[pendingIndex] = messages[pendingIndex].copyWith(
                 id: msgId,
                 status: 'sent',
                 time: DateTime.tryParse(lastMsg['created_at']?.toString() ?? '') ?? messages[pendingIndex].time,
+                attachmentUrl: lastMsg['attachment_url']?.toString(),
+                image: msgType == 'image' ? lastMsg['attachment_url']?.toString() : null,
+                type: msgType,
               );
               messages.refresh();
             } else {

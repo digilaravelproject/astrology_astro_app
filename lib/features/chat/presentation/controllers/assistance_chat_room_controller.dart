@@ -314,13 +314,19 @@ class AssistanceChatRoomController extends GetxController {
             // Find the optimistic placeholder and upgrade it in-place
             // to prevent the duplicate (race: echo arrives before API updates tempId).
             final pendingIndex = messages.indexWhere(
-              (m) => m.isMe && m.status == 'sending...' && m.text == msgText,
+              (m) => m.isMe && m.status == 'sending...' && 
+                     (m.text == msgText || 
+                      (m.type == 'image' && msgType == 'image') || 
+                      (m.type == 'document' && msgType == 'document')),
             );
             if (pendingIndex != -1) {
               messages[pendingIndex] = messages[pendingIndex].copyWith(
                 id: msgId,
                 status: 'sent',
                 time: DateTime.tryParse(lastMsg['created_at']?.toString() ?? '') ?? messages[pendingIndex].time,
+                attachmentUrl: lastMsg['attachment_url']?.toString(),
+                image: msgType == 'image' ? lastMsg['attachment_url']?.toString() : null,
+                type: msgType,
               );
               messages.refresh();
             } else {
