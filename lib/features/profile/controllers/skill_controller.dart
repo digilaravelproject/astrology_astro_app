@@ -122,7 +122,7 @@ class AstrologerSkillsController extends GetxController {
       builder: (context) => StatefulBuilder(
         builder: (context, setModalState) {
           final filteredOptions = options
-              .where((opt) => opt.toLowerCase().contains(searchQuery.toLowerCase()))
+              .where((opt) => opt.toLowerCase().contains(searchQuery.toLowerCase()) || opt.tr.toLowerCase().contains(searchQuery.toLowerCase()))
               .toList();
 
           return Container(

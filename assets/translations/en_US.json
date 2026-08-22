@@ -983,7 +983,7 @@
   "Enter website URL": "Enter website URL",
   "Enter Instagram handle": "Enter Instagram handle",
   "Call History": "Call History",
-  "New (indian)": "New (indian)",
+  "New (indian)": "New (Indian)",
   "Suggest Remedy": "Suggest Remedy",
   "Open Kundli": "Open Kundli",
   "Chat Assistant": "Chat Assistant",
@@ -1037,5 +1037,16 @@
   "No Blocked Users": "No Blocked Users",
   "You have not blocked any user yet.": "You have not blocked any user yet.",
   "You won't be able to message or call this user anymore.": "You won't be able to message or call this user anymore.",
-  "You will be able to message and call this user again.": "You will be able to message and call this user again."
+  "You will be able to message and call this user again.": "You will be able to message and call this user again.",
+  "Data shown for last 3 days only": "Data shown for last 3 days only",
+  "Unknown": "Unknown",
+  "Details saved successfully": "Details saved successfully",
+  "Prashna": "Prashna",
+  "Horoscope": "Horoscope",
+  "Marriage": "Marriage",
+  "Love": "Love",
+  "Finance": "Finance",
+  "Childbirth": "Childbirth",
+  "Legal": "Legal",
+  "No results found": "No results found"
 }

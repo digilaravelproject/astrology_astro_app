@@ -221,8 +221,8 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
-      appBar: const CustomAppBar(
-        title: 'Other Details',
+      appBar: CustomAppBar(
+        title: 'Other Details'.tr,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -406,6 +406,17 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
                 keyboardType: TextInputType.text,
               ),
             )),
+            
+            const SizedBox(height: 32),
+            CustomButton(
+              text: 'Submit'.tr,
+              onPressed: () {
+                Get.back();
+              },
+              backgroundColor: AppColors.primaryColor,
+              borderRadius: 100,
+            ),
+            const SizedBox(height: 20),
           ],
         ),
       ),
