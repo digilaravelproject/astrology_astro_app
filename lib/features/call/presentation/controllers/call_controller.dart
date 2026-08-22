@@ -6,6 +6,7 @@ import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/services/network/websocket_service.dart';
 import 'package:astro_astrologer/core/services/webrtc/webrtc_service.dart';
 import 'package:astro_astrologer/core/services/local_notification_service.dart';
+import 'package:astro_astrologer/core/services/sound_vibration_service.dart';
 import 'package:astro_astrologer/core/utils/logger.dart';
 import 'package:astro_astrologer/features/call/presentation/widgets/incoming_call_dialog.dart';
 import 'package:astro_astrologer/features/call/presentation/widgets/call_summary_dialog.dart';
@@ -398,11 +399,15 @@ class CallController extends GetxController with WidgetsBindingObserver {
   }
 
   void _startRingtone({required bool isIncoming}) {
-    // Sound play disabled
+    // Astrologer hears incoming_ring.mp3 when user calls/chats
+    final sound = isIncoming ? 'audio/incoming_ring.mp3' : 'audio/outgoing_ring.mp3';
+    SoundVibrationService().startRingtone(sound, loop: true, vibrate: true);
+    Logger.d('[CallController] Astrologer ringtone started → $sound');
   }
 
   void _stopRingtone() {
-    // Sound stop disabled
+    SoundVibrationService().stopRingtone();
+    Logger.d('[CallController] Astrologer ringtone stopped');
   }
 
   void cleanUp() {

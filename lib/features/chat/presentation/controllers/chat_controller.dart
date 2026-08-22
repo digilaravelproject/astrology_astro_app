@@ -17,6 +17,7 @@ import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.da
 import 'package:astro_astrologer/core/services/storage/shared_prefs.dart';
 import 'package:astro_astrologer/core/constants/app_constants.dart';
 import 'package:astro_astrologer/features/auth/domain/models/user_model.dart';
+import 'package:astro_astrologer/core/services/sound_vibration_service.dart';
 
 import 'package:astro_astrologer/features/chat/presentation/widgets/chat_summary_dialog.dart';
 import 'package:astro_astrologer/features/chat/presentation/bindings/chat_binding.dart';
@@ -45,6 +46,19 @@ class ChatController extends GetxController with WidgetsBindingObserver {
         _sendAttachmentUseCase = sendAttachmentUseCase,
         _markMessagesReadUseCase = markMessagesReadUseCase,
         _endChatSessionUseCase = endChatSessionUseCase;
+
+  // ── Sound helpers ────────────────────────────────────────────
+  /// Play incoming ring so astrologer hears a new chat request.
+  void _startRingtone() {
+    SoundVibrationService().startRingtone('audio/incoming_ring.mp3', loop: true, vibrate: true);
+    debugPrint('[ChatController] Astrologer ringtone started → incoming_ring.mp3');
+  }
+
+  /// Stop ringtone — called on accept OR reject.
+  void _stopRingtone() {
+    SoundVibrationService().stopRingtone();
+    debugPrint('[ChatController] Astrologer ringtone stopped');
+  }
 
   final RxList<ChatMessage> messages = <ChatMessage>[].obs;
   final RxBool isLoading = false.obs;
@@ -138,6 +152,10 @@ class ChatController extends GetxController with WidgetsBindingObserver {
 
     // Show ongoing local notification
     if (status.value == 'ongoing' || status.value == 'initiated' || status.value == 'ringing') {
+      // Astrologer side: play ring when a new chat request arrives
+      if (status.value == 'initiated' || status.value == 'ringing') {
+        _startRingtone();
+      }
       LocalNotificationService.showOngoingChatNotification(
         sessionId: sessionId,
         title: status.value == 'ongoing' ? 'Chat in progress' : 'Waiting for acceptance...',
@@ -553,6 +571,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> rejectChatSession() async {
+    _stopRingtone(); // Stop ring immediately on reject
     if (_sessionId == null) {
       Get.back();
       return;
@@ -599,6 +618,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> acceptChat(int incomingSessionId) async {
+    _stopRingtone(); // Stop ring immediately on accept
     try {
       final response = await Get.find<ApiClient>().post(
         AppUrls.acceptChatSession(incomingSessionId),
