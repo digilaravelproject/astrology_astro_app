@@ -104,7 +104,7 @@ class LocalNotificationService {
     if (androidPlugin != null) {
       await androidPlugin.createNotificationChannel(
         const AndroidNotificationChannel(
-          'calls_channel',
+          'calls_channel_v2',
           'Incoming Calls',
           description: 'Incoming Call Ringing (User & Astrologer)',
           importance: Importance.max,
@@ -113,7 +113,7 @@ class LocalNotificationService {
       );
       await androidPlugin.createNotificationChannel(
         const AndroidNotificationChannel(
-          'chats_channel',
+          'chats_channel_v2',
           'Chat Messages & Requests',
           description: 'New Chat Requests and Chat Room messages',
           importance: Importance.high,
@@ -122,7 +122,7 @@ class LocalNotificationService {
       );
       await androidPlugin.createNotificationChannel(
         const AndroidNotificationChannel(
-          'session_channel',
+          'session_channel_v2',
           'Consultations & Billing',
           description: 'Session Lifecycle, Acceptance, Ending & Billing Notifications',
           importance: Importance.high,
@@ -131,18 +131,20 @@ class LocalNotificationService {
       );
       await androidPlugin.createNotificationChannel(
         const AndroidNotificationChannel(
-          'wallet_channel',
+          'wallet_channel_v2',
           'Wallet & Gifts',
           description: 'Wallet Top-Up, Gifts & Transactions',
           importance: Importance.defaultImportance,
+          playSound: false,
         ),
       );
       await androidPlugin.createNotificationChannel(
         const AndroidNotificationChannel(
-          'system_channel',
+          'system_channel_v2',
           'Account & System Alerts',
           description: 'Account status and system notifications',
           importance: Importance.defaultImportance,
+          playSound: false,
         ),
       );
       await androidPlugin.createNotificationChannel(
@@ -413,14 +415,14 @@ class LocalNotificationService {
     String? payload,
     String? notificationType,
   }) async {
-    String channelId = 'session_channel';
+    String channelId = 'session_channel_v2';
     String soundName = AppConstants.generalNotificationSound;
 
     if (notificationType == 'call' || notificationType == 'CALL_ACCEPTED' || notificationType == 'CALL_REQUEST') {
-      channelId = 'calls_channel';
+      channelId = 'calls_channel_v2';
       soundName = AppConstants.callNotificationSound;
     } else if (notificationType == 'chat' || notificationType == 'CHAT_REQUEST' || notificationType == 'MessageSent') {
-      channelId = 'chats_channel';
+      channelId = 'chats_channel_v2';
       soundName = AppConstants.chatNotificationSound;
     }
 
