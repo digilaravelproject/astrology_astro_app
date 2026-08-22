@@ -351,12 +351,14 @@ class _KundliListScreenState extends State<KundliListScreen> {
 
   Widget _buildBottomButtons() {
     bool canMatch = _selectedIds.length == 2;
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-        boxShadow: [
+    return SafeArea(
+      top: false,
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+          boxShadow: [
           BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, -10)),
         ],
       ),
@@ -463,6 +465,7 @@ class _KundliListScreenState extends State<KundliListScreen> {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 }
