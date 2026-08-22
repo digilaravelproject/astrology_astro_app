@@ -249,10 +249,15 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     _statusUpdateSub = WebSocketService.messageStatusUpdates.listen((list) {
       if (list.isNotEmpty) {
         final lastUpdate = list.last;
-        final updateSessionId = int.tryParse(lastUpdate['session_id']?.toString() ?? '') ?? 0;
+        final updateSessionId = int.tryParse(
+          lastUpdate['session_id']?.toString() ?? 
+          lastUpdate['chat_session_id']?.toString() ?? 
+          lastUpdate['chat_assistance_session_id']?.toString() ?? 
+          lastUpdate['sessionId']?.toString() ?? ''
+        ) ?? 0;
         if (updateSessionId == _sessionId) {
           final newStatus = lastUpdate['status']?.toString();
-          final messageIdsList = lastUpdate['message_ids'] as List<dynamic>?;
+          final messageIdsList = (lastUpdate['message_ids'] ?? lastUpdate['messageIds']) as List<dynamic>?;
           if (newStatus != null && messageIdsList != null && messageIdsList.isNotEmpty) {
             final messageIds = messageIdsList.map((e) => int.tryParse(e.toString()) ?? 0).toList();
             bool changed = false;
@@ -462,8 +467,23 @@ class ChatController extends GetxController with WidgetsBindingObserver {
   String _getLatestStatus(int messageId, String defaultStatus) {
     String currentStatus = defaultStatus;
     for (var event in WebSocketService.messageStatusUpdates) {
-      if (event['session_id'] == _sessionId && event['message_id'] == messageId) {
-        currentStatus = event['status'];
+      final updateSessionId = int.tryParse(
+        event['session_id']?.toString() ?? 
+        event['chat_session_id']?.toString() ?? 
+        event['chat_assistance_session_id']?.toString() ?? 
+        event['sessionId']?.toString() ?? ''
+      ) ?? 0;
+      if (updateSessionId == _sessionId) {
+        final messageIdsList = (event['message_ids'] ?? event['messageIds']) as List<dynamic>?;
+        if (messageIdsList != null) {
+          final messageIds = messageIdsList.map((e) => int.tryParse(e.toString()) ?? 0).toList();
+          if (messageIds.contains(messageId)) {
+            final newStatus = event['status']?.toString();
+            if (newStatus == 'seen' || (newStatus == 'delivered' && currentStatus != 'seen')) {
+              currentStatus = newStatus!;
+            }
+          }
+        }
       }
     }
     return currentStatus;
