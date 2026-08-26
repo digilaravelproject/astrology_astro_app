@@ -132,6 +132,7 @@ flutter:
     - assets/images/
     - assets/images/app_icon.png
     - assets/images/app_logo.png
+    - assets/images/background.png
     - assets/language/
     - assets/translations/
   # To add assets to your application, add an assets section, like this:

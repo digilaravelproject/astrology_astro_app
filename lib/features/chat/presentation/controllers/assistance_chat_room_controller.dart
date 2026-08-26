@@ -92,6 +92,21 @@ class AssistanceChatRoomController extends GetxController {
           final bool isMe = senderId == _currentUserId;
           final bool isRead = msg['is_read'] == true || msg['is_read'] == 1 || msg['is_read']?.toString() == '1' || msg['is_read']?.toString() == 'true';
           final bool isDelivered = msg['is_delivered'] == true || msg['is_delivered'] == 1 || msg['is_delivered']?.toString() == '1' || msg['is_delivered']?.toString() == 'true';
+          ChatMessage? replyToMsg;
+          if (msg['reply_to'] != null) {
+            final replyData = msg['reply_to'];
+            final int replySenderId = int.tryParse(replyData['sender_id']?.toString() ?? '') ?? 0;
+            replyToMsg = ChatMessage(
+              id: int.tryParse(replyData['id']?.toString() ?? '') ?? 0,
+              text: replyData['message']?.toString() ?? '',
+              isMe: replySenderId == _currentUserId,
+              time: DateTime.tryParse(replyData['created_at']?.toString() ?? '') ?? DateTime.now(),
+              status: 'delivered', // fallback
+              type: replyData['type']?.toString() ?? 'text',
+              attachmentUrl: replyData['attachment_url']?.toString(),
+            );
+          }
+
           return ChatMessage(
             id: int.tryParse(msg['id']?.toString() ?? '') ?? 0,
             text: msg['message']?.toString() ?? '',
@@ -101,6 +116,8 @@ class AssistanceChatRoomController extends GetxController {
             type: msg['type']?.toString() ?? 'text',
             image: msg['type'] == 'image' ? msg['attachment_url']?.toString() : null,
             attachmentUrl: msg['attachment_url']?.toString(),
+            replyToId: int.tryParse(msg['reply_to_id']?.toString() ?? ''),
+            replyTo: replyToMsg,
           );
         }).toList().reversed);
         _scrollToBottom();
@@ -117,10 +134,12 @@ class AssistanceChatRoomController extends GetxController {
     String text = messageController.text.trim();
     if (text.isEmpty || limitReached.value) return;
 
+    int? replyToIdVal;
+    ChatMessage? replyMsgVal;
+
     if (replyingToMessage.value != null) {
-      final replyText = replyingToMessage.value!.text.replaceAll('\n', ' ');
-      final replyUser = replyingToMessage.value!.isMe ? 'You' : 'User';
-      text = '>>reply>>$replyUser: $replyText<<reply<<\n$text';
+      replyMsgVal = replyingToMessage.value!;
+      replyToIdVal = replyMsgVal.id;
       cancelReply();
     }
 
@@ -134,6 +153,8 @@ class AssistanceChatRoomController extends GetxController {
       time: DateTime.now(),
       status: 'sending...',
       type: 'text',
+      replyToId: replyToIdVal,
+      replyTo: replyMsgVal,
     );
     messages.insert(0, localMsg);
     _scrollToBottom();
@@ -142,6 +163,7 @@ class AssistanceChatRoomController extends GetxController {
       final body = {
         'message': text,
         'type': 'text',
+        if (replyToIdVal != null) 'reply_to_id': replyToIdVal,
       };
 
       final response = await _apiClient.post(AppUrls.sendChatAssistanceMessage(_sessionId), data: body);
@@ -324,6 +346,22 @@ class AssistanceChatRoomController extends GetxController {
           final String msgText = lastMsg['message']?.toString() ?? '';
           final String msgType = lastMsg['type']?.toString() ?? 'text';
 
+          ChatMessage? replyToMsg;
+          if (lastMsg['reply_to'] != null) {
+            final replyData = lastMsg['reply_to'];
+            final int replySenderId = int.tryParse(replyData['sender_id']?.toString() ?? '') ?? 0;
+            replyToMsg = ChatMessage(
+              id: int.tryParse(replyData['id']?.toString() ?? '') ?? 0,
+              text: replyData['message']?.toString() ?? '',
+              isMe: replySenderId == _currentUserId,
+              time: DateTime.tryParse(replyData['created_at']?.toString() ?? '') ?? DateTime.now(),
+              status: 'delivered',
+              type: replyData['type']?.toString() ?? 'text',
+              attachmentUrl: replyData['attachment_url']?.toString(),
+            );
+          }
+          final int? msgReplyToId = int.tryParse(lastMsg['reply_to_id']?.toString() ?? '');
+
           // Guard: already in list with the real server id → skip
           if (messages.any((m) => m.id == msgId)) return;
 
@@ -346,6 +384,8 @@ class AssistanceChatRoomController extends GetxController {
                 attachmentUrl: lastMsg['attachment_url']?.toString(),
                 image: msgType == 'image' ? lastMsg['attachment_url']?.toString() : null,
                 type: msgType,
+                replyToId: msgReplyToId,
+                replyTo: replyToMsg,
               );
               messages.refresh();
             } else {
@@ -358,6 +398,8 @@ class AssistanceChatRoomController extends GetxController {
                 status: 'sent',
                 type: msgType,
                 attachmentUrl: lastMsg['attachment_url']?.toString(),
+                replyToId: msgReplyToId,
+                replyTo: replyToMsg,
               ));
               _scrollToBottom();
             }
@@ -372,6 +414,8 @@ class AssistanceChatRoomController extends GetxController {
               type: msgType,
               image: msgType == 'image' ? lastMsg['attachment_url']?.toString() : null,
               attachmentUrl: lastMsg['attachment_url']?.toString(),
+              replyToId: msgReplyToId,
+              replyTo: replyToMsg,
             ));
             _scrollToBottom();
             syncReadStatus();
