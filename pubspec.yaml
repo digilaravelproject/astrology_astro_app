@@ -92,6 +92,7 @@ dependencies:
   flutter_foreground_task: ^9.2.2
   open_filex: ^4.7.0
   cloud_firestore: ^6.8.0
+  swipe_to: ^1.0.6
 
 
 dev_dependencies:

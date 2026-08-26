@@ -19,6 +19,16 @@ class AssistanceChatRoomController extends GetxController {
   final RxBool limitReached = false.obs;
   final RxInt remainingMessages = 0.obs;
 
+  final Rx<ChatMessage?> replyingToMessage = Rx<ChatMessage?>(null);
+
+  void setReply(ChatMessage message) {
+    replyingToMessage.value = message;
+  }
+
+  void cancelReply() {
+    replyingToMessage.value = null;
+  }
+
   final TextEditingController messageController = TextEditingController();
   final ScrollController scrollController = ScrollController();
 
@@ -104,8 +114,15 @@ class AssistanceChatRoomController extends GetxController {
   }
 
   Future<void> sendMessage() async {
-    final text = messageController.text.trim();
+    String text = messageController.text.trim();
     if (text.isEmpty || limitReached.value) return;
+
+    if (replyingToMessage.value != null) {
+      final replyText = replyingToMessage.value!.text.replaceAll('\n', ' ');
+      final replyUser = replyingToMessage.value!.isMe ? 'You' : 'User';
+      text = '>>reply>>$replyUser: $replyText<<reply<<\n$text';
+      cancelReply();
+    }
 
     messageController.clear();
 
@@ -317,6 +334,7 @@ class AssistanceChatRoomController extends GetxController {
             final pendingIndex = messages.indexWhere(
               (m) => m.isMe && m.status == 'sending...' && 
                      (m.text == msgText || 
+                      m.text.replaceAll('<<reply<<', '') == msgText.replaceAll('<<reply<<', '') ||
                       (m.type == 'image' && msgType == 'image') || 
                       (m.type == 'document' && msgType == 'document')),
             );

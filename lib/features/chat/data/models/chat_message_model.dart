@@ -11,10 +11,18 @@ class ChatMessageModel extends ChatMessage {
     super.image,
     required super.type,
     super.attachmentUrl,
+    super.replyToId,
+    super.replyTo,
   });
 
   factory ChatMessageModel.fromJson(Map<String, dynamic> json, {required int currentUserId}) {
     final senderId = int.tryParse(json['sender_id']?.toString() ?? '') ?? 0;
+    
+    ChatMessageModel? parsedReplyTo;
+    if (json['reply_to'] != null && json['reply_to'] is Map<String, dynamic>) {
+      parsedReplyTo = ChatMessageModel.fromJson(json['reply_to'] as Map<String, dynamic>, currentUserId: currentUserId);
+    }
+    
     return ChatMessageModel(
       id: int.tryParse(json['id']?.toString() ?? '') ?? 0,
       text: json['message']?.toString() ?? '',
@@ -28,6 +36,8 @@ class ChatMessageModel extends ChatMessage {
       type: json['type']?.toString() ?? 'text',
       attachmentUrl: json['attachment_url']?.toString(),
       image: json['type'] == 'image' ? json['attachment_url']?.toString() : null,
+      replyToId: json['reply_to_id'] != null ? int.tryParse(json['reply_to_id'].toString()) : null,
+      replyTo: parsedReplyTo,
     );
   }
 }

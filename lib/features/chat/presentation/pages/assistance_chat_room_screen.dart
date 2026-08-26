@@ -11,6 +11,7 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:astro_astrologer/features/chat/domain/entities/chat_message.dart';
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
 import 'package:astro_astrologer/features/kundli/create_kundli_screen.dart';
+import 'package:swipe_to/swipe_to.dart';
 
 class AssistanceChatRoomScreen extends StatefulWidget {
   final int sessionId;
@@ -226,13 +227,66 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
   }
 
   Widget _buildMessageBubble(ChatMessage message) {
-    return Align(
+    bool isReply = false;
+    String replyUser = '';
+    String replyText = '';
+    String mainText = message.text;
+    
+    if (message.replyTo != null) {
+      isReply = true;
+      replyUser = message.replyTo!.isMe ? 'You' : widget.userName;
+      replyText = message.replyTo!.text;
+    } else if (mainText.startsWith('>>reply>>')) {
+      // Fallback for old cached messages
+      isReply = true;
+      final endQuote = mainText.indexOf('<<reply<<');
+      if (endQuote != -1) {
+        final quotePart = mainText.substring(9, endQuote);
+        final colonIdx = quotePart.indexOf(': ');
+        if (colonIdx != -1) {
+          replyUser = quotePart.substring(0, colonIdx);
+          replyText = quotePart.substring(colonIdx + 2);
+        } else {
+          replyText = quotePart;
+        }
+        mainText = mainText.substring(endQuote + 9).trimLeft();
+      } else {
+        final quotePartWithText = mainText.substring(9);
+        final newlineIdx = quotePartWithText.indexOf('\n');
+        String quotePart;
+        if (newlineIdx != -1) {
+          quotePart = quotePartWithText.substring(0, newlineIdx);
+          mainText = quotePartWithText.substring(newlineIdx).trimLeft();
+        } else {
+          quotePart = quotePartWithText;
+          mainText = '';
+        }
+        
+        final colonIdx = quotePart.indexOf(': ');
+        if (colonIdx != -1) {
+          replyUser = quotePart.substring(0, colonIdx);
+          replyText = quotePart.substring(colonIdx + 2);
+        } else {
+          replyUser = 'User';
+          replyText = quotePart;
+        }
+      }
+    }
+
+    return SwipeTo(
+      onRightSwipe: (details) {
+        controller.setReply(message);
+      },
+      onLeftSwipe: (details) {
+        controller.setReply(message);
+      },
+      child: Align(
       alignment: message.isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: message.isMe ? AppColors.primaryColor : Colors.white,
+          color: message.isMe ? AppColors.deepPink : Colors.white,
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(16),
             topRight: const Radius.circular(16),
@@ -251,6 +305,24 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
+            if (isReply)
+              Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: message.isMe ? Colors.white.withOpacity(0.2) : Colors.black.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border(left: BorderSide(color: message.isMe ? Colors.white : AppColors.primaryColor, width: 4)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppText(replyUser, color: message.isMe ? Colors.white : AppColors.primaryColor, fontWeight: FontWeight.bold, fontSize: 12),
+                    const SizedBox(height: 4),
+                    AppText(replyText, color: message.isMe ? Colors.white70 : Colors.black87, fontSize: 12, maxLines: 2, overflow: TextOverflow.ellipsis),
+                  ],
+                ),
+              ),
             if (message.type == 'image')
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
@@ -291,19 +363,19 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
                 padding: const EdgeInsets.all(8),
                 margin: const EdgeInsets.only(bottom: 8.0),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.black.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Iconsax.document, color: Colors.white, size: 24),
+                    const Icon(Iconsax.document, color: Colors.black54, size: 24),
                     const SizedBox(width: 8),
                     Flexible(
                       child: AppText(
-                        message.text.replaceFirst('📄 ', ''),
+                        mainText.replaceFirst('📄 ', ''),
                         fontSize: 14,
-                        color: message.isMe ? Colors.white : Colors.black87,
+                        color: Colors.black87,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -311,9 +383,9 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
                   ],
                 ),
               )
-            else
+            else if (mainText.isNotEmpty)
               AppText(
-                message.text,
+                mainText,
                 fontSize: 14,
                 color: message.isMe ? Colors.white : Colors.black87,
               ),
@@ -324,7 +396,7 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
                 AppText(
                   _formatTime(message.time),
                   fontSize: 10,
-                  color: message.isMe ? Colors.white70 : Colors.grey.shade500,
+                  color: message.isMe ? Colors.white.withOpacity(0.7) : Colors.grey[600]!,
                 ),
                 if (message.isMe) ...[
                   const SizedBox(width: 4),
@@ -335,7 +407,7 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
           ],
         ),
       ),
-    );
+    ));
   }
 
   Widget _buildStatusIcon(String status) {
@@ -350,21 +422,21 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
           height: 12,
           child: CircularProgressIndicator(
             strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.white70),
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
           ),
         );
       case 'sent':
         iconData = Icons.check;
-        iconColor = Colors.white70;
+        iconColor = Colors.white.withOpacity(0.7);
         break;
       case 'delivered':
         iconData = Icons.done_all;
-        iconColor = Colors.white70;
+        iconColor = Colors.white.withOpacity(0.7);
         break;
       case 'read':
       case 'seen':
         iconData = Icons.done_all;
-        iconColor = Colors.blue.shade200;
+        iconColor = Colors.blueAccent;
         break;
       case 'failed':
         iconData = Icons.error_outline;
@@ -372,7 +444,7 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
         break;
       default:
         iconData = Icons.access_time;
-        iconColor = Colors.white70;
+        iconColor = Colors.white.withOpacity(0.7);
     }
 
     return Icon(iconData, size: 14, color: iconColor);
@@ -393,10 +465,52 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
         border: Border(top: BorderSide(color: Color(0xFFEEEEEE))),
       ),
       child: SafeArea(
-        child: Row(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            IconButton(
-              icon: const Icon(Icons.add_circle_outline, color: Colors.grey),
+            if (controller.replyingToMessage.value != null)
+              Container(
+                padding: const EdgeInsets.all(12),
+                margin: const EdgeInsets.only(bottom: 8),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(12),
+                  border: const Border(left: BorderSide(color: AppColors.primaryColor, width: 4)),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AppText(
+                            controller.replyingToMessage.value!.isMe ? 'You' : widget.userName,
+                            color: AppColors.primaryColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                          const SizedBox(height: 4),
+                          AppText(
+                            controller.replyingToMessage.value!.text.replaceAll('\n', ' '),
+                            color: Colors.black87,
+                            fontSize: 12,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close, color: Colors.grey, size: 20),
+                      onPressed: () => controller.cancelReply(),
+                    ),
+                  ],
+                ),
+              ),
+            Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.add_circle_outline, color: Colors.grey),
               onPressed: _showAttachmentBottomSheet,
             ),
             Expanded(
@@ -439,7 +553,9 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
             )),
           ],
         ),
+        ],
       ),
+      )
     );
   }
 

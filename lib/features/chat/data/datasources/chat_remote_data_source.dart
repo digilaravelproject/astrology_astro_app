@@ -6,7 +6,7 @@ import 'package:astro_astrologer/core/services/network/response_model.dart';
 
 abstract class IChatRemoteDataSource {
   Future<ResponseModel> getChatHistory(int sessionId, {int perPage = 50});
-  Future<ResponseModel> sendTextMessage(int sessionId, String text);
+  Future<ResponseModel> sendTextMessage(int sessionId, String text, {int? replyToId});
   Future<ResponseModel> uploadImageAttachment(int sessionId, dynamic xFile);
   Future<ResponseModel> uploadDocumentAttachment(int sessionId, String fileName, dynamic pickerResult);
   Future<ResponseModel> sendAttachmentMessage({
@@ -46,10 +46,14 @@ class ChatRemoteDataSourceImpl implements IChatRemoteDataSource {
   }
 
   @override
-  Future<ResponseModel> sendTextMessage(int sessionId, String text) async {
+  Future<ResponseModel> sendTextMessage(int sessionId, String text, {int? replyToId}) async {
+    final Map<String, dynamic> data = {'message': text, 'type': 'text'};
+    if (replyToId != null) {
+      data['reply_to_id'] = replyToId;
+    }
     return await _apiClient.post(
       AppUrls.sendChatMessage(sessionId),
-      data: {'message': text, 'type': 'text'},
+      data: data,
       handleError: false,
       showToaster: false,
     );

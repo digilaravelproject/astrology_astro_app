@@ -7,6 +7,8 @@ class ChatMessage {
   final String? image;
   final String type;
   final String? attachmentUrl;
+  final int? replyToId;
+  final ChatMessage? replyTo;
 
   const ChatMessage({
     required this.id,
@@ -17,6 +19,8 @@ class ChatMessage {
     this.image,
     required this.type,
     this.attachmentUrl,
+    this.replyToId,
+    this.replyTo,
   });
 
   ChatMessage copyWith({
@@ -28,6 +32,8 @@ class ChatMessage {
     String? image,
     String? type,
     String? attachmentUrl,
+    int? replyToId,
+    ChatMessage? replyTo,
   }) {
     return ChatMessage(
       id: id ?? this.id,
@@ -38,6 +44,8 @@ class ChatMessage {
       image: image ?? this.image,
       type: type ?? this.type,
       attachmentUrl: attachmentUrl ?? this.attachmentUrl,
+      replyToId: replyToId ?? this.replyToId,
+      replyTo: replyTo ?? this.replyTo,
     );
   }
 }

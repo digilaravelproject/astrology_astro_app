@@ -87,8 +87,9 @@ class ChatRepositoryImpl implements IChatRepository {
   Future<int?> sendTextMessage({
     required int sessionId,
     required String text,
+    int? replyToId,
   }) async {
-    final response = await _remoteDataSource.sendTextMessage(sessionId, text);
+    final response = await _remoteDataSource.sendTextMessage(sessionId, text, replyToId: replyToId);
     if (response.isSuccess && response.body != null) {
       final data = response.body['data'] ?? response.body;
       if (data != null) {
