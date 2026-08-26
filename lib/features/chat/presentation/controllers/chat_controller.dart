@@ -372,6 +372,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     _endSub = WebSocketService.chatEndedSessionId.listen((endedSessionId) {
       if (endedSessionId == _sessionId) {
         status.value = 'ended';
+        _stopRingtone();
         _timer?.cancel();
         if (_sessionId != null) {
           LocalNotificationService.cancelOngoingChatNotification(_sessionId!);
@@ -395,6 +396,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     _dismissSub = WebSocketService.chatDismissedSessionId.listen((dismissedSessionId) {
       if (dismissedSessionId == _sessionId) {
         status.value = 'ended'; // or 'dismissed'
+        _stopRingtone();
         _timer?.cancel();
         if (_sessionId != null) {
           LocalNotificationService.cancelOngoingChatNotification(_sessionId!);
@@ -411,7 +413,8 @@ class ChatController extends GetxController with WidgetsBindingObserver {
         final newStatus = updates[_sessionId!];
         if (newStatus != null && status.value != newStatus) {
           status.value = newStatus;
-          if (newStatus == 'ongoing') {
+          if (newStatus == 'ongoing' || newStatus == 'accepted') {
+            _stopRingtone();
             final startedAtStr = WebSocketService.sessionStartTimes[_sessionId];
             DateTime? serverStartTime;
             if (startedAtStr != null && startedAtStr.isNotEmpty) {
