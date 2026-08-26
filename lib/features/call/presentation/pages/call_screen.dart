@@ -375,7 +375,13 @@ class _CallScreenState extends State<CallScreen> {
       }
     } else {
       // Normal (non-package) call
-      controller.endCall();
+      if (controller.status.value == 'ringing' || 
+          controller.status.value == 'dialing' || 
+          controller.status.value == 'waiting') {
+        controller.rejectCall();
+      } else {
+        controller.endCall();
+      }
     }
   }
 
