@@ -678,7 +678,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.only(bottom: 4, top: 8),
-          child: AppText(label.tr, fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textColorPrimary.withOpacity(0.6)),
+          child: AppText(label, fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textColorPrimary.withOpacity(0.6)),
         ),
         GestureDetector(
           onTap: isPicker ? (onTap ?? () {}) : null,
@@ -710,7 +710,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                     style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.textColorPrimary),
                     onTap: isPicker ? (onTap ?? () {}) : null,
                     decoration: InputDecoration(
-                      hintText: hint.tr,
+                      hintText: hint,
                       hintStyle: TextStyle(color: AppColors.textColorHint.withOpacity(0.6), fontSize: 12),
                       filled: false,
                       fillColor: Colors.transparent,
