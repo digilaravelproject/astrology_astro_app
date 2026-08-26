@@ -8,6 +8,7 @@ class AssetsRes {
 
   static const String PROJECT_NAME = 'astro_astrologer';
   static const String PROJECT_VERSION = '1.0.2+3';
+  static const String GENERAL_ALERT_SOUND = 'assets/audio/general_alert_sound.mp3';
   static const String APP_ICON = 'assets/images/app_icon.png';
   static const String APP_LOGO = 'assets/images/app_logo.png';
   static const String BACKGROUND = 'assets/images/background.png';
