@@ -249,6 +249,11 @@ class _KundliListScreenState extends State<KundliListScreen> {
                       Row(
                         children: [
                           GestureDetector(
+                            onTap: () => _confirmDelete(context, item),
+                            child: Icon(Icons.delete_outline, color: Colors.redAccent.withOpacity(0.7), size: 24),
+                          ),
+                          const SizedBox(width: 8),
+                          GestureDetector(
                             onTap: () => Get.to(() => CreateKundliScreen(
                                   initialIsMatching: false,
                                   hideMatchingTab: true,
@@ -468,4 +473,38 @@ class _KundliListScreenState extends State<KundliListScreen> {
     ),
   );
 }
+
+  void _confirmDelete(BuildContext context, KundliItem item) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: AppText('Delete Kundli'.tr, fontWeight: FontWeight.bold),
+        content: AppText('Are you sure you want to delete ${item.name}\'s Kundli?'.tr),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: AppText('Cancel'.tr, color: Colors.grey),
+          ),
+          Obx(() {
+            return TextButton(
+              onPressed: _savedKundliController.isLoadingAction.value
+                  ? null
+                  : () async {
+                      final success = await _savedKundliController.deleteKundli(item.id);
+                      if (context.mounted) {
+                        Navigator.pop(context);
+                      }
+                      if (success) {
+                        CustomSnackBar.showSuccess('Kundli deleted successfully'.tr);
+                      }
+                    },
+              child: _savedKundliController.isLoadingAction.value
+                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                  : AppText('Delete'.tr, color: Colors.redAccent, fontWeight: FontWeight.bold),
+            );
+          }),
+        ],
+      ),
+    );
+  }
 }
