@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
+import 'package:astro_astrologer/core/services/sound_vibration_service.dart';
 import 'dart:convert';
 import '../../../../core/constants/app_urls.dart';
 import '../../../../core/widgets/app_text.dart';
@@ -12,6 +13,7 @@ import '../bindings/chat_binding.dart';
 import '../../../../core/constants/app_constants.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 import 'package:astro_astrologer/core/services/local_notification_service.dart';
+import 'floating_chat_bubble.dart';
 
 class IncomingChatDialog extends StatefulWidget {
   final Map<String, dynamic> sessionData;
@@ -127,11 +129,11 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
   }
 
   void _startRingtone() {
-    // Sound play disabled
+    SoundVibrationService().startRingtone('audio/astrolger_app_sound.mp3', loop: true, vibrate: true);
   }
 
   void _stopRingtone() {
-    // Sound stop disabled
+    SoundVibrationService().stopRingtone();
   }
 
   @override
@@ -371,6 +373,7 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
                         } catch (e) {
                           debugPrint('Reject error: $e');
                         }
+                        FloatingChatBubble.dismiss();
                         Get.back();
                       },
                       style: OutlinedButton.styleFrom(
@@ -396,6 +399,7 @@ class _IncomingChatDialogState extends State<IncomingChatDialog>
                           final response = await Get.find<ApiClient>()
                               .post(AppUrls.acceptChatSession(sessionId));
                           if (response.isSuccess) {
+                            FloatingChatBubble.dismiss();
                             Get.back();
                             
                             // Ensure we have a valid start time to start the timer immediately

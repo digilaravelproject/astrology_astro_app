@@ -19,6 +19,7 @@ import 'package:astro_astrologer/features/kundli/create_kundli_screen.dart';
 import 'package:astro_astrologer/features/kundli/kundli_list_screen.dart';
 import 'package:astro_astrologer/features/chat/presentation/bindings/chat_binding.dart';
 import 'package:swipe_to/swipe_to.dart';
+import 'package:astro_astrologer/features/chat/presentation/widgets/incoming_chat_dialog.dart';
 
 class ChatScreen extends StatefulWidget {
   final String userName;
@@ -69,6 +70,33 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     }
     _controller = Get.find<ChatController>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // If the session is still in 'initiated' state, show IncomingChatDialog
+      // instead of the ChatScreen so astrologer can Accept/Reject.
+      if (widget.initialStatus == 'initiated') {
+        Get.back(); // Close this ChatScreen
+        Future.delayed(const Duration(milliseconds: 100), () {
+          if (Get.isBottomSheetOpen == true) return;
+          Get.bottomSheet(
+            IncomingChatDialog(
+              sessionData: {'id': widget.sessionId, 'status': 'initiated'},
+              senderData: {
+                'name': widget.userName,
+                'profile_photo': widget.userImage,
+                'gender': widget.gender ?? '',
+                'date_of_birth': widget.dob ?? '',
+                'time_of_birth': widget.tob ?? '',
+                'place_of_birth': widget.place ?? '',
+              },
+            ),
+            isDismissible: false,
+            enableDrag: false,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+          );
+        });
+        return;
+      }
+
       _controller.initSession(
         sessionId: widget.sessionId,
         currentUserId: 0,

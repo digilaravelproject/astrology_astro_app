@@ -208,64 +208,148 @@ class _CallScreenState extends State<CallScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      status == 'ringing' ? 'Ringing...' : 'Connecting P2P...',
+                      status == 'ringing' ? 'Incoming Audio Call' : 'Connecting P2P...',
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.7),
+                        color: status == 'ringing' ? AppColors.primaryColor : Colors.white.withValues(alpha: 0.7),
                         fontSize: 15,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 1.2,
                       ),
                     ),
                   ],
                 ),
 
-                // Bottom Controls Panel: Translucent Glassmorphic Panel
-                Container(
-                  margin: const EdgeInsets.all(20),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.25),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
+                // Bottom Controls Panel
+                if (status == 'ringing') ...[
+                  // ── Incoming ringing: show Accept / Decline ──
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 60.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        // Decline button
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                controller.rejectCall();
+                                Get.back();
+                              },
+                              child: Container(
+                                width: 72,
+                                height: 72,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.red,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.red.withValues(alpha: 0.4),
+                                      blurRadius: 18,
+                                      spreadRadius: 2,
+                                    ),
+                                  ],
+                                ),
+                                child: const Icon(Icons.call_end, color: Colors.white, size: 32),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            const Text('Decline', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w500)),
+                          ],
+                        ),
+                        // Accept button
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            GestureDetector(
+                              onTap: () async {
+                                String sdp = controller.incomingOfferSdp ?? '';
+                                if (sdp.isEmpty && controller.sessionId != null) {
+                                  sdp = await controller.fetchOfferSdpFromCurrentSession() ?? '';
+                                }
+                                if (sdp.isEmpty) return;
+                                final success = await controller.acceptCall(sdp);
+                                if (success) {
+                                  // Already on CallScreen — just pop dialog overlay if open
+                                  if (Get.isDialogOpen == true) Get.back();
+                                } else {
+                                  Get.back();
+                                }
+                              },
+                              child: Container(
+                                width: 72,
+                                height: 72,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.green,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.green.withValues(alpha: 0.4),
+                                      blurRadius: 18,
+                                      spreadRadius: 2,
+                                    ),
+                                  ],
+                                ),
+                                child: const Icon(Icons.call, color: Colors.white, size: 32),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            const Text('Accept', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w500)),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      // Mute button
-                      _buildControlButton(
-                        icon: controller.isMuted.value ? Icons.mic_off : Icons.mic,
-                        label: 'Mute',
-                        isActive: controller.isMuted.value,
-                        onPressed: () => controller.toggleMute(),
-                      ),
-
-                      // Switch to Chat (visible during ongoing call)
-                      if (controller.isPackageCall)
+                ] else ...[
+                  // ── Active / ongoing call controls ──
+                  Container(
+                    margin: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.25),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        // Mute button
                         _buildControlButton(
-                          icon: Icons.swap_calls_rounded,
-                          label: 'Chat',
-                          isActive: false,
-                          onPressed: () => _showSwitchToChatDialog(context),
+                          icon: controller.isMuted.value ? Icons.mic_off : Icons.mic,
+                          label: 'Mute',
+                          isActive: controller.isMuted.value,
+                          onPressed: () => controller.toggleMute(),
                         ),
 
-                      _buildEndCallButton(onPressed: () => _onEndTapped()),
+                        // Switch to Chat (visible during ongoing call)
+                        if (controller.isPackageCall)
+                          _buildControlButton(
+                            icon: Icons.swap_calls_rounded,
+                            label: 'Chat',
+                            isActive: false,
+                            onPressed: () => _showSwitchToChatDialog(context),
+                          ),
 
-                      // Speaker button
-                      _buildControlButton(
-                        icon: controller.isSpeakerOn.value ? Icons.volume_up : Icons.volume_down,
-                        label: 'Speaker',
-                        isActive: controller.isSpeakerOn.value,
-                        onPressed: () => controller.toggleSpeaker(),
-                      ),
-                    ],
+                        _buildEndCallButton(onPressed: () => _onEndTapped()),
+
+                        // Speaker button
+                        _buildControlButton(
+                          icon: controller.isSpeakerOn.value ? Icons.volume_up : Icons.volume_down,
+                          label: 'Speaker',
+                          isActive: controller.isSpeakerOn.value,
+                          onPressed: () => controller.toggleSpeaker(),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                ],
               ],
             ),
           ],

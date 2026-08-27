@@ -416,14 +416,11 @@ class LocalNotificationService {
     String? notificationType,
   }) async {
     String channelId = 'session_channel_v2';
-    String soundName = AppConstants.generalNotificationSound;
 
     if (notificationType == 'call' || notificationType == 'CALL_ACCEPTED' || notificationType == 'CALL_REQUEST') {
       channelId = 'calls_channel_v2';
-      soundName = AppConstants.callNotificationSound;
     } else if (notificationType == 'chat' || notificationType == 'CHAT_REQUEST' || notificationType == 'MessageSent') {
       channelId = 'chats_channel_v2';
-      soundName = AppConstants.chatNotificationSound;
     }
 
     bool shouldPlaySound = (notificationType == 'CALL_REQUEST' || 

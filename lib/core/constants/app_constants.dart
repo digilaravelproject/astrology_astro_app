@@ -27,8 +27,8 @@ class AppConstants {
     static const String userData = 'user_data';
     static const String isLoggedIn = 'is_logged_in';
     // Call-related constants
-    static const String outgoingRingPath = 'audio/outgoing_ring.mp3';
-    static const String incomingRingPath = 'audio/incoming_ring.mp3';
+    static const String outgoingRingPath = 'audio/astrolger_app_sound.mp3'; // Unused, updated for consistency
+    static const String incomingRingPath = 'audio/astrolger_app_sound.mp3';
     static const String webrtcStunServer = 'stun:stun.l.google.com:19302';
     
     // LiveKit TURN Server Config
@@ -36,8 +36,5 @@ class AppConstants {
     static const String liveKitTurnUsername = 'livekit';
     static const String liveKitTurnCredential = 'livekit_secret_2024';
 
-    // Notification Sound Resource Names (Android Raw Resources & iOS Sound Files)
-    static const String callNotificationSound = 'outgoing_ring_sound';  // Connecting/Ringing tone when user initiates call/chat
-    static const String chatNotificationSound = 'incoming_ring_sound';  // Incoming tone when astrologer receives call/chat request
-    static const String generalNotificationSound = 'general_alert_sound'; // General/system notification tone
+
 }

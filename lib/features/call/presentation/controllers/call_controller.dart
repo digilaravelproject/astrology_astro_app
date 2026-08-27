@@ -497,8 +497,8 @@ class CallController extends GetxController with WidgetsBindingObserver {
   }
 
   void _startRingtone({required bool isIncoming}) {
-    // Astrologer hears incoming_ring.mp3 when user calls/chats
-    final sound = isIncoming ? 'audio/incoming_ring.mp3' : 'audio/outgoing_ring.mp3';
+    // Astrologer hears astrolger_app_sound.mp3 when user calls/chats
+    final sound = 'audio/astrolger_app_sound.mp3';
     SoundVibrationService().startRingtone(sound, loop: true, vibrate: true);
     Logger.d('[CallController] Astrologer ringtone started → $sound');
   }
@@ -567,8 +567,23 @@ class CallController extends GetxController with WidgetsBindingObserver {
       startedAt: status.value == 'ongoing' ? startStr : null,
       status: status.value,
       onTap: () {
+        final currentStatus = status.value;
         FloatingCallBubble.dismiss(stopForegroundService: false);
-        Get.to(() => const CallScreen());
+
+        if (currentStatus == 'ringing') {
+          // Incoming call still ringing — show IncomingCallDialog with Accept/Decline
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (Get.isDialogOpen == true) return;
+            final sdp = incomingOfferSdp ?? '';
+            Get.dialog(
+              IncomingCallDialog(offerSdp: sdp),
+              barrierDismissible: false,
+            );
+          });
+        } else {
+          // Ongoing call — go back to CallScreen
+          Get.to(() => const CallScreen());
+        }
       },
     );
     if (shouldPop) {

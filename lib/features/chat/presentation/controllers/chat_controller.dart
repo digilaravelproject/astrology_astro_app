@@ -28,6 +28,7 @@ import 'package:astro_astrologer/features/auth/controllers/auth_controller.dart'
 import 'package:astro_astrologer/core/services/foreground_task_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
+import 'package:astro_astrologer/features/chat/presentation/widgets/incoming_chat_dialog.dart';
 import 'package:astro_astrologer/core/utils/logger.dart';
 
 class ChatController extends GetxController with WidgetsBindingObserver {
@@ -52,8 +53,8 @@ class ChatController extends GetxController with WidgetsBindingObserver {
   // ── Sound helpers ────────────────────────────────────────────
   /// Play incoming ring so astrologer hears a new chat request.
   void _startRingtone() {
-    SoundVibrationService().startRingtone('audio/incoming_ring.mp3', loop: true, vibrate: true);
-    debugPrint('[ChatController] Astrologer ringtone started → incoming_ring.mp3');
+    SoundVibrationService().startRingtone('audio/astrolger_app_sound.mp3', loop: true, vibrate: true);
+    debugPrint('[ChatController] Astrologer ringtone started → astrolger_app_sound.mp3');
   }
 
   /// Stop ringtone — called on accept OR reject.
@@ -197,6 +198,59 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       if ((status.value == 'ongoing' || status.value == 'initiated') && _sessionId != null && _userName != null) {
         minimizeToBubble(Get.context!, _userName!, "", shouldPop: false);
       }
+    } else if (state == AppLifecycleState.resumed) {
+      // Check for any pending initiated chat sessions and show the incoming dialog
+      _checkPendingChatSession();
+    }
+  }
+
+  /// When astrologer resumes app from background, check if there's a
+  /// pending chat session waiting to be accepted/rejected.
+  Future<void> _checkPendingChatSession() async {
+    try {
+      final apiClient = Get.find<ApiClient>();
+      final response = await apiClient.get(
+        AppUrls.getCurrentSession,
+        handleError: false,
+        showErrorScreen: false,
+      );
+      if (!response.isSuccess || response.body == null) return;
+
+      final body = response.body;
+      final sessionData = body is Map
+          ? (body['session'] ?? body['data']?['session'] ?? body['data'])
+          : null;
+      if (sessionData == null) return;
+
+      final String sessionStatus = sessionData['status']?.toString() ?? '';
+      if (sessionStatus != 'initiated') return;
+
+      // Already handling this session
+      final int incomingId = int.tryParse(sessionData['id']?.toString() ?? '') ?? 0;
+      if (incomingId == 0) return;
+      if (status.value == 'initiated' && _sessionId == incomingId) return;
+
+      // Extract sender data
+      final senderData = sessionData['consumer'] ?? sessionData['user'] ?? {};
+
+      // Show IncomingChatDialog
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (Get.isBottomSheetOpen == true) return; // Already showing
+        // Close any open dialogs before showing incoming chat
+        if (Get.isDialogOpen == true) Get.back();
+        Get.bottomSheet(
+          IncomingChatDialog(
+            sessionData: Map<String, dynamic>.from(sessionData),
+            senderData: Map<String, dynamic>.from(senderData),
+          ),
+          isDismissible: false,
+          enableDrag: false,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+        );
+      });
+    } catch (e) {
+      // Silently fail — not critical
     }
   }
 
@@ -818,24 +872,125 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       imageUrl: image,
       startedAt: startStr,
       status: status.value,
-      onTap: () {
-        final currentStatus = FloatingChatBubble.chatStatus.value;
-        debugPrint("==== [FLOATING_CHAT_DEBUG] Astrologer FloatingChatBubble tapped! Navigating back to ChatScreen for sessionId=$_sessionId ====");
+      onTap: () async {
         FloatingChatBubble.dismiss(stopForegroundService: false);
-        Get.to(
-          () => ChatScreen(
-            userName: name,
-            userImage: image,
-            sessionId: _sessionId!,
-            initialStatus: currentStatus,
-            startedAtString: startStr,
-          ),
-          binding: ChatBinding(),
-        );
+
+        // Fetch current session status from API
+        String liveStatus = 'ongoing'; // default fallback
+        Map<String, dynamic> liveSession = {};
+        Map<String, dynamic> liveSender = {};
+
+        try {
+          final apiClient = Get.find<ApiClient>();
+          final response = await apiClient.get(
+            AppUrls.getCurrentSession,
+            handleError: false,
+            showErrorScreen: false,
+          );
+          if (response.isSuccess && response.body != null) {
+            final body = response.body;
+            final raw = body is Map
+                ? (body['session'] ?? body['data']?['session'] ?? body['data'])
+                : null;
+            if (raw != null) {
+              liveSession = Map<String, dynamic>.from(raw);
+              liveStatus = liveSession['status']?.toString() ?? 'ongoing';
+              final sd = liveSession['consumer'] ?? liveSession['user'];
+              if (sd != null) liveSender = Map<String, dynamic>.from(sd);
+            }
+          }
+        } catch (_) {}
+
+        if (liveStatus == 'initiated') {
+          // Chat is still ringing — show IncomingChatDialog
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (Get.isBottomSheetOpen == true) return;
+            if (liveSession.isEmpty && _sessionId != null) {
+              liveSession = {'id': _sessionId, 'status': 'initiated'};
+            }
+            if (liveSender.isEmpty) {
+              liveSender = WebSocketService.lastChatSenderData ?? {'name': name, 'profile_photo': image};
+            }
+            Get.bottomSheet(
+              IncomingChatDialog(
+                sessionData: liveSession,
+                senderData: liveSender,
+              ),
+              isDismissible: false,
+              enableDrag: false,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+            );
+          });
+        } else {
+          // Chat is ongoing — go to ChatScreen
+          final sessionId = liveSession['id'] != null
+              ? int.tryParse(liveSession['id'].toString()) ?? _sessionId!
+              : _sessionId!;
+          Get.to(
+            () => ChatScreen(
+              userName: name,
+              userImage: image,
+              sessionId: sessionId,
+              initialStatus: liveStatus,
+              startedAtString: startStr,
+            ),
+            binding: ChatBinding(),
+          );
+        }
       },
     );
     if (shouldPop) {
       Get.back();
+    }
+  }
+
+  /// Fetch current session data and show IncomingChatDialog for initiated/ringing state
+  Future<void> _showIncomingChatDialog(String name, String image) async {
+    try {
+      final apiClient = Get.find<ApiClient>();
+      final response = await apiClient.get(
+        AppUrls.getCurrentSession,
+        handleError: false,
+        showErrorScreen: false,
+      );
+      Map<String, dynamic> sessionData = {};
+      Map<String, dynamic> senderData = {};
+
+      if (response.isSuccess && response.body != null) {
+        final body = response.body;
+        final raw = body is Map
+            ? (body['session'] ?? body['data']?['session'] ?? body['data'])
+            : null;
+        if (raw != null) {
+          sessionData = Map<String, dynamic>.from(raw);
+          final sd = sessionData['consumer'] ?? sessionData['user'];
+          if (sd != null) senderData = Map<String, dynamic>.from(sd);
+        }
+      }
+
+      // Fallback: build minimal data from what we already have
+      if (sessionData.isEmpty && _sessionId != null) {
+        sessionData = {'id': _sessionId, 'status': 'initiated'};
+      }
+      if (senderData.isEmpty) {
+        senderData = WebSocketService.lastChatSenderData ?? {'name': name, 'profile_photo': image};
+      }
+
+      if (sessionData.isNotEmpty) {
+        Get.bottomSheet(
+          IncomingChatDialog(
+            sessionData: sessionData,
+            senderData: senderData,
+          ),
+          isDismissible: false,
+          enableDrag: false,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+        );
+      }
+    } catch (e) {
+      debugPrint('[ChatController] _showIncomingChatDialog error: $e');
     }
   }
 

@@ -128,7 +128,8 @@ flutter:
     - .env
     - assets/animations/
     - assets/audio/
-    - assets/audio/general_alert_sound.mp3
+    - assets/audio/astrolger_app_sound.mp3
+    - assets/audio/genral_sound_both.mp3
     - assets/icons/
     - assets/images/
     - assets/images/app_icon.png

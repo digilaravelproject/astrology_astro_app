@@ -50,6 +50,8 @@ class WebSocketService extends GetxService {
   static final StreamController<Map<String, dynamic>> chatInitiatedEvent = StreamController.broadcast();
   static final StreamController<Map<String, dynamic>> chatQueueUpdatedEvent = StreamController.broadcast();
   static final RxMap<String, dynamic> chatEndedBilling = <String, dynamic>{}.obs;
+  // Stores the last full senderData from ChatInitiated WebSocket event
+  static Map<String, dynamic>? lastChatSenderData;
 
   // Call System State
   static final RxMap<int, String> callSessionStatusUpdates = <int, String>{}.obs;
@@ -215,7 +217,14 @@ class WebSocketService extends GetxService {
           Logger.d('|🔔 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-          chatQueueUpdatedEvent.add(data['data'] ?? {});
+          
+          Map<String, dynamic> parsedData = {};
+          if (data['data'] is String) {
+            parsedData = jsonDecode(data['data']);
+          } else if (data['data'] is Map) {
+            parsedData = Map<String, dynamic>.from(data['data']);
+          }
+          chatQueueUpdatedEvent.add(parsedData);
         } else if (event == AppUrls.eventMessageStatusUpdated || event == 'App\\Events\\MessageStatusUpdated') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|🔔 WEBSOCKET EVENT: $event');
@@ -633,6 +642,9 @@ class WebSocketService extends GetxService {
 
       if (session != null && senderData != null) {
         chatInitiatedEvent.add(Map<String, dynamic>.from(session));
+        
+        // Store full sender details for later use (e.g. bubble tap)
+        lastChatSenderData = Map<String, dynamic>.from(senderData);
         
         final int sessionId = session['id'] is int 
             ? session['id'] 

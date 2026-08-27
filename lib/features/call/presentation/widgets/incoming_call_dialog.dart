@@ -7,6 +7,7 @@ import 'package:astro_astrologer/core/theme/app_colors.dart';
 import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 import 'package:astro_astrologer/features/call/presentation/pages/call_screen.dart';
 import 'package:astro_astrologer/core/utils/logger.dart';
+import 'package:astro_astrologer/core/services/sound_vibration_service.dart';
 
 class IncomingCallDialog extends StatefulWidget {
   final String offerSdp;
@@ -22,6 +23,20 @@ class IncomingCallDialog extends StatefulWidget {
 
 class _IncomingCallDialogState extends State<IncomingCallDialog> {
   bool _isAccepting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Start looping ringtone for Astrologer incoming call
+    SoundVibrationService().startRingtone('audio/astrolger_app_sound.mp3', loop: true, vibrate: true);
+  }
+
+  @override
+  void dispose() {
+    // Stop ringtone when dialog closes (accepted/declined/timed out)
+    SoundVibrationService().stopRingtone();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -165,18 +180,15 @@ class _IncomingCallDialogState extends State<IncomingCallDialog> {
                                 sdpToUse = await controller.fetchOfferSdpFromCurrentSession() ?? '';
                               }
                               
+                              bool success = false;
                               if (sdpToUse.isEmpty) {
-                                Logger.e('IncomingCallDialog: Could not obtain SDP. Cannot accept call.');
-                                if (mounted) {
-                                  setState(() {
-                                    _isAccepting = false;
-                                  });
-                                }
-                                return;
+                                Logger.d('IncomingCallDialog: No SDP available. Falling back to acceptCallDirect()...');
+                                success = await controller.acceptCallDirect();
+                              } else {
+                                Logger.d('IncomingCallDialog: Calling controller.acceptCall() with SDP...');
+                                success = await controller.acceptCall(sdpToUse);
                               }
                               
-                              Logger.d('IncomingCallDialog: Calling controller.acceptCall()...');
-                              final success = await controller.acceptCall(sdpToUse);
                               Logger.d('IncomingCallDialog: acceptCall finished. success = $success');
                               if (success) {
                                 Logger.d('IncomingCallDialog: Navigating to CallScreen.');

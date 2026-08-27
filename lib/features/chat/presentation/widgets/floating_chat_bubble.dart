@@ -63,6 +63,7 @@ class FloatingChatBubble {
     if (_isActive.value && FloatingChatBubble.sessionId == sessionId) {
       debugPrint("==== [DEBUG LOG ASTRO] FloatingChatBubble already active for sessionId=$sessionId. Updating status to $status ====");
       chatStatus.value = status;
+      onTapCallback = onTap; // Always refresh the tap callback so latest logic is used
       return;
     }
     

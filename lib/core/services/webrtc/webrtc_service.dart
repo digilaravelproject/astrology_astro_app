@@ -243,7 +243,12 @@ class WebRTCService {
       Logger.e('WebRTCService: Helper.setSpeakerphoneOn error -> $e');
     }
     
-    // track.enableSpeakerphone is deprecated and conflicts with Helper.setSpeakerphoneOn
+    if (localStream != null) {
+      localStream!.getAudioTracks().forEach((track) {
+        track.enableSpeakerphone(isSpeakerOn);
+      });
+      Logger.d('WebRTCService: Track Speakerphone enabled = $isSpeakerOn');
+    }
   }
 
   Future<void> _sendIceCandidate(int sessionId, RTCIceCandidate candidate) async {

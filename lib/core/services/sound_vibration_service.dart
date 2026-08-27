@@ -15,11 +15,6 @@ class SoundVibrationService {
     try {
       await stopSound();
       _audioPlayer = AudioPlayer();
-      if (loop) {
-        await _audioPlayer?.setReleaseMode(ReleaseMode.loop);
-      } else {
-        await _audioPlayer?.setReleaseMode(ReleaseMode.release);
-      }
       
       String assetPath = soundName;
       if (!soundName.contains('/') && !soundName.contains('.')) {
@@ -27,6 +22,13 @@ class SoundVibrationService {
       }
 
       await _audioPlayer?.play(AssetSource(assetPath));
+      
+      if (loop) {
+        await _audioPlayer?.setReleaseMode(ReleaseMode.loop);
+      } else {
+        await _audioPlayer?.setReleaseMode(ReleaseMode.release);
+      }
+      
       debugPrint('SoundVibrationService: Playing sound $assetPath (loop: $loop)');
     } catch (e) {
       debugPrint('SoundVibrationService error playing sound: $e');
