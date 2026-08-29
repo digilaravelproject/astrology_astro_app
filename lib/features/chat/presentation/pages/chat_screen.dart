@@ -253,7 +253,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        if (_controller.status.value == 'ongoing' || _controller.status.value == 'initiated') {
+        if (_controller.status.value.name == 'ongoing' || _controller.status.value.name == 'initiated') {
           _controller.minimizeToBubble(
             context,
             widget.userName,
@@ -304,7 +304,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           centerTitle: false,
           showLeading: true,
           onLeadingPressed: () {
-            if (_controller.status.value == 'ongoing' || _controller.status.value == 'initiated') {
+            if (_controller.status.value.name == 'ongoing' || _controller.status.value.name == 'initiated') {
               _controller.minimizeToBubble(
                 context,
                 widget.userName,
@@ -347,7 +347,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               ),
             ),
             Obx(() {
-              if (_controller.status.value == 'ongoing') {
+              if (_controller.status.value.name == 'ongoing') {
                 return Padding(
                   padding: const EdgeInsets.only(right: 16), // Adjusted right margin to 16
                   child: InkWell(
@@ -422,7 +422,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             // Messages List
             Expanded(
               child: Obx(() {
-                final isInitiated = _controller.status.value == 'initiated';
+                final isInitiated = _controller.status.value.name == 'initiated';
                 if (isInitiated) {
                   return _buildRingingScreen();
                 }

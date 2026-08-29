@@ -35,9 +35,9 @@ class _CallScreenState extends State<CallScreen> {
   void dispose() {
     controller.isCallScreenVisible = false;
     // Minimize to bubble if the call is still active
-    if (controller.status.value == 'ongoing' || 
-        controller.status.value == 'ringing' || 
-        controller.status.value == 'dialing') {
+    if (controller.status.value.name == 'ongoing' || 
+        controller.status.value.name == 'ringing' || 
+        controller.status.value.name == 'dialing') {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (controller.sessionId != null && controller.consumerName != null) {
           controller.minimizeToBubble(Get.context!, controller.consumerName!, controller.consumerImage ?? "", shouldPop: false);
@@ -460,9 +460,9 @@ class _CallScreenState extends State<CallScreen> {
       }
     } else {
       // Normal (non-package) call
-      if (controller.status.value == 'ringing' || 
-          controller.status.value == 'dialing' || 
-          controller.status.value == 'waiting') {
+      if (controller.status.value.name == 'ringing' || 
+          controller.status.value.name == 'dialing' || 
+          controller.status.value.name == 'waiting') {
         controller.rejectCall();
       } else {
         controller.endCall();
