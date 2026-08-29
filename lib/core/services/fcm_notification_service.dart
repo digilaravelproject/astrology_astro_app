@@ -148,7 +148,7 @@ class FCMNotificationService {
           
           if (parsedSessionId > 0) 
           return;
-        } else if (type == 'PACKAGE_EXHAUSTED') {
+        } else if (type == 'PACKAGE_EXHAUSTED' || type == 'package') {
           
           
           if (parsedSessionId > 0) 
@@ -177,7 +177,7 @@ class FCMNotificationService {
           
           if (parsedSessionId > 0) 
           return;
-        } else if (type == 'PACKAGE_EXHAUSTED') {
+        } else if (type == 'PACKAGE_EXHAUSTED' || type == 'package') {
           
           
           if (parsedSessionId > 0) 
