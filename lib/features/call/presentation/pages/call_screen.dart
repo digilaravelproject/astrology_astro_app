@@ -131,7 +131,7 @@ class _CallScreenState extends State<CallScreen> {
                                   border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
                               ),
                               child: Text(
-                                status == CallStatus.ongoing ? 'Ongoing Call' : status.toUpperCase(),
+                                status == CallStatus.ongoing ? 'Ongoing Call' : status.name.toUpperCase(),
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 12,
