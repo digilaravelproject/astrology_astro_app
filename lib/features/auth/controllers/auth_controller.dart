@@ -13,6 +13,7 @@ import '../../profile/model/other_details_model.dart';
 import '../../profile/model/skill_model.dart';
 import '../../../core/services/network/websocket_service.dart';
 import '../../../core/services/fcm_notification_service.dart';
+import '../../../core/services/network/api_client.dart';
 
 class AuthController extends GetxController {
   final LoginUseCase _loginUseCase;
@@ -436,6 +437,7 @@ class AuthController extends GetxController {
       final response = await _logoutUseCase.execute();
 
       if (response.isSuccess) {
+        await Get.find<ApiClient>().clearCache();
         currentUser.value = null;
         CustomSnackBar.showSuccess(response.message);
         Get.offAllNamed(RouteHelper.getLoginRoute());

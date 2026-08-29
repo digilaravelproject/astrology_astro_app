@@ -200,6 +200,19 @@ class LocalNotificationService {
 
       await androidPlugin.requestNotificationsPermission();
     }
+
+    final iosPlugin =
+        _notificationsPlugin
+            .resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin
+            >();
+    if (iosPlugin != null) {
+      await iosPlugin.requestPermissions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+    }
   }
 
   // ---------------------------------------------------------------------

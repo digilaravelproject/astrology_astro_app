@@ -93,6 +93,8 @@ dependencies:
   open_filex: ^4.7.0
   cloud_firestore: ^6.8.0
   swipe_to: ^1.0.6
+  dio_cache_interceptor: ^3.5.1
+  dio_cache_interceptor_hive_store: ^4.0.0
 
 
 dev_dependencies:

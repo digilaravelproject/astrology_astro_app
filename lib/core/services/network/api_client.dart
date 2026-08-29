@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'dart:convert';
 import 'package:dio/dio.dart' hide FormData, MultipartFile;
 import 'package:dio/dio.dart' as dio;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:astro_astrologer/core/constants/app_constants.dart';
 import 'package:flutter/foundation.dart';
@@ -11,6 +13,9 @@ import '../../utils/logger.dart';
 import '../storage/token_manger.dart';
 import 'api_checker.dart';
 import 'multipart.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
+import 'package:dio_cache_interceptor_hive_store/dio_cache_interceptor_hive_store.dart';
 import 'network_info.dart';
 import '../../widgets/no_internet_screen.dart';
 import 'response_model.dart';
@@ -34,6 +39,9 @@ class ApiClient {
       },
       validateStatus: (status) => status == null ? false : status < 500,
     );
+
+    // Initialize Cache Interceptor
+    _initCacheInterceptor();
 
     _dio.interceptors.add(
       InterceptorsWrapper(
@@ -132,6 +140,23 @@ class ApiClient {
     );
   }
 
+  Future<void> _initCacheInterceptor() async {
+    try {
+      final dir = await getTemporaryDirectory();
+      final cacheOptions = CacheOptions(
+        store: HiveCacheStore(dir.path),
+        policy: CachePolicy.request,
+        maxStale: const Duration(seconds: 30), // Cache valid for 30 seconds
+        priority: CachePriority.normal,
+        allowPostMethod: false,
+      );
+      _dio.interceptors.add(DioCacheInterceptor(options: cacheOptions));
+      Logger.d('|💾 DioCacheInterceptor successfully initialized');
+    } catch (e) {
+      Logger.e('|❌ Failed to initialize DioCacheInterceptor: $e');
+    }
+  }
+
   Future<bool> _checkInternetConnection({bool showDialog = false}) async {
     final isConnected = await NetworkInfo.checkConnectivity();
     if (!isConnected && showDialog) {
@@ -140,12 +165,31 @@ class ApiClient {
     return isConnected;
   }
 
+  Future<void> clearCache() async {
+    try {
+      final dir = await getTemporaryDirectory();
+      await HiveCacheStore(dir.path).clean();
+
+      final prefs = await SharedPreferences.getInstance();
+      final keys = prefs.getKeys();
+      for (String key in keys) {
+        if (key.startsWith('silent_cache_')) {
+          await prefs.remove(key);
+        }
+      }
+      Logger.i('|🗑️ Cache cleared successfully');
+    } catch (e) {
+      Logger.e('|❌ Failed to clear cache: $e');
+    }
+  }
+
   Future<ResponseModel> get(
     String path, {
     Map<String, dynamic>? queryParameters,
     Options? options,
     CancelToken? cancelToken,
     ProgressCallback? onReceiveProgress,
+    Function(ResponseModel)? onCacheData,
     bool handleError = AppConstants.handleError,
     bool showToaster = AppConstants.showToaster,
     bool showErrorScreen = AppConstants.isHandleErrorScreen,
@@ -156,6 +200,32 @@ class ApiClient {
       return const ResponseModel(
         isSuccess: false,
         message: 'No internet connection',
+      );
+    }
+
+    String cacheKey = 'silent_cache_$path';
+    if (queryParameters != null) {
+      cacheKey += '_${jsonEncode(queryParameters)}';
+    }
+
+    if (onCacheData != null) {
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        final cachedString = prefs.getString(cacheKey);
+        if (cachedString != null) {
+          final json = jsonDecode(cachedString);
+          onCacheData(ResponseModel.fromJson(json, statusCode: 200));
+        }
+      } catch (e) {
+        Logger.e('|❌ Failed to read manual cache: $e');
+      }
+
+      // Force API to bypass the 30s DioCacheInterceptor and fetch fresh data
+      options = CacheOptions(store: MemCacheStore(), policy: CachePolicy.refreshForceCache).toOptions().copyWith(
+        headers: options?.headers,
+        sendTimeout: options?.sendTimeout,
+        receiveTimeout: options?.receiveTimeout,
+        extra: options?.extra,
       );
     }
 
