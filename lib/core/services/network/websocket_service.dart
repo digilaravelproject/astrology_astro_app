@@ -120,6 +120,7 @@ class WebSocketService extends GetxService {
       _channel = IOWebSocketChannel.connect(
         Uri.parse(_wsUrl),
         headers: {'Origin': 'https://suryapathkundli.com'},
+        pingInterval: const Duration(seconds: 25), // 🔥 Fix for weak networks (silent drops)
       );
       
       _channel?.stream.listen(
