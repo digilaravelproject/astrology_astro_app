@@ -465,6 +465,7 @@ class AssistanceChatRoomController extends GetxController {
     });
   }
 
+
   @override
   void onClose() {
     _msgSub?.cancel();

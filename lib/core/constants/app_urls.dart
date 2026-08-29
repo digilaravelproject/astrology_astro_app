@@ -193,7 +193,7 @@ class AppUrls {
   static String getChatAssistanceMessages(int sessionId) => '/chat-assistance/$sessionId/messages';
   static String sendChatAssistanceMessage(int sessionId) => '/chat-assistance/$sessionId/message';
   static String syncChatAssistanceStatus(int sessionId) => '/chat-assistance/$sessionId/sync-status';
-  static const String getAstrologerChatAssistanceStatus = '/chat-assistance/astrologer/status';
+  static const String getAstrologerChatAssistanceStatus = '/chat-assistance/astrologer/limits-status';
 
   // Chat Assistance System Events
   static const String eventChatAssistanceInitiated = 'ChatAssistanceInitiated';
