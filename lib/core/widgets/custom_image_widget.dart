@@ -38,6 +38,7 @@ extension ImageTypeExtension on String {
 /// A reusable custom image widget
 class CustomImageWidget extends StatelessWidget {
   final int? memCacheWidth;
+  final int? memCacheHeight;
   final Widget? fallbackWidget;
   final Widget Function(BuildContext, Object, StackTrace?)? errorBuilder;
   final Widget Function(BuildContext, Widget, ImageChunkEvent?)? loadingBuilder;
@@ -55,6 +56,7 @@ class CustomImageWidget extends StatelessWidget {
     this.margin,
     this.border,
     this.memCacheWidth,
+    this.memCacheHeight,
     this.fallbackWidget,
     this.errorBuilder,
     this.loadingBuilder,
