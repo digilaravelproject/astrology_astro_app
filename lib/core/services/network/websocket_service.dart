@@ -1,6 +1,7 @@
 import 'package:astro_astrologer/core/services/local_notification_service.dart';
 import 'dart:async';
 import 'dart:convert';
+import 'package:astro_astrologer/core/enums/session_status_enums.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -744,7 +745,7 @@ class WebSocketService extends GetxService {
       if (Get.isRegistered<ChatController>()) {
         final controller = Get.find<ChatController>();
         if (controller.sessionId == sessionId) {
-          controller.status.value = 'ongoing';
+          controller.status.value = ChatStatus.ongoing;
         }
       }
     } catch (e) {
