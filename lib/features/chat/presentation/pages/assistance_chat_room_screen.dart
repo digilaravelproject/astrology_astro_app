@@ -283,6 +283,7 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
     }
 
     return SwipeTo(
+      key: ObjectKey(message),
       onRightSwipe: (details) {
         controller.setReply(message);
       },

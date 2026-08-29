@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'local_notification_service.dart';
 
 class FCMNotificationService {
@@ -47,9 +48,10 @@ class FCMNotificationService {
     // 4. Foreground Message Handler
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       debugPrint('Foreground Message Received: ${message.notification?.title}');
-      if (message.notification != null) {
+      if (message.notification != null || message.data.isNotEmpty) {
         final type = message.data['type']?.toString();
-        final title = message.notification?.title ?? '';
+        final title = message.notification?.title ?? message.data['title']?.toString() ?? '';
+        final body = message.notification?.body ?? message.data['body']?.toString() ?? '';
 
         final String rawSessionId = message.data['session_id']?.toString() ??
             message.data['chat_session_id']?.toString() ??
@@ -57,6 +59,104 @@ class FCMNotificationService {
             message.data['live_session_id']?.toString() ??
             message.data['id']?.toString() ?? '';
         final int parsedSessionId = int.tryParse(rawSessionId) ?? 0;
+
+        // Build structured payload for routing (mirrors user app)
+        String structuredPayload;
+        if (type == 'live_stream' || type == 'live' || type == 'live_session') {
+          structuredPayload = 'live_$rawSessionId';
+        } else if (type == 'call' || type == 'CALL_REQUEST' || type == 'CALL_ACCEPTED') {
+          structuredPayload = rawSessionId.isNotEmpty ? 'call_$rawSessionId' : message.data.toString();
+        } else {
+          structuredPayload = rawSessionId.isNotEmpty ? rawSessionId : message.data.toString();
+        }
+
+        // Choose notification channel based on type
+        String channelId;
+        final upperType = type?.toUpperCase() ?? '';
+        
+        if (upperType == 'CALL') {
+          channelId = 'call';
+        } else if (upperType == 'CHAT') {
+          channelId = 'chat';
+        } else if (upperType == 'CHAT_REQUEST') {
+          channelId = 'chat_request';
+        } else if (upperType == 'CALL_REQUEST') {
+          channelId = 'call_request';
+        } else if (upperType == 'LIVE_STREAM' || upperType == 'LIVE' || upperType == 'LIVE_SESSION') {
+          channelId = 'live_stream';
+        } else if (upperType == 'WALLET' || upperType == 'ORDER') {
+          channelId = 'wallet';
+        } else if (upperType == 'CHAT_ACCEPTED') {
+          channelId = 'chat_request';
+        } else if (upperType == 'CALL_ACCEPTED') {
+          channelId = 'call_request';
+        } else if (upperType.contains('CHAT')) {
+          channelId = 'chat';
+        } else if (upperType.contains('CALL')) {
+          channelId = 'call';
+        } else {
+          channelId = 'general';
+        }
+
+        // Read sound, priority, importance dynamically from backend data map
+        final String playSoundRaw = message.data['play_sound']?.toString() ?? message.data['playSound']?.toString() ?? '0';
+        final bool playSound = playSoundRaw == '1' || playSoundRaw == 'true' || playSoundRaw == 'yes' || playSoundRaw == 'true';
+
+        final String priorityRaw = message.data['priority']?.toString().toLowerCase() ?? 'high';
+        Priority priority = Priority.high;
+        if (priorityRaw == 'max') priority = Priority.max;
+        else if (priorityRaw == 'low') priority = Priority.low;
+        else if (priorityRaw == 'min') priority = Priority.min;
+        else if (priorityRaw == 'default' || priorityRaw == 'normal') priority = Priority.defaultPriority;
+
+        final String importanceRaw = message.data['importance']?.toString().toLowerCase() ?? 'high';
+        Importance importance = Importance.high;
+        if (importanceRaw == 'max') importance = Importance.max;
+        else if (importanceRaw == 'low') importance = Importance.low;
+        else if (importanceRaw == 'min') importance = Importance.min;
+        else if (importanceRaw == 'default' || importanceRaw == 'normal') importance = Importance.defaultImportance;
+        else if (importanceRaw == 'none') importance = Importance.none;
+
+        // Show the foreground notification (with dynamic params)
+        LocalNotificationService.showNotification(
+          title: title,
+          body: body,
+          payload: structuredPayload,
+          channelId: channelId,
+          playSound: playSound,
+          priority: priority,
+          importance: importance,
+        );
+
+        // Existing end‑handling logic follows
+        if (title.contains('Chat Ended') ||
+            type == 'chat_ended' ||
+            type == 'CHAT_ENDED' ||
+            type == 'session_ended' ||
+            type == 'chat_summary' ||
+            type == 'CHAT_MISSED' ||
+            type == 'CHAT_DISMISSED') {
+          
+          FloatingChatBubble.dismiss(stopForegroundService: true);
+          return;
+        } else if (title.contains('Call Ended') ||
+            type == 'call_ended' ||
+            type == 'CALL_ENDED' ||
+            type == 'session_completed' ||
+            type == 'CALL_FAILED' ||
+            type == 'CALL_DISMISSED') {
+          
+          if (parsedSessionId > 0) 
+          return;
+        } else if (type == 'PACKAGE_EXHAUSTED') {
+          
+          
+          if (parsedSessionId > 0) 
+          FloatingChatBubble.dismiss(stopForegroundService: true);
+          return;
+        }
+        
+        // No further processing needed in foreground for astrologer        final int parsedSessionId = int.tryParse(rawSessionId) ?? 0;
 
         if (title.contains('Chat Ended') ||
             type == 'chat_ended' ||

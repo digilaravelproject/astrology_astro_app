@@ -32,6 +32,7 @@ class ApiChecker {
   static Response checkResponse(Response response, {bool showToaster = false}) {
     switch (response.statusCode) {
       case 200:
+      case 201:
         if (response.data is Map && response.data.containsKey('auth')) {
           return response;
         }
