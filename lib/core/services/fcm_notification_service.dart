@@ -75,12 +75,12 @@ class FCMNotificationService {
             type == 'CALL_FAILED' ||
             type == 'CALL_DISMISSED') {
           LocalNotificationService.cancelOngoingCallNotification(parsedSessionId > 0 ? parsedSessionId : null);
-          LocalNotificationService.cancelIncomingCallNotification(parsedSessionId > 0 ? parsedSessionId : null);
+          if (parsedSessionId > 0) LocalNotificationService.cancelIncomingCallNotification(parsedSessionId);
           return;
         } else if (type == 'PACKAGE_EXHAUSTED') {
           LocalNotificationService.cancelOngoingChatNotification(parsedSessionId > 0 ? parsedSessionId : null);
           LocalNotificationService.cancelOngoingCallNotification(parsedSessionId > 0 ? parsedSessionId : null);
-          LocalNotificationService.cancelIncomingCallNotification(parsedSessionId > 0 ? parsedSessionId : null);
+          if (parsedSessionId > 0) LocalNotificationService.cancelIncomingCallNotification(parsedSessionId);
           FloatingChatBubble.dismiss(stopForegroundService: true);
           return;
         }

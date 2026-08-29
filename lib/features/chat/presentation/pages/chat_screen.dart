@@ -387,7 +387,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             // Timer / Status Bar
             Obx(() {
               final seconds = _controller.elapsedSeconds.value;
-              final status = _controller.status.value.toLowerCase();
+              final status = _controller.status.value.name.toLowerCase();
               final isEnded = status == 'ended' || status == 'completed' || status == 'cancelled' || status == 'rejected';
               final isInitiated = status == 'initiated';
 
@@ -636,7 +636,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
             // Input Area
             Obx(() {
-              final status = _controller.status.value.toLowerCase();
+              final status = _controller.status.value.name.toLowerCase();
               final isEnded = status == 'ended' || status == 'completed' || status == 'cancelled' || status == 'rejected';
               final isInitiated = status == 'initiated';
               if (isEnded || isInitiated) return const SizedBox.shrink();
