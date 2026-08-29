@@ -38,7 +38,12 @@ class LocalNotificationService {
               final callController = Get.find<CallController>();
               final currentStatus = callController.status.value;
 
-              if (currentStatus == 'ongoing') {
+              if (currentStatus == 'completed' || currentStatus == 'ended' || currentStatus == 'cancelled' || currentStatus == 'idle') {
+                debugPrint('[LocalNotificationService] Stale call notification tapped, cancelling...');
+                final sessionIdStr = response.payload!.replaceFirst('call_', '');
+                final int? sessionId = int.tryParse(sessionIdStr);
+                cancelOngoingCallNotification(sessionId);
+              } else if (currentStatus == 'ongoing') {
                 // Active call — go straight to CallScreen
                 Get.to(() => const CallScreen());
               } else if (currentStatus == 'ringing') {
@@ -54,6 +59,12 @@ class LocalNotificationService {
                 // App was killed/restarted — check pending or current session
                 callController.checkPendingCall();
               }
+            } else {
+              // CallController not registered, likely stale or cold start
+              debugPrint('[LocalNotificationService] Stale call notification tapped (no controller), cancelling...');
+              final sessionIdStr = response.payload!.replaceFirst('call_', '');
+              final int? sessionId = int.tryParse(sessionIdStr);
+              cancelOngoingCallNotification(sessionId);
             }
           } else if (response.payload!.startsWith('live_')) {
             if (Get.isRegistered<LiveController>()) {
