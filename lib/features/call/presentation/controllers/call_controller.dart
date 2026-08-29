@@ -52,6 +52,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
   StreamSubscription? _dismissedSubscription;
   StreamSubscription? _iceSubscription;
   StreamSubscription? _endedSubscription;
+  StreamSubscription? _packageTerminatedSub;
 
   @override
   void onInit() {
@@ -124,6 +125,13 @@ class CallController extends GetxController with WidgetsBindingObserver {
             _handleCallEnded(data);
           }
         }
+      }
+    });
+
+    _packageTerminatedSub?.cancel();
+    _packageTerminatedSub = WebSocketService.isPackageSessionTerminated.listen((isTerminated) {
+      if (isTerminated && isPackageCall) {
+        _handlePackageTerminated();
       }
     });
   }
@@ -470,6 +478,29 @@ class CallController extends GetxController with WidgetsBindingObserver {
     if (isCallScreenVisible || Get.currentRoute == '/CallScreen') {
       Get.until((route) => route.isFirst);
     }
+  }
+
+  void _handlePackageTerminated() {
+    status.value = CallStatus.completed;
+    _callTimer?.cancel();
+    FlutterBackgroundService().invoke('stopService');
+    FloatingCallBubble.dismiss();
+    WebSocketService.activeCallSessionId = null;
+    
+    Get.back();
+    Get.dialog(
+      AlertDialog(
+        title: const Text("Session Expired"),
+        content: const Text("Your prepaid package session has ended."),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+      barrierDismissible: false,
+    );
   }
 
   void _startRingingTimeout() {
@@ -847,6 +878,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
     _dismissedSubscription?.cancel();
     _iceSubscription?.cancel();
     _endedSubscription?.cancel();
+    _packageTerminatedSub?.cancel();
     cleanUp();
     super.onClose();
   }

@@ -93,6 +93,8 @@ class ChatController extends GetxController with WidgetsBindingObserver {
   StreamSubscription? _statusSub;
   StreamSubscription? _dismissSub;
   StreamSubscription? _statusUpdateSub;
+  StreamSubscription? _typingSub;
+  StreamSubscription? _packageTerminatedSub;
 
   int? get sessionId => _sessionId;
   int? get peerId => _peerId;
@@ -325,6 +327,26 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       }
     });
 
+    // Listen to WebSocket Chat Ended Event
+    _typingSub?.cancel();
+    _typingSub = WebSocketService.isTyping.listen((typingInfo) {
+      if (typingInfo['sessionId'] == _sessionId && typingInfo['userId'] != _currentUserId) {
+        if (typingInfo['isTyping'] == true) {
+          if (!isTyping.value) isTyping.value = true;
+          _resetTypingTimer();
+        } else {
+          isTyping.value = false;
+        }
+      }
+    });
+
+    _packageTerminatedSub?.cancel();
+    _packageTerminatedSub = WebSocketService.isPackageSessionTerminated.listen((isTerminated) {
+      if (isTerminated && isPackageChat) {
+        _handlePackageTerminated();
+      }
+    });
+
     _msgSub?.cancel();
     _msgSub = WebSocketService.incomingMessages.listen((list) {
       if (list.isNotEmpty) {
@@ -500,6 +522,13 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     });
   }
 
+  void _resetTypingTimer() {
+    _typingTimer?.cancel();
+    _typingTimer = Timer(const Duration(seconds: 3), () {
+      isTyping.value = false;
+    });
+  }
+
   DateTime? _parseSmartDate(dynamic input) {
     if (input == null) return null;
     if (input is DateTime) return input.toLocal();
@@ -527,6 +556,29 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     final int minutes = totalSeconds ~/ 60;
     final int seconds = totalSeconds % 60;
     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+
+  void _handlePackageTerminated() {
+    status.value = ChatStatus.completed;
+    _timer?.cancel();
+    FlutterBackgroundService().invoke('stopService');
+    FloatingChatBubble.dismiss();
+    WebSocketService.activeSessionId = null;
+    
+    Get.back();
+    Get.dialog(
+      AlertDialog(
+        title: const Text("Session Expired"),
+        content: const Text("Your prepaid package session has ended."),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+      barrierDismissible: false,
+    );
   }
 
   void _setupTimer(String? startedAtString) {
@@ -1004,6 +1056,11 @@ class ChatController extends GetxController with WidgetsBindingObserver {
   void onClose() {
     debugPrint("==== [FLOATING_CHAT_DEBUG] Astrologer ChatController.onClose invoked! sessionId=$_sessionId, status=${status.value.name} ====");
     WidgetsBinding.instance.removeObserver(this);
+    _timer?.cancel();
+    _statusUpdateSub?.cancel();
+    _typingSub?.cancel();
+    _packageTerminatedSub?.cancel();
+    _typingTimer?.cancel();
     _timer?.cancel();
     _msgSub?.cancel();
     _endSub?.cancel();
