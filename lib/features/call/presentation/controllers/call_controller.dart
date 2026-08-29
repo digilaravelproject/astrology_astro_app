@@ -786,6 +786,11 @@ class CallController extends GetxController with WidgetsBindingObserver {
             
             // Show Notification if the call is ongoing
             if (sessionStatus == 'ongoing') {
+              // Double check before showing notification in case status changed during async operations
+              if (status.value == 'completed' || status.value == 'cancelled' || status.value == 'ended' || status.value == 'idle' || _isEndingCall) {
+                return;
+              }
+
               final minutes = (durationSeconds.value ~/ 60).toString().padLeft(2, '0');
               final seconds = (durationSeconds.value % 60).toString().padLeft(2, '0');
               Logger.d('CallController: Showing ongoing call notification...');
