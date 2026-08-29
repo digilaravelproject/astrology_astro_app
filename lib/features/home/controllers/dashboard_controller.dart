@@ -69,33 +69,39 @@ class DashboardController extends GetxController {
           final int? startedAtMillis = parsedStart?.millisecondsSinceEpoch;
 
           if (sessionId != null && (status == 'ongoing' || status == 'initiated' || status == 'accepted')) {
-            LocalNotificationService.showOngoingChatNotification(
-              sessionId: sessionId,
-              title: '$name • Chat',
-              body: 'Ongoing chat session',
-              startedAtMillis: startedAtMillis,
-            );
-            FloatingChatBubble.show(
-              context: Get.context!,
-              sessionId: sessionId,
-              name: name,
-              imageUrl: imageUrl,
-              status: status,
-              startedAt: startedAt,
-              onTap: () {
-                final currentStatus = FloatingChatBubble.chatStatus.value;
-                Get.to(
-                  () => ChatScreen(
-                    userName: name,
-                    userImage: imageUrl,
-                    sessionId: sessionId,
-                    initialStatus: currentStatus,
-                    startedAtString: startedAt,
-                  ),
-                  binding: ChatBinding(),
-                );
-              },
-            );
+            final sessionType = session['session_type']?.toString().toLowerCase() ?? 
+                                session['type']?.toString().toLowerCase() ?? '';
+            final isCall = sessionType == 'call' || sessionType == 'audio_call' || sessionType == 'video_call';
+
+            if (!isCall) {
+              LocalNotificationService.showOngoingChatNotification(
+                sessionId: sessionId,
+                title: '$name • Chat',
+                body: 'Ongoing chat session',
+                startedAtMillis: startedAtMillis,
+              );
+              FloatingChatBubble.show(
+                context: Get.context!,
+                sessionId: sessionId,
+                name: name,
+                imageUrl: imageUrl,
+                status: status,
+                startedAt: startedAt,
+                onTap: () {
+                  final currentStatus = FloatingChatBubble.chatStatus.value;
+                  Get.to(
+                    () => ChatScreen(
+                      userName: name,
+                      userImage: imageUrl,
+                      sessionId: sessionId,
+                      initialStatus: currentStatus,
+                      startedAtString: startedAt,
+                    ),
+                    binding: ChatBinding(),
+                  );
+                },
+              );
+            }
           }
         }
       }

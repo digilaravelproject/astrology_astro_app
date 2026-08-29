@@ -22,6 +22,28 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   try {
     await LocalNotificationService.initialize();
     final data = message.data;
+    final title = message.notification?.title ?? '';
+    final type = data['type']?.toString();
+
+    final String rawSessionId = data['session_id']?.toString() ??
+        data['chat_session_id']?.toString() ??
+        data['chat_assistance_session_id']?.toString() ??
+        data['live_session_id']?.toString() ??
+        data['id']?.toString() ?? '';
+    final int parsedSessionId = int.tryParse(rawSessionId) ?? 0;
+
+    if (title.contains('Chat Ended') ||
+        type == 'chat_ended' ||
+        type == 'CHAT_ENDED' ||
+        type == 'session_ended' ||
+        type == 'chat_summary') {
+      await LocalNotificationService.cancelOngoingChatNotification(parsedSessionId > 0 ? parsedSessionId : null);
+    } else if (title.contains('Call Ended') ||
+        type == 'call_ended' ||
+        type == 'CALL_ENDED' ||
+        type == 'session_completed') {
+      await LocalNotificationService.cancelOngoingCallNotification(parsedSessionId > 0 ? parsedSessionId : null);
+    }
     if (data.containsKey('session')) {
       final sessionData = data['session'] is String 
           ? jsonDecode(data['session']) 
