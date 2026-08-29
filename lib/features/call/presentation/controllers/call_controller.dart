@@ -375,8 +375,11 @@ class CallController extends GetxController with WidgetsBindingObserver {
 
   // ──────────────────────────────────────────────────────────────────────────
 
+  bool _isEndingCall = false;
+
   Future<void> endCall() async {
     if (sessionId == null) return;
+    _isEndingCall = true;
     try {
       final response = await _apiClient.post(
         AppUrls.endCallSession(sessionId!),
@@ -417,6 +420,8 @@ class CallController extends GetxController with WidgetsBindingObserver {
     } catch (e) {
       Logger.e('CallController: Error ending call -> $e');
       cleanUp();
+    } finally {
+      _isEndingCall = false;
     }
   }
 
@@ -557,6 +562,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
   }
 
   void minimizeToBubble(BuildContext context, String name, String image, {bool shouldPop = true}) {
+    if (_isEndingCall) return;
     if (sessionId == null || (status.value != 'ongoing' && status.value != 'ringing' && status.value != 'dialing')) return;
     final startStr = WebSocketService.sessionStartTimes[sessionId!] ?? DateTime.now().subtract(Duration(seconds: durationSeconds.value)).toIso8601String();
     WebSocketService.sessionStartTimes[sessionId!] = startStr;
