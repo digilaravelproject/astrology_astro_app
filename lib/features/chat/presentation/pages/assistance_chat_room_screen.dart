@@ -162,7 +162,7 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/background.png'),
+            image: AssetImage('assets/images/background.jpg'),
             fit: BoxFit.cover,
             opacity: 0.12,
           ),

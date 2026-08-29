@@ -12,5 +12,5 @@ class AssetsRes {
   static const String GENRAL_SOUND_BOTH = 'assets/audio/genral_sound_both.mp3';
   static const String APP_ICON = 'assets/images/app_icon.png';
   static const String APP_LOGO = 'assets/images/app_logo.png';
-  static const String BACKGROUND = 'assets/images/background.png';
+  static const String BACKGROUND = 'assets/images/background.jpg';
 }

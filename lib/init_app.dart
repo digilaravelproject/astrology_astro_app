@@ -24,7 +24,22 @@ Future<void> initApp() async {
   );
 
   // Initialize Crashlytics
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+  FlutterError.onError = (FlutterErrorDetails details) {
+    final errorString = details.exceptionAsString();
+    final bool isImageError = details.library == 'image resource service';
+    final bool isNetworkError = errorString.contains('HttpException') || 
+                                errorString.contains('SocketException') ||
+                                errorString.contains('ClientException') ||
+                                errorString.contains('HandshakeException');
+    final bool isAssetError = errorString.contains('Unable to load asset');
+    final bool isUIWarning = errorString.contains('ListTile background');
+
+    if (isImageError || isNetworkError || isAssetError || isUIWarning) {
+      FirebaseCrashlytics.instance.recordFlutterError(details);
+    } else {
+      FirebaseCrashlytics.instance.recordFlutterFatalError(details);
+    }
+  };
 
   // Initialize Firestore settings
   FirebaseFirestore.instance.settings = const Settings(

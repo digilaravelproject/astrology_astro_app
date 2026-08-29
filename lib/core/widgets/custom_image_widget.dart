@@ -194,6 +194,12 @@ class CustomImageWidget extends StatelessWidget {
                     width: width,
                     fit: fit ?? BoxFit.cover,
                     color: color,
+                    errorBuilder: (context, error, stackTrace) => Image.asset(
+                      placeHolder,
+                      height: height,
+                      width: width,
+                      fit: fit ?? BoxFit.cover,
+                    ),
                   );
                 } else {
                   // Agar cache mil gaya to file se fast load
