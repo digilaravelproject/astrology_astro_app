@@ -42,16 +42,19 @@ class KundliData {
     return KundliData(
       birthDetails: BirthDetails.fromJson(json['birth_details'] ?? {}),
       ascendant: Ascendant.fromJson(json['ascendant'] ?? {}),
-      planets: (json['planets'] as List<dynamic>?)
+      planets:
+          (json['planets'] as List<dynamic>?)
               ?.map((e) => Planet.fromJson(e))
               .toList() ??
           [],
-      houses: (json['houses'] as List<dynamic>?)
+      houses:
+          (json['houses'] as List<dynamic>?)
               ?.map((e) => House.fromJson(e))
               .toList() ??
           [],
       dashas: Dashas.fromJson(json['dashas'] ?? {}),
-      yogas: (json['yogas'] as List<dynamic>?)
+      yogas:
+          (json['yogas'] as List<dynamic>?)
               ?.map((e) => Yoga.fromJson(e))
               .toList() ??
           [],
@@ -180,11 +183,7 @@ class House {
   final String sign;
   final double degree;
 
-  House({
-    required this.house,
-    required this.sign,
-    required this.degree,
-  });
+  House({required this.house, required this.sign, required this.degree});
 
   factory House.fromJson(Map<String, dynamic> json) {
     return House(
@@ -199,15 +198,13 @@ class Dashas {
   final CurrentDasha current;
   final List<UpcomingDasha> upcoming;
 
-  Dashas({
-    required this.current,
-    required this.upcoming,
-  });
+  Dashas({required this.current, required this.upcoming});
 
   factory Dashas.fromJson(Map<String, dynamic> json) {
     return Dashas(
       current: CurrentDasha.fromJson(json['current'] ?? {}),
-      upcoming: (json['upcoming'] as List<dynamic>?)
+      upcoming:
+          (json['upcoming'] as List<dynamic>?)
               ?.map((e) => UpcomingDasha.fromJson(e))
               .toList() ??
           [],
@@ -320,10 +317,7 @@ class MetaInfo {
   final String engine;
   final String version;
 
-  MetaInfo({
-    required this.engine,
-    required this.version,
-  });
+  MetaInfo({required this.engine, required this.version});
 
   factory MetaInfo.fromJson(Map<String, dynamic> json) {
     return MetaInfo(

@@ -30,7 +30,8 @@ class CustomBottomNavBar extends StatefulWidget {
   State<CustomBottomNavBar> createState() => _CustomBottomNavBarState();
 }
 
-class _CustomBottomNavBarState extends State<CustomBottomNavBar> with SingleTickerProviderStateMixin {
+class _CustomBottomNavBarState extends State<CustomBottomNavBar>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _pulseAnimation;
 
@@ -41,9 +42,10 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> with SingleTick
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     )..repeat(reverse: true);
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.06).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _pulseAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.06,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -97,9 +99,10 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> with SingleTick
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: List.generate(itemsCount, (index) {
                 return Expanded(
-                  child: widget.selectedIndex == index
-                      ? const SizedBox.shrink()
-                      : _buildNavItem(index),
+                  child:
+                      widget.selectedIndex == index
+                          ? const SizedBox.shrink()
+                          : _buildNavItem(index),
                 );
               }),
             ),
@@ -132,11 +135,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> with SingleTick
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            item.icon,
-            color: Colors.grey.shade400,
-            size: 22,
-          ),
+          Icon(item.icon, color: Colors.grey.shade400, size: 22),
           const SizedBox(height: 2),
           AppText(
             item.label,
@@ -169,10 +168,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> with SingleTick
                 gradient: const LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.primaryColor,
-                    Color(0xFFE94E4E),
-                  ],
+                  colors: [AppColors.primaryColor, Color(0xFFE94E4E)],
                   stops: [0.0, 1.0],
                 ),
                 shape: BoxShape.circle,
@@ -186,11 +182,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> with SingleTick
                 ],
                 border: Border.all(color: Colors.white, width: 3),
               ),
-              child: Icon(
-                item.icon,
-                color: Colors.white,
-                size: 20,
-              ),
+              child: Icon(item.icon, color: Colors.white, size: 20),
             ),
             const SizedBox(height: 2),
             AppText(

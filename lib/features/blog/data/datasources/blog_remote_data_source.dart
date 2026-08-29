@@ -24,7 +24,10 @@ class BlogRemoteDataSource implements BlogRemoteDataSourceInterface {
       return response;
     } catch (e) {
       Logger.e('BlogRemoteDataSource.getBlogList error: $e');
-      return ResponseModel(isSuccess: false, message: 'Something went wrong: $e');
+      return ResponseModel(
+        isSuccess: false,
+        message: 'Something went wrong: $e',
+      );
     }
   }
 
@@ -32,12 +35,17 @@ class BlogRemoteDataSource implements BlogRemoteDataSourceInterface {
   Future<ResponseModel> getBlogDetails(int id) async {
     try {
       final lang = SharedPrefs.getString(AppConstants.language) ?? 'en';
-      final response = await apiClient.get('${AppUrls.blogDetails(id)}?language=$lang');
+      final response = await apiClient.get(
+        '${AppUrls.blogDetails(id)}?language=$lang',
+      );
       Logger.d('BlogRemoteDataSource.getBlogDetails success');
       return response;
     } catch (e) {
       Logger.e('BlogRemoteDataSource.getBlogDetails error: $e');
-      return ResponseModel(isSuccess: false, message: 'Something went wrong: $e');
+      return ResponseModel(
+        isSuccess: false,
+        message: 'Something went wrong: $e',
+      );
     }
   }
 }

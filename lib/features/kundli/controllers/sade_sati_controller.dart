@@ -18,14 +18,14 @@ class SadeSatiController extends GetxController {
     try {
       isLoading.value = true;
       error.value = '';
-      
+
       final response = await _repository.getSadeSati(
         datetime: datetime,
         latitude: latitude,
         longitude: longitude,
         timezone: timezone,
       );
-      
+
       sadeSatiModel.value = response;
     } catch (e) {
       error.value = e.toString();

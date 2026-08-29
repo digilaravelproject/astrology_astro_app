@@ -25,16 +25,17 @@ class TrainingVideoModel {
 
   factory TrainingVideoModel.fromJson(Map<String, dynamic>? json) {
     if (json == null) return TrainingVideoModel.empty();
-    
+
     String vUrl = (json['video_url'] ?? '').toString();
     String tUrl = (json['thumbnail_url'] ?? '').toString();
-    
+
     // Comprehensive URL cleaning for both storage paths and leading slashes
     String cleanPath(String path) {
       if (path.isEmpty) return '';
       String result = path;
       if (result.startsWith('/')) result = result.substring(1);
-      if (result.startsWith('storage/')) result = result.replaceFirst('storage/', '');
+      if (result.startsWith('storage/'))
+        result = result.replaceFirst('storage/', '');
       if (result.startsWith('/')) result = result.substring(1);
       return result;
     }
@@ -45,7 +46,10 @@ class TrainingVideoModel {
     return TrainingVideoModel(
       id: json['id'] ?? 0,
       title: json['title'] ?? '',
-      type: (json['type'] == null || json['type'].toString().isEmpty) ? 'Call/Chat' : json['type'],
+      type:
+          (json['type'] == null || json['type'].toString().isEmpty)
+              ? 'Call/Chat'
+              : json['type'],
       description: json['description'] ?? '',
       videoUrl: vUrl,
       thumbnailUrl: tUrl,

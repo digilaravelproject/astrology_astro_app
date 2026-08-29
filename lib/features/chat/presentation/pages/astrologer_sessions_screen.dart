@@ -19,6 +19,7 @@ import 'package:astro_astrologer/features/chat/presentation/pages/assistance_cha
 
 import 'controllers/astrologer_sessions_controller.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
+import 'package:astro_astrologer/core/widgets/custom_image_widget.dart';
 
 class AstrologerSessionsScreen extends StatelessWidget {
   AstrologerSessionsScreen({super.key}) {
@@ -41,22 +42,35 @@ class AstrologerSessionsScreen extends StatelessWidget {
             child: Obx(() {
               if (controller.isLoading.value) {
                 return const Center(
-                  child: CircularProgressIndicator(color: AppColors.primaryColor),
+                  child: CircularProgressIndicator(
+                    color: AppColors.primaryColor,
+                  ),
                 );
               }
 
-              if (controller.error.value.isNotEmpty && controller.sessions.isEmpty) {
+              if (controller.error.value.isNotEmpty &&
+                  controller.sessions.isEmpty) {
                 return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.error_outline, size: 48, color: Colors.red.shade300),
+                      Icon(
+                        Icons.error_outline,
+                        size: 48,
+                        color: Colors.red.shade300,
+                      ),
                       const SizedBox(height: 12),
-                      AppText(controller.error.value, color: Colors.red, textAlign: TextAlign.center),
+                      AppText(
+                        controller.error.value,
+                        color: Colors.red,
+                        textAlign: TextAlign.center,
+                      ),
                       const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: controller.refresh,
-                        style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryColor),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryColor,
+                        ),
                         child: const AppText('Retry', color: Colors.white),
                       ),
                     ],
@@ -71,10 +85,21 @@ class AstrologerSessionsScreen extends StatelessWidget {
                   child: ListView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     children: [
-                      SizedBox(height: MediaQuery.of(context).size.height * 0.35),
-                      const Icon(Icons.chat_bubble_outline, size: 64, color: Colors.grey),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.35,
+                      ),
+                      const Icon(
+                        Icons.chat_bubble_outline,
+                        size: 64,
+                        color: Colors.grey,
+                      ),
                       const SizedBox(height: 16),
-                      const AppText('No chat sessions found', textAlign: TextAlign.center, color: Colors.grey, fontSize: 16),
+                      const AppText(
+                        'No chat sessions found',
+                        textAlign: TextAlign.center,
+                        color: Colors.grey,
+                        fontSize: 16,
+                      ),
                     ],
                   ),
                 );
@@ -86,18 +111,34 @@ class AstrologerSessionsScreen extends StatelessWidget {
                 child: ListView.builder(
                   controller: controller.scrollController,
                   physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 20),
+                  padding: const EdgeInsets.only(
+                    left: 12,
+                    right: 12,
+                    top: 12,
+                    bottom: 20,
+                  ),
                   itemCount: controller.sessions.length + 1,
                   itemBuilder: (context, index) {
                     if (index == controller.sessions.length) {
-                      return Obx(() => controller.isLoadingMore.value
-                          ? const Padding(
-                              padding: EdgeInsets.all(20),
-                              child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor, strokeWidth: 2)),
-                            )
-                          : const SizedBox.shrink());
+                      return Obx(
+                        () =>
+                            controller.isLoadingMore.value
+                                ? const Padding(
+                                  padding: EdgeInsets.all(20),
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      color: AppColors.primaryColor,
+                                      strokeWidth: 2,
+                                    ),
+                                  ),
+                                )
+                                : const SizedBox.shrink(),
+                      );
                     }
-                    return _buildHistoryCard(context, session: controller.sessions[index]);
+                    return _buildHistoryCard(
+                      context,
+                      session: controller.sessions[index],
+                    );
                   },
                 ),
               );
@@ -110,7 +151,12 @@ class AstrologerSessionsScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 8),
             color: Colors.white,
             child: Center(
-              child: AppText('Data shown for last 3 days only'.tr, fontSize: 13, fontWeight: FontWeight.w500, color: Colors.red.shade200),
+              child: AppText(
+                'Data shown for last 3 days only'.tr,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: Colors.red.shade200,
+              ),
             ),
           ),
 
@@ -118,20 +164,41 @@ class AstrologerSessionsScreen extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -2))],
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, -2),
+                ),
+              ],
             ),
             child: SafeArea(
               top: false,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 child: CustomButton(
                   text: "Create default message".tr,
-                  onPressed: () => Get.to(() => const CreateDefaultMessageScreen(), binding: ChatBinding()),
+                  onPressed:
+                      () => Get.to(
+                        () => const CreateDefaultMessageScreen(),
+                        binding: ChatBinding(),
+                      ),
                   height: 48,
                   backgroundColor: AppColors.primaryColor,
                   borderRadius: 10,
-                  prefixIcon: const Icon(Icons.add, color: Colors.white, size: 18),
-                  textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                  prefixIcon: const Icon(
+                    Icons.add,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                  textStyle: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
@@ -141,13 +208,19 @@ class AstrologerSessionsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHistoryCard(BuildContext context, {required ChatSessionModel session}) {
+  Widget _buildHistoryCard(
+    BuildContext context, {
+    required ChatSessionModel session,
+  }) {
     final consumer = session.consumer;
     final name = _toTitleCase(consumer?.name ?? 'Unknown');
     final rawPhoto = consumer?.profilePhoto;
-    final photoUrl = rawPhoto != null && rawPhoto.isNotEmpty
-        ? (rawPhoto.startsWith('http') ? rawPhoto : '${AppUrls.baseImageUrl}$rawPhoto')
-        : '';
+    final photoUrl =
+        rawPhoto != null && rawPhoto.isNotEmpty
+            ? (rawPhoto.startsWith('http')
+                ? rawPhoto
+                : '${AppUrls.baseImageUrl}$rawPhoto')
+            : '';
     final status = _capitalise(session.status);
     final date = _formatDate(session.createdAt);
     final duration = _formatDuration(session.durationSeconds);
@@ -173,7 +246,8 @@ class AstrologerSessionsScreen extends StatelessWidget {
       try {
         // date_of_birth is UTC; toLocal() gives correct IST date
         final dobDate = DateTime.parse(consumer.dateOfBirth!).toLocal();
-        dobPart = "${dobDate.year}-${dobDate.month.toString().padLeft(2, '0')}-${dobDate.day.toString().padLeft(2, '0')}";
+        dobPart =
+            "${dobDate.year}-${dobDate.month.toString().padLeft(2, '0')}-${dobDate.day.toString().padLeft(2, '0')}";
         // time_of_birth is already IST (e.g. "19:12"), use directly
         tobPart = "00:00:00";
         if (consumer.timeOfBirth != null && consumer.timeOfBirth!.isNotEmpty) {
@@ -189,21 +263,22 @@ class AstrologerSessionsScreen extends StatelessWidget {
         clipBehavior: Clip.none,
         children: [
           GestureDetector(
-            onTap: () => Get.to(
-              () => ChatScreen(
-                userName: name,
-                userImage: photoUrl,
-                sessionId: session.id,
-                initialStatus: session.status,
-                gender: consumer?.gender,
-                dob: dobPart,
-                tob: tobPart,
-                place: pob,
-                latitude: consumer?.latitude,
-                longitude: consumer?.longitude,
-              ),
-              binding: ChatBinding(),
-            ),
+            onTap:
+                () => Get.to(
+                  () => ChatScreen(
+                    userName: name,
+                    userImage: photoUrl,
+                    sessionId: session.id,
+                    initialStatus: session.status,
+                    gender: consumer?.gender,
+                    dob: dobPart,
+                    tob: tobPart,
+                    place: pob,
+                    latitude: consumer?.latitude,
+                    longitude: consumer?.longitude,
+                  ),
+                  binding: ChatBinding(),
+                ),
             child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -211,7 +286,11 @@ class AstrologerSessionsScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 10, offset: const Offset(0, 4)),
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.02),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
                 ],
               ),
               child: Column(
@@ -222,12 +301,22 @@ class AstrologerSessionsScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
-                          color: Colors.lightBlue.shade50.withValues(alpha: 0.5),
+                          color: Colors.lightBlue.shade50.withValues(
+                            alpha: 0.5,
+                          ),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: AppText('Session #${session.id}', fontSize: 13, fontWeight: FontWeight.bold, color: Colors.blue.shade400),
+                        child: AppText(
+                          'Session #${session.id}',
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue.shade400,
+                        ),
                       ),
                       _buildStatusPill(status),
                     ],
@@ -245,9 +334,19 @@ class AstrologerSessionsScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            AppText(name, fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+                            AppText(
+                              name,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
                             const SizedBox(height: 2),
-                            AppText('ID: #${session.consumerId}${session.providerId}', fontSize: 13, color: Colors.grey.shade500, fontWeight: FontWeight.w500),
+                            AppText(
+                              'ID: #${session.consumerId}${session.providerId}',
+                              fontSize: 13,
+                              color: Colors.grey.shade500,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ],
                         ),
                       ),
@@ -271,9 +370,19 @@ class AstrologerSessionsScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              AppText('Session Date'.tr, fontSize: 12, color: Colors.grey.shade500),
+                              AppText(
+                                'Session Date'.tr,
+                                fontSize: 12,
+                                color: Colors.grey.shade500,
+                              ),
                               const SizedBox(height: 2),
-                              AppText(date, fontSize: 14, fontWeight: FontWeight.w700, color: Colors.black87, overflow: TextOverflow.ellipsis),
+                              AppText(
+                                date,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.black87,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ],
                           ),
                         ),
@@ -281,9 +390,18 @@ class AstrologerSessionsScreen extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            AppText('Total Amount'.tr, fontSize: 12, color: Colors.grey.shade500),
+                            AppText(
+                              'Total Amount'.tr,
+                              fontSize: 12,
+                              color: Colors.grey.shade500,
+                            ),
                             const SizedBox(height: 2),
-                            AppText('₹ $totalCost', fontSize: 16, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
+                            AppText(
+                              '₹ $totalCost',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFF2E1A47),
+                            ),
                           ],
                         ),
                       ],
@@ -291,7 +409,11 @@ class AstrologerSessionsScreen extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 16),
-                  const Divider(height: 1, thickness: 1, color: Color(0xFFEEEEEE)),
+                  const Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: Color(0xFFEEEEEE),
+                  ),
                   const SizedBox(height: 16),
 
                   // ── Detail rows ──
@@ -303,33 +425,51 @@ class AstrologerSessionsScreen extends StatelessWidget {
                         children: [
                           SizedBox(
                             width: 80,
-                            child: AppText(entry.key, fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black87),
+                            child: AppText(
+                              entry.key,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87,
+                            ),
                           ),
                           const AppText(':  ', fontWeight: FontWeight.bold),
                           Expanded(
                             child: Row(
                               children: [
                                 Expanded(
-                                  child: AppText(entry.value, fontSize: 13, fontWeight: FontWeight.w600, color: Colors.grey.shade700),
+                                  child: AppText(
+                                    entry.value,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.grey.shade700,
+                                  ),
                                 ),
-                                 if (entry.key == 'Name'.tr || entry.key == 'POB'.tr)
-                                   GestureDetector(
-                                     onTap: () {
-                                       Clipboard.setData(ClipboardData(text: entry.value));
-                                       CustomSnackBar.disabledSnackbar(
-                                         'Copied',
-                                         '${entry.key} copied to clipboard',
-                                         snackPosition: SnackPosition.BOTTOM,
-                                         duration: const Duration(seconds: 2),
-                                         backgroundColor: Colors.black87,
-                                         colorText: Colors.white,
-                                       );
-                                     },
-                                     child: Padding(
-                                       padding: const EdgeInsets.only(left: 8),
-                                       child: Icon(Icons.copy_rounded, size: 14, color: AppColors.primaryColor.withValues(alpha: 0.7)),
-                                     ),
-                                   ),
+                                if (entry.key == 'Name'.tr ||
+                                    entry.key == 'POB'.tr)
+                                  GestureDetector(
+                                    onTap: () {
+                                      Clipboard.setData(
+                                        ClipboardData(text: entry.value),
+                                      );
+                                      CustomSnackBar.disabledSnackbar(
+                                        'Copied',
+                                        '${entry.key} copied to clipboard',
+                                        snackPosition: SnackPosition.BOTTOM,
+                                        duration: const Duration(seconds: 2),
+                                        backgroundColor: Colors.black87,
+                                        colorText: Colors.white,
+                                      );
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 8),
+                                      child: Icon(
+                                        Icons.copy_rounded,
+                                        size: 14,
+                                        color: AppColors.primaryColor
+                                            .withValues(alpha: 0.7),
+                                      ),
+                                    ),
+                                  ),
                               ],
                             ),
                           ),
@@ -346,20 +486,26 @@ class AstrologerSessionsScreen extends StatelessWidget {
                       Expanded(
                         child: CustomButton(
                           text: 'Open Kundli'.tr,
-                          onPressed: () => Get.to(() => KundliScreen(
-                            fullName: name,
-                            gender: consumer?.gender ?? "",
-                            dob: dobPart ?? "",
-                            tob: tobPart ?? "",
-                            place: pob,
-                            latitude: consumer?.latitude ?? 0.0,
-                            longitude: consumer?.longitude ?? 0.0,
-                          )),
+                          onPressed:
+                              () => Get.to(
+                                () => KundliScreen(
+                                  fullName: name,
+                                  gender: consumer?.gender ?? "",
+                                  dob: dobPart ?? "",
+                                  tob: tobPart ?? "",
+                                  place: pob,
+                                  latitude: consumer?.latitude ?? 0.0,
+                                  longitude: consumer?.longitude ?? 0.0,
+                                ),
+                              ),
                           height: 42,
                           padding: EdgeInsets.zero,
                           buttonType: ButtonStyleType.outlined,
                           borderRadius: 8,
-                          textStyle: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold),
+                          textStyle: const TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -368,22 +514,34 @@ class AstrologerSessionsScreen extends StatelessWidget {
                           text: 'Chat Assistant'.tr,
                           onPressed: () {
                             if (session.chatAssistanceSessionId != null) {
-                              Get.to(() => AssistanceChatRoomScreen(
-                                sessionId: session.chatAssistanceSessionId!,
-                                userName: name,
-                                userImage: photoUrl,
-                              ));
+                              Get.to(
+                                () => AssistanceChatRoomScreen(
+                                  sessionId: session.chatAssistanceSessionId!,
+                                  userName: name,
+                                  userImage: photoUrl,
+                                ),
+                              );
                             } else {
-                              CustomSnackBar.disabledSnackbar("Error", "No Chat Assistance Session available");
+                              CustomSnackBar.disabledSnackbar(
+                                "Error",
+                                "No Chat Assistance Session available",
+                              );
                             }
                           },
                           height: 42,
                           padding: EdgeInsets.zero,
                           backgroundColor: const Color(0xFF2CB772),
-                          prefixIcon: const Icon(Icons.chat_bubble_rounded, color: Colors.white, size: 12),
+                          prefixIcon: const Icon(
+                            Icons.chat_bubble_rounded,
+                            color: Colors.white,
+                            size: 12,
+                          ),
                           borderRadius: 8,
                           textColor: Colors.white,
-                          textStyle: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold),
+                          textStyle: const TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
@@ -407,25 +565,36 @@ class AstrologerSessionsScreen extends StatelessWidget {
       height: 44,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.primaryColor.withValues(alpha: 0.7), AppColors.primaryColor],
+          colors: [
+            AppColors.primaryColor.withValues(alpha: 0.7),
+            AppColors.primaryColor,
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         shape: BoxShape.circle,
       ),
-      child: Center(child: AppText(initial, fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+      child: Center(
+        child: AppText(
+          initial,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
     );
 
     if (photoUrl.isEmpty) return letterWidget;
 
     return ClipOval(
-      child: Image.network(
-        photoUrl,
+      child: CustomImageWidget(
+        imagePath: photoUrl,
         width: 44,
         height: 44,
         fit: BoxFit.cover,
         errorBuilder: (_, __, ___) => letterWidget,
-        loadingBuilder: (_, child, progress) => progress == null ? child : letterWidget,
+        loadingBuilder:
+            (_, child, progress) => progress == null ? child : letterWidget,
       ),
     );
   }
@@ -459,11 +628,19 @@ class AstrologerSessionsScreen extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(8)),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(8),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          AppText(status, fontSize: 13, fontWeight: FontWeight.bold, color: textColor),
+          AppText(
+            status,
+            fontSize: 13,
+            fontWeight: FontWeight.bold,
+            color: textColor,
+          ),
           const SizedBox(width: 4),
           Icon(icon, color: textColor, size: 14),
         ],
@@ -473,15 +650,37 @@ class AstrologerSessionsScreen extends StatelessWidget {
 
   String _toTitleCase(String text) {
     if (text.isEmpty) return text;
-    return text.split(' ').map((w) => w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1).toLowerCase()}' : '').join(' ');
+    return text
+        .split(' ')
+        .map(
+          (w) =>
+              w.isNotEmpty
+                  ? '${w[0].toUpperCase()}${w.substring(1).toLowerCase()}'
+                  : '',
+        )
+        .join(' ');
   }
 
-  String _capitalise(String text) => text.isNotEmpty ? '${text[0].toUpperCase()}${text.substring(1)}' : text;
+  String _capitalise(String text) =>
+      text.isNotEmpty ? '${text[0].toUpperCase()}${text.substring(1)}' : text;
 
   String _formatDate(String raw) {
     try {
       final dt = DateTime.parse(raw).toLocal();
-      final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      final months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ];
       final h = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
       final m = dt.minute.toString().padLeft(2, '0');
       final ampm = dt.hour >= 12 ? 'PM' : 'AM';
@@ -495,7 +694,20 @@ class AstrologerSessionsScreen extends StatelessWidget {
     if (dob == null || dob.isEmpty) return 'N/A';
     try {
       final dt = DateTime.parse(dob).toLocal();
-      final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      final months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ];
       final dateStr = '${dt.day}-${months[dt.month - 1]}-${dt.year}';
       return tob != null && tob.isNotEmpty ? '$dateStr, $tob' : dateStr;
     } catch (_) {

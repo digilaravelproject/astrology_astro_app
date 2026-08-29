@@ -12,7 +12,10 @@ class MatchingResponseModel {
   });
 
   factory MatchingResponseModel.fromJson(Map<String, dynamic> json) {
-    final hasRootData = json.containsKey('total') || json.containsKey('conclusion') || json.containsKey('varna');
+    final hasRootData =
+        json.containsKey('total') ||
+        json.containsKey('conclusion') ||
+        json.containsKey('varna');
     return MatchingResponseModel(
       success: json['success'] ?? hasRootData,
       data: MatchingData.fromJson(json['data'] ?? json),
@@ -52,12 +55,37 @@ class MatchingData {
   });
 
   factory MatchingData.fromJson(Map<String, dynamic> json) {
-    final totalPoints = (json['total']?['received_points'] ?? json['total_points'] ?? json['compatibility_score'] ?? 0).toDouble();
-    final maxPts = (json['total']?['total_points'] ?? json['maximum_points'] ?? json['max_score'] ?? 36) is int 
-        ? (json['total']?['total_points'] ?? json['maximum_points'] ?? json['max_score'] ?? 36) as int
-        : ((json['total']?['total_points'] ?? json['maximum_points'] ?? json['max_score'] ?? 36) as num).toInt();
-    final pct = (json['percentage'] ?? (maxPts > 0 ? (totalPoints / maxPts * 100) : 0)).toDouble();
-    final ver = json['conclusion']?['report'] ?? json['match_result'] ?? json['verdict'] ?? '';
+    final totalPoints =
+        (json['total']?['received_points'] ??
+                json['total_points'] ??
+                json['compatibility_score'] ??
+                0)
+            .toDouble();
+    final maxPts =
+        (json['total']?['total_points'] ??
+                    json['maximum_points'] ??
+                    json['max_score'] ??
+                    36)
+                is int
+            ? (json['total']?['total_points'] ??
+                    json['maximum_points'] ??
+                    json['max_score'] ??
+                    36)
+                as int
+            : ((json['total']?['total_points'] ??
+                        json['maximum_points'] ??
+                        json['max_score'] ??
+                        36)
+                    as num)
+                .toInt();
+    final pct =
+        (json['percentage'] ?? (maxPts > 0 ? (totalPoints / maxPts * 100) : 0))
+            .toDouble();
+    final ver =
+        json['conclusion']?['report'] ??
+        json['match_result'] ??
+        json['verdict'] ??
+        '';
     final rec = json['recommendation'] ?? '';
 
     final interp = json['interpretation'] as Map<String, dynamic>? ?? {};
@@ -68,7 +96,9 @@ class MatchingData {
     }
     List<String> chalList = [];
     if (interp['challenges'] is List) {
-      chalList = List<String>.from(interp['challenges'].map((c) => c.toString()));
+      chalList = List<String>.from(
+        interp['challenges'].map((c) => c.toString()),
+      );
     }
 
     return MatchingData(
@@ -77,10 +107,18 @@ class MatchingData {
       percentage: pct,
       verdict: ver,
       recommendation: rec,
-      gunaMilan: GunaMilan.fromJson(json['gunaDetails'] ?? json['guna_milan'] ?? json),
+      gunaMilan: GunaMilan.fromJson(
+        json['gunaDetails'] ?? json['guna_milan'] ?? json,
+      ),
       doshas: Doshas.fromJson(json['doshas'] ?? {}, parentJson: json),
-      maleInfo: json['male_info'] != null ? PersonAstrologyInfo.fromJson(json['male_info']) : null,
-      femaleInfo: json['female_info'] != null ? PersonAstrologyInfo.fromJson(json['female_info']) : null,
+      maleInfo:
+          json['male_info'] != null
+              ? PersonAstrologyInfo.fromJson(json['male_info'])
+              : null,
+      femaleInfo:
+          json['female_info'] != null
+              ? PersonAstrologyInfo.fromJson(json['female_info'])
+              : null,
       summary: summaryText,
       strengths: strList,
       challenges: chalList,
@@ -112,12 +150,21 @@ class GunaMilan {
   factory GunaMilan.fromJson(Map<String, dynamic> json) {
     return GunaMilan(
       varna: GunaDetail.fromJson(json['varna'] ?? {}, 'varna'),
-      vashya: GunaDetail.fromJson(json['vasya'] ?? json['vashya'] ?? {}, 'vashya'),
+      vashya: GunaDetail.fromJson(
+        json['vasya'] ?? json['vashya'] ?? {},
+        'vashya',
+      ),
       tara: GunaDetail.fromJson(json['tara'] ?? {}, 'tara'),
       yoni: GunaDetail.fromJson(json['yoni'] ?? {}, 'yoni'),
-      grahaMaitri: GunaDetail.fromJson(json['grahaMaitri'] ?? json['graha_maitri'] ?? json['maitri'] ?? {}, 'grahamaitri'),
+      grahaMaitri: GunaDetail.fromJson(
+        json['grahaMaitri'] ?? json['graha_maitri'] ?? json['maitri'] ?? {},
+        'grahamaitri',
+      ),
       gana: GunaDetail.fromJson(json['gana'] ?? json['gan'] ?? {}, 'gana'),
-      bhakoot: GunaDetail.fromJson(json['bhakoot'] ?? json['bhakut'] ?? {}, 'bhakoot'),
+      bhakoot: GunaDetail.fromJson(
+        json['bhakoot'] ?? json['bhakut'] ?? {},
+        'bhakoot',
+      ),
       nadi: GunaDetail.fromJson(json['nadi'] ?? {}, 'nadi'),
     );
   }
@@ -140,10 +187,7 @@ class PersonAstrologyInfo {
   final String moonNakshatra;
   final String moonSign;
 
-  PersonAstrologyInfo({
-    required this.moonNakshatra,
-    required this.moonSign,
-  });
+  PersonAstrologyInfo({required this.moonNakshatra, required this.moonSign});
 
   factory PersonAstrologyInfo.fromJson(Map<String, dynamic> json) {
     return PersonAstrologyInfo(
@@ -203,86 +247,86 @@ class GunaDetail {
     final isLow = score < (max / 2.0);
     switch (gunaName.toLowerCase()) {
       case 'varna':
-        return isLow 
-          ? [
+        return isLow
+            ? [
               'Develop mutual respect and value each other’s career paths and contributions.',
               'Avoid ego clashes and dividing duties rigidly; practice shared responsibility.',
             ]
-          : [
+            : [
               'Continue to support each other’s personal growth and aspirations.',
               'Keep the channels of mutual appreciation open to maintain ego alignment.',
             ];
       case 'vashya':
       case 'vasya':
         return isLow
-          ? [
+            ? [
               'Build equality in decision-making to prevent feelings of being dominated.',
               'Avoid manipulative behaviors and give each other personal space.',
             ]
-          : [
+            : [
               'Nurture the strong natural attraction you share to keep the relationship vibrant.',
               'Ensure mutual respect remains high alongside your close influence.',
             ];
       case 'tara':
         return isLow
-          ? [
+            ? [
               'Be supportive during times of low energy or minor health issues.',
               'Consider performing wellness practices or prayers to resolve malefic nakshatra effects.',
             ]
-          : [
+            : [
               'Capitalize on your mutual luck to plan and achieve long-term goals together.',
               'Celebrate milestones together to boost positive energy in the household.',
             ];
       case 'yoni':
         return isLow
-          ? [
+            ? [
               'Practice patience and open communication regarding physical needs and preferences.',
               'Build strong emotional intimacy first, as it helps bridge physical compatibility gaps.',
             ]
-          : [
+            : [
               'Maintain your active spark and check in on each other\'s needs regularly.',
               'Ensure deep emotional bonding accompanies your physical connection.',
             ];
       case 'grahamaitri':
       case 'maitri':
         return isLow
-          ? [
+            ? [
               'Spend time in activities that require sharing thoughts, such as reading or traveling.',
               'Learn to listen actively without judgment, treating your partner as your best friend.',
             ]
-          : [
+            : [
               'Maintain your great conversational chemistry; talk through conflicts easily.',
               'Engage in shared hobbies and intellectual discussions to keep the bond active.',
             ];
       case 'gana':
       case 'gan':
         return isLow
-          ? [
+            ? [
               'Accept differences in behavior without trying to force your partner to change.',
               'Avoid critical remarks during disagreements; take time to cool down before discussing.',
             ]
-          : [
+            : [
               'Enjoy your harmonious temperament and use it to easily resolve daily challenges.',
               'Keep practicing empathy and keep minor habits from escalating.',
             ];
       case 'bhakoot':
       case 'bhakut':
         return isLow
-          ? [
+            ? [
               'Formulate a collaborative financial plan and avoid keeping financial secrets.',
               'Support each other’s families and focus on building emotional resilience together.',
             ]
-          : [
+            : [
               'Use your financial compatibility to make smart investments for your future.',
               'Maintain a positive, nurturing home environment for family happiness.',
             ];
       case 'nadi':
         return isLow
-          ? [
+            ? [
               'Consult a medical practitioner or doctor for genetic counseling if planning a family.',
               'Focus on stress-reducing activities, healthy nutrition, and a balanced lifestyle.',
             ]
-          : [
+            : [
               'Focus on maintaining a healthy, active lifestyle to support overall wellness.',
               'Enjoy a naturally compatible constitution and genetic harmony.',
             ];
@@ -294,17 +338,28 @@ class GunaDetail {
   factory GunaDetail.fromJson(Map<String, dynamic> json, String gunaName) {
     List<String> tipsList = [];
     if (json['tips'] is List) {
-      tipsList = List<String>.from((json['tips'] as List).map((t) => t.toString()));
+      tipsList = List<String>.from(
+        (json['tips'] as List).map((t) => t.toString()),
+      );
     }
-    
-    final scoreValue = json['received_points'] ?? json['obtained_points'] ?? json['score'] ?? 0;
-    final double receivedScore = scoreValue is num ? scoreValue.toDouble() : 0.0;
-    final int maxPoints = json['total_points'] ?? json['maxPoints'] ?? json['max'] ?? 0;
-    
+
+    final scoreValue =
+        json['received_points'] ??
+        json['obtained_points'] ??
+        json['score'] ??
+        0;
+    final double receivedScore =
+        scoreValue is num ? scoreValue.toDouble() : 0.0;
+    final int maxPoints =
+        json['total_points'] ?? json['maxPoints'] ?? json['max'] ?? 0;
+
     final sig = json['significance']?.toString() ?? '';
     final finalSig = sig.isNotEmpty ? sig : getStaticSignificance(gunaName);
-    
-    final finalTips = tipsList.isNotEmpty ? tipsList : getStaticTips(gunaName, receivedScore, maxPoints);
+
+    final finalTips =
+        tipsList.isNotEmpty
+            ? tipsList
+            : getStaticTips(gunaName, receivedScore, maxPoints);
 
     return GunaDetail(
       score: scoreValue,
@@ -322,12 +377,12 @@ class Doshas {
   final ManglikDosha manglik;
   final NadiDosha nadiDosha;
 
-  Doshas({
-    required this.manglik,
-    required this.nadiDosha,
-  });
+  Doshas({required this.manglik, required this.nadiDosha});
 
-  factory Doshas.fromJson(Map<String, dynamic> json, {Map<String, dynamic>? parentJson}) {
+  factory Doshas.fromJson(
+    Map<String, dynamic> json, {
+    Map<String, dynamic>? parentJson,
+  }) {
     // Check if Nadi Dosha is indicated in gunaDetails['nadi'] or remedies
     bool isNadiPresent = json['nadi_dosha']?['present'] ?? false;
     if (!isNadiPresent && parentJson != null) {
@@ -335,14 +390,20 @@ class Doshas {
       final remediesList = parentJson['remedies'] as List<dynamic>?;
       if (nadiScore != null && (nadiScore == 0 || nadiScore == 0.0)) {
         isNadiPresent = true;
-      } else if (remediesList != null && remediesList.any((r) => r.toString().toLowerCase().contains('nadi'))) {
+      } else if (remediesList != null &&
+          remediesList.any(
+            (r) => r.toString().toLowerCase().contains('nadi'),
+          )) {
         isNadiPresent = true;
       }
     }
 
     return Doshas(
       manglik: ManglikDosha.fromJson(json['manglik'] ?? {}),
-      nadiDosha: NadiDosha.fromJson(json['nadi_dosha'] ?? {}, overridePresent: isNadiPresent),
+      nadiDosha: NadiDosha.fromJson(
+        json['nadi_dosha'] ?? {},
+        overridePresent: isNadiPresent,
+      ),
     );
   }
 }
@@ -351,10 +412,7 @@ class ManglikDosha {
   final ManglikDetail male;
   final ManglikDetail female;
 
-  ManglikDosha({
-    required this.male,
-    required this.female,
-  });
+  ManglikDosha({required this.male, required this.female});
 
   factory ManglikDosha.fromJson(Map<String, dynamic> json) {
     return ManglikDosha(
@@ -369,11 +427,7 @@ class ManglikDetail {
   final String? intensity;
   final String? cancelledBy;
 
-  ManglikDetail({
-    required this.present,
-    this.intensity,
-    this.cancelledBy,
-  });
+  ManglikDetail({required this.present, this.intensity, this.cancelledBy});
 
   factory ManglikDetail.fromJson(Map<String, dynamic> json) {
     return ManglikDetail(
@@ -395,11 +449,15 @@ class NadiDosha {
     required this.remedies,
   });
 
-  factory NadiDosha.fromJson(Map<String, dynamic> json, {bool? overridePresent}) {
+  factory NadiDosha.fromJson(
+    Map<String, dynamic> json, {
+    bool? overridePresent,
+  }) {
     return NadiDosha(
       present: overridePresent ?? (json['present'] ?? false),
       severity: json['severity'] ?? '',
-      remedies: (json['remedies'] as List<dynamic>?)
+      remedies:
+          (json['remedies'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],
@@ -440,10 +498,7 @@ class MetaInfo {
   final String engine;
   final String version;
 
-  MetaInfo({
-    required this.engine,
-    required this.version,
-  });
+  MetaInfo({required this.engine, required this.version});
 
   factory MetaInfo.fromJson(Map<String, dynamic> json) {
     return MetaInfo(

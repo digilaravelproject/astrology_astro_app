@@ -6,7 +6,7 @@ class PlanetPositionsRepository {
   final AstrologyApiClient _client;
 
   PlanetPositionsRepository({AstrologyApiClient? client})
-      : _client = client ?? AstrologyApiClient();
+    : _client = client ?? AstrologyApiClient();
 
   Future<PlanetPositionsModel?> getPlanetPositions({
     required String datetime,
@@ -25,38 +25,47 @@ class PlanetPositionsRepository {
       final response = await _client.getPlanetPositions(payload);
 
       if (response.statusCode == 200) {
-        final List<dynamic> rawList = response.data is List ? response.data : [response.data];
-        
+        final List<dynamic> rawList =
+            response.data is List ? response.data : [response.data];
+
         final signsList = [
-          'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
-          'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'
+          'Aries',
+          'Taurus',
+          'Gemini',
+          'Cancer',
+          'Leo',
+          'Virgo',
+          'Libra',
+          'Scorpio',
+          'Sagittarius',
+          'Capricorn',
+          'Aquarius',
+          'Pisces',
         ];
 
-        final mappedPlanets = rawList.map((item) {
-          if (item is Map) {
-            final signName = item['sign']?.toString() ?? 'Aries';
-            final signIndex = signsList.indexOf(signName) + 1; // 1-based index
+        final mappedPlanets =
+            rawList.map((item) {
+              if (item is Map) {
+                final signName = item['sign']?.toString() ?? 'Aries';
+                final signIndex =
+                    signsList.indexOf(signName) + 1; // 1-based index
 
-            return {
-              'name': item['name'],
-              'sign': signName,
-              'normDegree': item['normDegree'],
-              'nakshatra': {
-                'name': item['nakshatra']?.toString() ?? 'N/A'
-              },
-              'house': item['house'],
-              'signNumber': signIndex,
-              'fullDegree': item['fullDegree'],
-            };
-          }
-          return item;
-        }).toList();
+                return {
+                  'name': item['name'],
+                  'sign': signName,
+                  'normDegree': item['normDegree'],
+                  'nakshatra': {'name': item['nakshatra']?.toString() ?? 'N/A'},
+                  'house': item['house'],
+                  'signNumber': signIndex,
+                  'fullDegree': item['fullDegree'],
+                };
+              }
+              return item;
+            }).toList();
 
         final transformedJson = {
           'success': true,
-          'data': {
-            'planets': mappedPlanets
-          }
+          'data': {'planets': mappedPlanets},
         };
 
         return PlanetPositionsModel.fromJson(transformedJson);

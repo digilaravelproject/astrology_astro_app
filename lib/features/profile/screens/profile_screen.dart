@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:astro_astrologer/core/widgets/custom_image_widget.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -84,7 +85,7 @@ class ProfileScreen extends StatelessWidget {
       child: Column(
         children: [
           const SizedBox(height: 10),
-          
+
           // Profile Image
           Stack(
             alignment: Alignment.bottomRight,
@@ -99,9 +100,12 @@ class ProfileScreen extends StatelessWidget {
                   final user = authController.currentUser.value;
                   final profilePhoto = user?.astrologer?.profilePhoto;
 
-                  final String? imageUrl = (profilePhoto != null && profilePhoto.isNotEmpty)
-                      ? (profilePhoto.startsWith('http') ? profilePhoto : '${AppUrls.baseImageUrl}$profilePhoto')
-                      : null;
+                  final String? imageUrl =
+                      (profilePhoto != null && profilePhoto.isNotEmpty)
+                          ? (profilePhoto.startsWith('http')
+                              ? profilePhoto
+                              : '${AppUrls.baseImageUrl}$profilePhoto')
+                          : null;
 
                   return Container(
                     height: 100,
@@ -114,22 +118,34 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                     child: ClipOval(
-                      child: imageUrl != null
-                          ? CachedNetworkImage(
-                              imageUrl: imageUrl,
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) => const Center(
-                                child: SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
+                      child:
+                          imageUrl != null
+                              ? CustomImageWidget(
+                                imagePath: imageUrl,
+                                fit: BoxFit.cover,
+                                fallbackWidget: Container(
+                                  color: Colors.white,
+                                  child: Center(
+                                    child: Text(
+                                      user?.name.isNotEmpty == true
+                                          ? user!.name[0].toUpperCase()
+                                          : '',
+                                      style: const TextStyle(
+                                        fontSize: 40,
+                                        fontWeight: FontWeight.w700,
+                                        color: AppColors.primaryColor,
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              errorWidget: (context, url, error) => Container(
+                              )
+                              : Container(
                                 color: Colors.white,
                                 child: Center(
                                   child: Text(
-                                    user?.name.isNotEmpty == true ? user!.name[0].toUpperCase() : 'A',
+                                    user?.name.isNotEmpty == true
+                                        ? user!.name[0].toUpperCase()
+                                        : '',
                                     style: const TextStyle(
                                       fontSize: 40,
                                       fontWeight: FontWeight.w700,
@@ -138,24 +154,9 @@ class ProfileScreen extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                            )
-                          : Container(
-                              color: Colors.white,
-                              child: Center(
-                                child: Text(
-                                  user?.name.isNotEmpty == true ? user!.name[0].toUpperCase() : 'A',
-                                  style: const TextStyle(
-                                    fontSize: 40,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.primaryColor,
-                                  ),
-                                ),
-                              ),
-                            ),
                     ),
                   );
-                }
-                ),
+                }),
               ),
               GestureDetector(
                 onTap: () => Get.to(() => const EditProfileScreen()),
@@ -172,14 +173,16 @@ class ProfileScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          
+
           // Name and Phone
-          Obx(() => AppText(
-            authController.currentUser.value?.name ?? 'Astrologer Name',
-            fontSize: 22,
-            fontWeight: FontWeight.w700,
-            color: const Color(0xFF2E1A47),
-          )),
+          Obx(
+            () => AppText(
+              authController.currentUser.value?.name ?? 'Astrologer Name',
+              fontSize: 22,
+              fontWeight: FontWeight.w700,
+              color: const Color(0xFF2E1A47),
+            ),
+          ),
           const SizedBox(height: 4),
           AppText(
             authController.currentUser.value?.phone ?? "+91 9876543210",
@@ -209,7 +212,7 @@ class ProfileScreen extends StatelessWidget {
         _buildMenuItem(
           icon: Iconsax.teacher_copy,
           title: 'Skill Details',
-         // onTap: () => Get.to(() => const SkillDetailsScreen()),
+          // onTap: () => Get.to(() => const SkillDetailsScreen()),
           onTap: () => Get.toNamed(AppRoutes.skillDetailScreen),
         ),
         _buildMenuItem(
@@ -244,7 +247,7 @@ class ProfileScreen extends StatelessWidget {
           title: 'Performance',
           onTap: () => Get.to(() => const PerformanceScreen()),
         ),
-        
+
         const SizedBox(height: 10),
         _buildSectionHeader('ACCOUNT MANAGEMENT'),
         _buildMenuItem(
@@ -262,7 +265,7 @@ class ProfileScreen extends StatelessWidget {
           title: 'Change Language',
           onTap: () => Get.to(() => const ChangeLanguageScreen()),
         ),
-        
+
         const SizedBox(height: 10),
         _buildSectionHeader('APP INFO'),
         _buildMenuItem(
@@ -327,7 +330,13 @@ class ProfileScreen extends StatelessWidget {
         fontWeight: FontWeight.w500,
         color: const Color(0xFF2E1A47),
       ),
-      trailing: trailing ?? const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Colors.black26),
+      trailing:
+          trailing ??
+          const Icon(
+            Icons.arrow_forward_ios_rounded,
+            size: 14,
+            color: Colors.black26,
+          ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
       minVerticalPadding: 15,
     );
@@ -343,7 +352,9 @@ class ProfileScreen extends StatelessWidget {
             onPressed: () {
               Get.dialog(
                 Dialog(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                   child: Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
@@ -359,7 +370,11 @@ class ProfileScreen extends StatelessWidget {
                             color: Colors.red.withOpacity(0.1),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.logout_rounded, color: Colors.red, size: 32),
+                          child: const Icon(
+                            Icons.logout_rounded,
+                            color: Colors.red,
+                            size: 32,
+                          ),
                         ),
                         const SizedBox(height: 20),
                         const AppText(
@@ -383,11 +398,20 @@ class ProfileScreen extends StatelessWidget {
                               child: OutlinedButton(
                                 onPressed: () => Get.back(),
                                 style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
                                   side: BorderSide(color: Colors.grey[300]!),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
                                 ),
-                                child: AppText('Cancel', fontSize: 14, fontWeight: FontWeight.w600, color: Colors.grey[600]!),
+                                child: AppText(
+                                  'Cancel',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey[600]!,
+                                ),
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -398,12 +422,21 @@ class ProfileScreen extends StatelessWidget {
                                   authController.logout();
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
                                   backgroundColor: Colors.red,
                                   elevation: 0,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
                                 ),
-                                child: const AppText('Logout', fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
+                                child: const AppText(
+                                  'Logout',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ],
@@ -436,7 +469,7 @@ class ProfileScreen extends StatelessWidget {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 15),
 
           // Delete Account Button
@@ -463,7 +496,6 @@ class ProfileScreen extends StatelessWidget {
               color: Colors.red,
             ),
           ),*/
-
           TextButton(
             onPressed: () => authController.deleteAccount(),
             child: const AppText(
@@ -483,25 +515,33 @@ class ProfileScreen extends StatelessWidget {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
-      CustomSnackBar.disabledSnackbar('Error', 'Could not launch $url', snackPosition: SnackPosition.BOTTOM);
+      CustomSnackBar.disabledSnackbar(
+        'Error',
+        'Could not launch $url',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
   Future<void> _openStoreRating() async {
-    final String appId = Platform.isAndroid ? 'com.example.astro_astrologer' : '123456789';
-    final String url = Platform.isAndroid 
-        ? 'market://details?id=$appId' 
-        : 'https://apps.apple.com/app/id$appId?action=write-review';
-    
+    final String appId =
+        Platform.isAndroid ? 'com.example.astro_astrologer' : '123456789';
+    final String url =
+        Platform.isAndroid
+            ? 'market://details?id=$appId'
+            : 'https://apps.apple.com/app/id$appId?action=write-review';
+
     _launchURL(url);
   }
 
   Future<void> _shareApp() async {
-    final String appId = Platform.isAndroid ? 'com.example.astro_astrologer' : 'id123456789';
-    final String url = Platform.isAndroid 
-        ? 'https://play.google.com/store/apps/details?id=$appId' 
-        : 'https://apps.apple.com/app/$appId';
-    
+    final String appId =
+        Platform.isAndroid ? 'com.example.astro_astrologer' : 'id123456789';
+    final String url =
+        Platform.isAndroid
+            ? 'https://play.google.com/store/apps/details?id=$appId'
+            : 'https://apps.apple.com/app/$appId';
+
     await Share.share('${"Check out the Astro Astrologer app!".tr} $url');
   }
 }

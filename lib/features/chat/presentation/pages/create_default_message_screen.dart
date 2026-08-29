@@ -14,11 +14,15 @@ class CreateDefaultMessageScreen extends StatefulWidget {
   const CreateDefaultMessageScreen({super.key});
 
   @override
-  State<CreateDefaultMessageScreen> createState() => _CreateDefaultMessageScreenState();
+  State<CreateDefaultMessageScreen> createState() =>
+      _CreateDefaultMessageScreenState();
 }
 
-class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen> {
-  final DefaultMessageController controller = Get.put(DefaultMessageController(Get.find<IChatRepository>()));
+class _CreateDefaultMessageScreenState
+    extends State<CreateDefaultMessageScreen> {
+  final DefaultMessageController controller = Get.put(
+    DefaultMessageController(Get.find<IChatRepository>()),
+  );
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _messageController = TextEditingController();
@@ -47,13 +51,20 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
                 color: Colors.white,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
               ),
-              padding: EdgeInsets.fromLTRB(24, 24, 24, MediaQuery.of(context).viewInsets.bottom + 24),
+              padding: EdgeInsets.fromLTRB(
+                24,
+                24,
+                24,
+                MediaQuery.of(context).viewInsets.bottom + 24,
+              ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AppText(
-                    messageToEdit != null ? "Edit Default Message".tr : "New Default Message".tr,
+                    messageToEdit != null
+                        ? "Edit Default Message".tr
+                        : "New Default Message".tr,
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF2E1A47),
@@ -68,12 +79,22 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
                     child: TextField(
                       controller: _titleController,
                       autofocus: true,
-                      style: const TextStyle(fontSize: 14, color: Color(0xFF2E1A47), fontWeight: FontWeight.w600),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF2E1A47),
+                        fontWeight: FontWeight.w600,
+                      ),
                       decoration: InputDecoration(
                         hintText: "Enter message title...".tr,
-                        hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+                        hintStyle: TextStyle(
+                          color: Colors.grey.shade400,
+                          fontSize: 13,
+                        ),
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
                       ),
                     ),
                   ),
@@ -87,10 +108,18 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
                     child: TextField(
                       controller: _messageController,
                       maxLines: 4,
-                      style: const TextStyle(fontSize: 14, color: Color(0xFF2E1A47)),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF2E1A47),
+                      ),
                       decoration: InputDecoration(
-                        hintText: "Enter your predefined message here... You can use placeholders like {{user_name}}".tr,
-                        hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+                        hintText:
+                            "Enter your predefined message here... You can use placeholders like {{user_name}}"
+                                .tr,
+                        hintStyle: TextStyle(
+                          color: Colors.grey.shade400,
+                          fontSize: 13,
+                        ),
                         border: InputBorder.none,
                         contentPadding: const EdgeInsets.all(16),
                       ),
@@ -110,41 +139,47 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
                     activeColor: AppColors.primaryColor,
                   ),
                   const SizedBox(height: 16),
-                  Obx(() => CustomButton(
-                        text: "Save Message".tr,
-                        isLoading: controller.isLoading.value,
-                        onPressed: () async {
-                          if (_titleController.text.trim().isEmpty || _messageController.text.trim().isEmpty) {
-                            CustomSnackBar.disabledSnackbar('Error', 'Please fill all fields');
-                            return;
+                  Obx(
+                    () => CustomButton(
+                      text: "Save Message".tr,
+                      isLoading: controller.isLoading.value,
+                      onPressed: () async {
+                        if (_titleController.text.trim().isEmpty ||
+                            _messageController.text.trim().isEmpty) {
+                          CustomSnackBar.disabledSnackbar(
+                            'Error',
+                            'Please fill all fields',
+                          );
+                          return;
+                        }
+
+                        bool success = false;
+                        if (messageToEdit != null) {
+                          success = await controller.updateMessage(
+                            messageToEdit.id!,
+                            _titleController.text.trim(),
+                            _messageController.text.trim(),
+                            _isDefaultChecked,
+                          );
+                        } else {
+                          success = await controller.addMessage(
+                            _titleController.text.trim(),
+                            _messageController.text.trim(),
+                            _isDefaultChecked,
+                          );
+                        }
+                        if (success) {
+                          if (context.mounted) {
+                            Navigator.of(context).pop();
                           }
-                          
-                          bool success = false;
-                          if (messageToEdit != null) {
-                            success = await controller.updateMessage(
-                              messageToEdit.id!,
-                              _titleController.text.trim(),
-                              _messageController.text.trim(),
-                              _isDefaultChecked,
-                            );
-                          } else {
-                            success = await controller.addMessage(
-                              _titleController.text.trim(),
-                              _messageController.text.trim(),
-                              _isDefaultChecked,
-                            );
-                          }
-                          if (success) {
-                            if (context.mounted) {
-                              Navigator.of(context).pop();
-                            }
-                          }
-                        },
-                      )),
+                        }
+                      },
+                    ),
+                  ),
                 ],
               ),
             );
-          }
+          },
         );
       },
     );
@@ -161,12 +196,12 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(
-        title: 'Default Messages'.tr,
-      ),
+      appBar: CustomAppBar(title: 'Default Messages'.tr),
       body: Obx(() {
         if (controller.isLoading.value && controller.messages.isEmpty) {
-          return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
+          return const Center(
+            child: CircularProgressIndicator(color: AppColors.primaryColor),
+          );
         }
 
         return RefreshIndicator(
@@ -174,24 +209,26 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
           onRefresh: () async {
             await controller.fetchMessages();
           },
-          child: controller.messages.isEmpty
-              ? SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.7,
-                    child: _buildEmptyState(),
+          child:
+              controller.messages.isEmpty
+                  ? SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.7,
+                      child: _buildEmptyState(),
+                    ),
+                  )
+                  : ListView.separated(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.all(24),
+                    itemCount: controller.messages.length,
+                    separatorBuilder:
+                        (context, index) => const SizedBox(height: 16),
+                    itemBuilder: (context, index) {
+                      final msg = controller.messages[index];
+                      return _buildMessageCard(msg);
+                    },
                   ),
-                )
-              : ListView.separated(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(24),
-                  itemCount: controller.messages.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 16),
-                  itemBuilder: (context, index) {
-                    final msg = controller.messages[index];
-                    return _buildMessageCard(msg);
-                  },
-                ),
         );
       }),
       bottomNavigationBar: Padding(
@@ -233,10 +270,14 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDefault ? AppColors.primaryColor.withOpacity(0.05) : Colors.white,
+        color:
+            isDefault ? AppColors.primaryColor.withOpacity(0.05) : Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isDefault ? AppColors.primaryColor.withOpacity(0.5) : Colors.grey.shade200,
+          color:
+              isDefault
+                  ? AppColors.primaryColor.withOpacity(0.5)
+                  : Colors.grey.shade200,
           width: isDefault ? 1.5 : 1.0,
         ),
         boxShadow: [
@@ -267,7 +308,10 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
                     ),
                     if (isDefault)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.primaryColor.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(20),
@@ -311,7 +355,11 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
                 onTap: () => _showAddEditMessageSheet(messageToEdit: msg),
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 8.0, top: 4.0),
-                  child: Icon(Icons.edit, color: Colors.grey.shade500, size: 20),
+                  child: Icon(
+                    Icons.edit,
+                    color: Colors.grey.shade500,
+                    size: 20,
+                  ),
                 ),
               ),
               if (!isDefault)
@@ -319,7 +367,11 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
                   onTap: () => _confirmDelete(msg.id!),
                   child: const Padding(
                     padding: EdgeInsets.only(top: 4.0),
-                    child: Icon(Icons.delete_outline, color: Color(0xFFE57373), size: 20),
+                    child: Icon(
+                      Icons.delete_outline,
+                      color: Color(0xFFE57373),
+                      size: 20,
+                    ),
                   ),
                 ),
             ],
@@ -333,7 +385,9 @@ class _CreateDefaultMessageScreenState extends State<CreateDefaultMessageScreen>
     Get.dialog(
       AlertDialog(
         title: Text('Delete Message'.tr),
-        content: Text('Are you sure you want to delete this default message?'.tr),
+        content: Text(
+          'Are you sure you want to delete this default message?'.tr,
+        ),
         actions: [
           TextButton(
             onPressed: () {

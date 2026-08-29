@@ -73,81 +73,86 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
-          ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 50,
-              height: 5,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(10),
+      builder:
+          (context) => Container(
+            padding: const EdgeInsets.all(24),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
               ),
             ),
-            const SizedBox(height: 30),
-            const Icon(Icons.cloud_upload_outlined, color: AppColors.primaryColor, size: 60),
-            const SizedBox(height: 20),
-            AppText(
-              'Confirm Video Upload',
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF2E1A47),
-            ),
-            const SizedBox(height: 10),
-            AppText(
-              'Your profile video will be visible to all users. Make sure it represents you professionally.',
-              fontSize: 14,
-              color: Colors.grey.shade600,
-              textAlign: TextAlign.center,
-              height: 1.5,
-            ),
-            const SizedBox(height: 32),
-            Row(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(
-                  child: CustomButton(
-                    text: 'Cancel',
-                    onPressed: () => Get.back(),
-                    buttonType: ButtonStyleType.outlined,
-                    borderColor: Colors.grey.shade300,
-                    textColor: Colors.grey.shade700,
-                    borderRadius: 100,
+                Container(
+                  width: 50,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200,
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: CustomButton(
-                    text: 'Submit Video',
-                    onPressed: () {
-                      Get.back(); // Close bottom sheet
-                      Get.back(); // Close screen
-                      CustomSnackBar.disabledSnackbar(
-                        'Success',
-                        'Profile video uploaded successfully!',
-                        backgroundColor: Colors.green,
-                        colorText: Colors.white,
-                        snackPosition: SnackPosition.BOTTOM,
-                      );
-                    },
-                    backgroundColor: AppColors.primaryColor,
-                    borderRadius: 100,
-                  ),
+                const SizedBox(height: 30),
+                const Icon(
+                  Icons.cloud_upload_outlined,
+                  color: AppColors.primaryColor,
+                  size: 60,
                 ),
+                const SizedBox(height: 20),
+                AppText(
+                  'Confirm Video Upload',
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF2E1A47),
+                ),
+                const SizedBox(height: 10),
+                AppText(
+                  'Your profile video will be visible to all users. Make sure it represents you professionally.',
+                  fontSize: 14,
+                  color: Colors.grey.shade600,
+                  textAlign: TextAlign.center,
+                  height: 1.5,
+                ),
+                const SizedBox(height: 32),
+                Row(
+                  children: [
+                    Expanded(
+                      child: CustomButton(
+                        text: 'Cancel',
+                        onPressed: () => Get.back(),
+                        buttonType: ButtonStyleType.outlined,
+                        borderColor: Colors.grey.shade300,
+                        textColor: Colors.grey.shade700,
+                        borderRadius: 100,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: CustomButton(
+                        text: 'Submit Video',
+                        onPressed: () {
+                          Get.back(); // Close bottom sheet
+                          Get.back(); // Close screen
+                          CustomSnackBar.disabledSnackbar(
+                            'Success',
+                            'Profile video uploaded successfully!',
+                            backgroundColor: Colors.green,
+                            colorText: Colors.white,
+                            snackPosition: SnackPosition.BOTTOM,
+                          );
+                        },
+                        backgroundColor: AppColors.primaryColor,
+                        borderRadius: 100,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
               ],
             ),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
@@ -155,9 +160,7 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(
-        title: 'Profile Video',
-      ),
+      appBar: const CustomAppBar(title: 'Profile Video'),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -177,7 +180,7 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
               height: 1.5,
             ),
             const SizedBox(height: 40),
-            
+
             // Video Preview Area
             Expanded(
               child: Container(
@@ -187,57 +190,74 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(color: Colors.grey.shade200),
                 ),
-                child: _videoFile == null
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: AppColors.primaryColor.withOpacity(0.1),
-                              shape: BoxShape.circle,
+                child:
+                    _videoFile == null
+                        ? Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryColor.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Iconsax.video_play_copy,
+                                color: AppColors.primaryColor,
+                                size: 40,
+                              ),
                             ),
-                            child: const Icon(Iconsax.video_play_copy, color: AppColors.primaryColor, size: 40),
-                          ),
-                          const SizedBox(height: 20),
-                          AppText(
-                            'No video selected',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.grey.shade700,
-                          ),
-                          const SizedBox(height: 8),
-                          AppText(
-                            'Videos should be under 2 minutes',
-                            fontSize: 12,
-                            color: Colors.grey.shade500,
-                          ),
-                        ],
-                      )
-                    : ClipRRect(
-                        borderRadius: BorderRadius.circular(24),
-                        child: _chewieController != null && 
-                               _chewieController!.videoPlayerController.value.isInitialized
-                            ? Chewie(controller: _chewieController!)
-                            : const Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
-                      ),
+                            const SizedBox(height: 20),
+                            AppText(
+                              'No video selected',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.grey.shade700,
+                            ),
+                            const SizedBox(height: 8),
+                            AppText(
+                              'Videos should be under 2 minutes',
+                              fontSize: 12,
+                              color: Colors.grey.shade500,
+                            ),
+                          ],
+                        )
+                        : ClipRRect(
+                          borderRadius: BorderRadius.circular(24),
+                          child:
+                              _chewieController != null &&
+                                      _chewieController!
+                                          .videoPlayerController
+                                          .value
+                                          .isInitialized
+                                  ? Chewie(controller: _chewieController!)
+                                  : const Center(
+                                    child: CircularProgressIndicator(
+                                      color: AppColors.primaryColor,
+                                    ),
+                                  ),
+                        ),
               ),
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             if (_videoFile == null)
               CustomButton(
                 text: 'Select Video',
                 onPressed: _pickVideo,
                 backgroundColor: AppColors.primaryColor,
                 borderRadius: 100,
-                prefixIcon: const Icon(Icons.add, color: Colors.white, size: 20),
+                prefixIcon: const Icon(
+                  Icons.add,
+                  color: Colors.white,
+                  size: 20,
+                ),
               )
             else
               Column(
                 children: [
-                   CustomButton(
+                  CustomButton(
                     text: 'Change Video',
                     onPressed: _pickVideo,
                     buttonType: ButtonStyleType.outlined,
@@ -254,7 +274,7 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
                   ),
                 ],
               ),
-              
+
             const SizedBox(height: 20),
           ],
         ),

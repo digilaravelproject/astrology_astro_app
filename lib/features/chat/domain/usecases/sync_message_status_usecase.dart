@@ -5,7 +5,11 @@ class SyncMessageStatusUseCase {
 
   SyncMessageStatusUseCase(this._repository);
 
-  Future<void> execute({required int sessionId, required List<int> messageIds, required String status}) async {
+  Future<void> execute({
+    required int sessionId,
+    required List<int> messageIds,
+    required String status,
+  }) async {
     return await _repository.syncMessageStatus(
       sessionId: sessionId,
       messageIds: messageIds,

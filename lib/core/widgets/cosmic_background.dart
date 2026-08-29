@@ -17,18 +17,20 @@ class CosmicBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        gradient: showGradient
-            ? LinearGradient(
-                colors: gradientColors ??
-                    [
-                      AppColors.primaryColor.withOpacity(0.1),
-                      AppColors.secondaryColor.withOpacity(0.05),
-                      Colors.white,
-                    ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              )
-            : null,
+        gradient:
+            showGradient
+                ? LinearGradient(
+                  colors:
+                      gradientColors ??
+                      [
+                        AppColors.primaryColor.withOpacity(0.1),
+                        AppColors.secondaryColor.withOpacity(0.05),
+                        Colors.white,
+                      ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+                : null,
         color: showGradient ? null : AppColors.backgroundColor,
       ),
       child: child,

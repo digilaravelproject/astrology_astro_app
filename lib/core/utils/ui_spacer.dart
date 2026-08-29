@@ -15,14 +15,10 @@ class UiSpacer {
 
   static Widget emptySpace() => const SizedBox.shrink();
 
-  static Widget expandedSpace() => const Expanded(
-    child: SizedBox.shrink(),
-  );
+  static Widget expandedSpace() => const Expanded(child: SizedBox.shrink());
 
-  static Widget divider({double height = 1, double thickness = 1}) => Divider(
-    height: height,
-    thickness: thickness,
-  );
+  static Widget divider({double height = 1, double thickness = 1}) =>
+      Divider(height: height, thickness: thickness);
 
   static Widget slideIndicator() => Container(
     width: 100,

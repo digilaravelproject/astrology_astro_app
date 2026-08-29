@@ -100,43 +100,113 @@ class PanchangData {
       location: parsedLocation,
       timezone: json['timezone'] ?? '',
       coordinates: Coordinates.fromJson(json['coordinates'] ?? {}),
-      tithi: Tithi.fromJson(json['tithi'] is Map ? {...Map<String, dynamic>.from(json['tithi']), if (json['paksha'] != null) 'paksha': json['paksha']} : {'name': json['tithi']?.toString(), if (json['paksha'] != null) 'paksha': json['paksha']}),
-      nakshatra: Nakshatra.fromJson(json['nakshatra'] is Map ? Map<String, dynamic>.from(json['nakshatra']) : {'name': json['nakshatra']?.toString()}),
-      yoga: Yoga.fromJson(json['yog'] is Map ? Map<String, dynamic>.from(json['yog']) : (json['yoga'] is Map ? Map<String, dynamic>.from(json['yoga']) : {'name': json['yog']?.toString() ?? json['yoga']?.toString()})),
-      karana: Karana.fromJson(json['karan'] is Map ? Map<String, dynamic>.from(json['karan']) : (json['karana'] is Map ? Map<String, dynamic>.from(json['karana']) : {'name': json['karan']?.toString() ?? json['karana']?.toString()})),
-      vara: Vara.fromJson(json['vara'] is Map ? Map<String, dynamic>.from(json['vara']) : {'name': json['day']?.toString() ?? ''}),
+      tithi: Tithi.fromJson(
+        json['tithi'] is Map
+            ? {
+              ...Map<String, dynamic>.from(json['tithi']),
+              if (json['paksha'] != null) 'paksha': json['paksha'],
+            }
+            : {
+              'name': json['tithi']?.toString(),
+              if (json['paksha'] != null) 'paksha': json['paksha'],
+            },
+      ),
+      nakshatra: Nakshatra.fromJson(
+        json['nakshatra'] is Map
+            ? Map<String, dynamic>.from(json['nakshatra'])
+            : {'name': json['nakshatra']?.toString()},
+      ),
+      yoga: Yoga.fromJson(
+        json['yog'] is Map
+            ? Map<String, dynamic>.from(json['yog'])
+            : (json['yoga'] is Map
+                ? Map<String, dynamic>.from(json['yoga'])
+                : {
+                  'name': json['yog']?.toString() ?? json['yoga']?.toString(),
+                }),
+      ),
+      karana: Karana.fromJson(
+        json['karan'] is Map
+            ? Map<String, dynamic>.from(json['karan'])
+            : (json['karana'] is Map
+                ? Map<String, dynamic>.from(json['karana'])
+                : {
+                  'name':
+                      json['karan']?.toString() ?? json['karana']?.toString(),
+                }),
+      ),
+      vara: Vara.fromJson(
+        json['vara'] is Map
+            ? Map<String, dynamic>.from(json['vara'])
+            : {'name': json['day']?.toString() ?? ''},
+      ),
       sunrise: json['sunrise'] ?? json['vedic_sunrise'] ?? '',
       sunset: json['sunset'] ?? json['vedic_sunset'] ?? '',
       moonrise: json['moonrise'] ?? '',
       moonset: json['moonset'] ?? '',
-      rahukaal: TimeRange.fromJson(json['rahukaal'] is Map ? Map<String, dynamic>.from(json['rahukaal']) : {}),
-      yamagandam: TimeRange.fromJson(json['yamghant_kaal'] is Map ? Map<String, dynamic>.from(json['yamghant_kaal']) : (json['yamagandam'] is Map ? Map<String, dynamic>.from(json['yamagandam']) : {})),
-      gulika: TimeRange.fromJson(json['guliKaal'] is Map ? Map<String, dynamic>.from(json['guliKaal']) : (json['gulika'] is Map ? Map<String, dynamic>.from(json['gulika']) : {})),
-      abhijitMuhurta: TimeRange.fromJson(json['abhijit_muhurta'] is Map ? Map<String, dynamic>.from(json['abhijit_muhurta']) : {}),
-      auspiciousTimings: (json['auspicious_timings'] as List<dynamic>?)
+      rahukaal: TimeRange.fromJson(
+        json['rahukaal'] is Map
+            ? Map<String, dynamic>.from(json['rahukaal'])
+            : {},
+      ),
+      yamagandam: TimeRange.fromJson(
+        json['yamghant_kaal'] is Map
+            ? Map<String, dynamic>.from(json['yamghant_kaal'])
+            : (json['yamagandam'] is Map
+                ? Map<String, dynamic>.from(json['yamagandam'])
+                : {}),
+      ),
+      gulika: TimeRange.fromJson(
+        json['guliKaal'] is Map
+            ? Map<String, dynamic>.from(json['guliKaal'])
+            : (json['gulika'] is Map
+                ? Map<String, dynamic>.from(json['gulika'])
+                : {}),
+      ),
+      abhijitMuhurta: TimeRange.fromJson(
+        json['abhijit_muhurta'] is Map
+            ? Map<String, dynamic>.from(json['abhijit_muhurta'])
+            : {},
+      ),
+      auspiciousTimings:
+          (json['auspicious_timings'] as List<dynamic>?)
               ?.map((e) => AuspiciousTiming.fromJson(e))
               .toList() ??
           [],
-      inauspiciousPeriods: (json['inauspicious_periods'] as List<dynamic>?)
+      inauspiciousPeriods:
+          (json['inauspicious_periods'] as List<dynamic>?)
               ?.map((e) => InauspiciousPeriod.fromJson(e))
               .toList() ??
           [],
-      guidance: GuidanceInfo.fromJson(json['guidance'] is Map ? Map<String, dynamic>.from(json['guidance']) : {}),
-      masa: json['masa'] is Map
-          ? Masa.fromJson(Map<String, dynamic>.from(json['masa']))
-          : (json['hindu_maah'] is Map
-              ? Masa.fromJson({'name': json['hindu_maah']['purnimanta']?.toString() ?? ''})
-              : null),
-      ritu: json['ritu'] is Map
-          ? Ritu.fromJson(Map<String, dynamic>.from(json['ritu']))
-          : (json['ritu'] != null
-              ? Ritu.fromJson({'name': json['ritu']?.toString() ?? ''})
-              : null),
-      dishaShool: json['disha_shool'] is Map
-          ? DishaShool.fromJson(Map<String, dynamic>.from(json['disha_shool']))
-          : (json['disha_shool'] != null
-              ? DishaShool.fromJson({'direction': json['disha_shool']?.toString() ?? ''})
-              : null),
+      guidance: GuidanceInfo.fromJson(
+        json['guidance'] is Map
+            ? Map<String, dynamic>.from(json['guidance'])
+            : {},
+      ),
+      masa:
+          json['masa'] is Map
+              ? Masa.fromJson(Map<String, dynamic>.from(json['masa']))
+              : (json['hindu_maah'] is Map
+                  ? Masa.fromJson({
+                    'name': json['hindu_maah']['purnimanta']?.toString() ?? '',
+                  })
+                  : null),
+      ritu:
+          json['ritu'] is Map
+              ? Ritu.fromJson(Map<String, dynamic>.from(json['ritu']))
+              : (json['ritu'] != null
+                  ? Ritu.fromJson({'name': json['ritu']?.toString() ?? ''})
+                  : null),
+      dishaShool:
+          json['disha_shool'] is Map
+              ? DishaShool.fromJson(
+                Map<String, dynamic>.from(json['disha_shool']),
+              )
+              : (json['disha_shool'] != null
+                  ? DishaShool.fromJson({
+                    'direction': json['disha_shool']?.toString() ?? '',
+                  })
+                  : null),
     );
   }
 
@@ -161,7 +231,8 @@ class PanchangData {
       'gulika': gulika.toJson(),
       'abhijit_muhurta': abhijitMuhurta.toJson(),
       'auspicious_timings': auspiciousTimings.map((e) => e.toJson()).toList(),
-      'inauspicious_periods': inauspiciousPeriods.map((e) => e.toJson()).toList(),
+      'inauspicious_periods':
+          inauspiciousPeriods.map((e) => e.toJson()).toList(),
       'guidance': guidance.toJson(),
       'masa': masa?.toJson(),
       'ritu': ritu?.toJson(),
@@ -184,9 +255,9 @@ class Coordinates {
   }
 
   Map<String, dynamic> toJson() => {
-        'latitude': latitude,
-        'longitude': longitude,
-      };
+    'latitude': latitude,
+    'longitude': longitude,
+  };
 }
 
 class Paksha {
@@ -237,12 +308,12 @@ class CommonInterpretation {
   }
 
   Map<String, dynamic> toJson() => {
-        'meaning': meaning,
-        'energy': energy,
-        'bestFor': bestFor,
-        'avoid': avoid,
-        'tip': tip,
-      };
+    'meaning': meaning,
+    'energy': energy,
+    'bestFor': bestFor,
+    'avoid': avoid,
+    'tip': tip,
+  };
 }
 
 class Tithi {
@@ -267,13 +338,15 @@ class Tithi {
   });
 
   factory Tithi.fromJson(Map<String, dynamic> json) {
-    final details = json['details'] is Map ? json['details'] as Map<String, dynamic> : json;
+    final details =
+        json['details'] is Map ? json['details'] as Map<String, dynamic> : json;
     String formattedEndTime = '';
     if (json['end_time'] != null) {
       if (json['end_time'] is Map) {
         final h = json['end_time']['hour'] ?? 0;
         final m = json['end_time']['minute'] ?? 0;
-        formattedEndTime = '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
+        formattedEndTime =
+            '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
       } else {
         formattedEndTime = json['end_time'].toString();
       }
@@ -285,9 +358,15 @@ class Tithi {
       endTime: formattedEndTime,
       paksha: Paksha.fromJson(json['paksha'] ?? {}),
       deity: details['deity'] ?? json['deity'] ?? json['lord'] ?? '',
-      completionPercentage: (json['completionPercentage'] ?? json['completion_percentage'] ?? 0.0).toDouble(),
+      completionPercentage:
+          (json['completionPercentage'] ?? json['completion_percentage'] ?? 0.0)
+              .toDouble(),
       isKrishna: json['isKrishna'] ?? json['is_krishna'] ?? false,
-      interpretation: CommonInterpretation.fromJson(details['summary'] != null ? {'meaning': details['summary']} : (json['interpretation'] ?? {})),
+      interpretation: CommonInterpretation.fromJson(
+        details['summary'] != null
+            ? {'meaning': details['summary']}
+            : (json['interpretation'] ?? {}),
+      ),
     );
   }
 
@@ -333,13 +412,15 @@ class Nakshatra {
   });
 
   factory Nakshatra.fromJson(Map<String, dynamic> json) {
-    final details = json['details'] is Map ? json['details'] as Map<String, dynamic> : json;
+    final details =
+        json['details'] is Map ? json['details'] as Map<String, dynamic> : json;
     String formattedEndTime = '';
     if (json['end_time'] != null) {
       if (json['end_time'] is Map) {
         final h = json['end_time']['hour'] ?? 0;
         final m = json['end_time']['minute'] ?? 0;
-        formattedEndTime = '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
+        formattedEndTime =
+            '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
       } else {
         formattedEndTime = json['end_time'].toString();
       }
@@ -353,10 +434,17 @@ class Nakshatra {
       deity: details['deity'] ?? json['deity'] ?? json['lord'] ?? '',
       gana: details['gana'] ?? json['gana'] ?? '',
       pada: details['pada'] ?? json['pada'] ?? 0,
-      completionPercentage: (json['completionPercentage'] ?? json['completion_percentage'] ?? 0.0).toDouble(),
-      startDegree: (json['startDegree'] ?? json['start_degree'] ?? 0.0).toDouble(),
+      completionPercentage:
+          (json['completionPercentage'] ?? json['completion_percentage'] ?? 0.0)
+              .toDouble(),
+      startDegree:
+          (json['startDegree'] ?? json['start_degree'] ?? 0.0).toDouble(),
       endDegree: (json['endDegree'] ?? json['end_degree'] ?? 0.0).toDouble(),
-      interpretation: CommonInterpretation.fromJson(details['summary'] != null ? {'meaning': details['summary']} : (json['interpretation'] ?? {})),
+      interpretation: CommonInterpretation.fromJson(
+        details['summary'] != null
+            ? {'meaning': details['summary']}
+            : (json['interpretation'] ?? {}),
+      ),
     );
   }
 
@@ -397,10 +485,10 @@ class YogaInterpretation {
   }
 
   Map<String, dynamic> toJson() => {
-        'meaning': meaning,
-        'effect': effect,
-        'guidance': guidance,
-      };
+    'meaning': meaning,
+    'effect': effect,
+    'guidance': guidance,
+  };
 }
 
 class Yoga {
@@ -421,13 +509,15 @@ class Yoga {
   });
 
   factory Yoga.fromJson(Map<String, dynamic> json) {
-    final details = json['details'] is Map ? json['details'] as Map<String, dynamic> : json;
+    final details =
+        json['details'] is Map ? json['details'] as Map<String, dynamic> : json;
     String formattedEndTime = '';
     if (json['end_time'] != null) {
       if (json['end_time'] is Map) {
         final h = json['end_time']['hour'] ?? 0;
         final m = json['end_time']['minute'] ?? 0;
-        formattedEndTime = '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
+        formattedEndTime =
+            '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
       } else {
         formattedEndTime = json['end_time'].toString();
       }
@@ -438,8 +528,17 @@ class Yoga {
       name: details['yog_name'] ?? json['name'] ?? '',
       endTime: formattedEndTime,
       quality: details['special'] ?? json['quality'] ?? '',
-      completionPercentage: (json['completionPercentage'] ?? json['completion_percentage'] ?? 0.0).toDouble(),
-      interpretation: YogaInterpretation.fromJson(details['meaning'] != null ? {'meaning': details['meaning'], 'guidance': details['special'] ?? ''} : (json['interpretation'] ?? {})),
+      completionPercentage:
+          (json['completionPercentage'] ?? json['completion_percentage'] ?? 0.0)
+              .toDouble(),
+      interpretation: YogaInterpretation.fromJson(
+        details['meaning'] != null
+            ? {
+              'meaning': details['meaning'],
+              'guidance': details['special'] ?? '',
+            }
+            : (json['interpretation'] ?? {}),
+      ),
     );
   }
 
@@ -481,12 +580,12 @@ class KaranaInterpretation {
   }
 
   Map<String, dynamic> toJson() => {
-        'meaning': meaning,
-        'energy': nature,
-        'bestFor': bestFor,
-        'avoid': avoid,
-        'tip': tip,
-      };
+    'meaning': meaning,
+    'energy': nature,
+    'bestFor': bestFor,
+    'avoid': avoid,
+    'tip': tip,
+  };
 }
 
 class Karana {
@@ -507,13 +606,15 @@ class Karana {
   });
 
   factory Karana.fromJson(Map<String, dynamic> json) {
-    final details = json['details'] is Map ? json['details'] as Map<String, dynamic> : json;
+    final details =
+        json['details'] is Map ? json['details'] as Map<String, dynamic> : json;
     String formattedEndTime = '';
     if (json['end_time'] != null) {
       if (json['end_time'] is Map) {
         final h = json['end_time']['hour'] ?? 0;
         final m = json['end_time']['minute'] ?? 0;
-        formattedEndTime = '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
+        formattedEndTime =
+            '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
       } else {
         formattedEndTime = json['end_time'].toString();
       }
@@ -524,8 +625,14 @@ class Karana {
       name: details['karan_name'] ?? json['name'] ?? '',
       endTime: formattedEndTime,
       type: details['deity'] ?? json['type'] ?? '',
-      completionPercentage: (json['completionPercentage'] ?? json['completion_percentage'] ?? 0.0).toDouble(),
-      interpretation: KaranaInterpretation.fromJson(details['special'] != null ? {'meaning': details['special']} : (json['interpretation'] ?? {})),
+      completionPercentage:
+          (json['completionPercentage'] ?? json['completion_percentage'] ?? 0.0)
+              .toDouble(),
+      interpretation: KaranaInterpretation.fromJson(
+        details['special'] != null
+            ? {'meaning': details['special']}
+            : (json['interpretation'] ?? {}),
+      ),
     );
   }
 
@@ -573,14 +680,14 @@ class VaraInterpretation {
   }
 
   Map<String, dynamic> toJson() => {
-        'meaning': meaning,
-        'energy': energy,
-        'bestFor': bestFor,
-        'avoid': avoid,
-        'luckyColor': luckyColor,
-        'gemstone': gemstone,
-        'tip': tip,
-      };
+    'meaning': meaning,
+    'energy': energy,
+    'bestFor': bestFor,
+    'avoid': avoid,
+    'luckyColor': luckyColor,
+    'gemstone': gemstone,
+    'tip': tip,
+  };
 }
 
 class Vara {
@@ -637,43 +744,39 @@ class GuidanceInfo {
   factory GuidanceInfo.fromJson(Map<String, dynamic> json) {
     return GuidanceInfo(
       summary: json['summary'] ?? '',
-      overallAuspiciousness: json['overallAuspiciousness'] ?? json['overall_auspiciousness'] ?? '',
-      bestActivities: List<String>.from(json['bestActivities'] ?? json['best_activities'] ?? []),
-      activitiesToAvoid: List<String>.from(json['activitiesToAvoid'] ?? json['activities_to_avoid'] ?? []),
+      overallAuspiciousness:
+          json['overallAuspiciousness'] ?? json['overall_auspiciousness'] ?? '',
+      bestActivities: List<String>.from(
+        json['bestActivities'] ?? json['best_activities'] ?? [],
+      ),
+      activitiesToAvoid: List<String>.from(
+        json['activitiesToAvoid'] ?? json['activities_to_avoid'] ?? [],
+      ),
       tips: List<String>.from(json['tips'] ?? []),
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'summary': summary,
-        'overallAuspiciousness': overallAuspiciousness,
-        'bestActivities': bestActivities,
-        'activitiesToAvoid': activitiesToAvoid,
-        'tips': tips,
-      };
+    'summary': summary,
+    'overallAuspiciousness': overallAuspiciousness,
+    'bestActivities': bestActivities,
+    'activitiesToAvoid': activitiesToAvoid,
+    'tips': tips,
+  };
 }
 
 class TimeRange {
   final String start;
   final String end;
 
-  TimeRange({
-    required this.start,
-    required this.end,
-  });
+  TimeRange({required this.start, required this.end});
 
   factory TimeRange.fromJson(Map<String, dynamic> json) {
-    return TimeRange(
-      start: json['start'] ?? '',
-      end: json['end'] ?? '',
-    );
+    return TimeRange(start: json['start'] ?? '', end: json['end'] ?? '');
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'start': start,
-      'end': end,
-    };
+    return {'start': start, 'end': end};
   }
 }
 
@@ -697,11 +800,7 @@ class AuspiciousTiming {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'start': start,
-      'end': end,
-    };
+    return {'name': name, 'start': start, 'end': end};
   }
 }
 
@@ -725,11 +824,7 @@ class InauspiciousPeriod {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'start': start,
-      'end': end,
-    };
+    return {'name': name, 'start': start, 'end': end};
   }
 }
 
@@ -777,10 +872,7 @@ class MetaInfo {
   final String engine;
   final String version;
 
-  MetaInfo({
-    required this.engine,
-    required this.version,
-  });
+  MetaInfo({required this.engine, required this.version});
 
   factory MetaInfo.fromJson(Map<String, dynamic> json) {
     return MetaInfo(
@@ -790,10 +882,7 @@ class MetaInfo {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'engine': engine,
-      'version': version,
-    };
+    return {'engine': engine, 'version': version};
   }
 }
 
@@ -811,9 +900,9 @@ class MasaInterpretation {
   }
 
   Map<String, dynamic> toJson() => {
-        'significance': significance,
-        'festivals': festivals,
-      };
+    'significance': significance,
+    'festivals': festivals,
+  };
 }
 
 class Masa {
@@ -842,24 +931,26 @@ class Masa {
       id: json['id'] ?? 0,
       name: json['name'] ?? '',
       nameHindi: json['nameHindi'] ?? json['name_hindi'] ?? '',
-      englishEquivalent: json['englishEquivalent'] ?? json['english_equivalent'] ?? '',
+      englishEquivalent:
+          json['englishEquivalent'] ?? json['english_equivalent'] ?? '',
       sunSign: json['sunSign'] ?? json['sun_sign'] ?? '',
       sunSignHindi: json['sunSignHindi'] ?? json['sun_sign_hindi'] ?? '',
-      deityAssociation: json['deityAssociation'] ?? json['deity_association'] ?? '',
+      deityAssociation:
+          json['deityAssociation'] ?? json['deity_association'] ?? '',
       interpretation: MasaInterpretation.fromJson(json['interpretation'] ?? {}),
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'nameHindi': nameHindi,
-        'englishEquivalent': englishEquivalent,
-        'sunSign': sunSign,
-        'sunSignHindi': sunSignHindi,
-        'deityAssociation': deityAssociation,
-        'interpretation': interpretation.toJson(),
-      };
+    'id': id,
+    'name': name,
+    'nameHindi': nameHindi,
+    'englishEquivalent': englishEquivalent,
+    'sunSign': sunSign,
+    'sunSignHindi': sunSignHindi,
+    'deityAssociation': deityAssociation,
+    'interpretation': interpretation.toJson(),
+  };
 }
 
 class Ritu {
@@ -894,14 +985,14 @@ class Ritu {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'nameHindi': nameHindi,
-        'englishName': englishName,
-        'months': months,
-        'description': description,
-        'characteristics': characteristics,
-      };
+    'id': id,
+    'name': name,
+    'nameHindi': nameHindi,
+    'englishName': englishName,
+    'months': months,
+    'description': description,
+    'characteristics': characteristics,
+  };
 }
 
 class DishaShool {
@@ -923,18 +1014,19 @@ class DishaShool {
     return DishaShool(
       direction: json['direction'] ?? '',
       directionHindi: json['directionHindi'] ?? json['direction_hindi'] ?? '',
-      safeDirections: List<String>.from(json['safeDirections'] ?? json['safe_directions'] ?? []),
+      safeDirections: List<String>.from(
+        json['safeDirections'] ?? json['safe_directions'] ?? [],
+      ),
       remedies: List<String>.from(json['remedies'] ?? []),
       description: json['description'] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'direction': direction,
-        'directionHindi': directionHindi,
-        'safeDirections': safeDirections,
-        'remedies': remedies,
-        'description': description,
-      };
+    'direction': direction,
+    'directionHindi': directionHindi,
+    'safeDirections': safeDirections,
+    'remedies': remedies,
+    'description': description,
+  };
 }
-

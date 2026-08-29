@@ -33,93 +33,116 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
-          ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 50,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(10),
-                ),
+      builder:
+          (context) => Container(
+            padding: const EdgeInsets.all(24),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
               ),
             ),
-            const SizedBox(height: 24),
-            AppText(
-              '${'Select'.tr} ${title.tr}',
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF2E1A47),
-            ),
-            const SizedBox(height: 20),
-            Flexible(
-              child: ListView.separated(
-                shrinkWrap: true,
-                itemCount: options.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 8),
-                itemBuilder: (context, index) {
-                  final option = options[index];
-                  final isSelected = option == currentValue.value;
-                  return InkWell(
-                    onTap: () async {
-                      controller.isLoadingSheet.value = true;
-                      final oldValue = currentValue.value;
-                      currentValue.value = option;
-                      
-                      final success = await controller.updateOtherDetails(isSilent: true);
-                      
-                      controller.isLoadingSheet.value = false;
-                      if (success) {
-                        if (mounted) Navigator.pop(context);
-                      } else {
-                        currentValue.value = oldValue;
-                      }
-                    },
-                    borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                      decoration: BoxDecoration(
-                        color: isSelected ? AppColors.primaryColor.withOpacity(0.05) : Colors.grey.shade50,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 50,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                AppText(
+                  '${'Select'.tr} ${title.tr}',
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF2E1A47),
+                ),
+                const SizedBox(height: 20),
+                Flexible(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: options.length,
+                    separatorBuilder:
+                        (context, index) => const SizedBox(height: 8),
+                    itemBuilder: (context, index) {
+                      final option = options[index];
+                      final isSelected = option == currentValue.value;
+                      return InkWell(
+                        onTap: () async {
+                          controller.isLoadingSheet.value = true;
+                          final oldValue = currentValue.value;
+                          currentValue.value = option;
+
+                          final success = await controller.updateOtherDetails(
+                            isSilent: true,
+                          );
+
+                          controller.isLoadingSheet.value = false;
+                          if (success) {
+                            if (mounted) Navigator.pop(context);
+                          } else {
+                            currentValue.value = oldValue;
+                          }
+                        },
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: isSelected ? AppColors.primaryColor : Colors.grey.shade200,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: AppText(
-                              option.tr,
-                              fontSize: 14,
-                              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                              color: isSelected ? AppColors.primaryColor : const Color(0xFF2E1A47),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                          decoration: BoxDecoration(
+                            color:
+                                isSelected
+                                    ? AppColors.primaryColor.withOpacity(0.05)
+                                    : Colors.grey.shade50,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color:
+                                  isSelected
+                                      ? AppColors.primaryColor
+                                      : Colors.grey.shade200,
                             ),
                           ),
-                          if (isSelected)
-                            const Icon(Icons.check_circle, color: AppColors.primaryColor, size: 20),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: AppText(
+                                  option.tr,
+                                  fontSize: 14,
+                                  fontWeight:
+                                      isSelected
+                                          ? FontWeight.w600
+                                          : FontWeight.w400,
+                                  color:
+                                      isSelected
+                                          ? AppColors.primaryColor
+                                          : const Color(0xFF2E1A47),
+                                ),
+                              ),
+                              if (isSelected)
+                                const Icon(
+                                  Icons.check_circle,
+                                  color: AppColors.primaryColor,
+                                  size: 20,
+                                ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
             ),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
@@ -135,85 +158,101 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(30),
-              topRight: Radius.circular(30),
+      builder:
+          (context) => Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 50,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  AppText(
+                    '${'Edit'.tr} ${title.tr}',
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF2E1A47),
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade50,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: Colors.grey.shade200),
+                    ),
+                    child: TextField(
+                      controller: textController,
+                      keyboardType: keyboardType,
+                      maxLines: maxLines,
+                      autofocus: true,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF2E1A47),
+                      ),
+                      decoration: InputDecoration(
+                        hintText: hint.tr,
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 15,
+                        ),
+                        hintStyle: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey.shade400,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Obx(
+                    () => CustomButton(
+                      text: 'Save Changes'.tr,
+                      onPressed: () async {
+                        controller.isLoadingSheet.value = true;
+                        final oldValue = currentValue.value;
+                        currentValue.value = textController.text;
+
+                        final success = await controller.updateOtherDetails(
+                          isSilent: true,
+                        );
+
+                        controller.isLoadingSheet.value = false;
+                        if (success) {
+                          if (mounted) Navigator.pop(context);
+                        } else {
+                          currentValue.value = oldValue;
+                        }
+                      },
+                      isLoading: controller.isLoadingSheet.value,
+                      backgroundColor: AppColors.primaryColor,
+                      borderRadius: 100,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
             ),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 50,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              AppText(
-                '${'Edit'.tr} ${title.tr}',
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
-                color: const Color(0xFF2E1A47),
-              ),
-              const SizedBox(height: 20),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: Colors.grey.shade200),
-                ),
-                child: TextField(
-                  controller: textController,
-                  keyboardType: keyboardType,
-                  maxLines: maxLines,
-                  autofocus: true,
-                  style: const TextStyle(fontSize: 14, color: Color(0xFF2E1A47)),
-                  decoration: InputDecoration(
-                    hintText: hint.tr,
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
-                    hintStyle: TextStyle(fontSize: 13, color: Colors.grey.shade400),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              Obx(() => CustomButton(
-                text: 'Save Changes'.tr,
-                onPressed: () async {
-                  controller.isLoadingSheet.value = true;
-                  final oldValue = currentValue.value;
-                  currentValue.value = textController.text;
-                  
-                  final success = await controller.updateOtherDetails(isSilent: true);
-                  
-                  controller.isLoadingSheet.value = false;
-                  if (success) {
-                    if (mounted) Navigator.pop(context);
-                  } else {
-                    currentValue.value = oldValue;
-                  }
-                },
-                isLoading: controller.isLoadingSheet.value,
-                backgroundColor: AppColors.primaryColor,
-                borderRadius: 100,
-              )),
-              const SizedBox(height: 20),
-            ],
-          ),
-        ),
-      ),
     );
   }
 
@@ -221,9 +260,7 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
-      appBar: CustomAppBar(
-        title: 'Other Details'.tr,
-      ),
+      appBar: CustomAppBar(title: 'Other Details'.tr),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -231,182 +268,210 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
           children: [
             _buildSectionTitle('Personal Information'),
             const SizedBox(height: 16),
-            Obx(() => _buildDetailCard(
-              icon: Iconsax.calendar_1_copy,
-              label: 'Date of Birth',
-              value: controller.dateOfBirth.value,
-              iconColor: const Color(0xFF2196F3),
-              backgroundColor: const Color(0xFFE3F2FD),
-              onTap: () async {
-                final eighteenYearsAgo = DateTime(DateTime.now().year - 18, DateTime.now().month, DateTime.now().day);
-                DateTime tempDate = eighteenYearsAgo;
-                
-                // Parse existing date if not empty
-                if (controller.dateOfBirth.value.isNotEmpty) {
-                  try {
-                    tempDate = DateTime.parse(controller.dateOfBirth.value);
-                  } catch (_) {}
-                }
+            Obx(
+              () => _buildDetailCard(
+                icon: Iconsax.calendar_1_copy,
+                label: 'Date of Birth',
+                value: controller.dateOfBirth.value,
+                iconColor: const Color(0xFF2196F3),
+                backgroundColor: const Color(0xFFE3F2FD),
+                onTap: () async {
+                  final eighteenYearsAgo = DateTime(
+                    DateTime.now().year - 18,
+                    DateTime.now().month,
+                    DateTime.now().day,
+                  );
+                  DateTime tempDate = eighteenYearsAgo;
 
-                final date = await showModalBottomSheet<DateTime>(
-                  context: context,
-                  backgroundColor: Colors.transparent,
-                  builder: (BuildContext context) {
-                    return Container(
-                      height: 320,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-                      ),
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 12),
-                          Container(
-                            width: 40,
-                            height: 4,
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade300,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+                  // Parse existing date if not empty
+                  if (controller.dateOfBirth.value.isNotEmpty) {
+                    try {
+                      tempDate = DateTime.parse(controller.dateOfBirth.value);
+                    } catch (_) {}
+                  }
+
+                  final date = await showModalBottomSheet<DateTime>(
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    builder: (BuildContext context) {
+                      return Container(
+                        height: 320,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(24),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            child: AppText(
-                              'Select Birth Date'.tr,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.primaryColor,
-                            ),
-                          ),
-                          Expanded(
-                            child: CupertinoTheme(
-                              data: const CupertinoThemeData(
-                                textTheme: CupertinoTextThemeData(
-                                  dateTimePickerTextStyle: TextStyle(
-                                    color: AppColors.primaryColor,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                              child: CupertinoDatePicker(
-                                mode: CupertinoDatePickerMode.date,
-                                initialDateTime: tempDate,
-                                minimumDate: DateTime(1900),
-                                maximumDate: DateTime.now(),
-                                onDateTimeChanged: (DateTime newDate) {
-                                  tempDate = newDate;
-                                },
+                        ),
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 12),
+                            Container(
+                              width: 40,
+                              height: 4,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade300,
+                                borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                          ),
-                          const Divider(height: 1, color: Colors.black12),
-                          InkWell(
-                            onTap: () => Navigator.of(context).pop(tempDate),
-                            child: Container(
-                              width: double.infinity,
-                              alignment: Alignment.center,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
                               child: AppText(
-                                'Done'.tr,
+                                'Select Birth Date'.tr,
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.primaryColor,
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                );
+                            Expanded(
+                              child: CupertinoTheme(
+                                data: const CupertinoThemeData(
+                                  textTheme: CupertinoTextThemeData(
+                                    dateTimePickerTextStyle: TextStyle(
+                                      color: AppColors.primaryColor,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                                child: CupertinoDatePicker(
+                                  mode: CupertinoDatePickerMode.date,
+                                  initialDateTime: tempDate,
+                                  minimumDate: DateTime(1900),
+                                  maximumDate: DateTime.now(),
+                                  onDateTimeChanged: (DateTime newDate) {
+                                    tempDate = newDate;
+                                  },
+                                ),
+                              ),
+                            ),
+                            const Divider(height: 1, color: Colors.black12),
+                            InkWell(
+                              onTap: () => Navigator.of(context).pop(tempDate),
+                              child: Container(
+                                width: double.infinity,
+                                alignment: Alignment.center,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 14,
+                                ),
+                                child: AppText(
+                                  'Done'.tr,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.primaryColor,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
 
-                if (date != null) {
-                  final formattedDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
-                  final oldValue = controller.dateOfBirth.value;
-                  controller.dateOfBirth.value = formattedDate;
-                  
-                  final success = await controller.updateOtherDetails(isSilent: true);
-                  if (!success) {
-                    controller.dateOfBirth.value = oldValue;
+                  if (date != null) {
+                    final formattedDate =
+                        "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+                    final oldValue = controller.dateOfBirth.value;
+                    controller.dateOfBirth.value = formattedDate;
+
+                    final success = await controller.updateOtherDetails(
+                      isSilent: true,
+                    );
+                    if (!success) {
+                      controller.dateOfBirth.value = oldValue;
+                    }
                   }
-                }
-              },
-            )),
-            Obx(() => _buildDetailCard(
-              icon: Iconsax.user_copy,
-              label: 'Gender',
-              value: controller.gender.value,
-              iconColor: AppColors.primaryColor,
-              backgroundColor: AppColors.primaryColor.withOpacity(0.1),
-              onTap: () => _showEditBottomSheet(
-                title: 'Gender',
-                currentValue: controller.gender,
-                options: ['Male', 'Female', 'Other'],
+                },
               ),
-            )),
-            Obx(() => _buildDetailCard(
-              icon: Iconsax.location_copy,
-              label: 'Current Address',
-              value: controller.currentAddress.value,
-              iconColor: const Color(0xFF4CAF50),
-              backgroundColor: const Color(0xFFE8F5E9),
-              onTap: () => _showTextInputBottomSheet(
-                title: 'Address',
-                currentValue: controller.currentAddress,
-                hint: 'Enter your current address',
-                keyboardType: TextInputType.streetAddress,
+            ),
+            Obx(
+              () => _buildDetailCard(
+                icon: Iconsax.user_copy,
+                label: 'Gender',
+                value: controller.gender.value,
+                iconColor: AppColors.primaryColor,
+                backgroundColor: AppColors.primaryColor.withOpacity(0.1),
+                onTap:
+                    () => _showEditBottomSheet(
+                      title: 'Gender',
+                      currentValue: controller.gender,
+                      options: ['Male', 'Female', 'Other'],
+                    ),
               ),
-            )),
+            ),
+            Obx(
+              () => _buildDetailCard(
+                icon: Iconsax.location_copy,
+                label: 'Current Address',
+                value: controller.currentAddress.value,
+                iconColor: const Color(0xFF4CAF50),
+                backgroundColor: const Color(0xFFE8F5E9),
+                onTap:
+                    () => _showTextInputBottomSheet(
+                      title: 'Address',
+                      currentValue: controller.currentAddress,
+                      hint: 'Enter your current address',
+                      keyboardType: TextInputType.streetAddress,
+                    ),
+              ),
+            ),
 
             const SizedBox(height: 32),
             _buildSectionTitle('Professional Bio'),
             const SizedBox(height: 16),
-            Obx(() => _buildDetailCard(
-              icon: Iconsax.document_text_copy,
-              label: 'Biography',
-              value: controller.bio.value,
-              iconColor: const Color(0xFF9C27B0),
-              backgroundColor: const Color(0xFFF3E5F5),
-              onTap: () => _showTextInputBottomSheet(
-                title: 'Bio',
-                currentValue: controller.bio,
-                hint: 'Write a brief biography...',
-                keyboardType: TextInputType.multiline,
-                maxLines: 5,
+            Obx(
+              () => _buildDetailCard(
+                icon: Iconsax.document_text_copy,
+                label: 'Biography',
+                value: controller.bio.value,
+                iconColor: const Color(0xFF9C27B0),
+                backgroundColor: const Color(0xFFF3E5F5),
+                onTap:
+                    () => _showTextInputBottomSheet(
+                      title: 'Bio',
+                      currentValue: controller.bio,
+                      hint: 'Write a brief biography...',
+                      keyboardType: TextInputType.multiline,
+                      maxLines: 5,
+                    ),
               ),
-            )),
+            ),
 
             const SizedBox(height: 32),
             _buildSectionTitle('Social Presence'),
             const SizedBox(height: 16),
-            Obx(() => _buildDetailCard(
-              icon: Iconsax.global_copy,
-              label: 'Website Link',
-              value: controller.websiteLink.value,
-              iconColor: const Color(0xFFFF9800),
-              backgroundColor: const Color(0xFFFFF3E0),
-              onTap: () => _showTextInputBottomSheet(
-                title: 'Website',
-                currentValue: controller.websiteLink,
-                hint: 'Enter website URL',
-                keyboardType: TextInputType.url,
+            Obx(
+              () => _buildDetailCard(
+                icon: Iconsax.global_copy,
+                label: 'Website Link',
+                value: controller.websiteLink.value,
+                iconColor: const Color(0xFFFF9800),
+                backgroundColor: const Color(0xFFFFF3E0),
+                onTap:
+                    () => _showTextInputBottomSheet(
+                      title: 'Website',
+                      currentValue: controller.websiteLink,
+                      hint: 'Enter website URL',
+                      keyboardType: TextInputType.url,
+                    ),
               ),
-            )),
-            Obx(() => _buildDetailCard(
-              icon: Iconsax.instagram_copy,
-              label: 'Instagram Username',
-              value: controller.instagramUsername.value,
-              iconColor: const Color(0xFF673AB7),
-              backgroundColor: const Color(0xFFEDE7F6),
-              onTap: () => _showTextInputBottomSheet(
-                title: 'Instagram',
-                currentValue: controller.instagramUsername,
-                hint: 'Enter Instagram handle',
-                keyboardType: TextInputType.text,
+            ),
+            Obx(
+              () => _buildDetailCard(
+                icon: Iconsax.instagram_copy,
+                label: 'Instagram Username',
+                value: controller.instagramUsername.value,
+                iconColor: const Color(0xFF673AB7),
+                backgroundColor: const Color(0xFFEDE7F6),
+                onTap:
+                    () => _showTextInputBottomSheet(
+                      title: 'Instagram',
+                      currentValue: controller.instagramUsername,
+                      hint: 'Enter Instagram handle',
+                      keyboardType: TextInputType.text,
+                    ),
               ),
-            )),
-            
+            ),
+
             const SizedBox(height: 32),
             CustomButton(
               text: 'Submit'.tr,
@@ -424,7 +489,20 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
   }
 
   String _getMonthName(int month) {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     return months[month - 1];
   }
 
@@ -499,7 +577,11 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
                     ],
                   ),
                 ),
-                Icon(Icons.chevron_right_rounded, color: Colors.grey.shade400, size: 20),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: Colors.grey.shade400,
+                  size: 20,
+                ),
               ],
             ),
           ),

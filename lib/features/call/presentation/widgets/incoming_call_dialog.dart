@@ -12,10 +12,7 @@ import 'package:astro_astrologer/core/services/sound_vibration_service.dart';
 class IncomingCallDialog extends StatefulWidget {
   final String offerSdp;
 
-  const IncomingCallDialog({
-    super.key,
-    required this.offerSdp,
-  });
+  const IncomingCallDialog({super.key, required this.offerSdp});
 
   @override
   State<IncomingCallDialog> createState() => _IncomingCallDialogState();
@@ -28,7 +25,11 @@ class _IncomingCallDialogState extends State<IncomingCallDialog> {
   void initState() {
     super.initState();
     // Start looping ringtone for Astrologer incoming call
-    SoundVibrationService().startRingtone('audio/astrolger_app_sound.mp3', loop: true, vibrate: true);
+    SoundVibrationService().startRingtone(
+      'audio/astrolger_app_sound.mp3',
+      loop: true,
+      vibrate: true,
+    );
   }
 
   @override
@@ -50,9 +51,7 @@ class _IncomingCallDialogState extends State<IncomingCallDialog> {
           // Blurred background
           BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-            child: Container(
-              color: Colors.black.withValues(alpha: 0.6),
-            ),
+            child: Container(color: Colors.black.withValues(alpha: 0.6)),
           ),
 
           // Dialog content
@@ -77,19 +76,29 @@ class _IncomingCallDialogState extends State<IncomingCallDialog> {
                       const SizedBox(height: 30),
                       CircleAvatar(
                         radius: 65,
-                        backgroundColor: AppColors.primaryColor.withValues(alpha: 0.2),
+                        backgroundColor: AppColors.primaryColor.withValues(
+                          alpha: 0.2,
+                        ),
                         child: CircleAvatar(
                           radius: 60,
-                          backgroundImage: controller.consumerImage != null && controller.consumerImage!.isNotEmpty
-                              ? CachedNetworkImageProvider(
-                                  controller.consumerImage!.startsWith('http')
-                                      ? controller.consumerImage!
-                                      : '${AppUrls.baseImageUrl}${controller.consumerImage!.startsWith('/') ? controller.consumerImage!.substring(1) : controller.consumerImage}'
-                                )
-                              : null,
-                          child: controller.consumerImage == null || controller.consumerImage!.isEmpty
-                              ? const Icon(Icons.person, size: 50, color: Colors.white)
-                              : null,
+                          backgroundImage:
+                              controller.consumerImage != null &&
+                                      controller.consumerImage!.isNotEmpty
+                                  ? CachedNetworkImageProvider(
+                                    controller.consumerImage!.startsWith('http')
+                                        ? controller.consumerImage!
+                                        : '${AppUrls.baseImageUrl}${controller.consumerImage!.startsWith('/') ? controller.consumerImage!.substring(1) : controller.consumerImage}',
+                                  )
+                                  : null,
+                          child:
+                              controller.consumerImage == null ||
+                                      controller.consumerImage!.isEmpty
+                                  ? const Icon(
+                                    Icons.person,
+                                    size: 50,
+                                    color: Colors.white,
+                                  )
+                                  : null,
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -104,10 +113,7 @@ class _IncomingCallDialogState extends State<IncomingCallDialog> {
                       const SizedBox(height: 10),
                       const Text(
                         'Suryapath Kundli Call Session',
-                        style: TextStyle(
-                          color: Colors.white60,
-                          fontSize: 14,
-                        ),
+                        style: TextStyle(color: Colors.white60, fontSize: 14),
                       ),
                     ],
                   ),
@@ -125,7 +131,9 @@ class _IncomingCallDialogState extends State<IncomingCallDialog> {
                         children: [
                           GestureDetector(
                             onTap: () {
-                              Logger.d('IncomingCallDialog: Decline button clicked. Calling rejectCall...');
+                              Logger.d(
+                                'IncomingCallDialog: Decline button clicked. Calling rejectCall...',
+                              );
                               controller.rejectCall();
                               Get.back(); // Close dialog
                             },
@@ -167,62 +175,95 @@ class _IncomingCallDialogState extends State<IncomingCallDialog> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           GestureDetector(
-                            onTap: _isAccepting ? null : () async {
-                              setState(() {
-                                _isAccepting = true;
-                              });
-                              Logger.d('IncomingCallDialog: Accept button clicked. Processing...');
-                              
-                              String sdpToUse = widget.offerSdp;
-                              
-                              if (sdpToUse.isEmpty && controller.sessionId != null) {
-                                Logger.d('IncomingCallDialog: No SDP — fetching from current-session...');
-                                sdpToUse = await controller.fetchOfferSdpFromCurrentSession() ?? '';
-                              }
-                              
-                              bool success = false;
-                              if (sdpToUse.isEmpty) {
-                                Logger.d('IncomingCallDialog: No SDP available. Falling back to acceptCallDirect()...');
-                                success = await controller.acceptCallDirect();
-                              } else {
-                                Logger.d('IncomingCallDialog: Calling controller.acceptCall() with SDP...');
-                                success = await controller.acceptCall(sdpToUse);
-                              }
-                              
-                              Logger.d('IncomingCallDialog: acceptCall finished. success = $success');
-                              if (success) {
-                                Logger.d('IncomingCallDialog: Navigating to CallScreen.');
-                                Get.off(() => const CallScreen()); // Replace dialog with CallScreen
-                              } else {
-                                Logger.e('IncomingCallDialog: acceptCall failed. Will close dialog.');
-                                Get.back();
-                              }
-                            },
+                            onTap:
+                                _isAccepting
+                                    ? null
+                                    : () async {
+                                      setState(() {
+                                        _isAccepting = true;
+                                      });
+                                      Logger.d(
+                                        'IncomingCallDialog: Accept button clicked. Processing...',
+                                      );
+
+                                      String sdpToUse = widget.offerSdp;
+
+                                      if (sdpToUse.isEmpty &&
+                                          controller.sessionId != null) {
+                                        Logger.d(
+                                          'IncomingCallDialog: No SDP — fetching from current-session...',
+                                        );
+                                        sdpToUse =
+                                            await controller
+                                                .fetchOfferSdpFromCurrentSession() ??
+                                            '';
+                                      }
+
+                                      bool success = false;
+                                      if (sdpToUse.isEmpty) {
+                                        Logger.d(
+                                          'IncomingCallDialog: No SDP available. Falling back to acceptCallDirect()...',
+                                        );
+                                        success =
+                                            await controller.acceptCallDirect();
+                                      } else {
+                                        Logger.d(
+                                          'IncomingCallDialog: Calling controller.acceptCall() with SDP...',
+                                        );
+                                        success = await controller.acceptCall(
+                                          sdpToUse,
+                                        );
+                                      }
+
+                                      Logger.d(
+                                        'IncomingCallDialog: acceptCall finished. success = $success',
+                                      );
+                                      if (success) {
+                                        Logger.d(
+                                          'IncomingCallDialog: Navigating to CallScreen.',
+                                        );
+                                        Get.off(
+                                          () => const CallScreen(),
+                                        ); // Replace dialog with CallScreen
+                                      } else {
+                                        Logger.e(
+                                          'IncomingCallDialog: acceptCall failed. Will close dialog.',
+                                        );
+                                        Get.back();
+                                      }
+                                    },
                             child: Container(
                               width: 68,
                               height: 68,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: _isAccepting ? Colors.grey : Colors.green,
+                                color:
+                                    _isAccepting ? Colors.grey : Colors.green,
                                 boxShadow: [
                                   if (!_isAccepting)
                                     BoxShadow(
-                                      color: Colors.green.withValues(alpha: 0.4),
+                                      color: Colors.green.withValues(
+                                        alpha: 0.4,
+                                      ),
                                       blurRadius: 15,
                                       spreadRadius: 2,
                                     ),
                                 ],
                               ),
-                              child: _isAccepting
-                                  ? const Padding(
-                                      padding: EdgeInsets.all(20.0),
-                                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                                    )
-                                  : const Icon(
-                                      Icons.call,
-                                      color: Colors.white,
-                                      size: 30,
-                                    ),
+                              child:
+                                  _isAccepting
+                                      ? const Padding(
+                                        padding: EdgeInsets.all(20.0),
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                      : const Icon(
+                                        Icons.call,
+                                        color: Colors.white,
+                                        size: 30,
+                                      ),
                             ),
                           ),
                           const SizedBox(height: 12),

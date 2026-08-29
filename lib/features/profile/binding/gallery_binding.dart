@@ -13,13 +13,15 @@ class GalleryBinding extends Bindings {
     Get.lazyPut(() => UploadGalleryImagesUseCase(repository: Get.find()));
     Get.lazyPut(() => ToggleGalleryVisibilityUseCase(repository: Get.find()));
     Get.lazyPut(() => DeleteGalleryImageUseCase(repository: Get.find()));
-    
+
     Logger.d('GalleryBinding: Putting GalleryController');
-    Get.put(GalleryController(
-      getGalleryImagesUseCase: Get.find(),
-      uploadGalleryImagesUseCase: Get.find(),
-      toggleGalleryVisibilityUseCase: Get.find(),
-      deleteGalleryImageUseCase: Get.find(),
-    ));
+    Get.put(
+      GalleryController(
+        getGalleryImagesUseCase: Get.find(),
+        uploadGalleryImagesUseCase: Get.find(),
+        toggleGalleryVisibilityUseCase: Get.find(),
+        deleteGalleryImageUseCase: Get.find(),
+      ),
+    );
   }
 }

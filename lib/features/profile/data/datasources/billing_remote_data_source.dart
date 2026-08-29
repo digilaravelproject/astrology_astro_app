@@ -21,7 +21,10 @@ class BillingRemoteDataSource implements BillingRemoteDataSourceInterface {
       return response;
     } catch (e) {
       Logger.e('BillingRemoteDataSource.getBillingAddress error: $e');
-      return ResponseModel(isSuccess: false, message: 'Something went wrong: $e');
+      return ResponseModel(
+        isSuccess: false,
+        message: 'Something went wrong: $e',
+      );
     }
   }
 
@@ -33,7 +36,10 @@ class BillingRemoteDataSource implements BillingRemoteDataSourceInterface {
       return response;
     } catch (e) {
       Logger.e('BillingRemoteDataSource.updateBillingAddress error: $e');
-      return ResponseModel(isSuccess: false, message: 'Something went wrong: $e');
+      return ResponseModel(
+        isSuccess: false,
+        message: 'Something went wrong: $e',
+      );
     }
   }
 }

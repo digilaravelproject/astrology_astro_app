@@ -15,13 +15,15 @@ class AvailabilityRemoteDataSource {
     return result;
   }
 
-  Future<ResponseModel> updateAvailability(List<AvailabilityModel> availability) async {
+  Future<ResponseModel> updateAvailability(
+    List<AvailabilityModel> availability,
+  ) async {
     print('[AVAILABILITY_DS] Updating availability');
-    final data = {
-      'availability': availability.map((a) => a.toJson()).toList(),
-    };
+    final data = {'availability': availability.map((a) => a.toJson()).toList()};
     final result = await _apiClient.put(AppUrls.availability, data: data);
-    print('[AVAILABILITY_DS] Update availability response: ${result.toString()}');
+    print(
+      '[AVAILABILITY_DS] Update availability response: ${result.toString()}',
+    );
     return result;
   }
 }

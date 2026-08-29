@@ -32,7 +32,7 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
     }
     _financeController = Get.find<FinanceController>();
     _walletController = Get.find<WalletController>();
-    
+
     // Ensure we have latest bank accounts
     _financeController.getBankAccounts();
   }
@@ -53,9 +53,7 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
-      appBar: const CustomAppBar(
-        title: 'Withdraw Money',
-      ),
+      appBar: const CustomAppBar(title: 'Withdraw Money'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -67,7 +65,9 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
               decoration: BoxDecoration(
                 color: AppColors.primaryColor.withOpacity(0.05),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.primaryColor.withOpacity(0.1)),
+                border: Border.all(
+                  color: AppColors.primaryColor.withOpacity(0.1),
+                ),
               ),
               child: Row(
                 children: [
@@ -77,20 +77,29 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                       color: Colors.white,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Iconsax.wallet_3_copy, color: AppColors.primaryColor, size: 24),
+                    child: const Icon(
+                      Iconsax.wallet_3_copy,
+                      color: AppColors.primaryColor,
+                      size: 24,
+                    ),
                   ),
                   const SizedBox(width: 16),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AppText('Available Balance'.tr, fontSize: 13, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
+                      AppText(
+                        'Available Balance'.tr,
+                        fontSize: 13,
+                        color: Colors.grey.shade600,
+                        fontWeight: FontWeight.w500,
+                      ),
                       const SizedBox(height: 4),
                       Obx(() {
                         final val = _walletController.summary.value;
                         return AppText(
-                          '₹${val?.totalBalance ?? 0.0}', 
-                          fontSize: 20, 
-                          fontWeight: FontWeight.w800, 
+                          '₹${val?.totalBalance ?? 0.0}',
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
                           color: const Color(0xFF2E1A47),
                         );
                       }),
@@ -99,11 +108,16 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 32),
-            AppText('Enter Amount'.tr, fontSize: 15, fontWeight: FontWeight.w700, color: const Color(0xFF2E1A47)),
+            AppText(
+              'Enter Amount'.tr,
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: const Color(0xFF2E1A47),
+            ),
             const SizedBox(height: 16),
-            
+
             // Amount Input
             Container(
               decoration: BoxDecoration(
@@ -121,8 +135,16 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                 ),
                 decoration: InputDecoration(
                   prefixIcon: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                    child: const AppText('₹', fontSize: 24, fontWeight: FontWeight.w700, color: Color(0xFF2E1A47)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    child: const AppText(
+                      '₹',
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF2E1A47),
+                    ),
                   ),
                   hintText: '0.00',
                   hintStyle: TextStyle(color: Colors.grey.shade300),
@@ -131,9 +153,9 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Quick Select Chips
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -150,18 +172,23 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 40),
-            AppText('Withdrawal To'.tr, fontSize: 15, fontWeight: FontWeight.w700, color: const Color(0xFF2E1A47)),
+            AppText(
+              'Withdrawal To'.tr,
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: const Color(0xFF2E1A47),
+            ),
             const SizedBox(height: 16),
-            
+
             // Bank Card Preview
             Obx(() {
               final accounts = _financeController.bankAccounts;
               // Force register observable by accessing length
               final _ = accounts.length;
               final defaultBank = accounts.firstWhereOrNull((b) => b.isDefault);
-              
+
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -181,13 +208,17 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                     ),
                     child: Row(
                       children: [
-                         Container(
+                        Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             color: Colors.blue.shade50,
                             shape: BoxShape.circle,
                           ),
-                          child: Icon(Iconsax.bank_copy, color: Colors.blue.shade600, size: 20),
+                          child: Icon(
+                            Iconsax.bank_copy,
+                            color: Colors.blue.shade600,
+                            size: 20,
+                          ),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
@@ -195,18 +226,20 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               AppText(
-                                defaultBank != null ? defaultBank.bankName : 'No Bank Set', 
-                                fontSize: 15, 
-                                fontWeight: FontWeight.w700, 
+                                defaultBank != null
+                                    ? defaultBank.bankName
+                                    : 'No Bank Set',
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
                                 color: const Color(0xFF2E1A47),
                               ),
                               const SizedBox(height: 2),
                               AppText(
-                                defaultBank != null 
-                                  ? '**** ${defaultBank.accountNumber.substring(defaultBank.accountNumber.length - 4)}' 
-                                  : 'Tap to add an account', 
-                                fontSize: 12, 
-                                color: Colors.grey.shade500, 
+                                defaultBank != null
+                                    ? '**** ${defaultBank.accountNumber.substring(defaultBank.accountNumber.length - 4)}'
+                                    : 'Tap to add an account',
+                                fontSize: 12,
+                                color: Colors.grey.shade500,
                                 fontWeight: FontWeight.w500,
                               ),
                             ],
@@ -219,69 +252,109 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                             });
                           },
                           child: AppText(
-                            defaultBank != null ? 'Change' : 'Add', 
-                            fontSize: 13, 
-                            fontWeight: FontWeight.w700, 
+                            defaultBank != null ? 'Change' : 'Add',
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
                             color: AppColors.primaryColor,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  
+
                   const SizedBox(height: 48),
-                  
+
                   CustomButton(
                     text: 'Confirm Withdrawal',
                     onPressed: () {
                       if (_amountController.text.isEmpty) {
-                         CustomSnackBar.disabledSnackbar('Invalid Amount', 'Please enter a valid amount', backgroundColor: Colors.red.shade100, colorText: Colors.red.shade800);
-                         return;
+                        CustomSnackBar.disabledSnackbar(
+                          'Invalid Amount',
+                          'Please enter a valid amount',
+                          backgroundColor: Colors.red.shade100,
+                          colorText: Colors.red.shade800,
+                        );
+                        return;
                       }
                       if (defaultBank == null) {
-                         CustomSnackBar.disabledSnackbar('No Bank', 'Please select or add a bank account', backgroundColor: Colors.red.shade100, colorText: Colors.red.shade800);
-                         return;
+                        CustomSnackBar.disabledSnackbar(
+                          'No Bank',
+                          'Please select or add a bank account',
+                          backgroundColor: Colors.red.shade100,
+                          colorText: Colors.red.shade800,
+                        );
+                        return;
                       }
 
                       Get.defaultDialog(
                         title: 'Confirm',
-                        middleText: 'Are you sure you want to withdraw ₹${_amountController.text} to ${defaultBank.bankName}?',
+                        middleText:
+                            'Are you sure you want to withdraw ₹${_amountController.text} to ${defaultBank.bankName}?',
                         cancel: TextButton(
                           onPressed: () => Navigator.of(context).pop(),
-                          child: const Text('Cancel', style: TextStyle(color: AppColors.primaryColor)),
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(color: AppColors.primaryColor),
+                          ),
                         ),
                         confirm: TextButton(
                           style: TextButton.styleFrom(
                             backgroundColor: AppColors.primaryColor,
                           ),
                           onPressed: () async {
-                            Navigator.of(context).pop(); // Close confirm dialog safely
+                            Navigator.of(
+                              context,
+                            ).pop(); // Close confirm dialog safely
 
                             // Show loading dialog natively
                             showDialog(
                               context: context,
                               barrierDismissible: false,
-                              builder: (context) => const Center(child: CircularProgressIndicator()),
+                              builder:
+                                  (context) => const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
                             );
 
-                            final amount = double.tryParse(_amountController.text) ?? 0.0;
-                            final result = await _walletController.requestWithdrawal(amount, defaultBank.id);
-                            
+                            final amount =
+                                double.tryParse(_amountController.text) ?? 0.0;
+                            final result = await _walletController
+                                .requestWithdrawal(amount, defaultBank.id);
+
                             // Close loading dialog safely BEFORE showing any snackbar
                             Navigator.of(context).pop();
 
                             if (result['success'] == true) {
                               Get.back(); // close withdrawal screen
-                              Future.delayed(const Duration(milliseconds: 300), () {
-                                CustomSnackBar.disabledSnackbar('Success', result['message'], backgroundColor: Colors.green.shade100, colorText: Colors.green.shade800);
-                              });
+                              Future.delayed(
+                                const Duration(milliseconds: 300),
+                                () {
+                                  CustomSnackBar.disabledSnackbar(
+                                    'Success',
+                                    result['message'],
+                                    backgroundColor: Colors.green.shade100,
+                                    colorText: Colors.green.shade800,
+                                  );
+                                },
+                              );
                             } else {
-                              Future.delayed(const Duration(milliseconds: 300), () {
-                                CustomSnackBar.disabledSnackbar('Error', result['message'], backgroundColor: Colors.red.shade100, colorText: Colors.red.shade800);
-                              });
+                              Future.delayed(
+                                const Duration(milliseconds: 300),
+                                () {
+                                  CustomSnackBar.disabledSnackbar(
+                                    'Error',
+                                    result['message'],
+                                    backgroundColor: Colors.red.shade100,
+                                    colorText: Colors.red.shade800,
+                                  );
+                                },
+                              );
                             }
                           },
-                          child: const Text('Confirm', style: TextStyle(color: Colors.white)),
+                          child: const Text(
+                            'Confirm',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       );
                     },
@@ -291,7 +364,7 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                 ],
               );
             }),
-            
+
             const SizedBox(height: 20),
             Center(
               child: AppText(

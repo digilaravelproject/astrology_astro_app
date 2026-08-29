@@ -22,7 +22,7 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
   final _bankNameController = TextEditingController();
   final _accountNumberController = TextEditingController();
   final _ifscController = TextEditingController();
-  
+
   File? _selectedImage;
   final ImagePicker _picker = ImagePicker();
   late FinanceController _controller;
@@ -67,9 +67,7 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
-      appBar: CustomAppBar(
-        title: 'Add Bank Account'.tr,
-      ),
+      appBar: CustomAppBar(title: 'Add Bank Account'.tr),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -129,39 +127,55 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
                       style: BorderStyle.solid,
                     ),
                   ),
-                  child: _selectedImage != null
-                      ? ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Image.file(_selectedImage!, fit: BoxFit.cover),
-                  )
-                      : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: AppColors.primaryColor.withOpacity(0.05),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(Iconsax.camera_copy, color: AppColors.primaryColor, size: 24),
-                      ),
-                      const SizedBox(height: 12),
-                      AppText(
-                        'Tap to upload image'.tr,
-                        fontSize: 13,
-                        color: Colors.grey.shade400,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ],
-                  ),
+                  child:
+                      _selectedImage != null
+                          ? ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child: Image.file(
+                              _selectedImage!,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                          : Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primaryColor.withOpacity(
+                                    0.05,
+                                  ),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Iconsax.camera_copy,
+                                  color: AppColors.primaryColor,
+                                  size: 24,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              AppText(
+                                'Tap to upload image'.tr,
+                                fontSize: 13,
+                                color: Colors.grey.shade400,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ],
+                          ),
                 ),
               ),
 
               const SizedBox(height: 48),
-              Obx(() => CustomButton(
-                text: _controller.isAddingAccount.value ? 'Adding...'.tr : 'Save Account'.tr,
-                onPressed: _controller.isAddingAccount.value ? () {} : _submitForm,
-              )),
+              Obx(
+                () => CustomButton(
+                  text:
+                      _controller.isAddingAccount.value
+                          ? 'Adding...'.tr
+                          : 'Save Account'.tr,
+                  onPressed:
+                      _controller.isAddingAccount.value ? () {} : _submitForm,
+                ),
+              ),
               const SizedBox(height: 20),
             ],
           ),
@@ -206,9 +220,16 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
-              prefixIcon: Icon(icon, color: AppColors.primaryColor.withOpacity(0.5), size: 18),
+              prefixIcon: Icon(
+                icon,
+                color: AppColors.primaryColor.withOpacity(0.5),
+                size: 18,
+              ),
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {

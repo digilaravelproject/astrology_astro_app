@@ -3,7 +3,6 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'dart:typed_data'; // Import for Uint8List
 
-
 class CacheManager {
   static final DefaultCacheManager _cacheManager = DefaultCacheManager();
 

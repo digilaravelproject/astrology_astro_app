@@ -17,16 +17,14 @@ class HelpSupportScreen extends GetView<SupportController> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(
-        title: 'Customer Support'.tr,
-      ),
+      appBar: CustomAppBar(title: 'Customer Support'.tr),
       body: Obx(() {
         if (controller.isCustomerSupportLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
 
         final data = controller.customerSupportData.value;
-        
+
         return SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -39,7 +37,9 @@ class HelpSupportScreen extends GetView<SupportController> {
                   decoration: BoxDecoration(
                     color: AppColors.primaryColor.withOpacity(0.05),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppColors.primaryColor.withOpacity(0.1)),
+                    border: Border.all(
+                      color: AppColors.primaryColor.withOpacity(0.1),
+                    ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,7 +147,11 @@ class HelpSupportScreen extends GetView<SupportController> {
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Colors.grey.shade300),
+            Icon(
+              Icons.arrow_forward_ios_rounded,
+              size: 14,
+              color: Colors.grey.shade300,
+            ),
           ],
         ),
       ),

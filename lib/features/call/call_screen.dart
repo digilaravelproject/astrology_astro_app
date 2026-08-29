@@ -3,14 +3,12 @@ import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
+import '../../core/widgets/custom_image_widget.dart';
 
 class CallScreen extends StatefulWidget {
   final Map<String, dynamic> request;
 
-  const CallScreen({
-    super.key,
-    required this.request,
-  });
+  const CallScreen({super.key, required this.request});
 
   @override
   State<CallScreen> createState() => _CallScreenState();
@@ -23,7 +21,9 @@ class _CallScreenState extends State<CallScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1E1E1E), // Dark background for call screen
+      backgroundColor: const Color(
+        0xFF1E1E1E,
+      ), // Dark background for call screen
       body: SafeArea(
         child: Column(
           children: [
@@ -37,16 +37,12 @@ class _CallScreenState extends State<CallScreen> {
                     shape: BoxShape.circle,
                     border: Border.all(color: AppColors.deepPink, width: 2),
                   ),
-                  child: Container(
+                  child: CustomImageWidget(
+                    imagePath: widget.request['image'],
                     height: 120,
                     width: 120,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        image: NetworkImage(widget.request['image']),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                    radius: BorderRadius.circular(60),
+                    fit: BoxFit.cover,
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -64,16 +60,12 @@ class _CallScreenState extends State<CallScreen> {
                   fontWeight: FontWeight.w500,
                 ),
                 const SizedBox(height: 8),
-                 AppText(
-                  "Connected",
-                  fontSize: 14,
-                  color: Colors.greenAccent,
-                ),
+                AppText("Connected", fontSize: 14, color: Colors.greenAccent),
               ],
             ),
-            
+
             const Spacer(flex: 2),
-            
+
             // Call Controls
             Container(
               padding: const EdgeInsets.only(bottom: 50),
@@ -81,7 +73,10 @@ class _CallScreenState extends State<CallScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   _buildCallControl(
-                    icon: _isMuted ? Iconsax.microphone_slash_1_copy : Iconsax.microphone_2_copy,
+                    icon:
+                        _isMuted
+                            ? Iconsax.microphone_slash_1_copy
+                            : Iconsax.microphone_2_copy,
                     label: _isMuted ? "Unmute" : "Mute",
                     isActive: _isMuted,
                     onTap: () => setState(() => _isMuted = !_isMuted),
@@ -95,7 +90,11 @@ class _CallScreenState extends State<CallScreen> {
                         color: Colors.red,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.call_end, color: Colors.white, size: 32),
+                      child: const Icon(
+                        Icons.call_end,
+                        color: Colors.white,
+                        size: 32,
+                      ),
                     ),
                   ),
                   _buildCallControl(
@@ -137,11 +136,7 @@ class _CallScreenState extends State<CallScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          AppText(
-            label,
-            fontSize: 12,
-            color: Colors.white70,
-          ),
+          AppText(label, fontSize: 12, color: Colors.white70),
         ],
       ),
     );

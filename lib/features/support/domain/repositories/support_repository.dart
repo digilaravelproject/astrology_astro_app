@@ -32,9 +32,9 @@ class SupportRepository {
   }
 
   Future<ResponseModel> submitFeedback(int rating, String comment) async {
-    return await apiClient.post(AppUrls.feedback, data: {
-      'rating': rating,
-      'comment': comment,
-    });
+    return await apiClient.post(
+      AppUrls.feedback,
+      data: {'rating': rating, 'comment': comment},
+    );
   }
 }

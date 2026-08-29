@@ -20,12 +20,18 @@ class NavamshaData {
 
   factory NavamshaData.fromJson(Map<String, dynamic> json) {
     return NavamshaData(
-      houses: json['houses'] != null 
-          ? (json['houses'] as List).map((i) => HouseData.fromJson(i)).toList() 
-          : null,
-      planets: json['planets'] != null 
-          ? (json['planets'] as List).map((i) => PlanetData.fromJson(i)).toList() 
-          : null,
+      houses:
+          json['houses'] != null
+              ? (json['houses'] as List)
+                  .map((i) => HouseData.fromJson(i))
+                  .toList()
+              : null,
+      planets:
+          json['planets'] != null
+              ? (json['planets'] as List)
+                  .map((i) => PlanetData.fromJson(i))
+                  .toList()
+              : null,
     );
   }
 }
@@ -37,10 +43,7 @@ class HouseData {
   HouseData({this.house, this.sign});
 
   factory HouseData.fromJson(Map<String, dynamic> json) {
-    return HouseData(
-      house: json['house'],
-      sign: json['sign'],
-    );
+    return HouseData(house: json['house'], sign: json['sign']);
   }
 }
 

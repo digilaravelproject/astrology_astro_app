@@ -12,6 +12,7 @@ import 'package:astro_astrologer/features/chat/domain/entities/chat_message.dart
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
 import 'package:astro_astrologer/features/kundli/create_kundli_screen.dart';
 import 'package:swipe_to/swipe_to.dart';
+import 'package:astro_astrologer/core/widgets/custom_image_widget.dart';
 
 class AssistanceChatRoomScreen extends StatefulWidget {
   final int sessionId;
@@ -38,7 +39,8 @@ class AssistanceChatRoomScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<AssistanceChatRoomScreen> createState() => _AssistanceChatRoomScreenState();
+  State<AssistanceChatRoomScreen> createState() =>
+      _AssistanceChatRoomScreenState();
 }
 
 class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
@@ -47,7 +49,10 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
   @override
   void initState() {
     super.initState();
-    controller = Get.put(AssistanceChatRoomController(), tag: widget.sessionId.toString());
+    controller = Get.put(
+      AssistanceChatRoomController(),
+      tag: widget.sessionId.toString(),
+    );
     controller.initSession(widget.sessionId);
   }
 
@@ -71,21 +76,31 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
         ),
         title: Row(
           children: [
-            CircleAvatar(
-              radius: 20,
-              backgroundColor: AppColors.primaryColor.withOpacity(0.1),
-              backgroundImage: (widget.userImage != null && widget.userImage!.isNotEmpty)
-                  ? NetworkImage(widget.userImage!.startsWith('http')
-                      ? widget.userImage!
-                      : "${AppUrls.baseImageUrl}${widget.userImage!}")
-                  : null,
-              child: (widget.userImage == null || widget.userImage!.isEmpty)
-                  ? AppText(
-                      widget.userName.isNotEmpty ? widget.userName.substring(0, 1).toUpperCase() : 'U',
-                      color: AppColors.primaryColor,
-                      fontWeight: FontWeight.bold,
-                    )
-                  : null,
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.primaryColor.withOpacity(0.1),
+              ),
+              child: CustomImageWidget(
+                imagePath: (widget.userImage != null && widget.userImage!.isNotEmpty)
+                    ? (widget.userImage!.startsWith('http')
+                        ? widget.userImage!
+                        : "${AppUrls.baseImageUrl}${widget.userImage!}")
+                    : '',
+                height: 40,
+                width: 40,
+                radius: BorderRadius.circular(20),
+                fallbackWidget: Center(
+                  child: AppText(
+                    widget.userName.isNotEmpty
+                        ? widget.userName.substring(0, 1).toUpperCase()
+                        : 'U',
+                    color: AppColors.primaryColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -115,35 +130,46 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
               child: InkWell(
                 onTap: () {
                   if (widget.dob != null && widget.dob!.isNotEmpty) {
-                    Get.to(() => KundliScreen(
-                      fullName: widget.userName,
-                      gender: widget.gender ?? '',
-                      dob: widget.dob!,
-                      tob: widget.tob ?? '00:00:00',
-                      place: widget.place ?? '',
-                      latitude: widget.latitude ?? 0.0,
-                      longitude: widget.longitude ?? 0.0,
-                    ));
+                    Get.to(
+                      () => KundliScreen(
+                        fullName: widget.userName,
+                        gender: widget.gender ?? '',
+                        dob: widget.dob!,
+                        tob: widget.tob ?? '00:00:00',
+                        place: widget.place ?? '',
+                        latitude: widget.latitude ?? 0.0,
+                        longitude: widget.longitude ?? 0.0,
+                      ),
+                    );
                   } else {
-                    Get.to(() => CreateKundliScreen(
-                      initialKundliData: {
-                        'name': widget.userName,
-                      },
-                    ));
+                    Get.to(
+                      () => CreateKundliScreen(
+                        initialKundliData: {'name': widget.userName},
+                      ),
+                    );
                   }
                 },
                 borderRadius: BorderRadius.circular(20),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.primaryColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppColors.primaryColor.withOpacity(0.4)),
+                    border: Border.all(
+                      color: AppColors.primaryColor.withOpacity(0.4),
+                    ),
                   ),
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.auto_awesome, size: 14, color: AppColors.primaryColor),
+                      Icon(
+                        Icons.auto_awesome,
+                        size: 14,
+                        color: AppColors.primaryColor,
+                      ),
                       SizedBox(width: 4),
                       AppText(
                         'Kundli',
@@ -170,66 +196,73 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
         child: SafeArea(
           child: Column(
             children: [
-            Obx(() {
-              if (controller.limitReached.value) {
-                return Container(
-                  width: double.infinity,
-                  color: Colors.orange.shade100,
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                  child: AppText(
-                    'Daily message reply limit reached. You cannot send more replies today.',
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.deepOrange.shade800,
-                    textAlign: TextAlign.center,
-                  ),
-                );
-              } else if (controller.remainingMessages.value > 0) {
-                return Container(
-                  width: double.infinity,
-                  color: Colors.blue.shade50,
-                  padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
-                  child: AppText(
-                    'You have ${controller.remainingMessages.value} free replies left today.',
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.blue.shade800,
-                    textAlign: TextAlign.center,
-                  ),
-                );
-              }
-              return const SizedBox.shrink();
-            }),
-            Expanded(
-              child: Obx(() {
-                if (controller.isLoading.value && controller.messages.isEmpty) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                
-                if (controller.messages.isEmpty) {
-                  return const Center(
+              Obx(() {
+                if (controller.limitReached.value) {
+                  return Container(
+                    width: double.infinity,
+                    color: Colors.orange.shade100,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 16,
+                    ),
                     child: AppText(
-                      'Waiting for messages...',
-                      color: Colors.grey,
+                      'Daily message reply limit reached. You cannot send more replies today.',
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.deepOrange.shade800,
+                      textAlign: TextAlign.center,
+                    ),
+                  );
+                } else if (controller.remainingMessages.value > 0) {
+                  return Container(
+                    width: double.infinity,
+                    color: Colors.blue.shade50,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 6,
+                      horizontal: 16,
+                    ),
+                    child: AppText(
+                      'You have ${controller.remainingMessages.value} free replies left today.',
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.blue.shade800,
+                      textAlign: TextAlign.center,
                     ),
                   );
                 }
-
-                return ListView.builder(
-                  controller: controller.scrollController,
-                  reverse: true,
-                  padding: const EdgeInsets.all(16),
-                  itemCount: controller.messages.length,
-                  itemBuilder: (context, index) {
-                    final message = controller.messages[index];
-                    return _buildMessageBubble(message);
-                  },
-                );
+                return const SizedBox.shrink();
               }),
-            ),
-            Obx(() => _buildMessageInput()),
-          ],
-        ),
+              Expanded(
+                child: Obx(() {
+                  if (controller.isLoading.value &&
+                      controller.messages.isEmpty) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (controller.messages.isEmpty) {
+                    return const Center(
+                      child: AppText(
+                        'Waiting for messages...',
+                        color: Colors.grey,
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    controller: controller.scrollController,
+                    reverse: true,
+                    padding: const EdgeInsets.all(16),
+                    itemCount: controller.messages.length,
+                    itemBuilder: (context, index) {
+                      final message = controller.messages[index];
+                      return _buildMessageBubble(message);
+                    },
+                  );
+                }),
+              ),
+              Obx(() => _buildMessageInput()),
+            ],
+          ),
         ),
       ),
     );
@@ -240,7 +273,7 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
     String replyUser = '';
     String replyText = '';
     String mainText = message.text;
-    
+
     if (message.replyTo != null) {
       isReply = true;
       replyUser = message.replyTo!.isMe ? 'You' : widget.userName;
@@ -270,7 +303,7 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
           quotePart = quotePartWithText;
           mainText = '';
         }
-        
+
         final colonIdx = quotePart.indexOf(': ');
         if (colonIdx != -1) {
           replyUser = quotePart.substring(0, colonIdx);
@@ -291,133 +324,176 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
         controller.setReply(message);
       },
       child: Align(
-      alignment: message.isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        decoration: BoxDecoration(
-          color: message.isMe ? AppColors.deepPink : Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16),
-            topRight: const Radius.circular(16),
-            bottomLeft: Radius.circular(message.isMe ? 16 : 0),
-            bottomRight: Radius.circular(message.isMe ? 0 : 16),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
+        alignment: message.isMe ? Alignment.centerRight : Alignment.centerLeft,
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          decoration: BoxDecoration(
+            color: message.isMe ? AppColors.deepPink : Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: const Radius.circular(16),
+              topRight: const Radius.circular(16),
+              bottomLeft: Radius.circular(message.isMe ? 16 : 0),
+              bottomRight: Radius.circular(message.isMe ? 0 : 16),
             ),
-          ],
-        ),
-        constraints: const BoxConstraints(maxWidth: 280),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            if (isReply)
-              Container(
-                margin: const EdgeInsets.only(bottom: 8),
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: message.isMe ? Colors.white.withOpacity(0.2) : Colors.black.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border(left: BorderSide(color: message.isMe ? Colors.white : AppColors.primaryColor, width: 4)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AppText(replyUser, color: message.isMe ? Colors.white : AppColors.primaryColor, fontWeight: FontWeight.bold, fontSize: 12),
-                    const SizedBox(height: 4),
-                    AppText(replyText, color: message.isMe ? Colors.white70 : Colors.black87, fontSize: 12, maxLines: 2, overflow: TextOverflow.ellipsis),
-                  ],
-                ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
               ),
-            if (message.type == 'image')
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: message.image != null && message.image!.startsWith('http')
-                      ? Image.network(
-                          message.image!,
-                          height: 150,
-                          width: 200,
-                          fit: BoxFit.cover,
-                        )
-                      : (message.image != null
-                          ? Image.file(
-                              File(message.image!),
+            ],
+          ),
+          constraints: const BoxConstraints(maxWidth: 280),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              if (isReply)
+                Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color:
+                        message.isMe
+                            ? Colors.white.withOpacity(0.2)
+                            : Colors.black.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border(
+                      left: BorderSide(
+                        color:
+                            message.isMe
+                                ? Colors.white
+                                : AppColors.primaryColor,
+                        width: 4,
+                      ),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppText(
+                        replyUser,
+                        color:
+                            message.isMe
+                                ? Colors.white
+                                : AppColors.primaryColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                      const SizedBox(height: 4),
+                      AppText(
+                        replyText,
+                        color: message.isMe ? Colors.white70 : Colors.black87,
+                        fontSize: 12,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              if (message.type == 'image')
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child:
+                        message.image != null &&
+                                message.image!.startsWith('http')
+                            ? CustomImageWidget(
+                              imagePath: message.image!,
                               height: 150,
                               width: 200,
                               fit: BoxFit.cover,
                             )
-                          : Image.network(
-                              message.attachmentUrl != null && message.attachmentUrl!.startsWith('http')
-                                  ? message.attachmentUrl!
-                                  : '${AppUrls.baseImageUrl}${message.attachmentUrl ?? ""}',
-                              height: 150,
-                              width: 200,
-                              fit: BoxFit.cover,
-                              errorBuilder: (c, e, s) => Container(
-                                height: 150,
-                                width: 200,
-                                color: Colors.grey,
-                                child: const Icon(Icons.broken_image, color: Colors.white),
-                              ),
-                            )),
-                ),
-              )
-            else if (message.type == 'document')
-              Container(
-                padding: const EdgeInsets.all(8),
-                margin: const EdgeInsets.only(bottom: 8.0),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Iconsax.document, color: Colors.black54, size: 24),
-                    const SizedBox(width: 8),
-                    Flexible(
-                      child: AppText(
-                        mainText.replaceFirst('📄 ', ''),
-                        fontSize: 14,
-                        color: Colors.black87,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                            : (message.image != null
+                                ? Image.file(
+                                  File(message.image!),
+                                  height: 150,
+                                  width: 200,
+                                  fit: BoxFit.cover,
+                                )
+                                : CustomImageWidget(
+                                  imagePath:
+                                      message.attachmentUrl != null &&
+                                              message.attachmentUrl!.startsWith(
+                                                'http',
+                                              )
+                                          ? message.attachmentUrl!
+                                          : '${AppUrls.baseImageUrl}${message.attachmentUrl ?? ""}',
+                                  height: 150,
+                                  width: 200,
+                                  fit: BoxFit.cover,
+                                  errorBuilder:
+                                      (c, e, s) => Container(
+                                        height: 150,
+                                        width: 200,
+                                        color: Colors.grey,
+                                        child: const Icon(
+                                          Icons.broken_image,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                )),
+                  ),
+                )
+              else if (message.type == 'document')
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  margin: const EdgeInsets.only(bottom: 8.0),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Iconsax.document,
+                        color: Colors.black54,
+                        size: 24,
                       ),
-                    ),
-                  ],
-                ),
-              )
-            else if (mainText.isNotEmpty)
-              AppText(
-                mainText,
-                fontSize: 14,
-                color: message.isMe ? Colors.white : Colors.black87,
-              ),
-            const SizedBox(height: 4),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: AppText(
+                          mainText.replaceFirst('📄 ', ''),
+                          fontSize: 14,
+                          color: Colors.black87,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              else if (mainText.isNotEmpty)
                 AppText(
-                  _formatTime(message.time),
-                  fontSize: 10,
-                  color: message.isMe ? Colors.white.withOpacity(0.7) : Colors.grey[600]!,
+                  mainText,
+                  fontSize: 14,
+                  color: message.isMe ? Colors.white : Colors.black87,
                 ),
-                if (message.isMe) ...[
-                  const SizedBox(width: 4),
-                  _buildStatusIcon(message.status),
+              const SizedBox(height: 4),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AppText(
+                    _formatTime(message.time),
+                    fontSize: 10,
+                    color:
+                        message.isMe
+                            ? Colors.white.withOpacity(0.7)
+                            : Colors.grey[600]!,
+                  ),
+                  if (message.isMe) ...[
+                    const SizedBox(width: 4),
+                    _buildStatusIcon(message.status),
+                  ],
                 ],
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
-    ));
+    );
   }
 
   Widget _buildStatusIcon(String status) {
@@ -485,7 +561,9 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
                 decoration: BoxDecoration(
                   color: Colors.grey.shade100,
                   borderRadius: BorderRadius.circular(12),
-                  border: const Border(left: BorderSide(color: AppColors.primaryColor, width: 4)),
+                  border: const Border(
+                    left: BorderSide(color: AppColors.primaryColor, width: 4),
+                  ),
                 ),
                 child: Row(
                   children: [
@@ -494,14 +572,19 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           AppText(
-                            controller.replyingToMessage.value!.isMe ? 'You' : widget.userName,
+                            controller.replyingToMessage.value!.isMe
+                                ? 'You'
+                                : widget.userName,
                             color: AppColors.primaryColor,
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
                           ),
                           const SizedBox(height: 4),
                           AppText(
-                            controller.replyingToMessage.value!.text.replaceAll('\n', ' '),
+                            controller.replyingToMessage.value!.text.replaceAll(
+                              '\n',
+                              ' ',
+                            ),
                             color: Colors.black87,
                             fontSize: 12,
                             maxLines: 1,
@@ -511,7 +594,11 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, color: Colors.grey, size: 20),
+                      icon: const Icon(
+                        Icons.close,
+                        color: Colors.grey,
+                        size: 20,
+                      ),
                       onPressed: () => controller.cancelReply(),
                     ),
                   ],
@@ -520,52 +607,70 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
             Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.add_circle_outline, color: Colors.grey),
-              onPressed: _showAttachmentBottomSheet,
-            ),
-            Expanded(
-              child: TextField(
-                controller: controller.messageController,
-                decoration: InputDecoration(
-                  hintText: "Type a message...",
-                  filled: true,
-                  fillColor: const Color(0xFFF5F5F5),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: BorderSide.none,
+                  icon: const Icon(
+                    Icons.add_circle_outline,
+                    color: Colors.grey,
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: BorderSide.none,
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  onPressed: _showAttachmentBottomSheet,
                 ),
-                textCapitalization: TextCapitalization.sentences,
-                minLines: 1,
-                maxLines: 4,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Obx(() => GestureDetector(
-              onTap: controller.limitReached.value ? null : controller.sendMessage,
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: controller.limitReached.value ? Colors.grey : AppColors.primaryColor,
-                  shape: BoxShape.circle,
+                Expanded(
+                  child: TextField(
+                    controller: controller.messageController,
+                    decoration: InputDecoration(
+                      hintText: "Type a message...",
+                      filled: true,
+                      fillColor: const Color(0xFFF5F5F5),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                    ),
+                    textCapitalization: TextCapitalization.sentences,
+                    minLines: 1,
+                    maxLines: 4,
+                  ),
                 ),
-                child: const Icon(Iconsax.send_1_copy, color: Colors.white, size: 20),
-              ),
-            )),
+                const SizedBox(width: 8),
+                Obx(
+                  () => GestureDetector(
+                    onTap:
+                        controller.limitReached.value
+                            ? null
+                            : controller.sendMessage,
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color:
+                            controller.limitReached.value
+                                ? Colors.grey
+                                : AppColors.primaryColor,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Iconsax.send_1_copy,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
-        ],
       ),
-      )
     );
   }
 
@@ -588,60 +693,61 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 20),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(2),
-              ),
+      builder:
+          (context) => Container(
+            padding: const EdgeInsets.all(20),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                _buildAttachmentOption(
-                  icon: Iconsax.camera,
-                  color: Colors.blue,
-                  label: "Camera",
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    _pickImage(ImageSource.camera);
-                  },
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
-                _buildAttachmentOption(
-                  icon: Iconsax.gallery,
-                  color: Colors.purple,
-                  label: "Gallery",
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    _pickImage(ImageSource.gallery);
-                  },
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildAttachmentOption(
+                      icon: Iconsax.camera,
+                      color: Colors.blue,
+                      label: "Camera",
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        _pickImage(ImageSource.camera);
+                      },
+                    ),
+                    _buildAttachmentOption(
+                      icon: Iconsax.gallery,
+                      color: Colors.purple,
+                      label: "Gallery",
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        _pickImage(ImageSource.gallery);
+                      },
+                    ),
+                    _buildAttachmentOption(
+                      icon: Iconsax.document,
+                      color: Colors.orange,
+                      label: "Document",
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        _pickDocument();
+                      },
+                    ),
+                  ],
                 ),
-                _buildAttachmentOption(
-                  icon: Iconsax.document,
-                  color: Colors.orange,
-                  label: "Document",
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    _pickDocument();
-                  },
-                ),
+                const SizedBox(height: 20),
               ],
             ),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
@@ -675,4 +781,3 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
     );
   }
 }
-

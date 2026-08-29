@@ -19,13 +19,12 @@ class PaymentPolicyScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(
-        title: "Payment Policy",
-        centerTitle: true,
-      ),
+      appBar: CustomAppBar(title: "Payment Policy", centerTitle: true),
       body: Obx(() {
         if (controller.isPaymentLoading.value) {
-          return const Center(child: CircularProgressIndicator(color: Colors.pink));
+          return const Center(
+            child: CircularProgressIndicator(color: Colors.pink),
+          );
         }
 
         final policyData = controller.paymentPolicyData.value;
@@ -40,11 +39,12 @@ class PaymentPolicyScreen extends StatelessWidget {
         }
 
         // Simple formatting for HTML paragraphs
-        final formattedContent = policyData.content
-            .replaceAll(RegExp(r'</p>'), '\n\n')
-            .replaceAll(RegExp(r'<[^>]*>'), '')
-            .replaceAll(RegExp(r'&nbsp;'), ' ')
-            .trim();
+        final formattedContent =
+            policyData.content
+                .replaceAll(RegExp(r'</p>'), '\n\n')
+                .replaceAll(RegExp(r'<[^>]*>'), '')
+                .replaceAll(RegExp(r'&nbsp;'), ' ')
+                .trim();
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(20),

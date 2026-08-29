@@ -45,17 +45,23 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     required SendAttachmentUseCase sendAttachmentUseCase,
     required MarkMessagesReadUseCase markMessagesReadUseCase,
     required EndChatSessionUseCase endChatSessionUseCase,
-  })  : _loadChatHistoryUseCase = loadChatHistoryUseCase,
-        _sendTextMessageUseCase = sendTextMessageUseCase,
-        _sendAttachmentUseCase = sendAttachmentUseCase,
-        _markMessagesReadUseCase = markMessagesReadUseCase,
-        _endChatSessionUseCase = endChatSessionUseCase;
+  }) : _loadChatHistoryUseCase = loadChatHistoryUseCase,
+       _sendTextMessageUseCase = sendTextMessageUseCase,
+       _sendAttachmentUseCase = sendAttachmentUseCase,
+       _markMessagesReadUseCase = markMessagesReadUseCase,
+       _endChatSessionUseCase = endChatSessionUseCase;
 
   // ── Sound helpers ────────────────────────────────────────────
   /// Play incoming ring so astrologer hears a new chat request.
   void _startRingtone() {
-    SoundVibrationService().startRingtone('audio/astrolger_app_sound.mp3', loop: true, vibrate: true);
-    debugPrint('[ChatController] Astrologer ringtone started → astrolger_app_sound.mp3');
+    SoundVibrationService().startRingtone(
+      'audio/astrolger_app_sound.mp3',
+      loop: true,
+      vibrate: true,
+    );
+    debugPrint(
+      '[ChatController] Astrologer ringtone started → astrolger_app_sound.mp3',
+    );
   }
 
   /// Stop ringtone — called on accept OR reject.
@@ -93,12 +99,10 @@ class ChatController extends GetxController with WidgetsBindingObserver {
   StreamSubscription? _statusSub;
   StreamSubscription? _dismissSub;
   StreamSubscription? _statusUpdateSub;
-  StreamSubscription? _typingSub;
-  StreamSubscription? _packageTerminatedSub;
 
   int? get sessionId => _sessionId;
   int? get peerId => _peerId;
-  
+
   // Prepaid Package session info
   bool isPackageChat = false;
   bool isCallAlsoActive = false;
@@ -110,7 +114,9 @@ class ChatController extends GetxController with WidgetsBindingObserver {
   Future<void> terminateChannelOnly() async {
     final subId = subSessionId;
     if (subId == null) {
-      Logger.e('ChatController: terminateChannelOnly — no active subSessionId found');
+      Logger.e(
+        'ChatController: terminateChannelOnly — no active subSessionId found',
+      );
       return;
     }
     try {
@@ -124,16 +130,14 @@ class ChatController extends GetxController with WidgetsBindingObserver {
         },
       );
       Logger.d('ChatController: terminateChannelOnly success.');
-      
+
       // Update local state to show chat is ended/completed
       status.value = ChatStatus.completed;
       _timer?.cancel();
-      if (_sessionId != null) {
-        
-      }
+      if (_sessionId != null) {}
       FloatingChatBubble.dismiss();
       WebSocketService.activeSessionId = null;
-      
+
       // Navigate back
       Get.back();
     } catch (e) {
@@ -163,15 +167,13 @@ class ChatController extends GetxController with WidgetsBindingObserver {
         },
       );
       Logger.d('ChatController: terminateEntireSession success.');
-      
+
       status.value = ChatStatus.completed;
       _timer?.cancel();
-      if (_sessionId != null) {
-        
-      }
+      if (_sessionId != null) {}
       FloatingChatBubble.dismiss();
       WebSocketService.activeSessionId = null;
-      
+
       Get.back();
     } catch (e) {
       Logger.e('ChatController: Error in terminateEntireSession -> $e');
@@ -195,10 +197,15 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       }
     });
   }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
-      if ((status.value == ChatStatus.ongoing || status.value == ChatStatus.initiated) && _sessionId != null && _userName != null) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive) {
+      if ((status.value == ChatStatus.ongoing ||
+              status.value == ChatStatus.initiated) &&
+          _sessionId != null &&
+          _userName != null) {
         minimizeToBubble(Get.context!, _userName!, "", shouldPop: false);
       }
     } else if (state == AppLifecycleState.resumed) {
@@ -220,18 +227,21 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       if (!response.isSuccess || response.body == null) return;
 
       final body = response.body;
-      final sessionData = body is Map
-          ? (body['session'] ?? body['data']?['session'] ?? body['data'])
-          : null;
+      final sessionData =
+          body is Map
+              ? (body['session'] ?? body['data']?['session'] ?? body['data'])
+              : null;
       if (sessionData == null) return;
 
       final String sessionStatus = sessionData['status']?.toString() ?? '';
       if (sessionStatus != 'initiated') return;
 
       // Already handling this session
-      final int incomingId = int.tryParse(sessionData['id']?.toString() ?? '') ?? 0;
+      final int incomingId =
+          int.tryParse(sessionData['id']?.toString() ?? '') ?? 0;
       if (incomingId == 0) return;
-      if (status.value == ChatStatus.initiated && _sessionId == incomingId) return;
+      if (status.value == ChatStatus.initiated && _sessionId == incomingId)
+        return;
 
       // Extract sender data
       final senderData = sessionData['consumer'] ?? sessionData['user'] ?? {};
@@ -303,7 +313,8 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     // Setup timer if started at is known
     _setupTimer(startedAtString);
 
-    final startedAtStr = startedAtString ?? WebSocketService.sessionStartTimes[_sessionId];
+    final startedAtStr =
+        startedAtString ?? WebSocketService.sessionStartTimes[_sessionId];
     int? startedAtMillis;
     if (startedAtStr != null) {
       final startedAt = DateTime.tryParse(startedAtStr);
@@ -313,37 +324,20 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     }
 
     // Show ongoing local notification
-    if (status.value == ChatStatus.ongoing || status.value == ChatStatus.initiated || status.value == ChatStatus.initiated) {
+    if (status.value == ChatStatus.ongoing ||
+        status.value == ChatStatus.initiated ||
+        status.value == ChatStatus.initiated) {
       // Astrologer side: play ring when a new chat request arrives
-      if (status.value == ChatStatus.initiated || status.value == ChatStatus.initiated) {
+      if (status.value == ChatStatus.initiated ||
+          status.value == ChatStatus.initiated) {
         _startRingtone();
       }
-      
     }
 
     ever(status, (val) {
-      if (FloatingChatBubble.isActive && FloatingChatBubble.sessionId == _sessionId) {
+      if (FloatingChatBubble.isActive &&
+          FloatingChatBubble.sessionId == _sessionId) {
         FloatingChatBubble.updateStatus(val.name);
-      }
-    });
-
-    // Listen to WebSocket Chat Ended Event
-    _typingSub?.cancel();
-    _typingSub = WebSocketService.isTyping.listen((typingInfo) {
-      if (typingInfo['sessionId'] == _sessionId && typingInfo['userId'] != _currentUserId) {
-        if (typingInfo['isTyping'] == true) {
-          if (!isTyping.value) isTyping.value = true;
-          _resetTypingTimer();
-        } else {
-          isTyping.value = false;
-        }
-      }
-    });
-
-    _packageTerminatedSub?.cancel();
-    _packageTerminatedSub = WebSocketService.isPackageSessionTerminated.listen((isTerminated) {
-      if (isTerminated && isPackageChat) {
-        _handlePackageTerminated();
       }
     });
 
@@ -351,13 +345,17 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     _msgSub = WebSocketService.incomingMessages.listen((list) {
       if (list.isNotEmpty) {
         final lastMsg = list.last;
-        final msgSessionId = int.tryParse(lastMsg['chat_session_id']?.toString() ?? '') ?? 0;
-        final int senderId = int.tryParse(lastMsg['sender_id']?.toString() ?? '') ?? 0;
-        final int receiverId = int.tryParse(lastMsg['receiver_id']?.toString() ?? '') ?? 0;
-        
-        final isSameUserPair = (_peerId != null && _currentUserId != null) &&
-            ((senderId == _currentUserId && receiverId == _peerId) || 
-             (senderId == _peerId && receiverId == _currentUserId));
+        final msgSessionId =
+            int.tryParse(lastMsg['chat_session_id']?.toString() ?? '') ?? 0;
+        final int senderId =
+            int.tryParse(lastMsg['sender_id']?.toString() ?? '') ?? 0;
+        final int receiverId =
+            int.tryParse(lastMsg['receiver_id']?.toString() ?? '') ?? 0;
+
+        final isSameUserPair =
+            (_peerId != null && _currentUserId != null) &&
+            ((senderId == _currentUserId && receiverId == _peerId) ||
+                (senderId == _peerId && receiverId == _currentUserId));
 
         if (msgSessionId == _sessionId || isSameUserPair) {
           final bool isMe = senderId == _currentUserId;
@@ -374,30 +372,50 @@ class ChatController extends GetxController with WidgetsBindingObserver {
             // Find the optimistic placeholder (status='sending...', same text, or same type if image/file)
             // and upgrade it in-place to prevent duplicate.
             final pendingIndex = messages.indexWhere(
-              (m) => m.isMe && m.status == 'sending...' && 
-                     (m.text == msgText || 
-                      m.text.replaceAll('<<reply<<', '') == msgText.replaceAll('<<reply<<', '') ||
-                      (m.type == 'image' && msgType == 'image') || 
+              (m) =>
+                  m.isMe &&
+                  m.status == 'sending...' &&
+                  (m.text == msgText ||
+                      m.text.replaceAll('<<reply<<', '') ==
+                          msgText.replaceAll('<<reply<<', '') ||
+                      (m.type == 'image' && msgType == 'image') ||
                       (m.type == 'file' && msgType == 'file')),
             );
             if (pendingIndex != -1) {
               messages[pendingIndex] = messages[pendingIndex].copyWith(
                 id: msgId,
                 status: 'sent',
-                time: DateTime.tryParse(lastMsg['created_at']?.toString() ?? '') ?? messages[pendingIndex].time,
+                time:
+                    DateTime.tryParse(
+                      lastMsg['created_at']?.toString() ?? '',
+                    ) ??
+                    messages[pendingIndex].time,
                 attachmentUrl: lastMsg['attachment_url']?.toString(),
-                image: msgType == 'image' ? lastMsg['attachment_url']?.toString() : null,
+                image:
+                    msgType == 'image'
+                        ? lastMsg['attachment_url']?.toString()
+                        : null,
                 type: msgType,
               );
               messages.refresh();
             } else {
               // No placeholder (e.g. sent from another device) — add normally
-              messages.add(ChatMessageModel.fromJson(lastMsg, currentUserId: _currentUserId!));
+              messages.add(
+                ChatMessageModel.fromJson(
+                  lastMsg,
+                  currentUserId: _currentUserId!,
+                ),
+              );
               _scrollToBottom();
             }
           } else {
             // ── Message from the other side ────────────────────────────────
-            messages.add(ChatMessageModel.fromJson(lastMsg, currentUserId: _currentUserId!));
+            messages.add(
+              ChatMessageModel.fromJson(
+                lastMsg,
+                currentUserId: _currentUserId!,
+              ),
+            );
             _scrollToBottom();
             markRead();
           }
@@ -411,23 +429,34 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       if (list.isNotEmpty) {
         bool changed = false;
         for (var lastUpdate in list) {
-          final updateSessionId = int.tryParse(
-            lastUpdate['session_id']?.toString() ?? 
-            lastUpdate['chat_session_id']?.toString() ?? 
-            lastUpdate['chat_assistance_session_id']?.toString() ?? 
-            lastUpdate['sessionId']?.toString() ?? ''
-          ) ?? 0;
+          final updateSessionId =
+              int.tryParse(
+                lastUpdate['session_id']?.toString() ??
+                    lastUpdate['chat_session_id']?.toString() ??
+                    lastUpdate['chat_assistance_session_id']?.toString() ??
+                    lastUpdate['sessionId']?.toString() ??
+                    '',
+              ) ??
+              0;
           if (updateSessionId == _sessionId) {
             final newStatus = lastUpdate['status']?.toString();
-            final messageIdsList = (lastUpdate['message_ids'] ?? lastUpdate['messageIds']) as List<dynamic>?;
-            if (newStatus != null && messageIdsList != null && messageIdsList.isNotEmpty) {
-              final messageIds = messageIdsList.map((e) => int.tryParse(e.toString()) ?? 0).toList();
+            final messageIdsList =
+                (lastUpdate['message_ids'] ?? lastUpdate['messageIds'])
+                    as List<dynamic>?;
+            if (newStatus != null &&
+                messageIdsList != null &&
+                messageIdsList.isNotEmpty) {
+              final messageIds =
+                  messageIdsList
+                      .map((e) => int.tryParse(e.toString()) ?? 0)
+                      .toList();
               for (int i = 0; i < messages.length; i++) {
                 if (messageIds.contains(messages[i].id)) {
                   if (newStatus == 'seen' && messages[i].status != 'seen') {
                     messages[i] = messages[i].copyWith(status: 'seen');
                     changed = true;
-                  } else if (newStatus == 'delivered' && messages[i].status == 'sent') {
+                  } else if (newStatus == 'delivered' &&
+                      messages[i].status == 'sent') {
                     messages[i] = messages[i].copyWith(status: 'delivered');
                     changed = true;
                   }
@@ -449,9 +478,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
         status.value = ChatStatus.completed;
         _stopRingtone();
         _timer?.cancel();
-        if (_sessionId != null) {
-          
-        }
+        if (_sessionId != null) {}
         if (Get.isRegistered<AuthController>()) {
           Get.find<AuthController>().checkLoginStatus();
         }
@@ -468,14 +495,14 @@ class ChatController extends GetxController with WidgetsBindingObserver {
 
     // Listen to WebSocket Chat Dismissed Event
     _dismissSub?.cancel();
-    _dismissSub = WebSocketService.chatDismissedSessionId.listen((dismissedSessionId) {
+    _dismissSub = WebSocketService.chatDismissedSessionId.listen((
+      dismissedSessionId,
+    ) {
       if (dismissedSessionId == _sessionId) {
         status.value = ChatStatus.completed; // or 'dismissed'
         _stopRingtone();
         _timer?.cancel();
-        if (_sessionId != null) {
-          
-        }
+        if (_sessionId != null) {}
         Get.back();
         // CustomSnackBar.disabledSnackbar("Chat Cancelled", "The chat request was cancelled or timed out.");
       }
@@ -494,12 +521,14 @@ class ChatController extends GetxController with WidgetsBindingObserver {
             DateTime? serverStartTime;
             if (startedAtStr != null && startedAtStr.isNotEmpty) {
               String isoUtc = startedAtStr.trim().replaceAll(' ', 'T');
-              if (!isoUtc.endsWith('Z') && !isoUtc.contains('+') && !isoUtc.contains('-')) {
+              if (!isoUtc.endsWith('Z') &&
+                  !isoUtc.contains('+') &&
+                  !isoUtc.contains('-')) {
                 isoUtc += 'Z';
               }
               serverStartTime = DateTime.tryParse(isoUtc)?.toLocal();
             }
-            
+
             final effectiveStart = serverStartTime ?? DateTime.now();
             _startedAt = effectiveStart.toIso8601String();
             if (_sessionId != null) {
@@ -509,23 +538,16 @@ class ChatController extends GetxController with WidgetsBindingObserver {
             elapsedSeconds.value = diff >= 0 ? diff : 0;
 
             _setupTimer(_startedAt);
-            ForegroundTaskService.startService(
+            ForegroundTaskService.startActiveSessionNotification(
               title: 'Chat in progress',
-              text: 'Active chat with ${_userName ?? 'User'}',
+              type: 'Chat',
+              startedAt: effectiveStart,
             );
-            
+
             final startedAtMillis = effectiveStart.millisecondsSinceEpoch;
-            
           }
         }
       }
-    });
-  }
-
-  void _resetTypingTimer() {
-    _typingTimer?.cancel();
-    _typingTimer = Timer(const Duration(seconds: 3), () {
-      isTyping.value = false;
     });
   }
 
@@ -536,7 +558,9 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     if (dateStr.isEmpty) return null;
 
     String isoUtc = dateStr.replaceAll(' ', 'T');
-    if (!isoUtc.endsWith('Z') && !isoUtc.contains('+') && !isoUtc.contains('-')) {
+    if (!isoUtc.endsWith('Z') &&
+        !isoUtc.contains('+') &&
+        !isoUtc.contains('-')) {
       isoUtc += 'Z';
     }
     final utcDate = DateTime.tryParse(isoUtc)?.toLocal();
@@ -547,7 +571,9 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       }
     }
 
-    DateTime? parsed = DateTime.tryParse(dateStr.replaceAll(' ', 'T')) ?? DateTime.tryParse(dateStr);
+    DateTime? parsed =
+        DateTime.tryParse(dateStr.replaceAll(' ', 'T')) ??
+        DateTime.tryParse(dateStr);
     if (parsed == null) return null;
     return parsed.toLocal();
   }
@@ -558,40 +584,26 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
-  void _handlePackageTerminated() {
-    status.value = ChatStatus.completed;
-    _timer?.cancel();
-    FlutterBackgroundService().invoke('stopService');
-    FloatingChatBubble.dismiss();
-    WebSocketService.activeSessionId = null;
-    
-    Get.back();
-    Get.dialog(
-      AlertDialog(
-        title: const Text("Session Expired"),
-        content: const Text("Your prepaid package session has ended."),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text("OK"),
-          ),
-        ],
-      ),
-      barrierDismissible: false,
-    );
-  }
-
   void _setupTimer(String? startedAtString) {
     _timer?.cancel();
     final currentSt = status.value.name.toLowerCase();
-    if (currentSt == 'ended' || currentSt == 'completed' || currentSt == 'cancelled' || currentSt == 'rejected') return;
+    if (currentSt == 'ended' ||
+        currentSt == 'completed' ||
+        currentSt == 'cancelled' ||
+        currentSt == 'rejected')
+      return;
 
     if (startedAtString != null && _sessionId != null) {
       _startedAt = startedAtString;
       WebSocketService.sessionStartTimes[_sessionId!] = startedAtString;
     }
 
-    final startedAtStr = startedAtString ?? _startedAt ?? (_sessionId != null ? WebSocketService.sessionStartTimes[_sessionId] : null);
+    final startedAtStr =
+        startedAtString ??
+        _startedAt ??
+        (_sessionId != null
+            ? WebSocketService.sessionStartTimes[_sessionId]
+            : null);
     final startedAt = _parseSmartDate(startedAtStr);
 
     if (startedAt != null) {
@@ -600,7 +612,10 @@ class ChatController extends GetxController with WidgetsBindingObserver {
 
       _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         final st = status.value.name.toLowerCase();
-        if (st == 'ended' || st == 'completed' || st == 'cancelled' || st == 'rejected') {
+        if (st == 'ended' ||
+            st == 'completed' ||
+            st == 'cancelled' ||
+            st == 'rejected') {
           timer.cancel();
           return;
         }
@@ -618,14 +633,20 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     } else {
       _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         final st = status.value.name.toLowerCase();
-        if (st == 'ended' || st == 'completed' || st == 'cancelled' || st == 'rejected') {
+        if (st == 'ended' ||
+            st == 'completed' ||
+            st == 'cancelled' ||
+            st == 'rejected') {
           timer.cancel();
           return;
         }
         if (st == 'ongoing' || st == 'accepted') {
           elapsedSeconds.value++;
           if (_sessionId != null) {
-            final genStart = DateTime.now().subtract(Duration(seconds: elapsedSeconds.value)).toIso8601String();
+            final genStart =
+                DateTime.now()
+                    .subtract(Duration(seconds: elapsedSeconds.value))
+                    .toIso8601String();
             _startedAt = genStart;
             WebSocketService.sessionStartTimes[_sessionId!] = genStart;
           }
@@ -644,7 +665,9 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       );
       messages.assignAll(result.messages);
       _peerId = result.peerId;
-      if (result.startedAt != null && (status.value == ChatStatus.ongoing || status.value == ChatStatus.ongoing)) {
+      if (result.startedAt != null &&
+          (status.value == ChatStatus.ongoing ||
+              status.value == ChatStatus.ongoing)) {
         _startedAt = result.startedAt;
         _setupTimer(result.startedAt);
       }
@@ -660,19 +683,27 @@ class ChatController extends GetxController with WidgetsBindingObserver {
   String _getLatestStatus(int messageId, String defaultStatus) {
     String currentStatus = defaultStatus;
     for (var event in WebSocketService.messageStatusUpdates) {
-      final updateSessionId = int.tryParse(
-        event['session_id']?.toString() ?? 
-        event['chat_session_id']?.toString() ?? 
-        event['chat_assistance_session_id']?.toString() ?? 
-        event['sessionId']?.toString() ?? ''
-      ) ?? 0;
+      final updateSessionId =
+          int.tryParse(
+            event['session_id']?.toString() ??
+                event['chat_session_id']?.toString() ??
+                event['chat_assistance_session_id']?.toString() ??
+                event['sessionId']?.toString() ??
+                '',
+          ) ??
+          0;
       if (updateSessionId == _sessionId) {
-        final messageIdsList = (event['message_ids'] ?? event['messageIds']) as List<dynamic>?;
+        final messageIdsList =
+            (event['message_ids'] ?? event['messageIds']) as List<dynamic>?;
         if (messageIdsList != null) {
-          final messageIds = messageIdsList.map((e) => int.tryParse(e.toString()) ?? 0).toList();
+          final messageIds =
+              messageIdsList
+                  .map((e) => int.tryParse(e.toString()) ?? 0)
+                  .toList();
           if (messageIds.contains(messageId)) {
             final newStatus = event['status']?.toString();
-            if (newStatus == 'seen' || (newStatus == 'delivered' && currentStatus != 'seen')) {
+            if (newStatus == 'seen' ||
+                (newStatus == 'delivered' && currentStatus != 'seen')) {
               currentStatus = newStatus!;
             }
           }
@@ -688,7 +719,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
 
     final replyToMessage = replyingToMessage.value;
     final replyToId = replyToMessage?.id;
-    
+
     cancelReply();
     messageController.clear();
 
@@ -718,7 +749,10 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       if (index != -1) {
         if (serverId != null) {
           final newStatus = _getLatestStatus(serverId, 'sent');
-          messages[index] = messages[index].copyWith(id: serverId, status: newStatus);
+          messages[index] = messages[index].copyWith(
+            id: serverId,
+            status: newStatus,
+          );
         } else {
           messages[index] = messages[index].copyWith(status: 'failed');
         }
@@ -838,9 +872,9 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     status.value = ChatStatus.completed;
     _timer?.cancel();
     ForegroundTaskService.stopService();
-    
+
     FloatingChatBubble.dismiss();
-    
+
     // Immediately close screen for smooth UX
     if (Get.isRegistered<ChatController>()) {
       Get.back();
@@ -851,7 +885,6 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     } catch (e) {
       debugPrint("Error rejecting/cancelling chat session: $e");
     } finally {
-      
       FloatingChatBubble.dismiss();
     }
   }
@@ -870,7 +903,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       isLoading.value = false;
       status.value = ChatStatus.completed;
       _timer?.cancel();
-      
+
       FloatingChatBubble.dismiss();
     }
   }
@@ -891,7 +924,6 @@ class ChatController extends GetxController with WidgetsBindingObserver {
 
   Future<void> rejectChat(int incomingSessionId) async {
     try {
-      
       FloatingChatBubble.dismiss(stopForegroundService: true);
       await Get.find<ApiClient>().post(
         AppUrls.rejectChatSession(incomingSessionId),
@@ -901,14 +933,30 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  void minimizeToBubble(BuildContext context, String name, String image, {bool shouldPop = true}) {
-    debugPrint("==== [FLOATING_CHAT_DEBUG] Astrologer ChatController.minimizeToBubble called! sessionId=$_sessionId, status=${status.value.name}, shouldPop=$shouldPop ====");
-    if (_sessionId == null || (status.value != ChatStatus.ongoing && status.value != ChatStatus.initiated)) {
-      debugPrint("==== [FLOATING_CHAT_DEBUG] Astrologer minimizeToBubble SKIPPED because sessionId is null or status invalid ====");
+  void minimizeToBubble(
+    BuildContext context,
+    String name,
+    String image, {
+    bool shouldPop = true,
+  }) {
+    debugPrint(
+      "==== [FLOATING_CHAT_DEBUG] Astrologer ChatController.minimizeToBubble called! sessionId=$_sessionId, status=${status.value.name}, shouldPop=$shouldPop ====",
+    );
+    if (_sessionId == null ||
+        (status.value != ChatStatus.ongoing &&
+            status.value != ChatStatus.initiated)) {
+      debugPrint(
+        "==== [FLOATING_CHAT_DEBUG] Astrologer minimizeToBubble SKIPPED because sessionId is null or status invalid ====",
+      );
       return;
     }
     WebSocketService.activeSessionId = null;
-    final startStr = _startedAt ?? WebSocketService.sessionStartTimes[_sessionId!] ?? DateTime.now().subtract(Duration(seconds: elapsedSeconds.value)).toIso8601String();
+    final startStr =
+        _startedAt ??
+        WebSocketService.sessionStartTimes[_sessionId!] ??
+        DateTime.now()
+            .subtract(Duration(seconds: elapsedSeconds.value))
+            .toIso8601String();
     WebSocketService.sessionStartTimes[_sessionId!] = startStr;
 
     FloatingChatBubble.show(
@@ -935,9 +983,12 @@ class ChatController extends GetxController with WidgetsBindingObserver {
           );
           if (response.isSuccess && response.body != null) {
             final body = response.body;
-            final raw = body is Map
-                ? (body['session'] ?? body['data']?['session'] ?? body['data'])
-                : null;
+            final raw =
+                body is Map
+                    ? (body['session'] ??
+                        body['data']?['session'] ??
+                        body['data'])
+                    : null;
             if (raw != null) {
               liveSession = Map<String, dynamic>.from(raw);
               liveStatus = liveSession['status']?.toString() ?? 'ongoing';
@@ -955,7 +1006,9 @@ class ChatController extends GetxController with WidgetsBindingObserver {
               liveSession = {'id': _sessionId, 'status': 'initiated'};
             }
             if (liveSender.isEmpty) {
-              liveSender = WebSocketService.lastChatSenderData ?? {'name': name, 'profile_photo': image};
+              liveSender =
+                  WebSocketService.lastChatSenderData ??
+                  {'name': name, 'profile_photo': image};
             }
             Get.bottomSheet(
               IncomingChatDialog(
@@ -970,9 +1023,10 @@ class ChatController extends GetxController with WidgetsBindingObserver {
           });
         } else {
           // Chat is ongoing — go to ChatScreen
-          final sessionId = liveSession['id'] != null
-              ? int.tryParse(liveSession['id'].toString()) ?? _sessionId!
-              : _sessionId!;
+          final sessionId =
+              liveSession['id'] != null
+                  ? int.tryParse(liveSession['id'].toString()) ?? _sessionId!
+                  : _sessionId!;
           Get.to(
             () => ChatScreen(
               userName: name,
@@ -1005,9 +1059,10 @@ class ChatController extends GetxController with WidgetsBindingObserver {
 
       if (response.isSuccess && response.body != null) {
         final body = response.body;
-        final raw = body is Map
-            ? (body['session'] ?? body['data']?['session'] ?? body['data'])
-            : null;
+        final raw =
+            body is Map
+                ? (body['session'] ?? body['data']?['session'] ?? body['data'])
+                : null;
         if (raw != null) {
           sessionData = Map<String, dynamic>.from(raw);
           final sd = sessionData['consumer'] ?? sessionData['user'];
@@ -1020,15 +1075,14 @@ class ChatController extends GetxController with WidgetsBindingObserver {
         sessionData = {'id': _sessionId, 'status': 'initiated'};
       }
       if (senderData.isEmpty) {
-        senderData = WebSocketService.lastChatSenderData ?? {'name': name, 'profile_photo': image};
+        senderData =
+            WebSocketService.lastChatSenderData ??
+            {'name': name, 'profile_photo': image};
       }
 
       if (sessionData.isNotEmpty) {
         Get.bottomSheet(
-          IncomingChatDialog(
-            sessionData: sessionData,
-            senderData: senderData,
-          ),
+          IncomingChatDialog(sessionData: sessionData, senderData: senderData),
           isDismissible: false,
           enableDrag: false,
           isScrollControlled: true,
@@ -1054,33 +1108,34 @@ class ChatController extends GetxController with WidgetsBindingObserver {
 
   @override
   void onClose() {
-    debugPrint("==== [FLOATING_CHAT_DEBUG] Astrologer ChatController.onClose invoked! sessionId=$_sessionId, status=${status.value.name} ====");
+    debugPrint(
+      "==== [FLOATING_CHAT_DEBUG] Astrologer ChatController.onClose invoked! sessionId=$_sessionId, status=${status.value.name} ====",
+    );
     WidgetsBinding.instance.removeObserver(this);
-    _timer?.cancel();
-    _statusUpdateSub?.cancel();
-    _typingSub?.cancel();
-    _packageTerminatedSub?.cancel();
-    _typingTimer?.cancel();
     _timer?.cancel();
     _msgSub?.cancel();
     _endSub?.cancel();
     _statusSub?.cancel();
     _dismissSub?.cancel();
-    
+
     // Only dismiss notification & bubble if session is actually ended/completed
-    if (status.value == ChatStatus.completed || status.value == ChatStatus.completed || status.value == ChatStatus.cancelled || status.value == ChatStatus.rejected) {
-      debugPrint("==== [FLOATING_CHAT_DEBUG] Astrologer Session is TERMINATED (${status.value.name}). Dismissing bubble & cancelling ongoing notification for sessionId=$_sessionId ====");
+    if (status.value == ChatStatus.completed ||
+        status.value == ChatStatus.completed ||
+        status.value == ChatStatus.cancelled ||
+        status.value == ChatStatus.rejected) {
+      debugPrint(
+        "==== [FLOATING_CHAT_DEBUG] Astrologer Session is TERMINATED (${status.value.name}). Dismissing bubble & cancelling ongoing notification for sessionId=$_sessionId ====",
+      );
       if (_sessionId != null) {
-        
-      } else {
-        
-      }
+      } else {}
       FloatingChatBubble.dismiss(stopForegroundService: true);
       if (WebSocketService.activeSessionId == _sessionId) {
         WebSocketService.activeSessionId = null;
       }
     } else {
-      debugPrint("==== [FLOATING_CHAT_DEBUG] Astrologer ChatController closed while session active (${status.value.name}). PRESERVING BUBBLE AND NOTIFICATION! ====");
+      debugPrint(
+        "==== [FLOATING_CHAT_DEBUG] Astrologer ChatController closed while session active (${status.value.name}). PRESERVING BUBBLE AND NOTIFICATION! ====",
+      );
     }
     messageController.dispose();
     scrollController.dispose();

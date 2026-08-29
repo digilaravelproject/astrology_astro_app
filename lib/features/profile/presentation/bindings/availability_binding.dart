@@ -26,7 +26,9 @@ class AvailabilityBinding extends Bindings {
     );
 
     Get.lazyPut<UpdateAvailabilityUseCase>(
-      () => UpdateAvailabilityUseCase(Get.find<AvailabilityRepositoryInterface>()),
+      () => UpdateAvailabilityUseCase(
+        Get.find<AvailabilityRepositoryInterface>(),
+      ),
     );
 
     // Controller

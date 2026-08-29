@@ -7,9 +7,12 @@ class HouseCuspsModel {
   factory HouseCuspsModel.fromJson(Map<String, dynamic> json) {
     return HouseCuspsModel(
       success: json['success'] ?? false,
-      data: json['data'] != null 
-          ? (json['data'] as List).map((i) => HouseCuspData.fromJson(i)).toList() 
-          : null,
+      data:
+          json['data'] != null
+              ? (json['data'] as List)
+                  .map((i) => HouseCuspData.fromJson(i))
+                  .toList()
+              : null,
     );
   }
 }
@@ -22,11 +25,11 @@ class HouseCuspData {
   final num? degree;
 
   HouseCuspData({
-    this.number, 
-    this.sign, 
-    this.signNumber, 
-    this.cusp, 
-    this.degree
+    this.number,
+    this.sign,
+    this.signNumber,
+    this.cusp,
+    this.degree,
   });
 
   factory HouseCuspData.fromJson(Map<String, dynamic> json) {

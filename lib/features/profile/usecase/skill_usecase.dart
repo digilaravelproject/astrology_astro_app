@@ -10,5 +10,4 @@ class UpdateAstrologerSkillsUseCase {
   Future<ResponseModel> execute(AstrologerSkillsModel skills) async {
     return await _repository.updateSkills(skills);
   }
-  
 }

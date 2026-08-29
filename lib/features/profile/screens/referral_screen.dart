@@ -15,9 +15,7 @@ class ReferralScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(
-        title: 'Refer & Earn',
-      ),
+      appBar: const CustomAppBar(title: 'Refer & Earn'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -29,7 +27,11 @@ class ReferralScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(24),
               ),
               child: Center(
-                child: Icon(Iconsax.gift_copy, size: 100, color: AppColors.primaryColor.withOpacity(0.5)),
+                child: Icon(
+                  Iconsax.gift_copy,
+                  size: 100,
+                  color: AppColors.primaryColor.withOpacity(0.5),
+                ),
               ),
             ),
             const SizedBox(height: 32),
@@ -82,11 +84,11 @@ class ReferralScreen extends StatelessWidget {
                     onTap: () {
                       Clipboard.setData(const ClipboardData(text: "ASTRO2024"));
                       CustomSnackBar.disabledSnackbar(
-                        "Copied", 
-                        "Referral code copied to clipboard", 
-                        snackPosition: SnackPosition.BOTTOM, 
+                        "Copied",
+                        "Referral code copied to clipboard",
+                        snackPosition: SnackPosition.BOTTOM,
                         margin: const EdgeInsets.all(20),
-                        backgroundColor: const Color(0xFF2E1A47), 
+                        backgroundColor: const Color(0xFF2E1A47),
                         colorText: Colors.white,
                       );
                     },
@@ -96,10 +98,17 @@ class ReferralScreen extends StatelessWidget {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
-                          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                          ),
                         ],
                       ),
-                      child: const Icon(Icons.copy_rounded, color: AppColors.primaryColor, size: 20),
+                      child: const Icon(
+                        Icons.copy_rounded,
+                        color: AppColors.primaryColor,
+                        size: 20,
+                      ),
                     ),
                   ),
                 ],

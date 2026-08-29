@@ -7,6 +7,7 @@ import 'package:astro_astrologer/core/widgets/custom_app_bar.dart';
 import 'package:astro_astrologer/core/widgets/custom_button.dart';
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
 import 'package:astro_astrologer/core/widgets/loyal_badge.dart';
+import '../../../../core/widgets/custom_image_widget.dart';
 import '../controllers/orders_controller.dart';
 import 'package:astro_astrologer/features/orders/domain/usecases/get_astrologer_orders_usecase.dart';
 import 'package:astro_astrologer/features/orders/domain/repositories/i_orders_repository.dart';
@@ -29,19 +30,24 @@ class _OrdersScreenState extends State<OrdersScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this); // Only Chat and Call
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+    ); // Only Chat and Call
 
     if (!Get.isRegistered<OrdersController>()) {
       if (!Get.isRegistered<IOrdersRepository>()) {
-         Get.put<IOrdersRepository>(OrdersRepositoryImpl(apiClient: Get.find()));
+        Get.put<IOrdersRepository>(OrdersRepositoryImpl(apiClient: Get.find()));
       }
       if (!Get.isRegistered<GetAstrologerOrdersUseCase>()) {
         Get.put(GetAstrologerOrdersUseCase(Get.find<IOrdersRepository>()));
       }
-      Get.put(OrdersController(
-        getAstrologerOrdersUseCase: Get.find(),
-        apiClient: Get.find(),
-      ));
+      Get.put(
+        OrdersController(
+          getAstrologerOrdersUseCase: Get.find(),
+          apiClient: Get.find(),
+        ),
+      );
     }
     _ordersController = Get.find<OrdersController>();
   }
@@ -68,8 +74,17 @@ class _OrdersScreenState extends State<OrdersScreen>
                 _ordersController.fetchCallOrders(isRefresh: true);
               }
             },
-            icon: const Icon(Icons.refresh_rounded, color: Colors.black87, size: 18),
-            label: AppText('Refresh'.tr, fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black87),
+            icon: const Icon(
+              Icons.refresh_rounded,
+              color: Colors.black87,
+              size: 18,
+            ),
+            label: AppText(
+              'Refresh'.tr,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
           ),
           const SizedBox(width: 8),
         ],
@@ -87,21 +102,23 @@ class _OrdersScreenState extends State<OrdersScreen>
               unselectedLabelColor: Colors.grey,
               indicatorColor: AppColors.primaryColor,
               indicatorSize: TabBarIndicatorSize.tab,
-              labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, fontFamily: 'Poppins'),
-              unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 15, fontFamily: 'Poppins'),
-              tabs: [
-                Tab(text: 'Chat'.tr),
-                Tab(text: 'Call'.tr),
-              ],
+              labelStyle: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+                fontFamily: 'Poppins',
+              ),
+              unselectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.normal,
+                fontSize: 15,
+                fontFamily: 'Poppins',
+              ),
+              tabs: [Tab(text: 'Chat'.tr), Tab(text: 'Call'.tr)],
             ),
           ),
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: [
-                _buildChatTab(),
-                _buildCallTab(),
-              ],
+              children: [_buildChatTab(), _buildCallTab()],
             ),
           ),
         ],
@@ -111,12 +128,18 @@ class _OrdersScreenState extends State<OrdersScreen>
 
   Widget _buildChatTab() {
     return Obx(() {
-      if (_ordersController.isLoadingChat.value && _ordersController.chatOrders.isEmpty) {
-        return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
+      if (_ordersController.isLoadingChat.value &&
+          _ordersController.chatOrders.isEmpty) {
+        return const Center(
+          child: CircularProgressIndicator(color: AppColors.primaryColor),
+        );
       }
 
-      if (_ordersController.chatError.value.isNotEmpty && _ordersController.chatOrders.isEmpty) {
-        return Center(child: Text("Error: ${_ordersController.chatError.value}"));
+      if (_ordersController.chatError.value.isNotEmpty &&
+          _ordersController.chatOrders.isEmpty) {
+        return Center(
+          child: Text("Error: ${_ordersController.chatError.value}"),
+        );
       }
 
       if (_ordersController.chatOrders.isEmpty) {
@@ -144,12 +167,18 @@ class _OrdersScreenState extends State<OrdersScreen>
 
   Widget _buildCallTab() {
     return Obx(() {
-      if (_ordersController.isLoadingCall.value && _ordersController.callOrders.isEmpty) {
-        return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
+      if (_ordersController.isLoadingCall.value &&
+          _ordersController.callOrders.isEmpty) {
+        return const Center(
+          child: CircularProgressIndicator(color: AppColors.primaryColor),
+        );
       }
 
-      if (_ordersController.callError.value.isNotEmpty && _ordersController.callOrders.isEmpty) {
-        return Center(child: Text("Error: ${_ordersController.callError.value}"));
+      if (_ordersController.callError.value.isNotEmpty &&
+          _ordersController.callOrders.isEmpty) {
+        return Center(
+          child: Text("Error: ${_ordersController.callError.value}"),
+        );
       }
 
       if (_ordersController.callOrders.isEmpty) {
@@ -177,17 +206,23 @@ class _OrdersScreenState extends State<OrdersScreen>
 
   Widget _buildOrderCard(AstrologerOrderModel session) {
     final isCompleted = session.status == 'completed';
-    final isPending = session.status == 'waiting' || session.status == 'pending' || session.status == 'initiated';
+    final isPending =
+        session.status == 'waiting' ||
+        session.status == 'pending' ||
+        session.status == 'initiated';
     final customerName = session.userName;
-    
+
     DateTime? date;
     try {
       if (session.requestedAt != null) {
         date = DateTime.parse(session.requestedAt!);
       }
     } catch (_) {}
-    
-    final dateStr = date != null ? DateFormat('dd MMM yy, hh:mm a').format(date.toLocal()) : "N/A";
+
+    final dateStr =
+        date != null
+            ? DateFormat('dd MMM yy, hh:mm a').format(date.toLocal())
+            : "N/A";
     final durationMins = (session.durationSeconds / 60).ceil();
 
     List<Widget> actionButtons = [];
@@ -198,42 +233,72 @@ class _OrdersScreenState extends State<OrdersScreen>
           children: [
             Expanded(
               child: OutlinedButton(
-                onPressed: () => session.requestType == 'call'
-                    ? _ordersController.rejectCallOrder(session)
-                    : _ordersController.rejectChatOrder(session),
+                onPressed:
+                    () =>
+                        session.requestType == 'call'
+                            ? _ordersController.rejectCallOrder(session)
+                            : _ordersController.rejectChatOrder(session),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   side: const BorderSide(color: Colors.red, width: 1.5),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
-                child: const AppText('Reject', color: Colors.red, fontWeight: FontWeight.bold),
+                child: const AppText(
+                  'Reject',
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: ElevatedButton(
-                onPressed: () => session.requestType == 'call'
-                    ? _ordersController.acceptCallOrder(session)
-                    : _ordersController.acceptChatOrder(session),
+                onPressed:
+                    () =>
+                        session.requestType == 'call'
+                            ? _ordersController.acceptCallOrder(session)
+                            : _ordersController.acceptChatOrder(session),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF2DB84B),
                   padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   elevation: 0,
                 ),
-                child: const AppText('Accept', color: Colors.white, fontWeight: FontWeight.bold),
+                child: const AppText(
+                  'Accept',
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
-        )
+        ),
       ];
     } else if (isCompleted) {
       actionButtons = [
-        Row(children: [
-          Expanded(child: _outlinedAction('Suggest Remedy', Iconsax.health_copy, AppColors.primaryColor)),
-          const SizedBox(width: 8),
-          Expanded(child: _outlinedAction('Open Kundli', Iconsax.book_1_copy, AppColors.primaryColor)),
-        ]),
+        Row(
+          children: [
+            Expanded(
+              child: _outlinedAction(
+                'Suggest Remedy',
+                Iconsax.health_copy,
+                AppColors.primaryColor,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _outlinedAction(
+                'Open Kundli',
+                Iconsax.book_1_copy,
+                AppColors.primaryColor,
+              ),
+            ),
+          ],
+        ),
       ];
     }
 
@@ -243,7 +308,10 @@ class _OrdersScreenState extends State<OrdersScreen>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isPending ? Colors.orange.shade300 : Colors.grey.shade200, width: isPending ? 1.5 : 1.0),
+        border: Border.all(
+          color: isPending ? Colors.orange.shade300 : Colors.grey.shade200,
+          width: isPending ? 1.5 : 1.0,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.02),
@@ -271,11 +339,18 @@ class _OrdersScreenState extends State<OrdersScreen>
                     session.status.capitalizeFirst ?? session.status,
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: isPending ? Colors.orange : (isCompleted ? Colors.green : Colors.red),
+                    color:
+                        isPending
+                            ? Colors.orange
+                            : (isCompleted ? Colors.green : Colors.red),
                   ),
                   if (isCompleted) ...[
                     const SizedBox(width: 4),
-                    const Icon(Icons.check_circle, color: Colors.green, size: 16),
+                    const Icon(
+                      Icons.check_circle,
+                      color: Colors.green,
+                      size: 16,
+                    ),
                   ],
                 ],
               ),
@@ -284,22 +359,44 @@ class _OrdersScreenState extends State<OrdersScreen>
           const SizedBox(height: 16),
           Row(
             children: [
-              CircleAvatar(
-                radius: 20,
-                backgroundImage: session.userProfileImage != null ? NetworkImage(session.userProfileImage!) : null,
-                backgroundColor: AppColors.primaryColor.withOpacity(0.2),
-                child: session.userProfileImage == null 
-                  ? AppText(customerName.isNotEmpty ? customerName[0].toUpperCase() : 'U', fontWeight: FontWeight.bold, color: AppColors.primaryColor)
-                  : null,
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.primaryColor.withOpacity(0.2),
+                ),
+                child: CustomImageWidget(
+                  imagePath: session.userProfileImage ?? '',
+                  height: 40,
+                  width: 40,
+                  radius: BorderRadius.circular(20),
+                  fallbackWidget: Center(
+                    child: AppText(
+                      customerName.isNotEmpty
+                          ? customerName[0].toUpperCase()
+                          : 'U',
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primaryColor,
+                    ),
+                  ),
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AppText(customerName, fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+                    AppText(
+                      customerName,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
                     const SizedBox(height: 2),
-                    AppText('#${session.sessionId}', fontSize: 13, color: Colors.grey.shade500),
+                    AppText(
+                      '#${session.sessionId}',
+                      fontSize: 13,
+                      color: Colors.grey.shade500,
+                    ),
                   ],
                 ),
               ),
@@ -307,22 +404,32 @@ class _OrdersScreenState extends State<OrdersScreen>
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    AppText('₹ ${session.amount}', fontSize: 18, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
+                    AppText(
+                      '₹ ${session.amount}',
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF2E1A47),
+                    ),
                     const AppText('Earnings', fontSize: 10, color: Colors.grey),
-                  ]
-                )
+                  ],
+                ),
             ],
           ),
           const SizedBox(height: 16),
           Container(height: 1, color: Colors.grey.shade100),
           const SizedBox(height: 16),
-          AppText(dateStr, fontSize: 13, fontWeight: FontWeight.w700, color: Colors.black87),
+          AppText(
+            dateStr,
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: Colors.black87,
+          ),
           const SizedBox(height: 12),
           _detailRow('Duration', '$durationMins minutes'),
           _detailRow('Rate', '₹ ${session.ratePerMinute}/min'),
           if (session.queuePosition != null && isPending)
             _detailRow('WaitList #', '${session.queuePosition}'),
-          
+
           if (actionButtons.isNotEmpty) ...[
             const SizedBox(height: 16),
             const Divider(height: 1, color: Color(0xFFEEEEEE)),
@@ -337,11 +444,24 @@ class _OrdersScreenState extends State<OrdersScreen>
   Widget _detailRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
-      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        SizedBox(width: 80, child: AppText(label, fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black87)),
-        const AppText(':  ', fontWeight: FontWeight.bold),
-        Expanded(child: AppText(value, fontSize: 13, color: Colors.grey.shade700)),
-      ]),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 80,
+            child: AppText(
+              label,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
+          ),
+          const AppText(':  ', fontWeight: FontWeight.bold),
+          Expanded(
+            child: AppText(value, fontSize: 13, color: Colors.grey.shade700),
+          ),
+        ],
+      ),
     );
   }
 
@@ -349,7 +469,12 @@ class _OrdersScreenState extends State<OrdersScreen>
     return OutlinedButton.icon(
       onPressed: () {},
       icon: Icon(icon, size: 14, color: color),
-      label: AppText(label, fontSize: 12, fontWeight: FontWeight.w600, color: color),
+      label: AppText(
+        label,
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+        color: color,
+      ),
       style: OutlinedButton.styleFrom(
         side: BorderSide(color: color.withOpacity(0.4)),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),

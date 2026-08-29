@@ -24,12 +24,10 @@ class ErrorScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: showBackButton
-          ? const CustomAppBar(
-              title: "Error",
-              centerTitle: true,
-            )
-          : null,
+      appBar:
+          showBackButton
+              ? const CustomAppBar(title: "Error", centerTitle: true)
+              : null,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -43,11 +41,7 @@ class ErrorScreen extends StatelessWidget {
                   color: Colors.red.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  icon,
-                  size: 80,
-                  color: Colors.redAccent,
-                ),
+                child: Icon(icon, size: 80, color: Colors.redAccent),
               ),
 
               const SizedBox(height: 24),

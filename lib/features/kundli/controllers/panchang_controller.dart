@@ -4,7 +4,7 @@ import '../repositories/panchang_repository.dart';
 
 class PanchangController extends GetxController {
   final PanchangRepository _repository = PanchangRepository();
-  
+
   var isLoading = false.obs;
   var panchangModel = Rxn<PanchangModel>();
 

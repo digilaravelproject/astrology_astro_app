@@ -35,89 +35,101 @@ class ApiClient {
       validateStatus: (status) => status == null ? false : status < 500,
     );
 
-    _dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) async {
-        String token = '';
-        if (options.headers['no_auth'] == true) {
-          options.headers.remove('no_auth');
-        } else {
-          token = await TokenManager.getToken() ?? "";
-          if (token.isNotEmpty) {
-            options.headers["Authorization"] = "Bearer $token";
-          }
-        }
-        if (options.data is! dio.FormData) {
-          options.headers["Content-Type"] = "application/json";
-        }
-        options.headers["Accept"] = "application/json";
-
-        if (options.path.contains('/live/')) {
-          options.connectTimeout = const Duration(seconds: 60);
-          options.receiveTimeout = const Duration(seconds: 90);
-          Logger.d('|⏱️ Timeouts increased to 60s/90s for live session endpoint: ${options.path}');
-        }
-
-        // Detailed request logging
-        Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        Logger.d('|🌐 API REQUEST');
-        Logger.d('|📍 URL: ${options.baseUrl}${options.path}');
-        Logger.d('|🔧 Method: ${options.method}');
-        Logger.d('|🔑 Token: ${token.isNotEmpty ? "${token.substring(0, token.length > 20 ? 20 : token.length)}..." : "No Token"}');
-        Logger.d('|📋 Headers: ${options.headers}');
-        if (options.queryParameters.isNotEmpty) {
-          Logger.d('|🔍 Query Parameters: ${options.queryParameters}');
-        }
-        if (options.data != null) {
-          Logger.d('|📦 Body: ${options.data}');
-        }
-
-        return handler.next(options);
-      },
-      onResponse: (response, handler) {
-        // Detailed response logging
-        Logger.d('|✅ API RESPONSE');
-        Logger.d('|📍 URL: ${response.requestOptions.baseUrl}${response.requestOptions.path}');
-        Logger.d('|📊 Status Code: ${response.statusCode}');
-        Logger.d('|📨 Response: ${response.data}');
-        Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-
-        return handler.next(response);
-      },
-      onError: (error, handler) async {
-        // Detailed error logging
-        Logger.e('|❌ API ERROR');
-        Logger.e('|📍 URL: ${error.requestOptions.baseUrl}${error.requestOptions.path}');
-        Logger.e('|🔧 Method: ${error.requestOptions.method}');
-        Logger.e('|⚠️ Error Type: ${error.type}');
-        Logger.e('|💬 Error Message: ${error.message}');
-        if (error.response != null) {
-          Logger.e('|📊 Status Code: ${error.response?.statusCode}');
-          Logger.e('|📨 Response: ${error.response?.data}');
-        }
-        Logger.e('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-
-        // Retry logic for connection timeout or transient network error (up to 2 retries)
-        final opts = error.requestOptions;
-        final currentRetry = (opts.extra['retry_count'] as int?) ?? 0;
-        if ((error.type == DioExceptionType.connectionTimeout ||
-                error.type == DioExceptionType.sendTimeout ||
-                error.type == DioExceptionType.connectionError) &&
-            currentRetry < 2) {
-          opts.extra['retry_count'] = currentRetry + 1;
-          Logger.d('🔄 Retrying API Request (${currentRetry + 1}/2): ${opts.path}');
-          try {
-            final response = await _dio.fetch(opts);
-            return handler.resolve(response);
-          } catch (retryError) {
-            if (retryError is DioException) {
-              return handler.next(retryError);
+    _dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          String token = '';
+          if (options.headers['no_auth'] == true) {
+            options.headers.remove('no_auth');
+          } else {
+            token = await TokenManager.getToken() ?? "";
+            if (token.isNotEmpty) {
+              options.headers["Authorization"] = "Bearer $token";
             }
           }
-        }
+          if (options.data is! dio.FormData) {
+            options.headers["Content-Type"] = "application/json";
+          }
+          options.headers["Accept"] = "application/json";
 
-        return handler.next(error);
-      },
-    ));
+          if (options.path.contains('/live/')) {
+            options.connectTimeout = const Duration(seconds: 60);
+            options.receiveTimeout = const Duration(seconds: 90);
+            Logger.d(
+              '|⏱️ Timeouts increased to 60s/90s for live session endpoint: ${options.path}',
+            );
+          }
+
+          // Detailed request logging
+          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          Logger.d('|🌐 API REQUEST');
+          Logger.d('|📍 URL: ${options.baseUrl}${options.path}');
+          Logger.d('|🔧 Method: ${options.method}');
+          Logger.d(
+            '|🔑 Token: ${token.isNotEmpty ? "${token.substring(0, token.length > 20 ? 20 : token.length)}..." : "No Token"}',
+          );
+          Logger.d('|📋 Headers: ${options.headers}');
+          if (options.queryParameters.isNotEmpty) {
+            Logger.d('|🔍 Query Parameters: ${options.queryParameters}');
+          }
+          if (options.data != null) {
+            Logger.d('|📦 Body: ${options.data}');
+          }
+
+          return handler.next(options);
+        },
+        onResponse: (response, handler) {
+          // Detailed response logging
+          Logger.d('|✅ API RESPONSE');
+          Logger.d(
+            '|📍 URL: ${response.requestOptions.baseUrl}${response.requestOptions.path}',
+          );
+          Logger.d('|📊 Status Code: ${response.statusCode}');
+          Logger.d('|📨 Response: ${response.data}');
+          Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+          return handler.next(response);
+        },
+        onError: (error, handler) async {
+          // Detailed error logging
+          Logger.e('|❌ API ERROR');
+          Logger.e(
+            '|📍 URL: ${error.requestOptions.baseUrl}${error.requestOptions.path}',
+          );
+          Logger.e('|🔧 Method: ${error.requestOptions.method}');
+          Logger.e('|⚠️ Error Type: ${error.type}');
+          Logger.e('|💬 Error Message: ${error.message}');
+          if (error.response != null) {
+            Logger.e('|📊 Status Code: ${error.response?.statusCode}');
+            Logger.e('|📨 Response: ${error.response?.data}');
+          }
+          Logger.e('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+          // Retry logic for connection timeout or transient network error (up to 2 retries)
+          final opts = error.requestOptions;
+          final currentRetry = (opts.extra['retry_count'] as int?) ?? 0;
+          if ((error.type == DioExceptionType.connectionTimeout ||
+                  error.type == DioExceptionType.sendTimeout ||
+                  error.type == DioExceptionType.connectionError) &&
+              currentRetry < 2) {
+            opts.extra['retry_count'] = currentRetry + 1;
+            Logger.d(
+              '🔄 Retrying API Request (${currentRetry + 1}/2): ${opts.path}',
+            );
+            try {
+              final response = await _dio.fetch(opts);
+              return handler.resolve(response);
+            } catch (retryError) {
+              if (retryError is DioException) {
+                return handler.next(retryError);
+              }
+            }
+          }
+
+          return handler.next(error);
+        },
+      ),
+    );
   }
 
   Future<bool> _checkInternetConnection({bool showDialog = false}) async {
@@ -129,19 +141,22 @@ class ApiClient {
   }
 
   Future<ResponseModel> get(
-      String path, {
-        Map<String, dynamic>? queryParameters,
-        Options? options,
-        CancelToken? cancelToken,
-        ProgressCallback? onReceiveProgress,
-        bool handleError = AppConstants.handleError,
-        bool showToaster = AppConstants.showToaster,
-        bool showErrorScreen = AppConstants.isHandleErrorScreen,
-        bool showInternetScreen = AppConstants.isHandleInternetScreen,
-      }) async {
-
-    if (showInternetScreen && !(await _checkInternetConnection(showDialog: showInternetScreen))) {
-      return const ResponseModel(isSuccess: false, message: 'No internet connection');
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onReceiveProgress,
+    bool handleError = AppConstants.handleError,
+    bool showToaster = AppConstants.showToaster,
+    bool showErrorScreen = AppConstants.isHandleErrorScreen,
+    bool showInternetScreen = AppConstants.isHandleInternetScreen,
+  }) async {
+    if (showInternetScreen &&
+        !(await _checkInternetConnection(showDialog: showInternetScreen))) {
+      return const ResponseModel(
+        isSuccess: false,
+        message: 'No internet connection',
+      );
     }
 
     int maxRetries = 3;
@@ -158,14 +173,20 @@ class ApiClient {
         );
 
         if (handleError) {
-          final result = ApiChecker.checkResponse(response, showToaster: showToaster);
-          return ResponseModel.fromJson(result.data, statusCode: result.statusCode);
+          final result = ApiChecker.checkResponse(
+            response,
+            showToaster: showToaster,
+          );
+          return ResponseModel.fromJson(
+            result.data,
+            statusCode: result.statusCode,
+          );
         } else {
           return ApiChecker.checkApi(response, showToaster: showToaster);
         }
       } catch (e) {
         final isLastAttempt = attempt == maxRetries;
-        
+
         bool is429 = false;
         if (e is dio.DioException && e.response?.statusCode == 429) {
           is429 = true;
@@ -177,28 +198,37 @@ class ApiClient {
         }
 
         int sleepSec = is429 && path.contains('/watch') ? 5 : backoffs[attempt];
-        Logger.w('|⚠️ GET request to $path failed (Attempt ${attempt + 1}/$maxRetries). Retrying in ${sleepSec}s... Error: $e');
+        Logger.w(
+          '|⚠️ GET request to $path failed (Attempt ${attempt + 1}/$maxRetries). Retrying in ${sleepSec}s... Error: $e',
+        );
         await Future.delayed(Duration(seconds: sleepSec));
       }
     }
-    return const ResponseModel(isSuccess: false, message: 'Failed after retries');
+    return const ResponseModel(
+      isSuccess: false,
+      message: 'Failed after retries',
+    );
   }
 
   Future<ResponseModel> post(
-      String path, {
-        dynamic data,
-        Map<String, dynamic>? queryParameters,
-        Options? options,
-        CancelToken? cancelToken,
-        ProgressCallback? onSendProgress,
-        ProgressCallback? onReceiveProgress,
-        bool handleError = AppConstants.handleError,
-        bool showToaster = AppConstants.showToaster,
-        bool showErrorScreen = AppConstants.isHandleErrorScreen,
-        bool showInternetScreen = AppConstants.isHandleInternetScreen,
-      }) async {
-    if (showInternetScreen && !(await _checkInternetConnection(showDialog: showInternetScreen))) {
-      return const ResponseModel(isSuccess: false, message: 'No internet connection');
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+    bool handleError = AppConstants.handleError,
+    bool showToaster = AppConstants.showToaster,
+    bool showErrorScreen = AppConstants.isHandleErrorScreen,
+    bool showInternetScreen = AppConstants.isHandleInternetScreen,
+  }) async {
+    if (showInternetScreen &&
+        !(await _checkInternetConnection(showDialog: showInternetScreen))) {
+      return const ResponseModel(
+        isSuccess: false,
+        message: 'No internet connection',
+      );
     }
 
     int maxRetries = 3;
@@ -217,14 +247,20 @@ class ApiClient {
         );
 
         if (handleError) {
-          final result = ApiChecker.checkResponse(response, showToaster: showToaster);
-          return ResponseModel.fromJson(result.data, statusCode: result.statusCode);
+          final result = ApiChecker.checkResponse(
+            response,
+            showToaster: showToaster,
+          );
+          return ResponseModel.fromJson(
+            result.data,
+            statusCode: result.statusCode,
+          );
         } else {
           return ApiChecker.checkApi(response, showToaster: showToaster);
         }
       } catch (e) {
         final isLastAttempt = attempt == maxRetries;
-        
+
         bool is429 = false;
         if (e is dio.DioException && e.response?.statusCode == 429) {
           is429 = true;
@@ -236,31 +272,40 @@ class ApiClient {
         }
 
         int sleepSec = is429 && path.contains('/watch') ? 5 : backoffs[attempt];
-        Logger.w('|⚠️ POST request to $path failed (Attempt ${attempt + 1}/$maxRetries). Retrying in ${sleepSec}s... Error: $e');
+        Logger.w(
+          '|⚠️ POST request to $path failed (Attempt ${attempt + 1}/$maxRetries). Retrying in ${sleepSec}s... Error: $e',
+        );
         await Future.delayed(Duration(seconds: sleepSec));
       }
     }
-    return const ResponseModel(isSuccess: false, message: 'Failed after retries');
+    return const ResponseModel(
+      isSuccess: false,
+      message: 'Failed after retries',
+    );
   }
 
   Future<ResponseModel> postMultipartData(
-      String path,
-      Map<String, String> body,
-      List<MultipartBody> multipartBody,
-      List<MultipartDocument> otherFile, {
-        Map<String, dynamic>? queryParameters,
-        Options? options,
-        CancelToken? cancelToken,
-        ProgressCallback? onSendProgress,
-        ProgressCallback? onReceiveProgress,
-        bool fromChat = false,
-        bool handleError = AppConstants.handleError,
-        bool showToaster = AppConstants.showToaster,
-        bool showErrorScreen = AppConstants.isHandleErrorScreen,
-        bool showInternetScreen = AppConstants.isHandleInternetScreen,
-      }) async {
-    if (showInternetScreen && !(await _checkInternetConnection(showDialog: showInternetScreen))) {
-      return const ResponseModel(isSuccess: false, message: 'No internet connection');
+    String path,
+    Map<String, String> body,
+    List<MultipartBody> multipartBody,
+    List<MultipartDocument> otherFile, {
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+    bool fromChat = false,
+    bool handleError = AppConstants.handleError,
+    bool showToaster = AppConstants.showToaster,
+    bool showErrorScreen = AppConstants.isHandleErrorScreen,
+    bool showInternetScreen = AppConstants.isHandleInternetScreen,
+  }) async {
+    if (showInternetScreen &&
+        !(await _checkInternetConnection(showDialog: showInternetScreen))) {
+      return const ResponseModel(
+        isSuccess: false,
+        message: 'No internet connection',
+      );
     }
 
     try {
@@ -276,20 +321,27 @@ class ApiClient {
         if (multipart.file != null) {
           if (kIsWeb) {
             List<int> bytes = await multipart.file!.readAsBytes();
-            formData.files.add(MapEntry(
-              multipart.key,
-              dio.MultipartFile.fromBytes(
-                bytes,
-                filename: basename(multipart.file!.path),
-                contentType: MediaType('image', 'jpg'),
+            formData.files.add(
+              MapEntry(
+                multipart.key,
+                dio.MultipartFile.fromBytes(
+                  bytes,
+                  filename: basename(multipart.file!.path),
+                  contentType: MediaType('image', 'jpg'),
+                ),
               ),
-            ));
+            );
           } else {
             File file = File(multipart.file!.path);
-            formData.files.add(MapEntry(
-              multipart.key,
-              await dio.MultipartFile.fromFile(file.path, filename: basename(file.path)),
-            ));
+            formData.files.add(
+              MapEntry(
+                multipart.key,
+                await dio.MultipartFile.fromFile(
+                  file.path,
+                  filename: basename(file.path),
+                ),
+              ),
+            );
           }
         }
       }
@@ -299,23 +351,38 @@ class ApiClient {
           if (kIsWeb) {
             if (fromChat) {
               PlatformFile platformFile = file.file!.files.first;
-              formData.files.add(MapEntry(
-                'image[]',
-                dio.MultipartFile.fromBytes(platformFile.bytes!, filename: platformFile.name),
-              ));
+              formData.files.add(
+                MapEntry(
+                  'image[]',
+                  dio.MultipartFile.fromBytes(
+                    platformFile.bytes!,
+                    filename: platformFile.name,
+                  ),
+                ),
+              );
             } else {
               var fileBytes = file.file!.files.first.bytes!;
-              formData.files.add(MapEntry(
-                file.key,
-                dio.MultipartFile.fromBytes(fileBytes, filename: file.file!.files.first.name),
-              ));
+              formData.files.add(
+                MapEntry(
+                  file.key,
+                  dio.MultipartFile.fromBytes(
+                    fileBytes,
+                    filename: file.file!.files.first.name,
+                  ),
+                ),
+              );
             }
           } else {
             File other = File(file.file!.files.single.path!);
-            formData.files.add(MapEntry(
-              file.key,
-              await dio.MultipartFile.fromFile(other.path, filename: basename(other.path)),
-            ));
+            formData.files.add(
+              MapEntry(
+                file.key,
+                await dio.MultipartFile.fromFile(
+                  other.path,
+                  filename: basename(other.path),
+                ),
+              ),
+            );
           }
         }
       }
@@ -333,8 +400,14 @@ class ApiClient {
       Logger.d('ApiClient() => POST Multipart response: ${response.data}');
 
       if (handleError) {
-        final result = ApiChecker.checkResponse(response, showToaster: showToaster);
-        return ResponseModel.fromJson(result.data, statusCode: result.statusCode);
+        final result = ApiChecker.checkResponse(
+          response,
+          showToaster: showToaster,
+        );
+        return ResponseModel.fromJson(
+          result.data,
+          statusCode: result.statusCode,
+        );
       } else {
         return ApiChecker.checkApi(response, showToaster: showToaster);
       }
@@ -345,20 +418,24 @@ class ApiClient {
   }
 
   Future<ResponseModel> put(
-      String path, {
-        dynamic data,
-        Map<String, dynamic>? queryParameters,
-        Options? options,
-        CancelToken? cancelToken,
-        ProgressCallback? onSendProgress,
-        ProgressCallback? onReceiveProgress,
-        bool handleError = AppConstants.handleError,
-        bool showToaster = AppConstants.showToaster,
-        bool showErrorScreen = AppConstants.isHandleErrorScreen,
-        bool showInternetScreen = AppConstants.isHandleInternetScreen,
-      }) async {
-    if (showInternetScreen && !(await _checkInternetConnection(showDialog: showInternetScreen))) {
-      return const ResponseModel(isSuccess: false, message: 'No internet connection');
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+    bool handleError = AppConstants.handleError,
+    bool showToaster = AppConstants.showToaster,
+    bool showErrorScreen = AppConstants.isHandleErrorScreen,
+    bool showInternetScreen = AppConstants.isHandleInternetScreen,
+  }) async {
+    if (showInternetScreen &&
+        !(await _checkInternetConnection(showDialog: showInternetScreen))) {
+      return const ResponseModel(
+        isSuccess: false,
+        message: 'No internet connection',
+      );
     }
 
     try {
@@ -375,8 +452,14 @@ class ApiClient {
       Logger.d('ApiClient() => PUT response: ${response.data}');
 
       if (handleError) {
-        final result = ApiChecker.checkResponse(response, showToaster: showToaster);
-        return ResponseModel.fromJson(result.data, statusCode: result.statusCode);
+        final result = ApiChecker.checkResponse(
+          response,
+          showToaster: showToaster,
+        );
+        return ResponseModel.fromJson(
+          result.data,
+          statusCode: result.statusCode,
+        );
       } else {
         return ApiChecker.checkApi(response, showToaster: showToaster);
       }
@@ -387,18 +470,22 @@ class ApiClient {
   }
 
   Future<ResponseModel> delete(
-      String path, {
-        dynamic data,
-        Map<String, dynamic>? queryParameters,
-        Options? options,
-        CancelToken? cancelToken,
-        bool handleError = AppConstants.handleError,
-        bool showToaster = AppConstants.showToaster,
-        bool showErrorScreen = AppConstants.isHandleErrorScreen,
-        bool showInternetScreen = AppConstants.isHandleInternetScreen,
-      }) async {
-    if (showInternetScreen && !(await _checkInternetConnection(showDialog: showInternetScreen))) {
-      return const ResponseModel(isSuccess: false, message: 'No internet connection');
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    bool handleError = AppConstants.handleError,
+    bool showToaster = AppConstants.showToaster,
+    bool showErrorScreen = AppConstants.isHandleErrorScreen,
+    bool showInternetScreen = AppConstants.isHandleInternetScreen,
+  }) async {
+    if (showInternetScreen &&
+        !(await _checkInternetConnection(showDialog: showInternetScreen))) {
+      return const ResponseModel(
+        isSuccess: false,
+        message: 'No internet connection',
+      );
     }
 
     try {
@@ -413,8 +500,14 @@ class ApiClient {
       Logger.d('ApiClient() => DELETE response: ${response.data}');
 
       if (handleError) {
-        final result = ApiChecker.checkResponse(response, showToaster: showToaster);
-        return ResponseModel.fromJson(result.data, statusCode: result.statusCode);
+        final result = ApiChecker.checkResponse(
+          response,
+          showToaster: showToaster,
+        );
+        return ResponseModel.fromJson(
+          result.data,
+          statusCode: result.statusCode,
+        );
       } else {
         return ApiChecker.checkApi(response, showToaster: showToaster);
       }

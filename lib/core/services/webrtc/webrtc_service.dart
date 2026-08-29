@@ -24,10 +24,7 @@ class WebRTCService {
   };
 
   final Map<String, dynamic> _constraints = {
-    'mandatory': {
-      'OfferToReceiveAudio': true,
-      'OfferToReceiveVideo': false,
-    },
+    'mandatory': {'OfferToReceiveAudio': true, 'OfferToReceiveVideo': false},
     'optional': [],
   };
 
@@ -39,7 +36,7 @@ class WebRTCService {
       };
       localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
       Logger.d('WebRTCService: Local audio stream initialized successfully.');
-      
+
       // Force audio routing to earpiece and microphone unmute by default
       toggleMute(false);
       toggleSpeaker(false);
@@ -56,7 +53,9 @@ class WebRTCService {
   set activeSessionId(int? id) {
     _activeSessionId = id;
     if (id != null && id > 0 && _queuedIceCandidates.isNotEmpty) {
-      Logger.d('WebRTCService: Flushing ${_queuedIceCandidates.length} queued ICE candidates for session $id.');
+      Logger.d(
+        'WebRTCService: Flushing ${_queuedIceCandidates.length} queued ICE candidates for session $id.',
+      );
       for (var candidate in _queuedIceCandidates) {
         _sendIceCandidate(id, candidate);
       }
@@ -94,7 +93,9 @@ class WebRTCService {
         peerConnection!.addTrack(track, localStream!);
       });
 
-      RTCSessionDescription offer = await peerConnection!.createOffer(_constraints);
+      RTCSessionDescription offer = await peerConnection!.createOffer(
+        _constraints,
+      );
       await peerConnection!.setLocalDescription(offer);
       Logger.d('WebRTCService: SDP Offer created.');
       return offer;
@@ -109,7 +110,7 @@ class WebRTCService {
     if (cleanSdp.startsWith('"') && cleanSdp.endsWith('"')) {
       cleanSdp = cleanSdp.substring(1, cleanSdp.length - 1);
     }
-    
+
     // Convert all escaped newlines to standard LF
     cleanSdp = cleanSdp
         .replaceAll('\\r\\n', '\n')
@@ -121,17 +122,26 @@ class WebRTCService {
 
     // Split by LF and join using CRLF to ensure every line ends with \r\n
     List<String> lines = cleanSdp.split('\n');
-    return lines.map((line) => line.trim()).where((line) => line.isNotEmpty).join('\r\n') + '\r\n';
+    return lines
+            .map((line) => line.trim())
+            .where((line) => line.isNotEmpty)
+            .join('\r\n') +
+        '\r\n';
   }
 
   Future<void> setRemoteAnswer(String answerSdp) async {
     try {
       if (peerConnection == null) {
-        Logger.e('WebRTCService: peerConnection is null. Cannot set remote answer.');
+        Logger.e(
+          'WebRTCService: peerConnection is null. Cannot set remote answer.',
+        );
         return;
       }
       final normalized = _normalizeSdp(answerSdp);
-      RTCSessionDescription answer = RTCSessionDescription(normalized, 'answer');
+      RTCSessionDescription answer = RTCSessionDescription(
+        normalized,
+        'answer',
+      );
       await peerConnection!.setRemoteDescription(answer);
       _isRemoteDescriptionSet = true;
       Logger.d('WebRTCService: Remote Answer SDP set successfully.');
@@ -142,7 +152,10 @@ class WebRTCService {
     }
   }
 
-  Future<RTCSessionDescription> acceptOffer(int sessionId, String offerSdp) async {
+  Future<RTCSessionDescription> acceptOffer(
+    int sessionId,
+    String offerSdp,
+  ) async {
     try {
       await initLocalStream();
       peerConnection = await createPeerConnection(_iceConfig, _constraints);
@@ -182,9 +195,11 @@ class WebRTCService {
       _isRemoteDescriptionSet = true;
       _flushRemoteCandidates();
 
-      RTCSessionDescription answer = await peerConnection!.createAnswer(_constraints);
+      RTCSessionDescription answer = await peerConnection!.createAnswer(
+        _constraints,
+      );
       await peerConnection!.setLocalDescription(answer);
-      
+
       Logger.d('WebRTCService: SDP Answer created & set as local.');
       return answer;
     } catch (e) {
@@ -197,9 +212,14 @@ class WebRTCService {
     try {
       Map<String, dynamic> candidateMap = jsonDecode(candidateJson);
       RTCIceCandidate candidate = RTCIceCandidate(
-        candidateMap['candidate']?.toString() ?? candidateMap['iceCandidate']?.toString() ?? '',
+        candidateMap['candidate']?.toString() ??
+            candidateMap['iceCandidate']?.toString() ??
+            '',
         candidateMap['sdpMid']?.toString() ?? '',
-        candidateMap['sdpMLineIndex'] is int ? candidateMap['sdpMLineIndex'] : int.tryParse(candidateMap['sdpMLineIndex']?.toString() ?? '') ?? 0,
+        candidateMap['sdpMLineIndex'] is int
+            ? candidateMap['sdpMLineIndex']
+            : int.tryParse(candidateMap['sdpMLineIndex']?.toString() ?? '') ??
+                0,
       );
 
       if (peerConnection != null && _isRemoteDescriptionSet) {
@@ -207,7 +227,9 @@ class WebRTCService {
         Logger.d('WebRTCService: Ice Candidate added successfully.');
       } else {
         _remoteCandidateQueue.add(candidate);
-        Logger.d('WebRTCService: Queued remote ICE candidate. Total queued: ${_remoteCandidateQueue.length}');
+        Logger.d(
+          'WebRTCService: Queued remote ICE candidate. Total queued: ${_remoteCandidateQueue.length}',
+        );
       }
     } catch (e) {
       Logger.e('WebRTCService: Error adding remote candidate -> $e');
@@ -216,10 +238,14 @@ class WebRTCService {
 
   void _flushRemoteCandidates() {
     if (_remoteCandidateQueue.isNotEmpty) {
-      Logger.d('WebRTCService: Flushing ${_remoteCandidateQueue.length} queued remote candidates.');
+      Logger.d(
+        'WebRTCService: Flushing ${_remoteCandidateQueue.length} queued remote candidates.',
+      );
       for (var candidate in _remoteCandidateQueue) {
         peerConnection?.addCandidate(candidate).catchError((e) {
-          Logger.e('WebRTCService: Error adding flushed remote candidate -> $e');
+          Logger.e(
+            'WebRTCService: Error adding flushed remote candidate -> $e',
+          );
         });
       }
       _remoteCandidateQueue.clear();
@@ -242,7 +268,7 @@ class WebRTCService {
     } catch (e) {
       Logger.e('WebRTCService: Helper.setSpeakerphoneOn error -> $e');
     }
-    
+
     if (localStream != null) {
       localStream!.getAudioTracks().forEach((track) {
         track.enableSpeakerphone(isSpeakerOn);
@@ -251,7 +277,10 @@ class WebRTCService {
     }
   }
 
-  Future<void> _sendIceCandidate(int sessionId, RTCIceCandidate candidate) async {
+  Future<void> _sendIceCandidate(
+    int sessionId,
+    RTCIceCandidate candidate,
+  ) async {
     try {
       final apiClient = Get.find<ApiClient>();
       final candidateStr = jsonEncode({

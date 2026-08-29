@@ -32,7 +32,8 @@ class RemedyController extends GetxController {
 
       if (result.isSuccess) {
         final List<dynamic> data = result.body['remedies'] ?? [];
-        remedies.value = data.map((json) => RemedyModel.fromJson(json)).toList();
+        remedies.value =
+            data.map((json) => RemedyModel.fromJson(json)).toList();
         Logger.d('Loaded ${remedies.length} remedies', tag: 'REMEDY');
       } else {
         Logger.e('Failed to get remedies: ${result.message}', tag: 'REMEDY');

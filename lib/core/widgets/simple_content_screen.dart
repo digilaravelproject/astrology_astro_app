@@ -7,8 +7,8 @@ class SimpleContentScreen extends StatelessWidget {
   final String content;
 
   const SimpleContentScreen({
-    super.key, 
-    required this.title, 
+    super.key,
+    required this.title,
     required this.content,
   });
 
@@ -16,9 +16,7 @@ class SimpleContentScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(
-        title: title,
-      ),
+      appBar: CustomAppBar(title: title),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: AppText(

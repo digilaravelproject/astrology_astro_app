@@ -16,7 +16,8 @@ class ChatSessionListResponse {
       currentPage: json['current_page'] ?? 1,
       lastPage: json['last_page'] ?? 1,
       nextPageUrl: json['next_page_url']?.toString(),
-      data: (json['data'] as List<dynamic>?)
+      data:
+          (json['data'] as List<dynamic>?)
               ?.map((e) => ChatSessionModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
@@ -35,11 +36,11 @@ class ChatSessionModel {
   final String createdAt;
   final int unreadCount;
   final int? chatAssistanceSessionId;
-  
+
   // Either consumer or provider will be populated depending on the API side
   final ChatSessionUserModel? provider;
   final ChatSessionUserModel? consumer;
-  
+
   final ChatSessionLatestMessage? latestMessage;
 
   ChatSessionModel({
@@ -70,9 +71,18 @@ class ChatSessionModel {
       createdAt: json['created_at'] ?? '',
       unreadCount: json['unread_count'] ?? 0,
       chatAssistanceSessionId: json['chat_assistance_session_id'],
-      provider: json['provider'] != null ? ChatSessionUserModel.fromJson(json['provider']) : null,
-      consumer: json['consumer'] != null ? ChatSessionUserModel.fromJson(json['consumer']) : null,
-      latestMessage: json['latest_message'] != null ? ChatSessionLatestMessage.fromJson(json['latest_message']) : null,
+      provider:
+          json['provider'] != null
+              ? ChatSessionUserModel.fromJson(json['provider'])
+              : null,
+      consumer:
+          json['consumer'] != null
+              ? ChatSessionUserModel.fromJson(json['consumer'])
+              : null,
+      latestMessage:
+          json['latest_message'] != null
+              ? ChatSessionLatestMessage.fromJson(json['latest_message'])
+              : null,
     );
   }
 }
@@ -106,7 +116,8 @@ class ChatSessionUserModel {
 
   factory ChatSessionUserModel.fromJson(Map<String, dynamic> json) {
     num chatRate = 0;
-    if (json['astrologer'] != null && json['astrologer']['chat_rate_per_minute'] != null) {
+    if (json['astrologer'] != null &&
+        json['astrologer']['chat_rate_per_minute'] != null) {
       chatRate = json['astrologer']['chat_rate_per_minute'];
     }
     return ChatSessionUserModel(
@@ -117,12 +128,22 @@ class ChatSessionUserModel {
       dateOfBirth: json['date_of_birth']?.toString(),
       timeOfBirth: json['time_of_birth']?.toString(),
       placeOfBirth: json['place_of_birth']?.toString(),
-      latitude: double.tryParse(json['latitude']?.toString() ?? json['lat']?.toString() ?? ''),
-      longitude: double.tryParse(json['longitude']?.toString() ?? json['lng']?.toString() ?? json['long']?.toString() ?? ''),
+      latitude: double.tryParse(
+        json['latitude']?.toString() ?? json['lat']?.toString() ?? '',
+      ),
+      longitude: double.tryParse(
+        json['longitude']?.toString() ??
+            json['lng']?.toString() ??
+            json['long']?.toString() ??
+            '',
+      ),
       chatRatePerMinute: chatRate,
-      chatAssistanceSessionId: json['chat_assistance_session_id'] is int 
-          ? json['chat_assistance_session_id'] 
-          : int.tryParse(json['chat_assistance_session_id']?.toString() ?? ''),
+      chatAssistanceSessionId:
+          json['chat_assistance_session_id'] is int
+              ? json['chat_assistance_session_id']
+              : int.tryParse(
+                json['chat_assistance_session_id']?.toString() ?? '',
+              ),
     );
   }
 }

@@ -4,7 +4,7 @@ import '../repositories/remedies_repository.dart';
 
 class RemediesController extends GetxController {
   final RemediesRepository _repository = RemediesRepository();
-  
+
   var isLoading = false.obs;
   var remediesModel = Rxn<RemediesModel>();
 

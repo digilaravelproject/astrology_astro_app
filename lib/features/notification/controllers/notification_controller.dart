@@ -36,7 +36,9 @@ class NotificationController extends GetxController {
     // Listen for user changes to refetch count
     final authController = Get.find<AuthController>();
     ever(authController.currentUser, (user) {
-      Logger.d('NotificationController: ever listener triggered, user id: ${user?.id}');
+      Logger.d(
+        'NotificationController: ever listener triggered, user id: ${user?.id}',
+      );
       if (user != null) {
         getNotificationCount();
       }
@@ -71,15 +73,21 @@ class NotificationController extends GetxController {
       isLoading.value = true;
       final response = await _getNotificationCountUseCase.execute(userId);
 
-      Logger.d('NotificationController: API Response success: ${response.isSuccess}');
+      Logger.d(
+        'NotificationController: API Response success: ${response.isSuccess}',
+      );
 
       if (response.isSuccess && response.body != null) {
         Logger.d('NotificationController: API Body: ${response.body}');
         final countModel = NotificationCountModel.fromJson(response.body);
         unreadCount.value = countModel.unread;
-        Logger.d('NotificationController: New unreadCount: ${unreadCount.value}');
+        Logger.d(
+          'NotificationController: New unreadCount: ${unreadCount.value}',
+        );
       } else {
-        Logger.e('NotificationController: API Fetch failed: ${response.message}');
+        Logger.e(
+          'NotificationController: API Fetch failed: ${response.message}',
+        );
       }
     } catch (e) {
       Logger.e('NotificationController: getNotificationCount error: $e');
@@ -96,25 +104,35 @@ class NotificationController extends GetxController {
       final userId = authController.currentUser.value?.id;
 
       if (userId == null) {
-        Logger.e('NotificationController: userId is null, cannot fetch notifications');
+        Logger.e(
+          'NotificationController: userId is null, cannot fetch notifications',
+        );
         return;
       }
 
       isNotificationsLoading.value = true;
       final response = await _getNotificationsUseCase.execute(userId);
 
-      Logger.d('NotificationController: getNotifications response: ${response.isSuccess}');
+      Logger.d(
+        'NotificationController: getNotifications response: ${response.isSuccess}',
+      );
 
       if (response.isSuccess && response.body != null) {
         final rawList = response.body['notifications'] as List?;
         if (rawList != null) {
           notifications.assignAll(
-            rawList.map((item) => NotificationItemModel.fromJson(item)).toList(),
+            rawList
+                .map((item) => NotificationItemModel.fromJson(item))
+                .toList(),
           );
-          Logger.d('NotificationController: Loaded ${notifications.length} notifications');
+          Logger.d(
+            'NotificationController: Loaded ${notifications.length} notifications',
+          );
         }
       } else {
-        Logger.e('NotificationController: fetch notifications failed: ${response.message}');
+        Logger.e(
+          'NotificationController: fetch notifications failed: ${response.message}',
+        );
       }
     } catch (e) {
       Logger.e('NotificationController: getNotifications error: $e');
@@ -138,21 +156,25 @@ class NotificationController extends GetxController {
       selectedNotification.value = null;
       final response = await _getNotificationDetailUseCase.execute(id, userId);
 
-      Logger.d('NotificationController: getNotificationDetail response: ${response.isSuccess}');
+      Logger.d(
+        'NotificationController: getNotificationDetail response: ${response.isSuccess}',
+      );
 
       if (response.isSuccess && response.body != null) {
         final raw = response.body['notification'] as Map<String, dynamic>?;
         if (raw != null) {
           final item = NotificationItemModel.fromJson(raw);
           selectedNotification.value = item;
-          
+
           // Mark as read if it's currently unread
           if (!item.isRead) {
             markAsRead(id);
           }
         }
       } else {
-        Logger.e('NotificationController: detail fetch failed: ${response.message}');
+        Logger.e(
+          'NotificationController: detail fetch failed: ${response.message}',
+        );
       }
     } catch (e) {
       Logger.e('NotificationController: getNotificationDetail error: $e');
@@ -172,7 +194,7 @@ class NotificationController extends GetxController {
 
       if (response.isSuccess) {
         Logger.d('NotificationController: Notification $id marked as read');
-        
+
         // Update local list state
         final index = notifications.indexWhere((n) => n.id == id);
         if (index != -1) {
@@ -185,10 +207,12 @@ class NotificationController extends GetxController {
             }
           }
         }
-        
+
         // Also update selected notification if it's the one
         if (selectedNotification.value?.id == id) {
-          selectedNotification.value = selectedNotification.value?.copyWith(isRead: true);
+          selectedNotification.value = selectedNotification.value?.copyWith(
+            isRead: true,
+          );
         }
       }
     } catch (e) {

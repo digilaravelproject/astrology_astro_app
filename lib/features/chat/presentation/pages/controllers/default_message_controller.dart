@@ -21,7 +21,8 @@ class DefaultMessageController extends GetxController {
     try {
       isLoading.value = true;
       final result = await _chatRepository.getAllDefaultMessages();
-      messages.value = result.map((e) => DefaultMessageModel.fromJson(e)).toList();
+      messages.value =
+          result.map((e) => DefaultMessageModel.fromJson(e)).toList();
     } catch (e) {
       CustomSnackBar.disabledSnackbar('Error', e.toString());
     } finally {
@@ -54,7 +55,12 @@ class DefaultMessageController extends GetxController {
     }
   }
 
-  Future<bool> updateMessage(int id, String title, String content, bool isDefault) async {
+  Future<bool> updateMessage(
+    int id,
+    String title,
+    String content,
+    bool isDefault,
+  ) async {
     try {
       isLoading.value = true;
       final result = await _chatRepository.updateDefaultMessage(
@@ -73,7 +79,10 @@ class DefaultMessageController extends GetxController {
         messages[index] = DefaultMessageModel.fromJson(result);
         messages.refresh();
       }
-      CustomSnackBar.disabledSnackbar('Success', 'Message updated successfully');
+      CustomSnackBar.disabledSnackbar(
+        'Success',
+        'Message updated successfully',
+      );
       return true;
     } catch (e) {
       CustomSnackBar.disabledSnackbar('Error', e.toString());
@@ -92,7 +101,10 @@ class DefaultMessageController extends GetxController {
           msg.isDefault = (msg.id == id);
         }
         messages.refresh();
-        CustomSnackBar.disabledSnackbar('Success', 'Active default message updated');
+        CustomSnackBar.disabledSnackbar(
+          'Success',
+          'Active default message updated',
+        );
       }
     } catch (e) {
       CustomSnackBar.disabledSnackbar('Error', e.toString());
@@ -117,7 +129,10 @@ class DefaultMessageController extends GetxController {
       final success = await _chatRepository.deleteDefaultMessage(id);
       if (success) {
         messages.removeWhere((m) => m.id == id);
-        CustomSnackBar.disabledSnackbar('Success', 'Message deleted successfully');
+        CustomSnackBar.disabledSnackbar(
+          'Success',
+          'Message deleted successfully',
+        );
       }
     } catch (e) {
       CustomSnackBar.disabledSnackbar('Error', e.toString());

@@ -4,12 +4,12 @@ import 'package:get/get.dart';
 class Dimensions {
   // Make these getters instead of static variables
   static double get screenHeight {
-    return 800;  // Use Get.height instead of Get.context!.height
+    return 800; // Use Get.height instead of Get.context!.height
     // return Get.height;  // Use Get.height instead of Get.context!.height
   }
 
   static double get screenWidth {
-    return 350;  // Use Get.width instead of Get.context!.width
+    return 350; // Use Get.width instead of Get.context!.width
     // return Get.width;  // Use Get.width instead of Get.context!.width
   }
 

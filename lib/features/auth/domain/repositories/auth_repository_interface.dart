@@ -1,7 +1,6 @@
 import 'dart:io';
 import '../../../../core/services/network/response_model.dart';
 
-
 abstract class AuthRepositoryInterface {
   Future<ResponseModel> signup(String name, String mobile);
   Future<ResponseModel> astrologerSignup(Map<String, dynamic> data);

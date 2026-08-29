@@ -34,7 +34,10 @@ class KundliMatchScreen extends GetView<MatchingController> {
           backgroundColor: AppColors.white,
           elevation: 0.5,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textColorPrimary),
+            icon: const Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: AppColors.textColorPrimary,
+            ),
             onPressed: () => Navigator.maybePop(context),
           ),
           title: const Text(
@@ -144,9 +147,10 @@ class _ResultsTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final score = data?.compatibilityScore ?? 0.0;
     final maxScore = data?.maxScore ?? 36;
-    final verdict = data?.verdict.isNotEmpty == true
-        ? data!.verdict
-        : (score >= 18 ? 'Compatible Match' : 'Incompatible Match');
+    final verdict =
+        data?.verdict.isNotEmpty == true
+            ? data!.verdict
+            : (score >= 18 ? 'Compatible Match' : 'Incompatible Match');
     final recommendation = data?.recommendation ?? '';
 
     final maleManglik = data?.doshas.manglik.male.present == true;
@@ -229,7 +233,11 @@ class _ResultsTab extends StatelessWidget {
                     onPressed: () {
                       _showMarriageMuhuratBottomSheet(context);
                     },
-                    icon: const Icon(Icons.calendar_month, color: AppColors.white, size: 20),
+                    icon: const Icon(
+                      Icons.calendar_month,
+                      color: AppColors.white,
+                      size: 20,
+                    ),
                     label: const Text(
                       'Upcoming Marriage Muhurat',
                       style: TextStyle(
@@ -240,7 +248,10 @@ class _ResultsTab extends StatelessWidget {
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryColor,
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -306,14 +317,15 @@ class _ResultsTab extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
 
-
-
                 // Talk To Astrologers Button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      Get.offAllNamed(RouteHelper.getDashboardRoute(), arguments: {'index': 0});
+                      Get.offAllNamed(
+                        RouteHelper.getDashboardRoute(),
+                        arguments: {'index': 0},
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryColor,
@@ -358,49 +370,57 @@ class _DetailsTab extends StatelessWidget {
         'guna': 'Varna',
         'max': gunaMilan?.varna.max ?? 1,
         'obtained': (gunaMilan?.varna.score ?? 0).toDouble(),
-        'area': '${gunaMilan?.varna.maleKootAttribute.isNotEmpty == true ? gunaMilan!.varna.maleKootAttribute : "N/A"} / ${gunaMilan?.varna.femaleKootAttribute.isNotEmpty == true ? gunaMilan!.varna.femaleKootAttribute : "N/A"}'
+        'area':
+            '${gunaMilan?.varna.maleKootAttribute.isNotEmpty == true ? gunaMilan!.varna.maleKootAttribute : "N/A"} / ${gunaMilan?.varna.femaleKootAttribute.isNotEmpty == true ? gunaMilan!.varna.femaleKootAttribute : "N/A"}',
       },
       {
         'guna': 'Vasya',
         'max': gunaMilan?.vashya.max ?? 2,
         'obtained': (gunaMilan?.vashya.score ?? 0).toDouble(),
-        'area': '${gunaMilan?.vashya.maleKootAttribute.isNotEmpty == true ? gunaMilan!.vashya.maleKootAttribute : "N/A"} / ${gunaMilan?.vashya.femaleKootAttribute.isNotEmpty == true ? gunaMilan!.vashya.femaleKootAttribute : "N/A"}'
+        'area':
+            '${gunaMilan?.vashya.maleKootAttribute.isNotEmpty == true ? gunaMilan!.vashya.maleKootAttribute : "N/A"} / ${gunaMilan?.vashya.femaleKootAttribute.isNotEmpty == true ? gunaMilan!.vashya.femaleKootAttribute : "N/A"}',
       },
       {
         'guna': 'Tara',
         'max': gunaMilan?.tara.max ?? 3,
         'obtained': (gunaMilan?.tara.score ?? 0).toDouble(),
-        'area': '${gunaMilan?.tara.maleKootAttribute.isNotEmpty == true ? gunaMilan!.tara.maleKootAttribute : "N/A"} / ${gunaMilan?.tara.femaleKootAttribute.isNotEmpty == true ? gunaMilan!.tara.femaleKootAttribute : "N/A"}'
+        'area':
+            '${gunaMilan?.tara.maleKootAttribute.isNotEmpty == true ? gunaMilan!.tara.maleKootAttribute : "N/A"} / ${gunaMilan?.tara.femaleKootAttribute.isNotEmpty == true ? gunaMilan!.tara.femaleKootAttribute : "N/A"}',
       },
       {
         'guna': 'Yoni',
         'max': gunaMilan?.yoni.max ?? 4,
         'obtained': (gunaMilan?.yoni.score ?? 0).toDouble(),
-        'area': '${gunaMilan?.yoni.maleKootAttribute.isNotEmpty == true ? gunaMilan!.yoni.maleKootAttribute : "N/A"} / ${gunaMilan?.yoni.femaleKootAttribute.isNotEmpty == true ? gunaMilan!.yoni.femaleKootAttribute : "N/A"}'
+        'area':
+            '${gunaMilan?.yoni.maleKootAttribute.isNotEmpty == true ? gunaMilan!.yoni.maleKootAttribute : "N/A"} / ${gunaMilan?.yoni.femaleKootAttribute.isNotEmpty == true ? gunaMilan!.yoni.femaleKootAttribute : "N/A"}',
       },
       {
         'guna': 'Maitri',
         'max': gunaMilan?.grahaMaitri.max ?? 5,
         'obtained': (gunaMilan?.grahaMaitri.score ?? 0).toDouble(),
-        'area': '${gunaMilan?.grahaMaitri.maleKootAttribute.isNotEmpty == true ? gunaMilan!.grahaMaitri.maleKootAttribute : "N/A"} / ${gunaMilan?.grahaMaitri.femaleKootAttribute.isNotEmpty == true ? gunaMilan!.grahaMaitri.femaleKootAttribute : "N/A"}'
+        'area':
+            '${gunaMilan?.grahaMaitri.maleKootAttribute.isNotEmpty == true ? gunaMilan!.grahaMaitri.maleKootAttribute : "N/A"} / ${gunaMilan?.grahaMaitri.femaleKootAttribute.isNotEmpty == true ? gunaMilan!.grahaMaitri.femaleKootAttribute : "N/A"}',
       },
       {
         'guna': 'Gana',
         'max': gunaMilan?.gana.max ?? 6,
         'obtained': (gunaMilan?.gana.score ?? 0).toDouble(),
-        'area': '${gunaMilan?.gana.maleKootAttribute.isNotEmpty == true ? gunaMilan!.gana.maleKootAttribute : "N/A"} / ${gunaMilan?.gana.femaleKootAttribute.isNotEmpty == true ? gunaMilan!.gana.femaleKootAttribute : "N/A"}'
+        'area':
+            '${gunaMilan?.gana.maleKootAttribute.isNotEmpty == true ? gunaMilan!.gana.maleKootAttribute : "N/A"} / ${gunaMilan?.gana.femaleKootAttribute.isNotEmpty == true ? gunaMilan!.gana.femaleKootAttribute : "N/A"}',
       },
       {
         'guna': 'Bhakoot',
         'max': gunaMilan?.bhakoot.max ?? 7,
         'obtained': (gunaMilan?.bhakoot.score ?? 0).toDouble(),
-        'area': '${gunaMilan?.bhakoot.maleKootAttribute.isNotEmpty == true ? gunaMilan!.bhakoot.maleKootAttribute : "N/A"} / ${gunaMilan?.bhakoot.femaleKootAttribute.isNotEmpty == true ? gunaMilan!.bhakoot.femaleKootAttribute : "N/A"}'
+        'area':
+            '${gunaMilan?.bhakoot.maleKootAttribute.isNotEmpty == true ? gunaMilan!.bhakoot.maleKootAttribute : "N/A"} / ${gunaMilan?.bhakoot.femaleKootAttribute.isNotEmpty == true ? gunaMilan!.bhakoot.femaleKootAttribute : "N/A"}',
       },
       {
         'guna': 'Nadi',
         'max': gunaMilan?.nadi.max ?? 8,
         'obtained': (gunaMilan?.nadi.score ?? 0).toDouble(),
-        'area': '${gunaMilan?.nadi.maleKootAttribute.isNotEmpty == true ? gunaMilan!.nadi.maleKootAttribute : "N/A"} / ${gunaMilan?.nadi.femaleKootAttribute.isNotEmpty == true ? gunaMilan!.nadi.femaleKootAttribute : "N/A"}'
+        'area':
+            '${gunaMilan?.nadi.maleKootAttribute.isNotEmpty == true ? gunaMilan!.nadi.maleKootAttribute : "N/A"} / ${gunaMilan?.nadi.femaleKootAttribute.isNotEmpty == true ? gunaMilan!.nadi.femaleKootAttribute : "N/A"}',
       },
     ];
 
@@ -442,20 +462,60 @@ class _DetailsTab extends StatelessWidget {
                     decoration: BoxDecoration(color: AppColors.softPink),
                     children: [
                       Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                        child: Text('Guna', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.primaryColor)),
+                        padding: EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 8,
+                        ),
+                        child: Text(
+                          'Guna',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                            color: AppColors.primaryColor,
+                          ),
+                        ),
                       ),
                       Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                        child: Text('Maximum', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.primaryColor)),
+                        padding: EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 8,
+                        ),
+                        child: Text(
+                          'Maximum',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                            color: AppColors.primaryColor,
+                          ),
+                        ),
                       ),
                       Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                        child: Text('Obtained', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.primaryColor)),
+                        padding: EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 8,
+                        ),
+                        child: Text(
+                          'Obtained',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                            color: AppColors.primaryColor,
+                          ),
+                        ),
                       ),
                       Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                        child: Text('Attributes (B/G)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.primaryColor)),
+                        padding: EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 8,
+                        ),
+                        child: Text(
+                          'Attributes (B/G)',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                            color: AppColors.primaryColor,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -464,24 +524,65 @@ class _DetailsTab extends StatelessWidget {
                     final item = entry.value;
                     return TableRow(
                       decoration: BoxDecoration(
-                        color: index.isOdd ? AppColors.fieldBackground : AppColors.white,
+                        color:
+                            index.isOdd
+                                ? AppColors.fieldBackground
+                                : AppColors.white,
                       ),
                       children: [
                         Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                          child: Text(item['guna'].toString(), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.textColorPrimary)),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 8,
+                          ),
+                          child: Text(
+                            item['guna'].toString(),
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.textColorPrimary,
+                            ),
+                          ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                          child: Text(item['max'].toString(), style: const TextStyle(fontSize: 13, color: AppColors.textColorPrimary)),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 8,
+                          ),
+                          child: Text(
+                            item['max'].toString(),
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: AppColors.textColorPrimary,
+                            ),
+                          ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                          child: Text((item['obtained'] as double).toStringAsFixed(1), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.primaryColor)),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 8,
+                          ),
+                          child: Text(
+                            (item['obtained'] as double).toStringAsFixed(1),
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.primaryColor,
+                            ),
+                          ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                          child: Text(item['area'].toString(), style: const TextStyle(fontSize: 13, color: AppColors.textColorSecondary)),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 8,
+                          ),
+                          child: Text(
+                            item['area'].toString(),
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: AppColors.textColorSecondary,
+                            ),
+                          ),
                         ),
                       ],
                     );
@@ -536,18 +637,16 @@ class _InterpretationTabWidget extends StatelessWidget {
   final String title;
   final GunaDetail? detail;
 
-  const _InterpretationTabWidget({
-    required this.title,
-    this.detail,
-  });
+  const _InterpretationTabWidget({required this.title, this.detail});
 
   @override
   Widget build(BuildContext context) {
     final score = detail?.score ?? 0;
     final max = detail?.max ?? 0;
-    final description = detail?.description.isNotEmpty == true
-        ? detail!.description
-        : 'Interpretation data for this guna is being processed.';
+    final description =
+        detail?.description.isNotEmpty == true
+            ? detail!.description
+            : 'Interpretation data for this guna is being processed.';
     final significance = detail?.significance ?? '';
     final tips = detail?.tips ?? [];
 
@@ -570,7 +669,10 @@ class _InterpretationTabWidget extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.lightPink,
                   borderRadius: BorderRadius.circular(20),
@@ -608,7 +710,8 @@ class _InterpretationTabWidget extends StatelessWidget {
                     color: AppColors.textColorPrimary,
                   ),
                 ),
-                if (detail?.maleKootAttribute.isNotEmpty == true || detail?.femaleKootAttribute.isNotEmpty == true) ...[
+                if (detail?.maleKootAttribute.isNotEmpty == true ||
+                    detail?.femaleKootAttribute.isNotEmpty == true) ...[
                   const SizedBox(height: 16),
                   const Divider(color: AppColors.borderColor),
                   const SizedBox(height: 10),
@@ -702,21 +805,32 @@ class _InterpretationTabWidget extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 6),
-                  ...tips.map((tip) => Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text('• ', style: TextStyle(color: AppColors.primaryColor, fontWeight: FontWeight.bold)),
-                            Expanded(
-                              child: Text(
-                                tip,
-                                style: const TextStyle(fontSize: 12.5, color: AppColors.textColorPrimary),
+                  ...tips.map(
+                    (tip) => Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            '• ',
+                            style: TextStyle(
+                              color: AppColors.primaryColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              tip,
+                              style: const TextStyle(
+                                fontSize: 12.5,
+                                color: AppColors.textColorPrimary,
                               ),
                             ),
-                          ],
-                        ),
-                      )),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ],
             ),
@@ -753,7 +867,10 @@ class _DownloadPdfTab extends StatelessWidget {
           // Download PDF button
           ElevatedButton.icon(
             onPressed: () => _generateAndShareKundliPdf(context),
-            icon: const Icon(Icons.file_download_outlined, color: AppColors.white),
+            icon: const Icon(
+              Icons.file_download_outlined,
+              color: AppColors.white,
+            ),
             label: const Text(
               'Download PDF',
               style: TextStyle(
@@ -787,18 +904,30 @@ class _BirthDetailsTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<MatchingController>();
 
-    final maleNakshatra = data?.maleInfo?.moonNakshatra.isNotEmpty == true
-        ? data!.maleInfo!.moonNakshatra
-        : (data?.gunaMilan.tara.maleKootAttribute.isNotEmpty == true ? data!.gunaMilan.tara.maleKootAttribute : 'Ardra');
-    final maleSign = data?.maleInfo?.moonSign.isNotEmpty == true
-        ? data!.maleInfo!.moonSign
-        : (data?.gunaMilan.bhakoot.maleKootAttribute.isNotEmpty == true ? data!.gunaMilan.bhakoot.maleKootAttribute : 'Gemini');
-    final femaleNakshatra = data?.femaleInfo?.moonNakshatra.isNotEmpty == true
-        ? data!.femaleInfo!.moonNakshatra
-        : (data?.gunaMilan.tara.femaleKootAttribute.isNotEmpty == true ? data!.gunaMilan.tara.femaleKootAttribute : 'Purva Phalguni');
-    final femaleSign = data?.femaleInfo?.moonSign.isNotEmpty == true
-        ? data!.femaleInfo!.moonSign
-        : (data?.gunaMilan.bhakoot.femaleKootAttribute.isNotEmpty == true ? data!.gunaMilan.bhakoot.femaleKootAttribute : 'Leo');
+    final maleNakshatra =
+        data?.maleInfo?.moonNakshatra.isNotEmpty == true
+            ? data!.maleInfo!.moonNakshatra
+            : (data?.gunaMilan.tara.maleKootAttribute.isNotEmpty == true
+                ? data!.gunaMilan.tara.maleKootAttribute
+                : 'Ardra');
+    final maleSign =
+        data?.maleInfo?.moonSign.isNotEmpty == true
+            ? data!.maleInfo!.moonSign
+            : (data?.gunaMilan.bhakoot.maleKootAttribute.isNotEmpty == true
+                ? data!.gunaMilan.bhakoot.maleKootAttribute
+                : 'Gemini');
+    final femaleNakshatra =
+        data?.femaleInfo?.moonNakshatra.isNotEmpty == true
+            ? data!.femaleInfo!.moonNakshatra
+            : (data?.gunaMilan.tara.femaleKootAttribute.isNotEmpty == true
+                ? data!.gunaMilan.tara.femaleKootAttribute
+                : 'Purva Phalguni');
+    final femaleSign =
+        data?.femaleInfo?.moonSign.isNotEmpty == true
+            ? data!.femaleInfo!.moonSign
+            : (data?.gunaMilan.bhakoot.femaleKootAttribute.isNotEmpty == true
+                ? data!.gunaMilan.bhakoot.femaleKootAttribute
+                : 'Leo');
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -814,15 +943,17 @@ class _BirthDetailsTab extends StatelessWidget {
             rashi: maleSign,
             buttonLabel: "VIEW BOY'S KUNDLI",
             onTap: () {
-              Get.to(() => KundliScreen(
-                    fullName: controller.boyName,
-                    gender: controller.boyGender,
-                    dob: controller.boyDobRaw,
-                    tob: controller.boyTobRaw,
-                    place: controller.boyPlace,
-                    latitude: controller.boyLatVal,
-                    longitude: controller.boyLngVal,
-                  ));
+              Get.to(
+                () => KundliScreen(
+                  fullName: controller.boyName,
+                  gender: controller.boyGender,
+                  dob: controller.boyDobRaw,
+                  tob: controller.boyTobRaw,
+                  place: controller.boyPlace,
+                  latitude: controller.boyLatVal,
+                  longitude: controller.boyLngVal,
+                ),
+              );
             },
           ),
           const SizedBox(height: 16),
@@ -836,15 +967,17 @@ class _BirthDetailsTab extends StatelessWidget {
             rashi: femaleSign,
             buttonLabel: "VIEW GIRL'S KUNDLI",
             onTap: () {
-              Get.to(() => KundliScreen(
-                    fullName: controller.girlName,
-                    gender: controller.girlGender,
-                    dob: controller.girlDobRaw,
-                    tob: controller.girlTobRaw,
-                    place: controller.girlPlace,
-                    latitude: controller.girlLatVal,
-                    longitude: controller.girlLngVal,
-                  ));
+              Get.to(
+                () => KundliScreen(
+                  fullName: controller.girlName,
+                  gender: controller.girlGender,
+                  dob: controller.girlDobRaw,
+                  tob: controller.girlTobRaw,
+                  place: controller.girlPlace,
+                  latitude: controller.girlLatVal,
+                  longitude: controller.girlLngVal,
+                ),
+              );
             },
           ),
         ],
@@ -886,19 +1019,41 @@ class _BirthDetailsTab extends StatelessWidget {
             const SizedBox(height: 12),
             RichText(
               text: TextSpan(
-                style: const TextStyle(color: AppColors.textColorPrimary, fontSize: 13.5, height: 1.5),
+                style: const TextStyle(
+                  color: AppColors.textColorPrimary,
+                  fontSize: 13.5,
+                  height: 1.5,
+                ),
                 children: [
-                  const TextSpan(text: 'Name: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                  const TextSpan(
+                    text: 'Name: ',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   TextSpan(text: '$name\n'),
-                  const TextSpan(text: 'Birth Date: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                  const TextSpan(
+                    text: 'Birth Date: ',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   TextSpan(text: '$dob\n'),
-                  const TextSpan(text: 'Birth Time: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                  const TextSpan(
+                    text: 'Birth Time: ',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   TextSpan(text: '$tob\n'),
-                  const TextSpan(text: 'Birth Place: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                  const TextSpan(
+                    text: 'Birth Place: ',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   TextSpan(text: '$place\n'),
-                  const TextSpan(text: 'Moon Sign (Rashi): ', style: TextStyle(fontWeight: FontWeight.bold)),
+                  const TextSpan(
+                    text: 'Moon Sign (Rashi): ',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   TextSpan(text: '$rashi\n'),
-                  const TextSpan(text: 'Moon Nakshatra: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                  const TextSpan(
+                    text: 'Moon Nakshatra: ',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   TextSpan(text: nakshatra),
                 ],
               ),
@@ -910,7 +1065,10 @@ class _BirthDetailsTab extends StatelessWidget {
                 onPressed: onTap,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryColor,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -935,28 +1093,49 @@ class _BirthDetailsTab extends StatelessWidget {
 void _showMarriageMuhuratBottomSheet(BuildContext context) {
   final now = DateTime.now();
   final monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
   final monthAbbr = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
   ];
-  
+
   // Calculate upcoming 4 months dynamically from today
   final List<Map<String, String>> dynamicMuhurats = [];
   final sampleDatesPattern = [
     '04, 07, 12, 18, 22, 25',
     '02, 06, 09, 14, 19, 27',
     '05, 08, 11, 16, 21, 28',
-    '03, 10, 15, 20, 24, 29'
+    '03, 10, 15, 20, 24, 29',
   ];
 
   for (int i = 0; i < 4; i++) {
     final futureDate = DateTime(now.year, now.month + i, 1);
     final monthName = '${monthNames[futureDate.month - 1]} ${futureDate.year}';
     final abbr = monthAbbr[futureDate.month - 1];
-    final datesStr = '${sampleDatesPattern[i % sampleDatesPattern.length]} $abbr';
+    final datesStr =
+        '${sampleDatesPattern[i % sampleDatesPattern.length]} $abbr';
     dynamicMuhurats.add({'month': monthName, 'dates': datesStr});
   }
 
@@ -980,7 +1159,11 @@ void _showMarriageMuhuratBottomSheet(BuildContext context) {
               children: [
                 const Row(
                   children: [
-                    Icon(Icons.calendar_month, color: AppColors.primaryColor, size: 22),
+                    Icon(
+                      Icons.calendar_month,
+                      color: AppColors.primaryColor,
+                      size: 22,
+                    ),
                     SizedBox(width: 8),
                     Text(
                       'Upcoming Marriage Muhurats',
@@ -993,15 +1176,20 @@ void _showMarriageMuhuratBottomSheet(BuildContext context) {
                   ],
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close, color: AppColors.textColorSecondary),
+                  icon: const Icon(
+                    Icons.close,
+                    color: AppColors.textColorSecondary,
+                  ),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
             ),
             const Divider(color: AppColors.borderColor),
             const SizedBox(height: 10),
-            
-            ...dynamicMuhurats.map((m) => _buildMuhuratTile(m['month']!, m['dates']!)),
+
+            ...dynamicMuhurats.map(
+              (m) => _buildMuhuratTile(m['month']!, m['dates']!),
+            ),
 
             const SizedBox(height: 16),
             SizedBox(
@@ -1011,7 +1199,11 @@ void _showMarriageMuhuratBottomSheet(BuildContext context) {
                   Navigator.pop(context);
                   Get.toNamed(RouteHelper.getPanchangRoute());
                 },
-                icon: const Icon(Icons.auto_awesome, color: AppColors.white, size: 18),
+                icon: const Icon(
+                  Icons.auto_awesome,
+                  color: AppColors.white,
+                  size: 18,
+                ),
                 label: const Text(
                   'VIEW DAILY PANCHANG & SHUBH MUHURAT',
                   style: TextStyle(
@@ -1048,7 +1240,11 @@ Widget _buildMuhuratTile(String month, String dates) {
             color: AppColors.lightPink,
             borderRadius: BorderRadius.circular(8),
           ),
-          child: const Icon(Icons.favorite, color: AppColors.primaryColor, size: 18),
+          child: const Icon(
+            Icons.favorite,
+            color: AppColors.primaryColor,
+            size: 18,
+          ),
         ),
         const SizedBox(width: 12),
         Expanded(

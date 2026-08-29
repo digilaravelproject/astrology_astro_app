@@ -33,7 +33,8 @@ class ManglikReportTab extends StatelessWidget {
 
       bool isManglik = manglikData.isPresent;
       String resultText = isManglik ? "YES".tr : "NO".tr;
-      Color statusColor = isManglik ? const Color(0xFFEA4335) : const Color(0xFF2EBD59);
+      Color statusColor =
+          isManglik ? const Color(0xFFEA4335) : const Color(0xFF2EBD59);
 
       return SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -50,15 +51,27 @@ class ManglikReportTab extends StatelessWidget {
               _buildConclusionCard(manglikData.manglikReport),
             if (manglikData.basedOnHouse.isNotEmpty) ...[
               const SizedBox(height: 16),
-              _buildRulesCard("House Placements".tr, manglikData.basedOnHouse, Icons.home_outlined),
+              _buildRulesCard(
+                "House Placements".tr,
+                manglikData.basedOnHouse,
+                Icons.home_outlined,
+              ),
             ],
             if (manglikData.basedOnAspect.isNotEmpty) ...[
               const SizedBox(height: 16),
-              _buildRulesCard("Planetary Aspects".tr, manglikData.basedOnAspect, Icons.remove_red_eye_outlined),
+              _buildRulesCard(
+                "Planetary Aspects".tr,
+                manglikData.basedOnAspect,
+                Icons.remove_red_eye_outlined,
+              ),
             ],
             if (manglikData.cancelRules.isNotEmpty) ...[
               const SizedBox(height: 16),
-              _buildRulesCard("Cancellation Factors".tr, manglikData.cancelRules, Icons.check_circle_outline),
+              _buildRulesCard(
+                "Cancellation Factors".tr,
+                manglikData.cancelRules,
+                Icons.check_circle_outline,
+              ),
             ],
           ],
         ),
@@ -77,7 +90,11 @@ class ManglikReportTab extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Column(
@@ -87,10 +104,18 @@ class ManglikReportTab extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 12),
             decoration: const BoxDecoration(
               color: AppColors.primaryColor,
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
+              ),
             ),
             child: Center(
-              child: AppText("Manglik Analysis".tr, fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+              child: AppText(
+                "Manglik Analysis".tr,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
             ),
           ),
           Padding(
@@ -140,7 +165,11 @@ class ManglikReportTab extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Column(
@@ -151,10 +180,18 @@ class ManglikReportTab extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 12),
             decoration: const BoxDecoration(
               color: AppColors.primaryColor,
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
+              ),
             ),
             child: Center(
-              child: AppText("Conclusion".tr, fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+              child: AppText(
+                "Conclusion".tr,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
             ),
           ),
           Padding(
@@ -170,7 +207,8 @@ class ManglikReportTab extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 AppText(
-                  "[This is a computer generated result based on planetary positions. Please consult an Astrologer to confirm & understand this in detail.]".tr,
+                  "[This is a computer generated result based on planetary positions. Please consult an Astrologer to confirm & understand this in detail.]"
+                      .tr,
                   fontSize: 12,
                   color: Colors.grey.shade600,
                   height: 1.3,
@@ -189,7 +227,11 @@ class ManglikReportTab extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Column(
@@ -200,13 +242,21 @@ class ManglikReportTab extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
             decoration: BoxDecoration(
               color: AppColors.primaryColor.withOpacity(0.1),
-              borderRadius: const BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
+              ),
             ),
             child: Row(
               children: [
                 Icon(icon, size: 18, color: AppColors.primaryColor),
                 const SizedBox(width: 8),
-                AppText(title, fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black87),
+                AppText(
+                  title,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
               ],
             ),
           ),
@@ -214,20 +264,30 @@ class ManglikReportTab extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: rules.map((rule) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const AppText("• ", fontWeight: FontWeight.bold, fontSize: 14),
-                      Expanded(
-                        child: AppText(rule.tr, fontSize: 13, height: 1.3, color: Colors.black87),
+              children:
+                  rules.map((rule) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const AppText(
+                            "• ",
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                          Expanded(
+                            child: AppText(
+                              rule.tr,
+                              fontSize: 13,
+                              height: 1.3,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                );
-              }).toList(),
+                    );
+                  }).toList(),
             ),
           ),
         ],

@@ -11,8 +11,8 @@ class BlogController extends GetxController {
   BlogController({
     required GetBlogsUseCase getBlogsUseCase,
     required GetBlogDetailsUseCase getBlogDetailsUseCase,
-  })  : _getBlogsUseCase = getBlogsUseCase,
-        _getBlogDetailsUseCase = getBlogDetailsUseCase;
+  }) : _getBlogsUseCase = getBlogsUseCase,
+       _getBlogDetailsUseCase = getBlogDetailsUseCase;
 
   final isLoading = false.obs;
   final allBlogs = <BlogModel>[].obs;
@@ -34,14 +34,15 @@ class BlogController extends GetxController {
       isLoading.value = true;
       final result = await _getBlogsUseCase.execute();
       allBlogs.assignAll(result);
-      
+
       // Extract unique categories from blogs
-      final uniqueCategories = result
-          .map((blog) => blog.type ?? "General")
-          .where((type) => type.isNotEmpty)
-          .toSet()
-          .toList();
-      
+      final uniqueCategories =
+          result
+              .map((blog) => blog.type ?? "General")
+              .where((type) => type.isNotEmpty)
+              .toSet()
+              .toList();
+
       categories.assignAll(["All", ...uniqueCategories]);
       _applyFilters();
     } catch (e) {
@@ -62,13 +63,21 @@ class BlogController extends GetxController {
   }
 
   void _applyFilters() {
-    filteredBlogs.assignAll(allBlogs.where((blog) {
-      final matchesCategory = selectedCategory.value == "All" || 
-                              (blog.type ?? "General") == selectedCategory.value;
-      final matchesSearch = blog.title.toLowerCase().contains(searchQuery.value.toLowerCase()) ||
-                            blog.subtitle.toLowerCase().contains(searchQuery.value.toLowerCase());
-      return matchesCategory && matchesSearch;
-    }).toList());
+    filteredBlogs.assignAll(
+      allBlogs.where((blog) {
+        final matchesCategory =
+            selectedCategory.value == "All" ||
+            (blog.type ?? "General") == selectedCategory.value;
+        final matchesSearch =
+            blog.title.toLowerCase().contains(
+              searchQuery.value.toLowerCase(),
+            ) ||
+            blog.subtitle.toLowerCase().contains(
+              searchQuery.value.toLowerCase(),
+            );
+        return matchesCategory && matchesSearch;
+      }).toList(),
+    );
   }
 
   // Fetch single blog details

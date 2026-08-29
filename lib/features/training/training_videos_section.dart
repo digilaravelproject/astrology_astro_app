@@ -6,6 +6,7 @@ import '../../../core/constants/app_urls.dart';
 import 'controller/training_video_controller.dart';
 import 'model/training_videos_model.dart';
 import 'training_video_detail_screen.dart';
+import 'package:astro_astrologer/core/widgets/custom_image_widget.dart';
 
 class TrainingVideosSection extends StatelessWidget {
   const TrainingVideosSection({super.key});
@@ -26,9 +27,16 @@ class TrainingVideosSection extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.red.withOpacity(0.5), width: 1.5),
+                  border: Border.all(
+                    color: Colors.red.withOpacity(0.5),
+                    width: 1.5,
+                  ),
                 ),
-                child: const Icon(Icons.play_arrow_rounded, color: Colors.red, size: 20),
+                child: const Icon(
+                  Icons.play_arrow_rounded,
+                  color: Colors.red,
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -84,17 +92,23 @@ class TrainingVideosSection extends StatelessWidget {
 
   Widget _buildVideoCard(TrainingVideoModel video, int index) {
     return GestureDetector(
-      onTap: () => Get.to(
-        () => TrainingVideoDetailScreen(
-          videoId: video.id,
-          preloadedVideo: video,
-        ),
-      ),
+      onTap:
+          () => Get.to(
+            () => TrainingVideoDetailScreen(
+              videoId: video.id,
+              preloadedVideo: video,
+            ),
+          ),
       child: Container(
         width: 160,
         margin: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
-          color: index % 3 == 0 ? const Color(0xFFFFEB3B) : (index % 3 == 1 ? const Color(0xFFFFF176) : const Color(0xFFFFF9C4)),
+          color:
+              index % 3 == 0
+                  ? const Color(0xFFFFEB3B)
+                  : (index % 3 == 1
+                      ? const Color(0xFFFFF176)
+                      : const Color(0xFFFFF9C4)),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -116,7 +130,9 @@ class TrainingVideosSection extends StatelessWidget {
                 height: 140,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(20),
+                  ),
                   border: Border.all(color: Colors.black87, width: 2),
                 ),
                 padding: const EdgeInsets.all(4),
@@ -124,19 +140,32 @@ class TrainingVideosSection extends StatelessWidget {
                   clipBehavior: Clip.antiAlias,
                   decoration: BoxDecoration(
                     color: Colors.grey.shade50,
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(16),
+                    ),
                   ),
-                  child: video.thumbnailUrl.isNotEmpty
-                      ? Image.network(
-                          AppUrls.baseImageUrl + video.thumbnailUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Center(
-                              child: Icon(Icons.videocam_outlined,
-                                  color: Colors.grey.shade300, size: 40)))
-                      : Center(
-                          child: Icon(Icons.smartphone_rounded,
-                              color: Colors.grey.shade300, size: 40),
-                        ),
+                  child:
+                      video.thumbnailUrl.isNotEmpty
+                          ? CustomImageWidget(
+                            imagePath:
+                                AppUrls.baseImageUrl + video.thumbnailUrl,
+                            fit: BoxFit.cover,
+                            errorBuilder:
+                                (_, __, ___) => Center(
+                                  child: Icon(
+                                    Icons.videocam_outlined,
+                                    color: Colors.grey.shade300,
+                                    size: 40,
+                                  ),
+                                ),
+                          )
+                          : Center(
+                            child: Icon(
+                              Icons.smartphone_rounded,
+                              color: Colors.grey.shade300,
+                              size: 40,
+                            ),
+                          ),
                 ),
               ),
             ),

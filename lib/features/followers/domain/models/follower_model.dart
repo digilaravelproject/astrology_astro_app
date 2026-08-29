@@ -21,11 +21,12 @@ class FollowerResponse {
 
   factory FollowerResponse.fromJson(Map<String, dynamic> json) {
     // The 'json' here is likely 'response.body', which is the 'data' object from the API
-    final List<dynamic> followerList = json['followers'] ?? json['favorites'] ?? [];
+    final List<dynamic> followerList =
+        json['followers'] ?? json['favorites'] ?? [];
 
     return FollowerResponse(
       status: 'success', // Assuming success if we got here
-      message: '', 
+      message: '',
       total: json['total'] ?? 0,
       perPage: json['per_page'] ?? 10,
       currentPage: json['current_page'] ?? 1,

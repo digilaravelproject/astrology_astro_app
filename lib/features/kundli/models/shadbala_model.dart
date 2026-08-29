@@ -22,10 +22,16 @@ class ShadbalaData {
   factory ShadbalaData.fromJson(Map<String, dynamic> json) {
     return ShadbalaData(
       note: json['note'],
-      shadbala: json['shadbala'] != null
-          ? (json['shadbala'] as List).map((i) => ShadbalaItem.fromJson(i)).toList()
-          : null,
-      summary: json['summary'] != null ? ShadbalaSummary.fromJson(json['summary']) : null,
+      shadbala:
+          json['shadbala'] != null
+              ? (json['shadbala'] as List)
+                  .map((i) => ShadbalaItem.fromJson(i))
+                  .toList()
+              : null,
+      summary:
+          json['summary'] != null
+              ? ShadbalaSummary.fromJson(json['summary'])
+              : null,
     );
   }
 }
@@ -58,15 +64,27 @@ class ShadbalaItem {
   factory ShadbalaItem.fromJson(Map<String, dynamic> json) {
     return ShadbalaItem(
       planet: json['planet'],
-      totalStrength: json['total_strength'] != null ? (json['total_strength'] as num).toDouble() : null,
-      requiredMinimum: json['required_minimum'] != null ? (json['required_minimum'] as num).toDouble() : null,
-      strengthRatio: json['strength_ratio'] != null ? (json['strength_ratio'] as num).toDouble() : null,
+      totalStrength:
+          json['total_strength'] != null
+              ? (json['total_strength'] as num).toDouble()
+              : null,
+      requiredMinimum:
+          json['required_minimum'] != null
+              ? (json['required_minimum'] as num).toDouble()
+              : null,
+      strengthRatio:
+          json['strength_ratio'] != null
+              ? (json['strength_ratio'] as num).toDouble()
+              : null,
       normalizedScore: json['normalized_score'],
       isStrong: json['is_strong'],
       qualifier: json['qualifier'],
       governs: json['governs'],
       interpretation: json['interpretation'],
-      breakdown: json['breakdown'] != null ? ShadbalaBreakdown.fromJson(json['breakdown']) : null,
+      breakdown:
+          json['breakdown'] != null
+              ? ShadbalaBreakdown.fromJson(json['breakdown'])
+              : null,
     );
   }
 }
@@ -90,12 +108,30 @@ class ShadbalaBreakdown {
 
   factory ShadbalaBreakdown.fromJson(Map<String, dynamic> json) {
     return ShadbalaBreakdown(
-      chestaBala: json['chesta_bala'] != null ? (json['chesta_bala'] as num).toDouble() : null,
-      digBala: json['dig_bala'] != null ? (json['dig_bala'] as num).toDouble() : null,
-      drikBala: json['drik_bala'] != null ? (json['drik_bala'] as num).toDouble() : null,
-      kalaBala: json['kala_bala'] != null ? (json['kala_bala'] as num).toDouble() : null,
-      naisargikaBala: json['naisargika_bala'] != null ? (json['naisargika_bala'] as num).toDouble() : null,
-      sthanaBala: json['sthana_bala'] != null ? SthanaBala.fromJson(json['sthana_bala']) : null,
+      chestaBala:
+          json['chesta_bala'] != null
+              ? (json['chesta_bala'] as num).toDouble()
+              : null,
+      digBala:
+          json['dig_bala'] != null
+              ? (json['dig_bala'] as num).toDouble()
+              : null,
+      drikBala:
+          json['drik_bala'] != null
+              ? (json['drik_bala'] as num).toDouble()
+              : null,
+      kalaBala:
+          json['kala_bala'] != null
+              ? (json['kala_bala'] as num).toDouble()
+              : null,
+      naisargikaBala:
+          json['naisargika_bala'] != null
+              ? (json['naisargika_bala'] as num).toDouble()
+              : null,
+      sthanaBala:
+          json['sthana_bala'] != null
+              ? SthanaBala.fromJson(json['sthana_bala'])
+              : null,
     );
   }
 }
@@ -117,10 +153,22 @@ class SthanaBala {
 
   factory SthanaBala.fromJson(Map<String, dynamic> json) {
     return SthanaBala(
-      drekkanaBala: json['drekkana_bala'] != null ? (json['drekkana_bala'] as num).toDouble() : null,
-      kendraBala: json['kendra_bala'] != null ? (json['kendra_bala'] as num).toDouble() : null,
-      saptavargajaBala: json['saptavargaja_bala'] != null ? (json['saptavargaja_bala'] as num).toDouble() : null,
-      uchchaBala: json['uchcha_bala'] != null ? (json['uchcha_bala'] as num).toDouble() : null,
+      drekkanaBala:
+          json['drekkana_bala'] != null
+              ? (json['drekkana_bala'] as num).toDouble()
+              : null,
+      kendraBala:
+          json['kendra_bala'] != null
+              ? (json['kendra_bala'] as num).toDouble()
+              : null,
+      saptavargajaBala:
+          json['saptavargaja_bala'] != null
+              ? (json['saptavargaja_bala'] as num).toDouble()
+              : null,
+      uchchaBala:
+          json['uchcha_bala'] != null
+              ? (json['uchcha_bala'] as num).toDouble()
+              : null,
       total: json['total'] != null ? (json['total'] as num).toDouble() : null,
     );
   }
@@ -150,10 +198,16 @@ class ShadbalaSummary {
       planetsAboveRequired: json['planets_above_required'],
       planetsBelowRequired: json['planets_below_required'],
       strongestPlanet: json['strongest_planet'],
-      strongestScore: json['strongest_score'] != null ? (json['strongest_score'] as num).toDouble() : null,
+      strongestScore:
+          json['strongest_score'] != null
+              ? (json['strongest_score'] as num).toDouble()
+              : null,
       totalPlanetsAnalyzed: json['total_planets_analyzed'],
       weakestPlanet: json['weakest_planet'],
-      weakestScore: json['weakest_score'] != null ? (json['weakest_score'] as num).toDouble() : null,
+      weakestScore:
+          json['weakest_score'] != null
+              ? (json['weakest_score'] as num).toDouble()
+              : null,
     );
   }
 }

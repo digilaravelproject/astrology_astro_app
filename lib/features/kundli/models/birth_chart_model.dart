@@ -19,9 +19,12 @@ class BirthChartData {
 
   factory BirthChartData.fromJson(Map<String, dynamic> json) {
     return BirthChartData(
-      planets: json['planets'] != null
-          ? (json['planets'] as List).map((i) => BirthChartPlanet.fromJson(i)).toList()
-          : null,
+      planets:
+          json['planets'] != null
+              ? (json['planets'] as List)
+                  .map((i) => BirthChartPlanet.fromJson(i))
+                  .toList()
+              : null,
     );
   }
 }

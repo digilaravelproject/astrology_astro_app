@@ -32,11 +32,14 @@ class PhoneNumberBinding extends Bindings {
     );
 
     Get.lazyPut<SetDefaultPhoneNumberUseCase>(
-      () => SetDefaultPhoneNumberUseCase(Get.find<PhoneNumberRepositoryInterface>()),
+      () => SetDefaultPhoneNumberUseCase(
+        Get.find<PhoneNumberRepositoryInterface>(),
+      ),
     );
 
     Get.lazyPut<VerifyPhoneNumberUseCase>(
-      () => VerifyPhoneNumberUseCase(Get.find<PhoneNumberRepositoryInterface>()),
+      () =>
+          VerifyPhoneNumberUseCase(Get.find<PhoneNumberRepositoryInterface>()),
     );
 
     // Controller

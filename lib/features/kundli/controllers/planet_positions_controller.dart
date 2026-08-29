@@ -4,7 +4,7 @@ import '../repositories/planet_positions_repository.dart';
 
 class PlanetPositionsController extends GetxController {
   final PlanetPositionsRepository _repository = PlanetPositionsRepository();
-  
+
   var isLoading = false.obs;
   var planetPositionsModel = Rxn<PlanetPositionsModel>();
 

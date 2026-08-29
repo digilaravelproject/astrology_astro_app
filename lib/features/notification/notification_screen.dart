@@ -29,9 +29,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(
-        title: 'Notifications',
-      ),
+      appBar: const CustomAppBar(title: 'Notifications'),
       body: Obx(() {
         if (_controller.isNotificationsLoading.value) {
           return const Center(
@@ -51,14 +49,17 @@ class _NotificationScreenState extends State<NotificationScreen> {
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
             itemCount: notifications.length,
-            separatorBuilder: (_, __) =>
-                const Divider(height: 1, color: Color(0xFFEEEEEE)),
+            separatorBuilder:
+                (_, __) => const Divider(height: 1, color: Color(0xFFEEEEEE)),
             itemBuilder: (context, index) {
               final notification = notifications[index];
               return GestureDetector(
-                onTap: () => Get.to(() => NotificationDetailScreen(
-                      notificationId: notification.id,
-                    )),
+                onTap:
+                    () => Get.to(
+                      () => NotificationDetailScreen(
+                        notificationId: notification.id,
+                      ),
+                    ),
                 child: _buildNotificationItem(notification),
               );
             },
@@ -72,8 +73,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
   String _getTypeFromTitle(String title) {
     final lower = title.toLowerCase();
     if (lower.contains('follow')) return 'follower';
-    if (lower.contains('wallet') || lower.contains('earning') || lower.contains('credit')) return 'wallet';
-    if (lower.contains('review') || lower.contains('rating') || lower.contains('star')) return 'review';
+    if (lower.contains('wallet') ||
+        lower.contains('earning') ||
+        lower.contains('credit'))
+      return 'wallet';
+    if (lower.contains('review') ||
+        lower.contains('rating') ||
+        lower.contains('star'))
+      return 'review';
     if (lower.contains('like') || lower.contains('liked')) return 'like';
     if (lower.contains('block')) return 'block';
     if (lower.contains('report')) return 'report';
@@ -158,9 +165,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
               color: isRead ? const Color(0xFFF5F5F5) : AppColors.white,
               shape: BoxShape.circle,
               border: Border.all(
-                color: isRead
-                    ? Colors.transparent
-                    : AppColors.deepPink.withOpacity(0.2),
+                color:
+                    isRead
+                        ? Colors.transparent
+                        : AppColors.deepPink.withOpacity(0.2),
               ),
             ),
             child: Icon(
@@ -181,8 +189,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       child: AppText(
                         notification.title,
                         fontSize: 15,
-                        fontWeight:
-                            isRead ? FontWeight.w500 : FontWeight.w700,
+                        fontWeight: isRead ? FontWeight.w500 : FontWeight.w700,
                         color: Colors.black87,
                       ),
                     ),

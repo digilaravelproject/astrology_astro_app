@@ -87,11 +87,15 @@ class StartPaidSessionSection extends StatelessWidget {
                   ],
                 ),
                 child: ClipOval(
-                  child: Icon(Icons.person, size: 24, color: Colors.grey.shade600), // Even smaller icon size
+                  child: Icon(
+                    Icons.person,
+                    size: 24,
+                    color: Colors.grey.shade600,
+                  ), // Even smaller icon size
                 ),
               ),
               const SizedBox(width: 8),
-              
+
               // Name and Spent Amount
               Expanded(
                 child: Column(
@@ -113,19 +117,28 @@ class StartPaidSessionSection extends StatelessWidget {
                   ],
                 ),
               ),
-              
+
               // Timer Badge
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3), // Smaller padding
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 3,
+                ), // Smaller padding
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(100),
-                  border: Border.all(color: AppColors.primaryColor.withOpacity(0.3)),
+                  border: Border.all(
+                    color: AppColors.primaryColor.withOpacity(0.3),
+                  ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.schedule, size: 10, color: Colors.grey.shade600), // Smaller icon
+                    Icon(
+                      Icons.schedule,
+                      size: 10,
+                      color: Colors.grey.shade600,
+                    ), // Smaller icon
                     const SizedBox(width: 3),
                     AppText(
                       '4 min',
@@ -140,7 +153,7 @@ class StartPaidSessionSection extends StatelessWidget {
             ],
           ),
           const Spacer(),
-          
+
           // Action Buttons
           Row(
             children: [
@@ -148,7 +161,9 @@ class StartPaidSessionSection extends StatelessWidget {
                 child: InkWell(
                   onTap: () {},
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 6), // Smaller padding
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 6,
+                    ), // Smaller padding
                     decoration: BoxDecoration(
                       color: AppColors.primaryColor,
                       borderRadius: BorderRadius.circular(6), // Smaller radius
@@ -157,7 +172,11 @@ class StartPaidSessionSection extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.call, size: 14, color: Colors.white), // Smaller icon
+                        const Icon(
+                          Icons.call,
+                          size: 14,
+                          color: Colors.white,
+                        ), // Smaller icon
                         const SizedBox(width: 4),
                         AppText(
                           'Call Now',
@@ -175,7 +194,9 @@ class StartPaidSessionSection extends StatelessWidget {
                 child: InkWell(
                   onTap: () {},
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 6), // Smaller padding
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 6,
+                    ), // Smaller padding
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(6), // Smaller radius
@@ -184,7 +205,11 @@ class StartPaidSessionSection extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.chat_bubble_outline, size: 14, color: AppColors.primaryColor), // Smaller icon
+                        Icon(
+                          Icons.chat_bubble_outline,
+                          size: 14,
+                          color: AppColors.primaryColor,
+                        ), // Smaller icon
                         const SizedBox(width: 4),
                         AppText(
                           'Chat Now',

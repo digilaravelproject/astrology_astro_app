@@ -8,15 +8,11 @@ class PanchangBinding extends Bindings {
   @override
   void dependencies() {
     // Repository
-    Get.lazyPut<PanchangRepository>(
-      () => PanchangRepositoryImpl(),
-    );
+    Get.lazyPut<PanchangRepository>(() => PanchangRepositoryImpl());
 
     // UseCase
     Get.lazyPut<GetPanchangUseCase>(
-      () => GetPanchangUseCase(
-        repository: Get.find<PanchangRepository>(),
-      ),
+      () => GetPanchangUseCase(repository: Get.find<PanchangRepository>()),
     );
 
     // Controller

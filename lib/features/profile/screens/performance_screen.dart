@@ -27,18 +27,20 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
       Get.lazyPut(() => ApiClient());
     }
     if (!Get.isRegistered<PerformanceRepository>()) {
-      Get.lazyPut(() => PerformanceRepository(apiClient: Get.find<ApiClient>()));
+      Get.lazyPut(
+        () => PerformanceRepository(apiClient: Get.find<ApiClient>()),
+      );
     }
-    controller = Get.put(PerformanceController(repository: Get.find<PerformanceRepository>()));
+    controller = Get.put(
+      PerformanceController(repository: Get.find<PerformanceRepository>()),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
-      appBar: CustomAppBar(
-        title: 'My Performance'.tr,
-      ),
+      appBar: CustomAppBar(title: 'My Performance'.tr),
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
@@ -47,7 +49,10 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
         final data = controller.performanceData.value;
         if (data == null) {
           return Center(
-            child: AppText('Failed to load performance data'.tr, color: Colors.grey),
+            child: AppText(
+              'Failed to load performance data'.tr,
+              color: Colors.grey,
+            ),
           );
         }
 
@@ -96,7 +101,10 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
             ),
             child: FractionallySizedBox(
               alignment: Alignment.centerLeft,
-              widthFactor: badgeType == 'Celebrity' ? 1.0 : (badgeType == 'Top Choice' ? 0.6 : 0.2), 
+              widthFactor:
+                  badgeType == 'Celebrity'
+                      ? 1.0
+                      : (badgeType == 'Top Choice' ? 0.6 : 0.2),
               child: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -200,12 +208,27 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
           ),
           child: Column(
             children: [
-              _buildHealthRow('Total Sessions', '${health?.totalSessions ?? 0}', isFirst: true),
-              _buildHealthRow('Missed Sessions', '${health?.missedSessions ?? 0}'),
-              _buildHealthRow('Revenue Loss from missed Sessions', '₹${health?.revenueLoss ?? 0.0}', showInfo: true),
+              _buildHealthRow(
+                'Total Sessions',
+                '${health?.totalSessions ?? 0}',
+                isFirst: true,
+              ),
+              _buildHealthRow(
+                'Missed Sessions',
+                '${health?.missedSessions ?? 0}',
+              ),
+              _buildHealthRow(
+                'Revenue Loss from missed Sessions',
+                '₹${health?.revenueLoss ?? 0.0}',
+                showInfo: true,
+              ),
               _buildHealthRow('Missed Calls', '${health?.missedCalls ?? 0}'),
               _buildHealthRow('Missed Chats', '${health?.missedChats ?? 0}'),
-              _buildHealthRow('Loyal Users', '${health?.loyalUsers ?? 0}', isLast: true),
+              _buildHealthRow(
+                'Loyal Users',
+                '${health?.loyalUsers ?? 0}',
+                isLast: true,
+              ),
             ],
           ),
         ),
@@ -213,12 +236,19 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
     );
   }
 
-  Widget _buildHealthRow(String label, String value, {bool showInfo = false, bool isFirst = false, bool isLast = false}) {
+  Widget _buildHealthRow(
+    String label,
+    String value, {
+    bool showInfo = false,
+    bool isFirst = false,
+    bool isLast = false,
+  }) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         border: Border(
-          bottom: isLast ? BorderSide.none : BorderSide(color: Colors.grey.shade50),
+          bottom:
+              isLast ? BorderSide.none : BorderSide(color: Colors.grey.shade50),
         ),
       ),
       child: Row(
@@ -236,7 +266,11 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
                 ),
                 if (showInfo) ...[
                   const SizedBox(width: 6),
-                  Icon(Iconsax.info_circle_copy, size: 14, color: Colors.grey.shade400),
+                  Icon(
+                    Iconsax.info_circle_copy,
+                    size: 14,
+                    color: Colors.grey.shade400,
+                  ),
                 ],
               ],
             ),
@@ -288,19 +322,21 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
                 ],
               ),
               const SizedBox(height: 20),
-              _buildAvailabilityRow('Available Mins'.tr, 
-                '${availability?.availableMins?.today ?? 0} ${"mins".tr}', 
-                '${availability?.availableMins?.sevenDays ?? 0} ${"mins".tr}', 
-                '${availability?.availableMins?.thirtyDays ?? 0} ${"mins".tr}'
+              _buildAvailabilityRow(
+                'Available Mins'.tr,
+                '${availability?.availableMins?.today ?? 0} ${"mins".tr}',
+                '${availability?.availableMins?.sevenDays ?? 0} ${"mins".tr}',
+                '${availability?.availableMins?.thirtyDays ?? 0} ${"mins".tr}',
               ),
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 16),
                 child: Divider(height: 1),
               ),
-              _buildAvailabilityRow('Busy Mins'.tr, 
-                '${availability?.busyMins?.today ?? 0} ${"mins".tr}', 
-                '${availability?.busyMins?.sevenDays ?? 0} ${"mins".tr}', 
-                '${availability?.busyMins?.thirtyDays ?? 0} ${"mins".tr}'
+              _buildAvailabilityRow(
+                'Busy Mins'.tr,
+                '${availability?.busyMins?.today ?? 0} ${"mins".tr}',
+                '${availability?.busyMins?.sevenDays ?? 0} ${"mins".tr}',
+                '${availability?.busyMins?.thirtyDays ?? 0} ${"mins".tr}',
               ),
             ],
           ),
@@ -378,7 +414,11 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
                     color: Colors.grey.shade700,
                   ),
                 ),
-                Icon(Iconsax.arrow_right_3_copy, size: 20, color: Colors.grey.shade400),
+                Icon(
+                  Iconsax.arrow_right_3_copy,
+                  size: 20,
+                  color: Colors.grey.shade400,
+                ),
               ],
             ),
           ),
@@ -389,7 +429,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
 
   Widget _buildLoyalUserSection(LoyalUserConversion? conversion) {
     final double percentage = conversion?.conversionPercentage ?? 0.0;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -423,15 +463,29 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
                 ],
               ),
               const SizedBox(height: 20),
-              _buildMarkerProgressBar(percentage, [0.0, 17.0, 25.5, 100.0], Colors.amber),
+              _buildMarkerProgressBar(percentage, [
+                0.0,
+                17.0,
+                25.5,
+                100.0,
+              ], Colors.amber),
               const SizedBox(height: 32),
               const Divider(color: Color(0xFFF0F0F0)),
               const SizedBox(height: 16),
               Row(
                 children: [
-                  _buildStatItem('Total users'.tr, '${conversion?.totalUsers ?? 0}'),
-                  _buildStatItem('Loyal Users'.tr, '${conversion?.loyalUsers ?? 0}'),
-                  _buildStatItem('Loyal user level'.tr, '${conversion?.loyalUserLevel ?? 0}'),
+                  _buildStatItem(
+                    'Total users'.tr,
+                    '${conversion?.totalUsers ?? 0}',
+                  ),
+                  _buildStatItem(
+                    'Loyal Users'.tr,
+                    '${conversion?.loyalUsers ?? 0}',
+                  ),
+                  _buildStatItem(
+                    'Loyal user level'.tr,
+                    '${conversion?.loyalUserLevel ?? 0}',
+                  ),
                 ],
               ),
             ],
@@ -439,7 +493,8 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
         ),
         const SizedBox(height: 12),
         AppText(
-          'Loyal user conversion means if Astrotalk provides you with 500 new customers then how many of them became your loyal customers'.tr,
+          'Loyal user conversion means if Astrotalk provides you with 500 new customers then how many of them became your loyal customers'
+              .tr,
           fontSize: 12,
           color: Colors.grey.shade500,
           height: 1.5,
@@ -494,7 +549,11 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
     );
   }
 
-  Widget _buildMarkerProgressBar(double value, List<double> markers, Color color) {
+  Widget _buildMarkerProgressBar(
+    double value,
+    List<double> markers,
+    Color color,
+  ) {
     return Column(
       children: [
         Stack(
@@ -537,14 +596,15 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
         const SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: markers.map((m) {
-            return AppText(
-              '${m.toInt()}%',
-              fontSize: 10,
-              color: Colors.grey.shade500,
-              fontWeight: FontWeight.w600,
-            );
-          }).toList(),
+          children:
+              markers.map((m) {
+                return AppText(
+                  '${m.toInt()}%',
+                  fontSize: 10,
+                  color: Colors.grey.shade500,
+                  fontWeight: FontWeight.w600,
+                );
+              }).toList(),
         ),
       ],
     );

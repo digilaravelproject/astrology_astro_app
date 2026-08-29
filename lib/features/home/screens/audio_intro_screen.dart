@@ -38,81 +38,86 @@ class _AudioIntroScreenState extends State<AudioIntroScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
-          ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 50,
-              height: 5,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(10),
+      builder:
+          (context) => Container(
+            padding: const EdgeInsets.all(24),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
               ),
             ),
-            const SizedBox(height: 30),
-            const Icon(Icons.mic_none_outlined, color: AppColors.primaryColor, size: 60),
-            const SizedBox(height: 20),
-            AppText(
-              'Confirm Audio Upload',
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF2E1A47),
-            ),
-            const SizedBox(height: 10),
-            AppText(
-              'Your audio introduction will help users trust you more. Make sure it is clear and professional.',
-              fontSize: 14,
-              color: Colors.grey.shade600,
-              textAlign: TextAlign.center,
-              height: 1.5,
-            ),
-            const SizedBox(height: 32),
-            Row(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(
-                  child: CustomButton(
-                    text: 'Cancel',
-                    onPressed: () => Get.back(),
-                    buttonType: ButtonStyleType.outlined,
-                    borderColor: Colors.grey.shade300,
-                    textColor: Colors.grey.shade700,
-                    borderRadius: 100,
+                Container(
+                  width: 50,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200,
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: CustomButton(
-                    text: 'Submit Audio',
-                    onPressed: () {
-                      Get.back(); // Close bottom sheet
-                      Get.back(); // Close screen
-                      CustomSnackBar.disabledSnackbar(
-                        'Success',
-                        'Audio introduction uploaded successfully!',
-                        backgroundColor: Colors.green,
-                        colorText: Colors.white,
-                        snackPosition: SnackPosition.BOTTOM,
-                      );
-                    },
-                    backgroundColor: AppColors.primaryColor,
-                    borderRadius: 100,
-                  ),
+                const SizedBox(height: 30),
+                const Icon(
+                  Icons.mic_none_outlined,
+                  color: AppColors.primaryColor,
+                  size: 60,
                 ),
+                const SizedBox(height: 20),
+                AppText(
+                  'Confirm Audio Upload',
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF2E1A47),
+                ),
+                const SizedBox(height: 10),
+                AppText(
+                  'Your audio introduction will help users trust you more. Make sure it is clear and professional.',
+                  fontSize: 14,
+                  color: Colors.grey.shade600,
+                  textAlign: TextAlign.center,
+                  height: 1.5,
+                ),
+                const SizedBox(height: 32),
+                Row(
+                  children: [
+                    Expanded(
+                      child: CustomButton(
+                        text: 'Cancel',
+                        onPressed: () => Get.back(),
+                        buttonType: ButtonStyleType.outlined,
+                        borderColor: Colors.grey.shade300,
+                        textColor: Colors.grey.shade700,
+                        borderRadius: 100,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: CustomButton(
+                        text: 'Submit Audio',
+                        onPressed: () {
+                          Get.back(); // Close bottom sheet
+                          Get.back(); // Close screen
+                          CustomSnackBar.disabledSnackbar(
+                            'Success',
+                            'Audio introduction uploaded successfully!',
+                            backgroundColor: Colors.green,
+                            colorText: Colors.white,
+                            snackPosition: SnackPosition.BOTTOM,
+                          );
+                        },
+                        backgroundColor: AppColors.primaryColor,
+                        borderRadius: 100,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
               ],
             ),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
@@ -120,9 +125,7 @@ class _AudioIntroScreenState extends State<AudioIntroScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(
-        title: 'Audio Introduction',
-      ),
+      appBar: const CustomAppBar(title: 'Audio Introduction'),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -142,7 +145,7 @@ class _AudioIntroScreenState extends State<AudioIntroScreen> {
               height: 1.5,
             ),
             const SizedBox(height: 40),
-            
+
             // Audio Preview Area
             Expanded(
               child: Container(
@@ -152,92 +155,110 @@ class _AudioIntroScreenState extends State<AudioIntroScreen> {
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(color: Colors.grey.shade200),
                 ),
-                child: _audioFile == null
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: AppColors.primaryColor.withOpacity(0.1),
-                              shape: BoxShape.circle,
+                child:
+                    _audioFile == null
+                        ? Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryColor.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Iconsax.microphone_2_copy,
+                                color: AppColors.primaryColor,
+                                size: 40,
+                              ),
                             ),
-                            child: const Icon(Iconsax.microphone_2_copy, color: AppColors.primaryColor, size: 40),
-                          ),
-                          const SizedBox(height: 20),
-                          AppText(
-                            'No audio selected',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.grey.shade700,
-                          ),
-                          const SizedBox(height: 8),
-                          AppText(
-                            'Audio should be clear and under 60 seconds',
-                            fontSize: 12,
-                            color: Colors.grey.shade500,
-                          ),
-                        ],
-                      )
-                    : Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(30),
-                            decoration: BoxDecoration(
-                              color: AppColors.primaryColor.withOpacity(0.05),
-                              shape: BoxShape.circle,
+                            const SizedBox(height: 20),
+                            AppText(
+                              'No audio selected',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.grey.shade700,
                             ),
-                            child: const Icon(Icons.audiotrack_rounded, color: AppColors.primaryColor, size: 60),
-                          ),
-                          const SizedBox(height: 24),
-                          AppText(
-                            _audioFile!.path.split('/').last,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFF2E1A47),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 32),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              GestureDetector(
-                                onTap: () => setState(() => isPlaying = !isPlaying),
-                                child: Container(
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: const BoxDecoration(
-                                    color: AppColors.primaryColor,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Icon(
-                                    isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                                    color: Colors.white,
-                                    size: 32,
+                            const SizedBox(height: 8),
+                            AppText(
+                              'Audio should be clear and under 60 seconds',
+                              fontSize: 12,
+                              color: Colors.grey.shade500,
+                            ),
+                          ],
+                        )
+                        : Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(30),
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryColor.withOpacity(0.05),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.audiotrack_rounded,
+                                color: AppColors.primaryColor,
+                                size: 60,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            AppText(
+                              _audioFile!.path.split('/').last,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF2E1A47),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 32),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                GestureDetector(
+                                  onTap:
+                                      () => setState(
+                                        () => isPlaying = !isPlaying,
+                                      ),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: const BoxDecoration(
+                                      color: AppColors.primaryColor,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      isPlaying
+                                          ? Icons.pause_rounded
+                                          : Icons.play_arrow_rounded,
+                                      color: Colors.white,
+                                      size: 32,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                              ],
+                            ),
+                          ],
+                        ),
               ),
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             if (_audioFile == null)
               CustomButton(
                 text: 'Select Audio',
                 onPressed: _pickAudio,
                 backgroundColor: AppColors.primaryColor,
                 borderRadius: 100,
-                prefixIcon: const Icon(Icons.add, color: Colors.white, size: 20),
+                prefixIcon: const Icon(
+                  Icons.add,
+                  color: Colors.white,
+                  size: 20,
+                ),
               )
             else
               Column(
                 children: [
-                   CustomButton(
+                  CustomButton(
                     text: 'Change Audio',
                     onPressed: _pickAudio,
                     buttonType: ButtonStyleType.outlined,
@@ -254,7 +275,7 @@ class _AudioIntroScreenState extends State<AudioIntroScreen> {
                   ),
                 ],
               ),
-              
+
             const SizedBox(height: 20),
           ],
         ),

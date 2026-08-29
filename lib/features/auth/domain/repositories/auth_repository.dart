@@ -24,7 +24,8 @@ class AuthRepository implements AuthRepositoryInterface {
     // Format keys for arrays if they don't already have []
     final Map<String, dynamic> formattedData = {};
     data.forEach((key, value) {
-      if ((key == 'areas_of_expertise' || key == 'languages') && value is List) {
+      if ((key == 'areas_of_expertise' || key == 'languages') &&
+          value is List) {
         formattedData['$key[]'] = value;
       } else {
         formattedData[key] = value;
@@ -32,29 +33,35 @@ class AuthRepository implements AuthRepositoryInterface {
     });
 
     final formData = dio.FormData.fromMap(formattedData);
-    
+
     // Handle files separately if they are paths
     if (data.containsKey('profile_photo') && data['profile_photo'] != null) {
-      formData.files.add(MapEntry(
-        'profile_photo',
-        await dio.MultipartFile.fromFile(data['profile_photo']),
-      ));
+      formData.files.add(
+        MapEntry(
+          'profile_photo',
+          await dio.MultipartFile.fromFile(data['profile_photo']),
+        ),
+      );
     }
     if (data.containsKey('id_proof') && data['id_proof'] != null) {
-      formData.files.add(MapEntry(
-        'id_proof',
-        await dio.MultipartFile.fromFile(data['id_proof']),
-      ));
+      formData.files.add(
+        MapEntry(
+          'id_proof',
+          await dio.MultipartFile.fromFile(data['id_proof']),
+        ),
+      );
     }
     if (data.containsKey('certificate') && data['certificate'] != null) {
-      formData.files.add(MapEntry(
-        'certificate',
-        await dio.MultipartFile.fromFile(data['certificate']),
-      ));
+      formData.files.add(
+        MapEntry(
+          'certificate',
+          await dio.MultipartFile.fromFile(data['certificate']),
+        ),
+      );
     }
-    
+
     return await _apiClient.post(
-      AppUrls.astrologerSignup, 
+      AppUrls.astrologerSignup,
       data: formData,
       options: dio.Options(headers: {'no_auth': true}),
     );
@@ -67,28 +74,23 @@ class AuthRepository implements AuthRepositoryInterface {
 
   @override
   Future<ResponseModel> verifyOtp(String mobile, String otp) async {
-    final data = dio.FormData.fromMap({
-      'phone': mobile,
-      'otp': otp,
-    });
+    final data = dio.FormData.fromMap({'phone': mobile, 'otp': otp});
     return await _apiClient.post(AppUrls.verifyOtp, data: data);
   }
 
   @override
   Future<ResponseModel> sendOtp(String mobile, String otp) async {
-    final data = dio.FormData.fromMap({
-      'phone': mobile,
-      'otp': otp,
-    });
-    return await _apiClient.post(AppUrls.sendOtp, data: data, showToaster: false);
+    final data = dio.FormData.fromMap({'phone': mobile, 'otp': otp});
+    return await _apiClient.post(
+      AppUrls.sendOtp,
+      data: data,
+      showToaster: false,
+    );
   }
 
   @override
   Future<ResponseModel> resendOtp(String mobile, String otp) async {
-    final data = dio.FormData.fromMap({
-      'phone': mobile,
-      'otp': otp,
-    });
+    final data = dio.FormData.fromMap({'phone': mobile, 'otp': otp});
     return await _apiClient.post(AppUrls.resendOtp, data: data);
   }
 
@@ -112,24 +114,21 @@ class AuthRepository implements AuthRepositoryInterface {
     // Handle potential files in the data map
     if (data.containsKey('profile_photo') && data['profile_photo'] is File) {
       File file = data['profile_photo'];
-      formData.files.add(MapEntry(
-        'profile_photo',
-        await dio.MultipartFile.fromFile(file.path),
-      ));
+      formData.files.add(
+        MapEntry('profile_photo', await dio.MultipartFile.fromFile(file.path)),
+      );
     }
     if (data.containsKey('id_proof') && data['id_proof'] is File) {
       File file = data['id_proof'];
-      formData.files.add(MapEntry(
-        'id_proof',
-        await dio.MultipartFile.fromFile(file.path),
-      ));
+      formData.files.add(
+        MapEntry('id_proof', await dio.MultipartFile.fromFile(file.path)),
+      );
     }
     if (data.containsKey('certificate') && data['certificate'] is File) {
       File file = data['certificate'];
-      formData.files.add(MapEntry(
-        'certificate',
-        await dio.MultipartFile.fromFile(file.path),
-      ));
+      formData.files.add(
+        MapEntry('certificate', await dio.MultipartFile.fromFile(file.path)),
+      );
     }
 
     return await _apiClient.post(AppUrls.updateProfile, data: formData);
@@ -152,10 +151,7 @@ class AuthRepository implements AuthRepositoryInterface {
 
   @override
   Future<ResponseModel> toggleOnline(int isOnline, String type) async {
-    final Map<String, dynamic> data = {
-      'is_online': isOnline,
-      'type': type,
-    };
+    final Map<String, dynamic> data = {'is_online': isOnline, 'type': type};
     return await _apiClient.post(AppUrls.toggleOnline, data: data);
   }
 }

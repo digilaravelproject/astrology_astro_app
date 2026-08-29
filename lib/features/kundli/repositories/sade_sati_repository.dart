@@ -6,7 +6,7 @@ class SadeSatiRepository {
   final AstrologyApiClient _client;
 
   SadeSatiRepository({AstrologyApiClient? client})
-      : _client = client ?? AstrologyApiClient();
+    : _client = client ?? AstrologyApiClient();
 
   Future<SadeSatiModel?> getSadeSati({
     required String datetime,
@@ -39,17 +39,23 @@ class SadeSatiRepository {
       final response = await _client.getSadhesatiStatus(payload);
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> rawData = response.data is Map<String, dynamic> ? response.data : {};
-        
+        final Map<String, dynamic> rawData =
+            response.data is Map<String, dynamic> ? response.data : {};
+
         List<Map<String, dynamic>> timelineList = [];
         try {
           final lifeResponse = await _client.getSadhesatiLifeDetails(payload);
           if (lifeResponse.statusCode == 200) {
             final rawLife = lifeResponse.data;
             if (rawLife is List) {
-              timelineList = List<Map<String, dynamic>>.from(rawLife.map((e) => e is Map<String, dynamic> ? e : {}));
-            } else if (rawLife is Map<String, dynamic> && rawLife['sub_periods'] is List) {
-              timelineList = List<Map<String, dynamic>>.from(rawLife['sub_periods']);
+              timelineList = List<Map<String, dynamic>>.from(
+                rawLife.map((e) => e is Map<String, dynamic> ? e : {}),
+              );
+            } else if (rawLife is Map<String, dynamic> &&
+                rawLife['sub_periods'] is List) {
+              timelineList = List<Map<String, dynamic>>.from(
+                rawLife['sub_periods'],
+              );
             }
           }
         } catch (e) {
@@ -60,24 +66,24 @@ class SadeSatiRepository {
           'success': true,
           'data': {
             'description': rawData['what_is_sadhesati'],
-            'is_in_sade_sati': rawData['sadhesati_status'] == true || rawData['is_undergoing_sadhesati']?.toString().toLowerCase().contains('yes') == true,
-            'moon_sign': {
-              'name': rawData['moon_sign'],
-              'id': 0
-            },
+            'is_in_sade_sati':
+                rawData['sadhesati_status'] == true ||
+                rawData['is_undergoing_sadhesati']
+                        ?.toString()
+                        .toLowerCase()
+                        .contains('yes') ==
+                    true,
+            'moon_sign': {'name': rawData['moon_sign'], 'id': 0},
             'phase': rawData['sadhesati_phase'],
             'phase_name': rawData['sadhesati_phase'],
             'sade_sati_status': rawData['is_undergoing_sadhesati'],
             'start_date': rawData['start_date'],
             'end_date': rawData['end_date'],
             'transit_saturn': {
-              'sign': {
-                'name': rawData['saturn_sign'],
-                'id': 0
-              }
+              'sign': {'name': rawData['saturn_sign'], 'id': 0},
             },
             'timeline': timelineList,
-          }
+          },
         };
 
         return SadeSatiModel.fromJson(transformedJson);

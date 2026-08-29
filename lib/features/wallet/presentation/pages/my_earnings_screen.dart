@@ -32,12 +32,14 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
     super.initState();
     if (!Get.isRegistered<WalletController>()) {
       final repository = WalletRepositoryImpl(apiClient: Get.find<ApiClient>());
-      Get.put(WalletController(
-        GetWalletSummaryUseCase(repository),
-        GetWalletEarningsUseCase(repository),
-        GetWalletWithdrawalsUseCase(repository),
-        RequestWithdrawalUseCase(repository),
-      ));
+      Get.put(
+        WalletController(
+          GetWalletSummaryUseCase(repository),
+          GetWalletEarningsUseCase(repository),
+          GetWalletWithdrawalsUseCase(repository),
+          RequestWithdrawalUseCase(repository),
+        ),
+      );
     }
     _walletController = Get.find<WalletController>();
   }
@@ -46,9 +48,7 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.fieldBackground,
-      appBar: CustomAppBar(
-        title: 'My Earnings'.tr,
-      ),
+      appBar: CustomAppBar(title: 'My Earnings'.tr),
       body: RefreshIndicator(
         onRefresh: () async {
           await Future.wait([
@@ -64,33 +64,35 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
             children: [
               _buildWalletCard(),
               Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildCompactEarningsRow(),
-                  const SizedBox(height: 12),
-                  _buildWeeklyEarningsCard(),
-                  const SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildTabToggle(),
-                      if (_activeTab == 'Earnings') _buildFilterDropdown(),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  _activeTab == 'Earnings' ? _buildTransactionList() : _buildWithdrawalHistoryList(),
-                  const SizedBox(height: 20),
-                ],
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildCompactEarningsRow(),
+                    const SizedBox(height: 12),
+                    _buildWeeklyEarningsCard(),
+                    const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildTabToggle(),
+                        if (_activeTab == 'Earnings') _buildFilterDropdown(),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    _activeTab == 'Earnings'
+                        ? _buildTransactionList()
+                        : _buildWithdrawalHistoryList(),
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildWalletCard() {
     return Container(
@@ -115,7 +117,7 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
       child: Obx(() {
         final summary = _walletController.summary.value;
         final balance = summary?.totalBalance ?? 0.0;
-        
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -125,7 +127,12 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AppText('Total Balance'.tr, fontSize: 13, color: Colors.white.withOpacity(0.7), fontWeight: FontWeight.w500),
+                    AppText(
+                      'Total Balance'.tr,
+                      fontSize: 13,
+                      color: Colors.white.withOpacity(0.7),
+                      fontWeight: FontWeight.w500,
+                    ),
                     const SizedBox(height: 4),
                     AppText(
                       '₹${NumberFormat("#,##0.00").format(balance)}',
@@ -141,11 +148,16 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
                     color: Colors.white.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Iconsax.wallet_2_copy, color: Colors.white, size: 24),
+                  child: const Icon(
+                    Iconsax.wallet_2_copy,
+                    color: Colors.white,
+                    size: 24,
+                  ),
                 ),
               ],
             ),
-           /// const SizedBox(height: 20),
+
+            /// const SizedBox(height: 20),
             // Row(
             //   children: [
             //     Expanded(
@@ -170,9 +182,19 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
       final summary = _walletController.summary.value;
       return Row(
         children: [
-          Expanded(child: _buildSimpleInfoCard('Last 3 Months Earnings'.tr, summary != null ? '₹${summary.threeMonthEarning}' : '-')),
+          Expanded(
+            child: _buildSimpleInfoCard(
+              'Last 3 Months Earnings'.tr,
+              summary != null ? '₹${summary.threeMonthEarning}' : '-',
+            ),
+          ),
           const SizedBox(width: 12),
-          Expanded(child: _buildSimpleInfoCard('Monthly Earnings'.tr, summary != null ? '₹${summary.monthlyEarning}' : '-')),
+          Expanded(
+            child: _buildSimpleInfoCard(
+              'Monthly Earnings'.tr,
+              summary != null ? '₹${summary.monthlyEarning}' : '-',
+            ),
+          ),
         ],
       );
     });
@@ -191,7 +213,12 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
         children: [
           AppText(title.tr, fontSize: 13, fontWeight: FontWeight.bold),
           const SizedBox(height: 12),
-          AppText(value, fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green.shade600),
+          AppText(
+            value,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.green.shade600,
+          ),
         ],
       ),
     );
@@ -214,20 +241,42 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  AppText('Weekly Earnings'.tr, fontSize: 14, fontWeight: FontWeight.bold),
-                  AppText('Rank'.tr, fontSize: 14, fontWeight: FontWeight.bold, color: Colors.amber.shade600),
+                  AppText(
+                    'Weekly Earnings'.tr,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  AppText(
+                    'Rank'.tr,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.amber.shade600,
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  AppText(summary != null ? '₹${summary.weeklyEarning}' : '-', fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green.shade600),
+                  AppText(
+                    summary != null ? '₹${summary.weeklyEarning}' : '-',
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green.shade600,
+                  ),
                   Row(
                     children: [
-                      AppText(summary != null ? '#${summary.rank}' : '-', fontSize: 18, fontWeight: FontWeight.bold),
+                      AppText(
+                        summary != null ? '#${summary.rank}' : '-',
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                       const SizedBox(width: 8),
-                      Icon(Icons.arrow_forward_ios_rounded, size: 20, color: Colors.grey.shade400),
+                      Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        size: 20,
+                        color: Colors.grey.shade400,
+                      ),
                     ],
                   ),
                 ],
@@ -241,11 +290,17 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
 
   Widget _buildTransactionList() {
     return Obx(() {
-      if (_walletController.isLoadingEarnings.value && _walletController.earningsList.isEmpty) {
+      if (_walletController.isLoadingEarnings.value &&
+          _walletController.earningsList.isEmpty) {
         return const Center(child: CircularProgressIndicator());
       }
       if (_walletController.earningsList.isEmpty) {
-        return Center(child: Padding(padding: const EdgeInsets.all(20), child: AppText('No earnings found.'.tr)));
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: AppText('No earnings found.'.tr),
+          ),
+        );
       }
       return ListView.builder(
         shrinkWrap: true,
@@ -255,7 +310,7 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
           final tx = _walletController.earningsList[index];
           String name = 'User';
           String model = tx.description;
-          
+
           if (tx.meta != null) {
             name = tx.meta!['user_name'] ?? 'User';
             model = tx.meta!['service_type'] ?? tx.description;
@@ -300,12 +355,27 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AppText(name, fontSize: 14, fontWeight: FontWeight.w700, color: const Color(0xFF2E1A47)),
+                      AppText(
+                        name,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF2E1A47),
+                      ),
                       const SizedBox(height: 2),
-                      AppText(model, fontSize: 11, color: Colors.grey.shade500, fontWeight: FontWeight.w500),
+                      AppText(
+                        model,
+                        fontSize: 11,
+                        color: Colors.grey.shade500,
+                        fontWeight: FontWeight.w500,
+                      ),
                       if (formattedDate.isNotEmpty) ...[
                         const SizedBox(height: 2),
-                        AppText(formattedDate, fontSize: 10, color: Colors.grey.shade400, fontWeight: FontWeight.w600),
+                        AppText(
+                          formattedDate,
+                          fontSize: 10,
+                          color: Colors.grey.shade400,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ],
                     ],
                   ),
@@ -313,9 +383,19 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    AppText('+₹${tx.amount}', fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.successColor),
+                    AppText(
+                      '+₹${tx.amount}',
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.successColor,
+                    ),
                     const SizedBox(height: 2),
-                    AppText(tx.status.capitalizeFirst ?? tx.status, fontSize: 10, color: AppColors.successColor, fontWeight: FontWeight.w700),
+                    AppText(
+                      tx.status.capitalizeFirst ?? tx.status,
+                      fontSize: 10,
+                      color: AppColors.successColor,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ],
                 ),
               ],
@@ -328,11 +408,17 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
 
   Widget _buildWithdrawalHistoryList() {
     return Obx(() {
-      if (_walletController.isLoadingWithdrawals.value && _walletController.withdrawalsList.isEmpty) {
+      if (_walletController.isLoadingWithdrawals.value &&
+          _walletController.withdrawalsList.isEmpty) {
         return const Center(child: CircularProgressIndicator());
       }
       if (_walletController.withdrawalsList.isEmpty) {
-        return const Center(child: Padding(padding: EdgeInsets.all(20), child: AppText('No withdrawals found.')));
+        return const Center(
+          child: Padding(
+            padding: EdgeInsets.all(20),
+            child: AppText('No withdrawals found.'),
+          ),
+        );
       }
       return ListView.builder(
         shrinkWrap: true,
@@ -341,7 +427,7 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
         itemBuilder: (context, index) {
           final w = _walletController.withdrawalsList[index];
           final bool isPending = w.status.toLowerCase() == 'pending';
-          
+
           String bankInfo = 'Bank Transfer';
           if (w.meta != null && w.meta!['bank_name'] != null) {
             bankInfo = w.meta!['bank_name'];
@@ -361,7 +447,8 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
                   height: 44,
                   width: 44,
                   decoration: BoxDecoration(
-                    color: (isPending ? Colors.orange : Colors.blue).withOpacity(0.05),
+                    color: (isPending ? Colors.orange : Colors.blue)
+                        .withOpacity(0.05),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -375,18 +462,38 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AppText('Withdrawal', fontSize: 14, fontWeight: FontWeight.w700, color: const Color(0xFF2E1A47)),
+                      AppText(
+                        'Withdrawal',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF2E1A47),
+                      ),
                       const SizedBox(height: 2),
-                      AppText(bankInfo, fontSize: 11, color: Colors.grey.shade500, fontWeight: FontWeight.w500),
+                      AppText(
+                        bankInfo,
+                        fontSize: 11,
+                        color: Colors.grey.shade500,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ],
                   ),
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    AppText('₹${w.amount}', fontSize: 15, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
+                    AppText(
+                      '₹${w.amount}',
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF2E1A47),
+                    ),
                     const SizedBox(height: 2),
-                    AppText(w.status.capitalizeFirst ?? w.status, fontSize: 10, color: isPending ? Colors.orange : Colors.green, fontWeight: FontWeight.w700),
+                    AppText(
+                      w.status.capitalizeFirst ?? w.status,
+                      fontSize: 10,
+                      color: isPending ? Colors.orange : Colors.green,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ],
                 ),
               ],
@@ -424,7 +531,15 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
         decoration: BoxDecoration(
           color: isActive ? AppColors.primaryColor : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
-          boxShadow: isActive ? [BoxShadow(color: AppColors.primaryColor.withOpacity(0.2), blurRadius: 4)] : [],
+          boxShadow:
+              isActive
+                  ? [
+                    BoxShadow(
+                      color: AppColors.primaryColor.withOpacity(0.2),
+                      blurRadius: 4,
+                    ),
+                  ]
+                  : [],
         ),
         child: AppText(
           title.tr,
@@ -442,11 +557,21 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
         onSelected: (String value) {
           _walletController.fetchEarnings(filter: value, isRefresh: true);
         },
-        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-          PopupMenuItem<String>(value: 'Today', child: AppText('Today'.tr, fontSize: 13)),
-          PopupMenuItem<String>(value: 'Weekly', child: AppText('Weekly'.tr, fontSize: 13)),
-          PopupMenuItem<String>(value: 'Monthly', child: AppText('Monthly'.tr, fontSize: 13)),
-        ],
+        itemBuilder:
+            (BuildContext context) => <PopupMenuEntry<String>>[
+              PopupMenuItem<String>(
+                value: 'Today',
+                child: AppText('Today'.tr, fontSize: 13),
+              ),
+              PopupMenuItem<String>(
+                value: 'Weekly',
+                child: AppText('Weekly'.tr, fontSize: 13),
+              ),
+              PopupMenuItem<String>(
+                value: 'Monthly',
+                child: AppText('Monthly'.tr, fontSize: 13),
+              ),
+            ],
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
@@ -456,9 +581,18 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
           ),
           child: Row(
             children: [
-              AppText(_walletController.selectedEarningFilter.value.tr, fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.primaryColor),
+              AppText(
+                _walletController.selectedEarningFilter.value.tr,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: AppColors.primaryColor,
+              ),
               const SizedBox(width: 4),
-              const Icon(Icons.keyboard_arrow_down_rounded, size: 14, color: AppColors.primaryColor),
+              const Icon(
+                Icons.keyboard_arrow_down_rounded,
+                size: 14,
+                color: AppColors.primaryColor,
+              ),
             ],
           ),
         ),

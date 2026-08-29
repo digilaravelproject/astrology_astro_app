@@ -39,14 +39,23 @@ class PanchangData {
 
   factory PanchangData.fromJson(Map<String, dynamic> json) {
     return PanchangData(
-      tithi: json['tithi'] != null ? PanchangItem.fromJson(json['tithi']) : null,
-      karana: json['karana'] != null ? PanchangItem.fromJson(json['karana']) : null,
+      tithi:
+          json['tithi'] != null ? PanchangItem.fromJson(json['tithi']) : null,
+      karana:
+          json['karana'] != null ? PanchangItem.fromJson(json['karana']) : null,
       yoga: json['yoga'] != null ? PanchangItem.fromJson(json['yoga']) : null,
-      nakshatra: json['nakshatra'] != null ? PanchangItem.fromJson(json['nakshatra']) : null,
+      nakshatra:
+          json['nakshatra'] != null
+              ? PanchangItem.fromJson(json['nakshatra'])
+              : null,
       masa: json['masa'] != null ? PanchangItem.fromJson(json['masa']) : null,
       ritu: json['ritu'] != null ? PanchangItem.fromJson(json['ritu']) : null,
-      vaara: json['vara'] != null ? PanchangItem.fromJson(json['vara'])
-           : json['vaara'] != null ? PanchangItem.fromJson(json['vaara']) : null,
+      vaara:
+          json['vara'] != null
+              ? PanchangItem.fromJson(json['vara'])
+              : json['vaara'] != null
+              ? PanchangItem.fromJson(json['vaara'])
+              : null,
       timezone: json['timezone']?.toString(),
       sunrise: json['sunrise']?.toString(),
       sunset: json['sunset']?.toString(),
@@ -61,9 +70,6 @@ class PanchangItem {
   PanchangItem({this.name, this.id});
 
   factory PanchangItem.fromJson(Map<String, dynamic> json) {
-    return PanchangItem(
-      name: json['name'],
-      id: json['id'],
-    );
+    return PanchangItem(name: json['name'], id: json['id']);
   }
 }

@@ -3,6 +3,7 @@ import 'dart:isolate';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
+import 'package:astro_astrologer/core/widgets/custom_image_widget.dart';
 
 class OverlayChatBubbleApp extends StatelessWidget {
   const OverlayChatBubbleApp({super.key});
@@ -20,7 +21,8 @@ class OverlayChatBubbleWidget extends StatefulWidget {
   const OverlayChatBubbleWidget({super.key});
 
   @override
-  State<OverlayChatBubbleWidget> createState() => _OverlayChatBubbleWidgetState();
+  State<OverlayChatBubbleWidget> createState() =>
+      _OverlayChatBubbleWidgetState();
 }
 
 class _OverlayChatBubbleWidgetState extends State<OverlayChatBubbleWidget> {
@@ -52,24 +54,24 @@ class _OverlayChatBubbleWidgetState extends State<OverlayChatBubbleWidget> {
           _isLive = event['isLive'] ?? _isLive;
 
           if (event['type'] == 'init' || event['type'] == 'update') {
-             final startedAtStr = event['startedAt'];
-             if (startedAtStr != null && startedAtStr.isNotEmpty) {
-                _startedAt = DateTime.tryParse(startedAtStr)?.toLocal();
-             }
+            final startedAtStr = event['startedAt'];
+            if (startedAtStr != null && startedAtStr.isNotEmpty) {
+              _startedAt = DateTime.tryParse(startedAtStr)?.toLocal();
+            }
           }
         });
-        
+
         if (_status == 'ongoing' && _timer == null) {
-           _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-              setState(() {
-                 if (_startedAt != null) {
-                    final diff = DateTime.now().difference(_startedAt!).inSeconds;
-                    _elapsedSeconds = diff > 0 ? diff : 0;
-                 } else {
-                    _elapsedSeconds++;
-                 }
-              });
-           });
+          _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+            setState(() {
+              if (_startedAt != null) {
+                final diff = DateTime.now().difference(_startedAt!).inSeconds;
+                _elapsedSeconds = diff > 0 ? diff : 0;
+              } else {
+                _elapsedSeconds++;
+              }
+            });
+          });
         }
       }
     });
@@ -93,14 +95,17 @@ class _OverlayChatBubbleWidgetState extends State<OverlayChatBubbleWidget> {
       color: Colors.transparent,
       child: GestureDetector(
         onTap: () {
-           debugPrint("==== GESTURE DETECTOR TAPPED ====");
-           FlutterOverlayWindow.shareData({'action': 'tap'});
-           
-           final String portName = _isLive 
-               ? 'overlay_live_port' 
-               : (_isCall ? 'overlay_call_port' : 'overlay_chat_port');
-           final SendPort? sendPort = IsolateNameServer.lookupPortByName(portName);
-           sendPort?.send('tap');
+          debugPrint("==== GESTURE DETECTOR TAPPED ====");
+          FlutterOverlayWindow.shareData({'action': 'tap'});
+
+          final String portName =
+              _isLive
+                  ? 'overlay_live_port'
+                  : (_isCall ? 'overlay_call_port' : 'overlay_chat_port');
+          final SendPort? sendPort = IsolateNameServer.lookupPortByName(
+            portName,
+          );
+          sendPort?.send('tap');
         },
         child: Center(
           child: Stack(
@@ -120,25 +125,30 @@ class _OverlayChatBubbleWidgetState extends State<OverlayChatBubbleWidget> {
                     ),
                   ],
                   border: Border.all(
-                    color: _isLive 
-                        ? Colors.red.shade600 
-                        : (_isCall ? Colors.green.shade600 : const Color(0xFFFF6F00)), // Red for Live
+                    color:
+                        _isLive
+                            ? Colors.red.shade600
+                            : (_isCall
+                                ? Colors.green.shade600
+                                : const Color(0xFFFF6F00)), // Red for Live
                     width: 2.5,
                   ),
                 ),
                 child: ClipOval(
-                  child: _imageUrl.isNotEmpty
-                      ? Image.network(
-                          _imageUrl.startsWith('http')
-                              ? _imageUrl
-                              : 'https://suryapathkundli.com/storage/app/public/$_imageUrl',
-                          fit: BoxFit.cover,
-                          errorBuilder: (c, e, s) => _buildInitials(),
-                        )
-                      : _buildInitials(),
+                  child:
+                      _imageUrl.isNotEmpty
+                          ? CustomImageWidget(
+                            imagePath:
+                                _imageUrl.startsWith('http')
+                                    ? _imageUrl
+                                    : 'https://suryapathkundli.com/storage/app/public/$_imageUrl',
+                            fit: BoxFit.cover,
+                            errorBuilder: (c, e, s) => _buildInitials(),
+                          )
+                          : _buildInitials(),
                 ),
               ),
-              
+
               // Timing overlay
               Positioned(
                 bottom: -12,
@@ -146,35 +156,40 @@ class _OverlayChatBubbleWidgetState extends State<OverlayChatBubbleWidget> {
                 right: 0,
                 child: Center(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF2E1A47), // Deep Violet
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Builder(builder: (context) {
-                      if (_status == 'initiated' || _status == 'ringing') {
-                        return const Text(
-                          'Waiting',
-                          style: TextStyle(
+                    child: Builder(
+                      builder: (context) {
+                        if (_status == 'initiated' || _status == 'ringing') {
+                          return const Text(
+                            'Waiting',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          );
+                        }
+                        return Text(
+                          _formatDuration(_elapsedSeconds),
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 9,
                             fontWeight: FontWeight.bold,
                           ),
                         );
-                      }
-                      return Text(
-                        _formatDuration(_elapsedSeconds),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 9,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      );
-                    }),
+                      },
+                    ),
                   ),
                 ),
               ),
-              
+
               // Unread count badge
               if (_unreadCount > 0)
                 Positioned(
@@ -214,11 +229,7 @@ class _OverlayChatBubbleWidgetState extends State<OverlayChatBubbleWidget> {
       return Container(
         color: const Color(0xFF2E1A47),
         child: const Center(
-          child: Icon(
-            Icons.live_tv_rounded,
-            color: Colors.white,
-            size: 28,
-          ),
+          child: Icon(Icons.live_tv_rounded, color: Colors.white, size: 28),
         ),
       );
     }
@@ -226,11 +237,7 @@ class _OverlayChatBubbleWidgetState extends State<OverlayChatBubbleWidget> {
       return Container(
         color: const Color(0xFF2E1A47),
         child: const Center(
-          child: Icon(
-            Icons.phone,
-            color: Colors.white,
-            size: 28,
-          ),
+          child: Icon(Icons.phone, color: Colors.white, size: 28),
         ),
       );
     }

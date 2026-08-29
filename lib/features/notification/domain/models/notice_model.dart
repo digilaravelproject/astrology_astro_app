@@ -7,9 +7,8 @@ class NoticeModel {
   factory NoticeModel.fromJson(Map<String, dynamic> json) {
     return NoticeModel(
       isSuccess: true,
-      notices: (json['notices'] as List)
-          .map((e) => NoticeData.fromJson(e))
-          .toList(),
+      notices:
+          (json['notices'] as List).map((e) => NoticeData.fromJson(e)).toList(),
     );
   }
 }

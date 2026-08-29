@@ -6,6 +6,7 @@ import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/constants/app_urls.dart';
 import '../controllers/assistant_chat_list_controller.dart';
 import 'assistance_chat_room_screen.dart';
+import 'package:astro_astrologer/core/widgets/custom_image_widget.dart';
 
 class AssistantChatScreen extends StatefulWidget {
   const AssistantChatScreen({super.key});
@@ -15,7 +16,9 @@ class AssistantChatScreen extends StatefulWidget {
 }
 
 class _AssistantChatScreenState extends State<AssistantChatScreen> {
-  final AssistantChatListController controller = Get.put(AssistantChatListController());
+  final AssistantChatListController controller = Get.put(
+    AssistantChatListController(),
+  );
   final TextEditingController _searchController = TextEditingController();
 
   @override
@@ -25,23 +28,23 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
   }
 
   void _navigateToChat(int sessionId, String userName, String? userImage) {
-     Get.to(() => AssistanceChatRoomScreen(
+    Get.to(
+      () => AssistanceChatRoomScreen(
         sessionId: sessionId,
         userName: userName,
         userImage: userImage,
-     ))?.then((_) {
-       // Refresh list when coming back from chat room
-       controller.fetchSessions();
-     });
+      ),
+    )?.then((_) {
+      // Refresh list when coming back from chat room
+      controller.fetchSessions();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
-      appBar: CustomAppBar(
-        title: 'Assistant Chat Requests'.tr,
-      ),
+      appBar: CustomAppBar(title: 'Assistant Chat Requests'.tr),
       body: Column(
         children: [
           // Search & Filter Panel
@@ -59,17 +62,31 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
                   textAlignVertical: TextAlignVertical.center,
                   decoration: InputDecoration(
                     hintText: 'Search chats...'.tr,
-                    hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
-                    prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primaryColor, size: 20),
-                    suffixIcon: Obx(() => controller.searchQuery.value.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.close_rounded, size: 20, color: Colors.grey),
-                            onPressed: () {
-                              _searchController.clear();
-                              controller.searchQuery.value = '';
-                            },
-                          )
-                        : const SizedBox.shrink()),
+                    hintStyle: TextStyle(
+                      color: Colors.grey.shade400,
+                      fontSize: 14,
+                    ),
+                    prefixIcon: const Icon(
+                      Icons.search_rounded,
+                      color: AppColors.primaryColor,
+                      size: 20,
+                    ),
+                    suffixIcon: Obx(
+                      () =>
+                          controller.searchQuery.value.isNotEmpty
+                              ? IconButton(
+                                icon: const Icon(
+                                  Icons.close_rounded,
+                                  size: 20,
+                                  color: Colors.grey,
+                                ),
+                                onPressed: () {
+                                  _searchController.clear();
+                                  controller.searchQuery.value = '';
+                                },
+                              )
+                              : const SizedBox.shrink(),
+                    ),
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
@@ -82,43 +99,53 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.primaryColor, width: 1),
+                      borderSide: const BorderSide(
+                        color: AppColors.primaryColor,
+                        width: 1,
+                      ),
                     ),
                     contentPadding: const EdgeInsets.symmetric(vertical: 10),
                   ),
                 ),
                 const SizedBox(height: 12),
                 // Filter Chips
-                Obx(() => Row(
-                      children: [
-                        _buildFilterChip('All'),
-                        const SizedBox(width: 8),
-                        _buildFilterChip('Unread'),
-                        const SizedBox(width: 8),
-                        _buildFilterChip('Read'),
-                      ],
-                    )),
+                Obx(
+                  () => Row(
+                    children: [
+                      _buildFilterChip('All'),
+                      const SizedBox(width: 8),
+                      _buildFilterChip('Unread'),
+                      const SizedBox(width: 8),
+                      _buildFilterChip('Read'),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
-          
+
           // Sessions List
           Expanded(
             child: Obx(() {
-              if (controller.isLoading.value && controller.activeSessions.isEmpty) {
+              if (controller.isLoading.value &&
+                  controller.activeSessions.isEmpty) {
                 return const Center(child: CircularProgressIndicator());
               }
 
-              if (controller.hasError.value && controller.activeSessions.isEmpty) {
+              if (controller.hasError.value &&
+                  controller.activeSessions.isEmpty) {
                 return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const AppText('Failed to load chat sessions', color: Colors.grey),
+                      const AppText(
+                        'Failed to load chat sessions',
+                        color: Colors.grey,
+                      ),
                       TextButton(
                         onPressed: controller.fetchSessions,
                         child: const Text('Retry'),
-                      )
+                      ),
                     ],
                   ),
                 );
@@ -131,10 +158,15 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.chat_bubble_outline, size: 48, color: Colors.grey.shade400),
+                      Icon(
+                        Icons.chat_bubble_outline,
+                        size: 48,
+                        color: Colors.grey.shade400,
+                      ),
                       const SizedBox(height: 16),
                       AppText(
-                        controller.searchQuery.value.isNotEmpty || controller.selectedFilter.value != 'All'
+                        controller.searchQuery.value.isNotEmpty ||
+                                controller.selectedFilter.value != 'All'
                             ? 'No matching chats found.'
                             : 'No active assistance requests.',
                         color: Colors.grey,
@@ -151,23 +183,31 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
                   final session = sessions[index];
                   final consumer = session['consumer'] ?? {};
                   final latestMessage = session['latest_message'] ?? {};
-                  
+
                   final sessionId = session['id'] as int;
                   final consumerName = consumer['name']?.toString() ?? 'User';
                   final consumerImage = consumer['profile_photo']?.toString();
-                  final messageText = latestMessage['message']?.toString() ?? 'Attachment';
-                  final messageTimeStr = latestMessage['created_at']?.toString() ?? session['updated_at']?.toString() ?? '';
-                  final messageType = latestMessage['type']?.toString() ?? 'text';
-                  
+                  final messageText =
+                      latestMessage['message']?.toString() ?? 'Attachment';
+                  final messageTimeStr =
+                      latestMessage['created_at']?.toString() ??
+                      session['updated_at']?.toString() ??
+                      '';
+                  final messageType =
+                      latestMessage['type']?.toString() ?? 'text';
+
                   final consumerId = session['consumer_id'];
-                  final isUnread = latestMessage['sender_id'] == consumerId && latestMessage['is_read'] == false;
-                  
+                  final isUnread =
+                      latestMessage['sender_id'] == consumerId &&
+                      latestMessage['is_read'] == false;
+
                   String timeFormatted = '';
                   if (messageTimeStr.isNotEmpty) {
-                     final dt = DateTime.tryParse(messageTimeStr);
-                     if (dt != null) {
-                        timeFormatted = '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
-                     }
+                    final dt = DateTime.tryParse(messageTimeStr);
+                    if (dt != null) {
+                      timeFormatted =
+                          '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+                    }
                   }
 
                   return _buildActiveUserCard(
@@ -179,9 +219,12 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
                     time: timeFormatted,
                     isUnread: isUnread,
                     isMe: latestMessage['sender_id'] != consumerId,
-                    messageStatus: latestMessage['is_read'] == true
-                        ? 'seen'
-                        : (latestMessage['is_delivered'] == true ? 'delivered' : 'sent'),
+                    messageStatus:
+                        latestMessage['is_read'] == true
+                            ? 'seen'
+                            : (latestMessage['is_delivered'] == true
+                                ? 'delivered'
+                                : 'sent'),
                   );
                 },
               );
@@ -303,29 +346,38 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
                       color: AppColors.primaryColor.withOpacity(0.1),
                     ),
                     child: ClipOval(
-                      child: (userImage != null && userImage.isNotEmpty)
-                          ? Image.network(
-                              userImage.startsWith('http')
-                                  ? userImage
-                                  : '${AppUrls.baseImageUrl}$userImage',
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) => Center(
+                      child:
+                          (userImage != null && userImage.isNotEmpty)
+                              ? CustomImageWidget(
+                                imagePath:
+                                    userImage.startsWith('http')
+                                        ? userImage
+                                        : '${AppUrls.baseImageUrl}$userImage',
+                                fit: BoxFit.cover,
+                                errorBuilder:
+                                    (context, error, stackTrace) => Center(
+                                      child: AppText(
+                                        userName.isNotEmpty
+                                            ? userName
+                                                .substring(0, 1)
+                                                .toUpperCase()
+                                            : 'U',
+                                        color: AppColors.primaryColor,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                              )
+                              : Center(
                                 child: AppText(
-                                  userName.isNotEmpty ? userName.substring(0, 1).toUpperCase() : 'U',
+                                  userName.isNotEmpty
+                                      ? userName.substring(0, 1).toUpperCase()
+                                      : 'U',
                                   color: AppColors.primaryColor,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
                                 ),
                               ),
-                            )
-                          : Center(
-                              child: AppText(
-                                userName.isNotEmpty ? userName.substring(0, 1).toUpperCase() : 'U',
-                                color: AppColors.primaryColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
                     ),
                   ),
                   if (isUnread)
@@ -356,7 +408,8 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
                           child: AppText(
                             userName,
                             fontSize: 15,
-                            fontWeight: isUnread ? FontWeight.bold : FontWeight.w600,
+                            fontWeight:
+                                isUnread ? FontWeight.bold : FontWeight.w600,
                             color: Colors.black87,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -366,7 +419,8 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
                           time,
                           fontSize: 11,
                           color: isUnread ? Colors.green : Colors.grey.shade400,
-                          fontWeight: isUnread ? FontWeight.bold : FontWeight.normal,
+                          fontWeight:
+                              isUnread ? FontWeight.bold : FontWeight.normal,
                         ),
                       ],
                     ),
@@ -381,7 +435,10 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
                         if (isUnread) ...[
                           const SizedBox(width: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
                             decoration: const BoxDecoration(
                               color: Colors.green,
                               shape: BoxShape.circle,

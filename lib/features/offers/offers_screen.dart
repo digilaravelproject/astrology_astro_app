@@ -19,7 +19,8 @@ class OffersScreen extends StatefulWidget {
   State<OffersScreen> createState() => _OffersScreenState();
 }
 
-class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderStateMixin {
+class _OffersScreenState extends State<OffersScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late final OfferController _controller;
   String _selectedHistoryFilter = 'All';
@@ -28,11 +29,19 @@ class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderSt
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _controller = Get.put(OfferController(
-      getOffersUseCase: GetOffersUseCase(OfferRepositoryImpl(apiClient: Get.find<ApiClient>())),
-      toggleOfferUseCase: ToggleOfferUseCase(OfferRepositoryImpl(apiClient: Get.find<ApiClient>())),
-      getOfferHistoryUseCase: GetOfferHistoryUseCase(OfferRepositoryImpl(apiClient: Get.find<ApiClient>())),
-    ));
+    _controller = Get.put(
+      OfferController(
+        getOffersUseCase: GetOffersUseCase(
+          OfferRepositoryImpl(apiClient: Get.find<ApiClient>()),
+        ),
+        toggleOfferUseCase: ToggleOfferUseCase(
+          OfferRepositoryImpl(apiClient: Get.find<ApiClient>()),
+        ),
+        getOfferHistoryUseCase: GetOfferHistoryUseCase(
+          OfferRepositoryImpl(apiClient: Get.find<ApiClient>()),
+        ),
+      ),
+    );
   }
 
   @override
@@ -53,10 +62,7 @@ class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderSt
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: [
-                _buildAllOffersTab(),
-                _buildHistoryTab(),
-              ],
+              children: [_buildAllOffersTab(), _buildHistoryTab()],
             ),
           ),
         ],
@@ -70,7 +76,8 @@ class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderSt
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       color: Colors.white,
       child: AppText(
-        'Loyal - Customers who have spoken with you for more than 15 minutes (including both call and chat)'.tr,
+        'Loyal - Customers who have spoken with you for more than 15 minutes (including both call and chat)'
+            .tr,
         fontSize: 12,
         color: Colors.grey.shade600,
         fontWeight: FontWeight.w400,
@@ -88,8 +95,16 @@ class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderSt
         unselectedLabelColor: Colors.grey,
         indicatorColor: AppColors.primaryColor,
         indicatorSize: TabBarIndicatorSize.tab,
-        labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, fontFamily: 'Poppins'),
-        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 13, fontFamily: 'Poppins'),
+        labelStyle: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 13,
+          fontFamily: 'Poppins',
+        ),
+        unselectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.normal,
+          fontSize: 13,
+          fontFamily: 'Poppins',
+        ),
         tabs: [
           Tab(child: Text('ALL OFFERS'.tr)),
           Tab(child: Text('HISTORY'.tr)),
@@ -156,28 +171,40 @@ class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderSt
                     ),
                     const SizedBox(width: 8),
                     Obx(() {
-                      final isToggling = _controller.togglingOfferIds.contains(offer.id);
+                      final isToggling = _controller.togglingOfferIds.contains(
+                        offer.id,
+                      );
                       return Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           isToggling
                               ? const SizedBox(
-                                  width: 40,
-                                  height: 20,
-                                  child: Center(child: SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))),
-                                )
-                              : Transform.scale(
-                                  scale: 0.8,
-                                  child: Switch(
-                                    value: offer.isCurrentlyActiveForMe,
-                                    onChanged: (v) {
-                                      _controller.toggleOffer(offer.id);
-                                    },
-                                    activeColor: AppColors.primaryColor,
+                                width: 40,
+                                height: 20,
+                                child: Center(
+                                  child: SizedBox(
+                                    width: 14,
+                                    height: 14,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
                                   ),
                                 ),
+                              )
+                              : Transform.scale(
+                                scale: 0.8,
+                                child: Switch(
+                                  value: offer.isCurrentlyActiveForMe,
+                                  onChanged: (v) {
+                                    _controller.toggleOffer(offer.id);
+                                  },
+                                  activeColor: AppColors.primaryColor,
+                                ),
+                              ),
                           AppText(
-                            offer.isCurrentlyActiveForMe ? 'Active' : 'Inactive',
+                            offer.isCurrentlyActiveForMe
+                                ? 'Active'
+                                : 'Inactive',
                             fontSize: 12,
                             color: Colors.grey,
                           ),
@@ -198,7 +225,8 @@ class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderSt
                     Colors.blue.shade50,
                     Colors.blue,
                   ),
-                if (offer.calculatedPricing?.chat != null) const SizedBox(height: 16),
+                if (offer.calculatedPricing?.chat != null)
+                  const SizedBox(height: 16),
                 if (offer.calculatedPricing?.call != null)
                   _buildUserTypeSection(
                     'Call Pricing',
@@ -239,13 +267,28 @@ class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderSt
                 color: tagBg,
                 borderRadius: BorderRadius.circular(6),
               ),
-              child: AppText(title, color: tagText, fontSize: 11, fontWeight: FontWeight.bold),
+              child: AppText(
+                title,
+                color: tagText,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             Row(
               children: [
-                AppText(originalPrice, color: Colors.grey, fontSize: 12, decoration: TextDecoration.lineThrough),
+                AppText(
+                  originalPrice,
+                  color: Colors.grey,
+                  fontSize: 12,
+                  decoration: TextDecoration.lineThrough,
+                ),
                 const SizedBox(width: 8),
-                AppText(currentPrice, color: Colors.green.shade600, fontSize: 14, fontWeight: FontWeight.bold),
+                AppText(
+                  currentPrice,
+                  color: Colors.green.shade600,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
               ],
             ),
           ],
@@ -275,9 +318,20 @@ class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderSt
         ),
         child: Column(
           children: [
-            AppText(label, fontSize: 10, color: Colors.grey.shade600, textAlign: TextAlign.center, overflow: TextOverflow.ellipsis),
+            AppText(
+              label,
+              fontSize: 10,
+              color: Colors.grey.shade600,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+            ),
             const SizedBox(height: 4),
-            AppText(value, fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black87),
+            AppText(
+              value,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
           ],
         ),
       ),
@@ -293,11 +347,14 @@ class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderSt
             if (_controller.isLoadingHistory.value) {
               return const Center(child: CircularProgressIndicator());
             }
-            
-            final filteredHistory = _controller.history.where((item) {
-              if (_selectedHistoryFilter == 'All') return true;
-              return item.offerName.contains(_selectedHistoryFilter) || '${item.discountPercentage}% off' == _selectedHistoryFilter;
-            }).toList();
+
+            final filteredHistory =
+                _controller.history.where((item) {
+                  if (_selectedHistoryFilter == 'All') return true;
+                  return item.offerName.contains(_selectedHistoryFilter) ||
+                      '${item.discountPercentage}% off' ==
+                          _selectedHistoryFilter;
+                }).toList();
 
             if (filteredHistory.isEmpty) {
               return Center(child: AppText('No history available.'.tr));
@@ -350,7 +407,12 @@ class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderSt
               selectedColor: AppColors.primaryColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
-                side: BorderSide(color: isSelected ? AppColors.primaryColor : Colors.grey.shade300),
+                side: BorderSide(
+                  color:
+                      isSelected
+                          ? AppColors.primaryColor
+                          : Colors.grey.shade300,
+                ),
               ),
               showCheckmark: false,
             ),
@@ -377,25 +439,31 @@ class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderSt
             children: [
               Expanded(
                 child: AppText(
-                  historyItem.discountPercentage > 0 
-                    ? '${historyItem.discountPercentage}% off - ${historyItem.offerName}' 
-                    : historyItem.offerName, 
-                  fontSize: 16, 
-                  fontWeight: FontWeight.bold, 
-                  color: AppColors.primaryColor, 
-                  overflow: TextOverflow.ellipsis
+                  historyItem.discountPercentage > 0
+                      ? '${historyItem.discountPercentage}% off - ${historyItem.offerName}'
+                      : historyItem.offerName,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primaryColor,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: historyItem.status == 'active' ? Colors.green.shade50 : Colors.red.shade50,
+                  color:
+                      historyItem.status == 'active'
+                          ? Colors.green.shade50
+                          : Colors.red.shade50,
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: AppText(
                   historyItem.status.capitalizeFirst ?? historyItem.status,
-                  color: historyItem.status == 'active' ? Colors.green.shade700 : Colors.red.shade700,
+                  color:
+                      historyItem.status == 'active'
+                          ? Colors.green.shade700
+                          : Colors.red.shade700,
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
                 ),
@@ -406,11 +474,19 @@ class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderSt
           Row(
             children: [
               Expanded(
-                child: _buildTimeDetail('Start Time *', _formatDate(historyItem.activatedAt)),
+                child: _buildTimeDetail(
+                  'Start Time *',
+                  _formatDate(historyItem.activatedAt),
+                ),
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: _buildTimeDetail('End Time *', historyItem.deactivatedAt != null ? _formatDate(historyItem.deactivatedAt!) : 'N/A'),
+                child: _buildTimeDetail(
+                  'End Time *',
+                  historyItem.deactivatedAt != null
+                      ? _formatDate(historyItem.deactivatedAt!)
+                      : 'N/A',
+                ),
               ),
             ],
           ),
@@ -428,7 +504,6 @@ class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderSt
     }
   }
 
-
   Widget _buildTimeDetail(String label, String value) {
     return Container(
       padding: const EdgeInsets.all(10),
@@ -442,7 +517,12 @@ class _OffersScreenState extends State<OffersScreen> with SingleTickerProviderSt
         children: [
           AppText(label, fontSize: 10, color: Colors.grey.shade600),
           const SizedBox(height: 4),
-          AppText(value, fontSize: 11, fontWeight: FontWeight.w600, color: Colors.black87),
+          AppText(
+            value,
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
         ],
       ),
     );

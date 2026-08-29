@@ -21,9 +21,7 @@ class HistoryScreen extends StatelessWidget {
       length: 2,
       child: Scaffold(
         backgroundColor: const Color(0xFFFDF9F5), // Premium Ivory/Off-white
-        appBar: const CustomAppBar(
-          title: 'History',
-        ),
+        appBar: const CustomAppBar(title: 'History'),
         body: SafeArea(
           top: false,
           child: Column(
@@ -37,17 +35,20 @@ class HistoryScreen extends StatelessWidget {
                   unselectedLabelColor: Colors.grey,
                   indicatorColor: AppColors.primaryColor,
                   indicatorSize: TabBarIndicatorSize.label,
-                  labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                  unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 13),
-                  tabs: [
-                    Tab(text: 'Call'.tr),
-                    Tab(text: 'Chat'.tr),
-                  ],
+                  labelStyle: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                  unselectedLabelStyle: const TextStyle(
+                    fontWeight: FontWeight.normal,
+                    fontSize: 13,
+                  ),
+                  tabs: [Tab(text: 'Call'.tr), Tab(text: 'Chat'.tr)],
                 ),
               ),
               Expanded(
                 child: TabBarView(
-                  children:  [
+                  children: [
                     CallHistoryScreen(isFromTab: true),
                     ChatHistoryScreen(isFromTab: true),
                   ],

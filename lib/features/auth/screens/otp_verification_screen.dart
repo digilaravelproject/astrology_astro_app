@@ -26,9 +26,7 @@ class OtpVerificationScreen extends StatelessWidget {
       child: Stack(
         children: [
           // Fixed white background layer
-          Positioned.fill(
-            child: Container(color: Colors.white),
-          ),
+          Positioned.fill(child: Container(color: Colors.white)),
           // Background image - Fixed (temporarily disabled)
           // Positioned.fill(
           //   child: Opacity(
@@ -67,14 +65,16 @@ class OtpVerificationScreen extends StatelessWidget {
 
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Obx(() => AppText(
-                        'Enter OTP sent to\n+91 ${authController.currentMobile.value}',
-                        textAlign: TextAlign.center,
-                        fontSize: 14,
-                        color: AppColors.black.withOpacity(0.3),
-                        fontWeight: FontWeight.w400,
-                        letterSpacing: 0.5,
-                      )),
+                      child: Obx(
+                        () => AppText(
+                          'Enter OTP sent to\n+91 ${authController.currentMobile.value}',
+                          textAlign: TextAlign.center,
+                          fontSize: 14,
+                          color: AppColors.black.withOpacity(0.3),
+                          fontWeight: FontWeight.w400,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
                     ),
 
                     SizedBox(height: size.height * 0.08),
@@ -82,43 +82,49 @@ class OtpVerificationScreen extends StatelessWidget {
                     _buildOtpInput(context, authController, errorMessage),
 
                     // Error message
-                    Obx(() => errorMessage.value.isNotEmpty
-                        ? Padding(
-                            padding: const EdgeInsets.only(top: 12),
-                            child: AppText(
-                              errorMessage.value,
-                              fontSize: 12,
-                              color: Colors.red,
-                              fontWeight: FontWeight.w500,
-                              textAlign: TextAlign.center,
-                            ),
-                          )
-                        : const SizedBox.shrink()),
+                    Obx(
+                      () =>
+                          errorMessage.value.isNotEmpty
+                              ? Padding(
+                                padding: const EdgeInsets.only(top: 12),
+                                child: AppText(
+                                  errorMessage.value,
+                                  fontSize: 12,
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.w500,
+                                  textAlign: TextAlign.center,
+                                ),
+                              )
+                              : const SizedBox.shrink(),
+                    ),
 
                     SizedBox(height: size.height * 0.08),
 
-                    Obx(() => CustomButton(
-                          text: 'Verify',
-                          borderRadius: 100,
-                          onPressed: () {
-                            // Validate OTP before proceeding
-                            if (authController.otpController.text.isEmpty) {
-                              errorMessage.value = 'Please enter OTP';
-                              return;
-                            }
+                    Obx(
+                      () => CustomButton(
+                        text: 'Verify',
+                        borderRadius: 100,
+                        onPressed: () {
+                          // Validate OTP before proceeding
+                          if (authController.otpController.text.isEmpty) {
+                            errorMessage.value = 'Please enter OTP';
+                            return;
+                          }
 
-                            if (authController.otpController.text.length != 4) {
-                              errorMessage.value = 'Please enter valid 4-digit OTP';
-                              return;
-                            }
+                          if (authController.otpController.text.length != 4) {
+                            errorMessage.value =
+                                'Please enter valid 4-digit OTP';
+                            return;
+                          }
 
-                            // Clear error and proceed
-                            errorMessage.value = '';
-                            // Call actual verification logic
-                            authController.verifyOtp();
-                          },
-                          isLoading: authController.isLoading.value,
-                        )),
+                          // Clear error and proceed
+                          errorMessage.value = '';
+                          // Call actual verification logic
+                          authController.verifyOtp();
+                        },
+                        isLoading: authController.isLoading.value,
+                      ),
+                    ),
 
                     const SizedBox(height: 40),
 
@@ -135,7 +141,10 @@ class OtpVerificationScreen extends StatelessWidget {
   }
 
   Widget _buildOtpInput(
-      BuildContext context, AuthController authController, RxString errorMessage) {
+    BuildContext context,
+    AuthController authController,
+    RxString errorMessage,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: List.generate(
@@ -242,8 +251,11 @@ class OtpVerificationScreen extends StatelessWidget {
       top: 50,
       left: 20,
       child: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new,
-            size: 20, color: AppColors.black),
+        icon: const Icon(
+          Icons.arrow_back_ios_new,
+          size: 20,
+          color: AppColors.black,
+        ),
         onPressed: () => Get.back(),
       ),
     );

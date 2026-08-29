@@ -80,21 +80,31 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     if (!Get.isRegistered<WalletController>()) {
       final repository = WalletRepositoryImpl(apiClient: Get.find<ApiClient>());
-      Get.put(WalletController(
-        GetWalletSummaryUseCase(repository),
-        GetWalletEarningsUseCase(repository),
-        GetWalletWithdrawalsUseCase(repository),
-        RequestWithdrawalUseCase(repository),
-      ));
+      Get.put(
+        WalletController(
+          GetWalletSummaryUseCase(repository),
+          GetWalletEarningsUseCase(repository),
+          GetWalletWithdrawalsUseCase(repository),
+          RequestWithdrawalUseCase(repository),
+        ),
+      );
     }
     _walletController = Get.find<WalletController>();
 
     if (!Get.isRegistered<OfferController>()) {
-      Get.put(OfferController(
-        getOffersUseCase: GetOffersUseCase(OfferRepositoryImpl(apiClient: Get.find<ApiClient>())),
-        toggleOfferUseCase: ToggleOfferUseCase(OfferRepositoryImpl(apiClient: Get.find<ApiClient>())),
-        getOfferHistoryUseCase: GetOfferHistoryUseCase(OfferRepositoryImpl(apiClient: Get.find<ApiClient>())),
-      ));
+      Get.put(
+        OfferController(
+          getOffersUseCase: GetOffersUseCase(
+            OfferRepositoryImpl(apiClient: Get.find<ApiClient>()),
+          ),
+          toggleOfferUseCase: ToggleOfferUseCase(
+            OfferRepositoryImpl(apiClient: Get.find<ApiClient>()),
+          ),
+          getOfferHistoryUseCase: GetOfferHistoryUseCase(
+            OfferRepositoryImpl(apiClient: Get.find<ApiClient>()),
+          ),
+        ),
+      );
     }
     _offerController = Get.find<OfferController>();
 
@@ -102,7 +112,9 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!Get.isRegistered<PerformanceRepository>()) {
         Get.put(PerformanceRepository(apiClient: Get.find<ApiClient>()));
       }
-      Get.put(PerformanceController(repository: Get.find<PerformanceRepository>()));
+      Get.put(
+        PerformanceController(repository: Get.find<PerformanceRepository>()),
+      );
     }
     _performanceController = Get.find<PerformanceController>();
 
@@ -117,12 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
             authController.getProfile(authController.currentUser.value!.id);
           }
         } catch (e) {
-
-
-
           Logger.e('HomeScreen: Init post frame calls error: $e');
-
-
         }
       });
     });
@@ -152,7 +159,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: RefreshIndicator(
@@ -216,40 +222,55 @@ class _HomeScreenState extends State<HomeScreen> {
             },
             child: Obx(() {
               final user = authController.currentUser.value;
-              final photo = user?.astrologer?.profilePhoto ?? user?.profilePhoto;
-              final String? imageUrl = (photo != null && photo.isNotEmpty)
-                  ? (photo.startsWith('http') ? photo : '${AppUrls.baseImageUrl}$photo')
-                  : null;
+              final photo =
+                  user?.astrologer?.profilePhoto ?? user?.profilePhoto;
+              final String? imageUrl =
+                  (photo != null && photo.isNotEmpty)
+                      ? (photo.startsWith('http')
+                          ? photo
+                          : '${AppUrls.baseImageUrl}$photo')
+                      : null;
 
               return Container(
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(
-                    color: AppColors.primaryColor,
-                    width: 2.5,
-                  ),
+                  border: Border.all(color: AppColors.primaryColor, width: 2.5),
                 ),
                 child: ClipOval(
-                  child: imageUrl != null
-                      ? CachedNetworkImage(
-                          imageUrl: imageUrl,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => const Center(
-                            child: SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
+                  child:
+                      imageUrl != null
+                          ? CustomImageWidget(
+                            imagePath: imageUrl,
+                            fit: BoxFit.cover,
+                            fallbackWidget: Container(
+                              decoration: const BoxDecoration(
+                                gradient: AppColors.primaryGradient,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  user?.name.isNotEmpty == true
+                                      ? user!.name[0].toUpperCase()
+                                      : '',
+                                  style: const TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                          errorWidget: (context, url, error) => Container(
+                          )
+                          : Container(
                             decoration: const BoxDecoration(
                               gradient: AppColors.primaryGradient,
                             ),
                             child: Center(
                               child: Text(
-                                user?.name.isNotEmpty == true ? user!.name[0].toUpperCase() : 'A',
+                                user?.name.isNotEmpty == true
+                                    ? user!.name[0].toUpperCase()
+                                    : '',
                                 style: const TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.w700,
@@ -258,22 +279,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                           ),
-                        )
-                      : Container(
-                          decoration: const BoxDecoration(
-                            gradient: AppColors.primaryGradient,
-                          ),
-                          child: Center(
-                            child: Text(
-                              user?.name.isNotEmpty == true ? user!.name[0].toUpperCase() : 'A',
-                              style: const TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
                 ),
               );
             }),
@@ -294,9 +299,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Stack(
                     clipBehavior: Clip.none,
                     children: [
-                      const Icon(Icons.notifications_outlined, size: 22, color: Color(0xFF2E1A47)),
+                      const Icon(
+                        Icons.notifications_outlined,
+                        size: 22,
+                        color: Color(0xFF2E1A47),
+                      ),
                       Obx(() {
-                        final unreadCount = Get.find<NotificationController>().unreadCount.value;
+                        final unreadCount =
+                            Get.find<NotificationController>()
+                                .unreadCount
+                                .value;
                         if (unreadCount > 0) {
                           return Positioned(
                             right: -2,
@@ -339,7 +351,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.grey.shade200),
                   ),
-                  child: const Icon(Iconsax.setting_2_copy, size: 22, color: Color(0xFF2E1A47)),
+                  child: const Icon(
+                    Iconsax.setting_2_copy,
+                    size: 22,
+                    color: Color(0xFF2E1A47),
+                  ),
                 ),
               ),
             ],
@@ -357,7 +373,10 @@ class _HomeScreenState extends State<HomeScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: AppColors.primaryColor.withOpacity(0.3), width: 1),
+          border: Border.all(
+            color: AppColors.primaryColor.withOpacity(0.3),
+            width: 1,
+          ),
           boxShadow: [
             BoxShadow(
               color: AppColors.primaryColor.withOpacity(0.08),
@@ -377,11 +396,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.account_balance_wallet_rounded, color: Colors.white, size: 10),
+              child: const Icon(
+                Icons.account_balance_wallet_rounded,
+                color: Colors.white,
+                size: 10,
+              ),
             ),
             const SizedBox(width: 6),
             Obx(() {
-              final balance = _walletController.summary.value?.totalBalance ?? 0.0;
+              final balance =
+                  _walletController.summary.value?.totalBalance ?? 0.0;
               return AppText(
                 balance.toStringAsFixed(0),
                 fontSize: 13,
@@ -411,7 +435,11 @@ class _HomeScreenState extends State<HomeScreen> {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.lightPink, width: 1.5),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 4)),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Obx(() {
@@ -421,39 +449,41 @@ class _HomeScreenState extends State<HomeScreen> {
         OfferModel? activeOffer;
         if (_offerController.offers.isNotEmpty) {
           try {
-            activeOffer = _offerController.offers.firstWhere((o) => o.isCurrentlyActiveForMe);
+            activeOffer = _offerController.offers.firstWhere(
+              (o) => o.isCurrentlyActiveForMe,
+            );
           } catch (_) {}
         }
 
         return Column(
           children: [
             _buildServiceRow(
-              'Chat', 
-              '', 
+              'Chat',
+              '',
               null,
-              astro.isChatEnabled ? 'Online' : 'Offline', 
+              astro.isChatEnabled ? 'Online' : 'Offline',
               'chat',
-              astro.isChatEnabled, 
+              astro.isChatEnabled,
               (v) => authController.toggleOnline(v, 'chat'),
             ),
             _divider(),
             _buildServiceRow(
-              'Call', 
-              '', 
+              'Call',
+              '',
               null,
-              astro.isCallEnabled ? 'Online' : 'Offline', 
+              astro.isCallEnabled ? 'Online' : 'Offline',
               'call',
-              astro.isCallEnabled, 
+              astro.isCallEnabled,
               (v) => authController.toggleOnline(v, 'call'),
             ),
             // _divider(),
             // _buildServiceRow(
-            //   'Video Call', 
-            //   '₹${astro.videoCallRate}/min', 
+            //   'Video Call',
+            //   '₹${astro.videoCallRate}/min',
             //   null,
-            //   astro.isVideoCallEnabled ? 'Online' : 'Offline', 
+            //   astro.isVideoCallEnabled ? 'Online' : 'Offline',
             //   'video_call',
-            //   astro.isVideoCallEnabled, 
+            //   astro.isVideoCallEnabled,
             //   (v) => authController.toggleOnline(v, 'video_call'),
             // ),
           ],
@@ -464,7 +494,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _divider() => Divider(height: 32, color: Colors.grey.withOpacity(0.1));
 
-  Widget _buildServiceRow(String title, String originalPrice, String? discountedPrice, String status, String type, bool value, ValueChanged<bool> onChanged) {
+  Widget _buildServiceRow(
+    String title,
+    String originalPrice,
+    String? discountedPrice,
+    String status,
+    String type,
+    bool value,
+    ValueChanged<bool> onChanged,
+  ) {
     String displayOriginalPrice = originalPrice;
     if (discountedPrice != null && discountedPrice.isNotEmpty) {
       displayOriginalPrice = originalPrice.replaceAll('/min', '');
@@ -482,26 +520,36 @@ class _HomeScreenState extends State<HomeScreen> {
                 Row(
                   children: [
                     Text(
-                      displayOriginalPrice, 
+                      displayOriginalPrice,
                       style: TextStyle(
-                        fontSize: 12, 
-                        color: Colors.grey.shade500, 
+                        fontSize: 12,
+                        color: Colors.grey.shade500,
                         fontWeight: FontWeight.w500,
                         decoration: TextDecoration.lineThrough,
                       ),
                     ),
                     const SizedBox(width: 6),
-                    AppText(discountedPrice, fontSize: 13, color: Colors.green.shade600, fontWeight: FontWeight.w600),
+                    AppText(
+                      discountedPrice,
+                      fontSize: 13,
+                      color: Colors.green.shade600,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ],
                 )
               else
-                AppText(originalPrice, fontSize: 13, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
+                AppText(
+                  originalPrice,
+                  fontSize: 13,
+                  color: Colors.grey.shade600,
+                  fontWeight: FontWeight.w500,
+                ),
             ],
           ),
         ),
         Obx(() {
           final isToggling = authController.togglingServices.contains(type);
-          
+
           if (isToggling) {
             return const SizedBox(
               width: 51,
@@ -512,13 +560,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 18,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryColor),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.primaryColor,
+                    ),
                   ),
                 ),
               ),
             );
           }
-          
+
           return Transform.scale(
             scale: 0.8,
             child: Switch(
@@ -530,7 +580,12 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         }),
         const SizedBox(width: 8),
-        AppText(status, fontSize: 11, color: Colors.grey.shade500, fontWeight: FontWeight.w500),
+        AppText(
+          status,
+          fontSize: 11,
+          color: Colors.grey.shade500,
+          fontWeight: FontWeight.w500,
+        ),
       ],
     );
   }
@@ -614,7 +669,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildSleepTimeCard() {
     final scheduleController = Get.find<ScheduleController>();
-    
+
     return GestureDetector(
       onTap: () {
         Get.to(() => const SetSleepHoursScreen());
@@ -624,14 +679,19 @@ class _HomeScreenState extends State<HomeScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.primaryColor.withOpacity(0.3), width: 1.5),
+          border: Border.all(
+            color: AppColors.primaryColor.withOpacity(0.3),
+            width: 1.5,
+          ),
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFF9FAFB), // Very light grey/white background for icon
+                color: const Color(
+                  0xFFF9FAFB,
+                ), // Very light grey/white background for icon
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
@@ -688,11 +748,80 @@ class _HomeScreenState extends State<HomeScreen> {
   String _formatDisplayTime(String time24) {
     return time24;
   }
+}
 
-  }
+Widget _buildToggleTile({
+  required IconData icon,
+  required String title,
+  required String subtitle,
+  required bool value,
+  required ValueChanged<bool> onChanged,
+  bool showInfo = false,
+}) {
+  return Container(
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: const Color(0xFFEEEEEE)),
+    ),
+    child: Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade50,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(icon, color: Colors.black87, size: 24),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  AppText(
+                    title,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black87,
+                  ),
+                  if (showInfo) ...[
+                    const SizedBox(width: 6),
+                    const Icon(Icons.info, size: 18, color: Color(0xFF2196F3)),
+                  ],
+                ],
+              ),
+              const SizedBox(height: 2),
+              AppText(subtitle, fontSize: 12, color: Colors.grey.shade600),
+            ],
+          ),
+        ),
+        Transform.scale(
+          scale: 0.8,
+          child: Switch(
+            value: value,
+            onChanged: onChanged,
+            activeColor: Colors.white,
+            activeTrackColor: AppColors.primaryColor,
+          ),
+        ),
+      ],
+    ),
+  );
+}
 
-  Widget _buildToggleTile({required IconData icon, required String title, required String subtitle, required bool value, required ValueChanged<bool> onChanged, bool showInfo = false}) {
-    return Container(
+Widget _buildNavigationTile({
+  required IconData icon,
+  required String title,
+  required String subtitle,
+  required VoidCallback onTap,
+}) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -703,7 +832,10 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Container(
             padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: Colors.grey.shade50, borderRadius: BorderRadius.circular(12)),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Icon(icon, color: Colors.black87, size: 24),
           ),
           const SizedBox(width: 16),
@@ -711,341 +843,337 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    AppText(title, fontSize: 16, fontWeight: FontWeight.w700, color: Colors.black87),
-                    if (showInfo) ...[
-                      const SizedBox(width: 6),
-                      const Icon(Icons.info, size: 18, color: Color(0xFF2196F3)),
-                    ]
-                  ],
+                AppText(
+                  title,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black87,
                 ),
                 const SizedBox(height: 2),
                 AppText(subtitle, fontSize: 12, color: Colors.grey.shade600),
               ],
             ),
           ),
-          Transform.scale(
-            scale: 0.8,
-            child: Switch(
-              value: value,
-              onChanged: onChanged,
-              activeColor: Colors.white,
-              activeTrackColor: AppColors.primaryColor,
-            ),
-          ),
+          Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey.shade400),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
-  Widget _buildNavigationTile({required IconData icon, required String title, required String subtitle, required VoidCallback onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFEEEEEE)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(color: Colors.grey.shade50, borderRadius: BorderRadius.circular(12)),
-              child: Icon(icon, color: Colors.black87, size: 24),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AppText(title, fontSize: 16, fontWeight: FontWeight.w700, color: Colors.black87),
-                  const SizedBox(height: 2),
-                  AppText(subtitle, fontSize: 12, color: Colors.grey.shade600),
-                ],
-              ),
-            ),
-            Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey.shade400),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEarningsCard() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFEEEEEE)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Obx(() {
-            final month = DateFormat('MMMM').format(DateTime.now()).toUpperCase();
-            final walletController = Get.find<WalletController>();
-            final earning = walletController.summary.value?.monthlyEarning ?? 0.0;
-            return AppText('$month Earning - ₹${earning.toStringAsFixed(2)}', fontSize: 13, fontWeight: FontWeight.w700, color: Colors.black87);
-          }),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AppText('Invoice Acknowledged', fontSize: 11, color: Colors.grey.shade700, fontWeight: FontWeight.w500),
-                    const SizedBox(height: 8),
-                    AppText('You can check your invoice in settings.', fontSize: 10, color: Colors.grey.shade500),
-                  ],
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Get.to(() => const InvoiceScreen());
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryColor,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                ),
-                child: AppText('Details', color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildGreeting(AuthController authController) {
-    return Obx(() => HomeGreeting(
-      name: authController.currentUser.value?.name,
-    ));
-  }
-
-
-  Widget _buildTodayProgressCard() {
-    return Obx(() {
-      final data = Get.find<PerformanceController>().performanceData.value?.todayProgress;
-      
-      final targetHours = data?.targetHours ?? 8.0;
-      final completedMinutes = data?.completedMinutes ?? 0;
-      final remainingHours = data?.remainingHours ?? targetHours;
-      
-      final targetMinutes = targetHours * 60;
-      final progress = targetMinutes > 0 ? completedMinutes / targetMinutes : 0.0;
-      
-      return Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFFEEEEEE)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
+Widget _buildEarningsCard() {
+  return Container(
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: const Color(0xFFEEEEEE)),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Obx(() {
+          final month = DateFormat('MMMM').format(DateTime.now()).toUpperCase();
+          final walletController = Get.find<WalletController>();
+          final earning = walletController.summary.value?.monthlyEarning ?? 0.0;
+          return AppText(
+            '$month Earning - ₹${earning.toStringAsFixed(2)}',
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: Colors.black87,
+          );
+        }),
+        const SizedBox(height: 16),
+        Row(
           children: [
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AppText(
-                    "Today's Progress",
-                    fontSize: 15,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.black.withOpacity(0.8),
+                    'Invoice Acknowledged',
+                    fontSize: 11,
+                    color: Colors.grey.shade700,
+                    fontWeight: FontWeight.w500,
                   ),
-                  const SizedBox(height: 10),
-                  RichText(
-                    text: TextSpan(
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey.shade500,
-                        height: 1.4,
-                      ),
-                      children: [
-                        TextSpan(text: 'Only '.tr),
-                        TextSpan(
-                          text: '${remainingHours.toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '')} ${"hours".tr}',
-                          style: const TextStyle(fontWeight: FontWeight.w700, color: Colors.black87),
-                        ),
-                        TextSpan(text: ' ${"left to complete your".tr} ${targetHours.toStringAsFixed(0)} ${"hours online target.".tr}'),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      Get.to(() => const PerformanceScreen());
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    ),
-                    child: AppText(
-                      'Performance',
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  const SizedBox(height: 8),
+                  AppText(
+                    'You can check your invoice in settings.',
+                    fontSize: 10,
+                    color: Colors.grey.shade500,
                   ),
                 ],
               ),
             ),
-            const SizedBox(width: 20),
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                SizedBox(
-                  width: 85,
-                  height: 85,
-                  child: CircularProgressIndicator(
-                    value: progress.clamp(0.0, 1.0),
-                    strokeWidth: 8,
-                    backgroundColor: Colors.grey.shade100,
-                    valueColor: AlwaysStoppedAnimation<Color>(progress > 0 ? AppColors.primaryColor : const Color(0xFFEEEEEE)),
-                    strokeCap: StrokeCap.round,
-                  ),
+            ElevatedButton(
+              onPressed: () {
+                Get.to(() => const InvoiceScreen());
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryColor,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    AppText(
-                      '${completedMinutes}m',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.primaryColor,
-                    ),
-                    AppText(
-                      "Let's Start",
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey.shade600,
-                    ),
-                  ],
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
                 ),
-              ],
+              ),
+              child: AppText(
+                'Details',
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ],
         ),
-      );
-    });
-  }
+      ],
+    ),
+  );
+}
 
-  Widget _buildMenuGrid() {
-    final List<_MenuData> menuItems = [
-      // Live & Communication (most important – top)
-      _MenuData(
-        title: 'Go Live',
-        icon: Iconsax.video_play_copy,
-        bgColor: AppColors.primaryColor.withOpacity(0.08),
-        iconBgColor: AppColors.primaryColor.withOpacity(0.18),
-        textColor: AppColors.primaryColor,
-        onTap: () => _showGoLiveBottomSheet(Get.context!),
+Widget _buildGreeting(AuthController authController) {
+  return Obx(() => HomeGreeting(name: authController.currentUser.value?.name));
+}
+
+Widget _buildTodayProgressCard() {
+  return Obx(() {
+    final data =
+        Get.find<PerformanceController>().performanceData.value?.todayProgress;
+
+    final targetHours = data?.targetHours ?? 8.0;
+    final completedMinutes = data?.completedMinutes ?? 0;
+    final remainingHours = data?.remainingHours ?? targetHours;
+
+    final targetMinutes = targetHours * 60;
+    final progress = targetMinutes > 0 ? completedMinutes / targetMinutes : 0.0;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFEEEEEE)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-      _MenuData(
-        title: 'Chat',
-        icon: Iconsax.messages_2_copy,
-        bgColor: const Color(0xFFEAF8F1),
-        iconBgColor: const Color(0xFFD0F0E0),
-        textColor: const Color(0xFF0D9D57),
-        onTap: () => Get.to(() => AstrologerSessionsScreen()),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppText(
+                  "Today's Progress",
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.black.withOpacity(0.8),
+                ),
+                const SizedBox(height: 10),
+                RichText(
+                  text: TextSpan(
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.grey.shade500,
+                      height: 1.4,
+                    ),
+                    children: [
+                      TextSpan(text: 'Only '.tr),
+                      TextSpan(
+                        text:
+                            '${remainingHours.toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '')} ${"hours".tr}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      TextSpan(
+                        text:
+                            ' ${"left to complete your".tr} ${targetHours.toStringAsFixed(0)} ${"hours online target.".tr}',
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    Get.to(() => const PerformanceScreen());
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryColor,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
+                  ),
+                  child: AppText(
+                    'Performance',
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 20),
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              SizedBox(
+                width: 85,
+                height: 85,
+                child: CircularProgressIndicator(
+                  value: progress.clamp(0.0, 1.0),
+                  strokeWidth: 8,
+                  backgroundColor: Colors.grey.shade100,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    progress > 0
+                        ? AppColors.primaryColor
+                        : const Color(0xFFEEEEEE),
+                  ),
+                  strokeCap: StrokeCap.round,
+                ),
+              ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AppText(
+                    '${completedMinutes}m',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.primaryColor,
+                  ),
+                  AppText(
+                    "Let's Start",
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey.shade600,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
       ),
-      _MenuData(
-        title: 'Call',
-        icon: Iconsax.call_copy,
-        bgColor: const Color(0xFFFFF4E5),
-        iconBgColor: const Color(0xFFFFE4B5),
-        textColor: const Color(0xFFF5A623),
-        onTap: () => Get.to(() =>  CallHistoryScreen()),
-      ),
-      // Consultation tools
-      _MenuData(
-        title: 'Assistant Chat',
-        icon: Iconsax.cpu_setting_copy,
-        bgColor: const Color(0xFFF3EEFF),
-        iconBgColor: const Color(0xFFE5D7FF),
-        textColor: const Color(0xFF7C3AED),
-        onTap: () => Get.to(() => const AssistantChatScreen()),
-      ),
-      _MenuData(
-        title: 'Suggested Remedies',
-        icon: Iconsax.clipboard_text_copy,
-        bgColor: AppColors.primaryColor.withOpacity(0.08),
-        iconBgColor: AppColors.primaryColor.withOpacity(0.15),
-        textColor: AppColors.primaryColor,
-        onTap: () => Get.to(() => const SuggestedRemediesScreen()),
-      ),
-      // Reviews & Community
-      _MenuData(
-        title: 'My Reviews',
-        icon: Iconsax.star_copy,
-        bgColor: const Color(0xFFFFF8E1),
-        iconBgColor: const Color(0xFFFFECB3),
-        textColor: const Color(0xFFF9A825),
-        onTap: () => Get.toNamed(AppRoutes.myReviews),
-      ),
-      _MenuData(
-        title: 'My Community',
-        icon: Iconsax.people_copy,
-        bgColor: const Color(0xFFE8F5FE),
-        iconBgColor: const Color(0xFFBBDEFB),
-        textColor: const Color(0xFF1E88E5),
-        onTap: () => Get.to(() => const MyFollowersScreen()),
-      ),
-      _MenuData(
-        title: 'History',
-        icon: Iconsax.clock_copy,
-        bgColor: const Color(0xFFF0F7FF),
-        iconBgColor: const Color(0xFFD0E8FF),
-        textColor: const Color(0xFF0288D1),
-        onTap: () => Get.to(() => const HistoryScreen()),
-      ),
-      // Astrology content
-      _MenuData(
-        title: 'Kundli',
-        icon: Iconsax.document_text_1_copy,
-        bgColor: const Color(0xFFFFF0F5),
-        iconBgColor: const Color(0xFFFFD1DC),
-        textColor: AppColors.primaryColor,
-        onTap: () => Get.to(() => const KundliListScreen()),
-      ),
-      _MenuData(
-        title: 'Match Making',
-        icon: Iconsax.heart_copy,
-        bgColor: const Color(0xFFFFF0F3),
-        iconBgColor: const Color(0xFFFFCCD5),
-        textColor: const Color(0xFFE63946),
-        onTap: () => Get.to(() => const CreateKundliScreen(
+    );
+  });
+}
+
+Widget _buildMenuGrid() {
+  final List<_MenuData> menuItems = [
+    // Live & Communication (most important – top)
+    _MenuData(
+      title: 'Go Live',
+      icon: Iconsax.video_play_copy,
+      bgColor: AppColors.primaryColor.withOpacity(0.08),
+      iconBgColor: AppColors.primaryColor.withOpacity(0.18),
+      textColor: AppColors.primaryColor,
+      onTap: () => _showGoLiveBottomSheet(Get.context!),
+    ),
+    _MenuData(
+      title: 'Chat',
+      icon: Iconsax.messages_2_copy,
+      bgColor: const Color(0xFFEAF8F1),
+      iconBgColor: const Color(0xFFD0F0E0),
+      textColor: const Color(0xFF0D9D57),
+      onTap: () => Get.to(() => AstrologerSessionsScreen()),
+    ),
+    _MenuData(
+      title: 'Call',
+      icon: Iconsax.call_copy,
+      bgColor: const Color(0xFFFFF4E5),
+      iconBgColor: const Color(0xFFFFE4B5),
+      textColor: const Color(0xFFF5A623),
+      onTap: () => Get.to(() => CallHistoryScreen()),
+    ),
+    // Consultation tools
+    _MenuData(
+      title: 'Assistant Chat',
+      icon: Iconsax.cpu_setting_copy,
+      bgColor: const Color(0xFFF3EEFF),
+      iconBgColor: const Color(0xFFE5D7FF),
+      textColor: const Color(0xFF7C3AED),
+      onTap: () => Get.to(() => const AssistantChatScreen()),
+    ),
+    _MenuData(
+      title: 'Suggested Remedies',
+      icon: Iconsax.clipboard_text_copy,
+      bgColor: AppColors.primaryColor.withOpacity(0.08),
+      iconBgColor: AppColors.primaryColor.withOpacity(0.15),
+      textColor: AppColors.primaryColor,
+      onTap: () => Get.to(() => const SuggestedRemediesScreen()),
+    ),
+    // Reviews & Community
+    _MenuData(
+      title: 'My Reviews',
+      icon: Iconsax.star_copy,
+      bgColor: const Color(0xFFFFF8E1),
+      iconBgColor: const Color(0xFFFFECB3),
+      textColor: const Color(0xFFF9A825),
+      onTap: () => Get.toNamed(AppRoutes.myReviews),
+    ),
+    _MenuData(
+      title: 'My Community',
+      icon: Iconsax.people_copy,
+      bgColor: const Color(0xFFE8F5FE),
+      iconBgColor: const Color(0xFFBBDEFB),
+      textColor: const Color(0xFF1E88E5),
+      onTap: () => Get.to(() => const MyFollowersScreen()),
+    ),
+    _MenuData(
+      title: 'History',
+      icon: Iconsax.clock_copy,
+      bgColor: const Color(0xFFF0F7FF),
+      iconBgColor: const Color(0xFFD0E8FF),
+      textColor: const Color(0xFF0288D1),
+      onTap: () => Get.to(() => const HistoryScreen()),
+    ),
+    // Astrology content
+    _MenuData(
+      title: 'Kundli',
+      icon: Iconsax.document_text_1_copy,
+      bgColor: const Color(0xFFFFF0F5),
+      iconBgColor: const Color(0xFFFFD1DC),
+      textColor: AppColors.primaryColor,
+      onTap: () => Get.to(() => const KundliListScreen()),
+    ),
+    _MenuData(
+      title: 'Match Making',
+      icon: Iconsax.heart_copy,
+      bgColor: const Color(0xFFFFF0F3),
+      iconBgColor: const Color(0xFFFFCCD5),
+      textColor: const Color(0xFFE63946),
+      onTap:
+          () => Get.to(
+            () => const CreateKundliScreen(
               initialIsMatching: true,
               hideMatchingTab: true,
-            )),
-      ),
-      _MenuData(
-        title: 'Panchang',
-        icon: Iconsax.sun_1_copy,
-        bgColor: const Color(0xFFFFF3E0),
-        iconBgColor: const Color(0xFFFFE0B2),
-        textColor: const Color(0xFFE65100),
-        onTap: () => Get.toNamed(AppRoutes.panchangScreen),
-      ),
-      /*_MenuData(
+            ),
+          ),
+    ),
+    _MenuData(
+      title: 'Panchang',
+      icon: Iconsax.sun_1_copy,
+      bgColor: const Color(0xFFFFF3E0),
+      iconBgColor: const Color(0xFFFFE0B2),
+      textColor: const Color(0xFFE65100),
+      onTap: () => Get.toNamed(AppRoutes.panchangScreen),
+    ),
+    /*_MenuData(
         title: 'Astrology Blog',
         icon: Iconsax.book_1_copy,
         bgColor: const Color(0xFFE8F5E9),
@@ -1053,8 +1181,8 @@ class _HomeScreenState extends State<HomeScreen> {
         textColor: const Color(0xFF2E7D32),
         onTap: () => Get.to(() => const BlogScreen()),
       ),*/
-      // Commerce
-      /*_MenuData(
+    // Commerce
+    /*_MenuData(
         title: 'Astromall',
         icon: Iconsax.shop_copy,
         bgColor: const Color(0xFFF9F0FF),
@@ -1062,195 +1190,201 @@ class _HomeScreenState extends State<HomeScreen> {
         textColor: const Color(0xFF8B2FC9),
         onTap: () => Get.to(() => const AstromallOrdersScreen()),
       ),*/
-      _MenuData(
-        title: 'Offers',
-        icon: Iconsax.tag_copy,
-        bgColor: const Color(0xFFE3F2FD),
-        iconBgColor: const Color(0xFFBBDEFB),
-        textColor: const Color(0xFF1565C0),
-        onTap: () => Get.to(() => const OffersScreen()),
-      ),
-      // Admin & settings
-      _MenuData(
-        title: 'Settings',
-        icon: Iconsax.setting_2_copy,
-        bgColor: const Color(0xFFF5F5F5),
-        iconBgColor: const Color(0xFFEEEEEE),
-        textColor: const Color(0xFF616161),
-        onTap: () => Get.to(() => const SettingsScreen()),
-      ),
-    ];
+    _MenuData(
+      title: 'Offers',
+      icon: Iconsax.tag_copy,
+      bgColor: const Color(0xFFE3F2FD),
+      iconBgColor: const Color(0xFFBBDEFB),
+      textColor: const Color(0xFF1565C0),
+      onTap: () => Get.to(() => const OffersScreen()),
+    ),
+    // Admin & settings
+    _MenuData(
+      title: 'Settings',
+      icon: Iconsax.setting_2_copy,
+      bgColor: const Color(0xFFF5F5F5),
+      iconBgColor: const Color(0xFFEEEEEE),
+      textColor: const Color(0xFF616161),
+      onTap: () => Get.to(() => const SettingsScreen()),
+    ),
+  ];
 
-    return GridView.builder(
-      padding: EdgeInsets.zero,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 0.8,
-      ),
-      itemCount: menuItems.length,
-      itemBuilder: (context, index) {
-        return _buildMenuItem(menuItems[index]);
-      },
-    );
-  }
+  return GridView.builder(
+    padding: EdgeInsets.zero,
+    shrinkWrap: true,
+    physics: const NeverScrollableScrollPhysics(),
+    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: 3,
+      crossAxisSpacing: 12,
+      mainAxisSpacing: 12,
+      childAspectRatio: 0.8,
+    ),
+    itemCount: menuItems.length,
+    itemBuilder: (context, index) {
+      return _buildMenuItem(menuItems[index]);
+    },
+  );
+}
 
-  void _showGoLiveBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => SafeArea(
-        top: false,
-        child: Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+void _showGoLiveBottomSheet(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.transparent,
+    builder:
+        (context) => SafeArea(
+          top: false,
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 25),
+                AppText(
+                  'Go Live'.tr,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF2E1A47),
+                ),
+                const SizedBox(height: 12),
+                AppText(
+                  'Would you like to go live instantly or schedule it for later?'
+                      .tr,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey[600],
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 30),
+
+                // Go Live Instantly Button
+                SizedBox(
+                  width: double.infinity,
+                  height: 55,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Get.back();
+                      // For actual implementation, replace this with direct navigation
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(
+                        0xFF4CAF50,
+                      ), // Green for Go Live
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: AppText(
+                      'Go Live Instantly'.tr,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 14),
+
+                // Schedule for Later Button
+                SizedBox(
+                  width: double.infinity,
+                  height: 55,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      Get.back();
+                      Get.toNamed(AppRoutes.liveSchedule);
+                    },
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(
+                        0xFF1E88E5,
+                      ), // Blue for Schedule
+                      elevation: 0,
+                      side: const BorderSide(
+                        color: Color(0xFF1E88E5),
+                        width: 1.5,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: AppText(
+                      'Schedule for Later'.tr,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF2196F3),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 25),
-            AppText(
-              'Go Live'.tr,
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFF2E1A47),
-            ),
-            const SizedBox(height: 12),
-            AppText(
-              'Would you like to go live instantly or schedule it for later?'.tr,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: Colors.grey[600],
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 30),
-            
-            // Go Live Instantly Button
-            SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: ElevatedButton(
-                onPressed: () {
-                  Get.back();
-                  // For actual implementation, replace this with direct navigation
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF4CAF50), // Green for Go Live
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-                child: AppText(
-                  'Go Live Instantly'.tr,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            
-            const SizedBox(height: 14),
-            
-            // Schedule for Later Button
-            SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: OutlinedButton(
-                onPressed: () {
-                  Get.back();
-                  Get.toNamed(AppRoutes.liveSchedule);
-                },
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF1E88E5), // Blue for Schedule
-                  elevation: 0,
-                  side: const BorderSide(color: Color(0xFF1E88E5), width: 1.5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-                child: AppText(
-                  'Schedule for Later'.tr,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF2196F3),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-          ],
         ),
+  );
+}
+
+Widget _buildMenuItem(_MenuData item) {
+  return GestureDetector(
+    onTap: item.onTap,
+    child: Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: item.textColor.withOpacity(0.08), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: item.textColor.withOpacity(0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: item.bgColor,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: item.textColor.withOpacity(0.12),
+                width: 1,
+              ),
+            ),
+            child: Icon(item.icon, color: item.textColor, size: 26),
+          ),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: AppText(
+              item.title.tr,
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+              color: const Color(0xFF2E1A47),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
       ),
     ),
   );
 }
-
-  Widget _buildMenuItem(_MenuData item) {
-    return GestureDetector(
-      onTap: item.onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: item.textColor.withOpacity(0.08), width: 1.5),
-          boxShadow: [
-            BoxShadow(
-              color: item.textColor.withOpacity(0.04),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: item.bgColor,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: item.textColor.withOpacity(0.12), width: 1),
-              ),
-              child: Icon(
-                item.icon,
-                color: item.textColor,
-                size: 26,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: AppText(
-                item.title.tr,
-                fontSize: 12,
-                fontWeight: FontWeight.w800,
-                color: const Color(0xFF2E1A47),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-
 
 class _MenuData {
   final String title;

@@ -7,7 +7,6 @@ import '../../domain/usecases/get_wallet_earnings_usecase.dart';
 import '../../domain/usecases/get_wallet_withdrawals_usecase.dart';
 import '../../domain/usecases/request_withdrawal_usecase.dart';
 
-
 class WalletController extends GetxController {
   final GetWalletSummaryUseCase _getWalletSummaryUseCase;
   final GetWalletEarningsUseCase _getWalletEarningsUseCase;
@@ -27,7 +26,8 @@ class WalletController extends GetxController {
   final RxString summaryError = ''.obs;
 
   // Earnings State
-  final RxList<WalletTransactionModel> earningsList = <WalletTransactionModel>[].obs;
+  final RxList<WalletTransactionModel> earningsList =
+      <WalletTransactionModel>[].obs;
   final RxBool isLoadingEarnings = false.obs;
   final RxString earningsError = ''.obs;
   int _currentEarningsPage = 1;
@@ -35,7 +35,8 @@ class WalletController extends GetxController {
   final RxString selectedEarningFilter = 'Today'.obs; // Default
 
   // Withdrawals State
-  final RxList<WalletTransactionModel> withdrawalsList = <WalletTransactionModel>[].obs;
+  final RxList<WalletTransactionModel> withdrawalsList =
+      <WalletTransactionModel>[].obs;
   final RxBool isLoadingWithdrawals = false.obs;
   final RxString withdrawalsError = ''.obs;
   int _currentWithdrawalsPage = 1;
@@ -79,7 +80,8 @@ class WalletController extends GetxController {
     try {
       isLoadingEarnings.value = true;
       String apiFilter = selectedEarningFilter.value.toLowerCase();
-      if (apiFilter == 'last 3 months') apiFilter = 'monthly'; // fallback or adjust according to API
+      if (apiFilter == 'last 3 months')
+        apiFilter = 'monthly'; // fallback or adjust according to API
 
       final response = await _getWalletEarningsUseCase.execute(
         filter: apiFilter,
@@ -128,7 +130,10 @@ class WalletController extends GetxController {
     }
   }
 
-  Future<Map<String, dynamic>> requestWithdrawal(double amount, int bankAccountId) async {
+  Future<Map<String, dynamic>> requestWithdrawal(
+    double amount,
+    int bankAccountId,
+  ) async {
     try {
       final tx = await _requestWithdrawalUseCase.execute(
         amount: amount,
@@ -137,9 +142,15 @@ class WalletController extends GetxController {
       // Refresh summary to reflect new balance, and add to withdrawals list
       fetchWalletSummary();
       withdrawalsList.insert(0, tx);
-      return {'success': true, 'message': 'Withdrawal request submitted successfully.'};
+      return {
+        'success': true,
+        'message': 'Withdrawal request submitted successfully.',
+      };
     } catch (e) {
-      return {'success': false, 'message': e.toString().replaceAll('Exception: ', '')};
+      return {
+        'success': false,
+        'message': e.toString().replaceAll('Exception: ', ''),
+      };
     }
   }
 }

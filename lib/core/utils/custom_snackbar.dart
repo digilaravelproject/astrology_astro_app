@@ -14,8 +14,10 @@ class CustomSnackBar {
   }) {
     final context = Get.overlayContext ?? Get.context;
     // Try to find the overlay state using the global navigator key
-    final overlay = Get.key.currentState?.overlay ?? (context != null ? Overlay.of(context) : null);
-    
+    final overlay =
+        Get.key.currentState?.overlay ??
+        (context != null ? Overlay.of(context) : null);
+
     if (overlay == null) {
       debugPrint('CustomSnackBar: Overlay not found via Get.key or context');
       return;
@@ -30,19 +32,20 @@ class CustomSnackBar {
     // Remove old overlay if any
     _currentOverlay?.remove();
     _currentOverlay = null;
-    
+
     _currentOverlay = OverlayEntry(
-      builder: (context) => _SnackbarWidget(
-        title: title,
-        message: message,
-        backgroundColor: backgroundColor,
-        icon: icon,
-        textColor: effectiveTextColor,
-        onDismiss: () {
-          _currentOverlay?.remove();
-          _currentOverlay = null;
-        },
-      ),
+      builder:
+          (context) => _SnackbarWidget(
+            title: title,
+            message: message,
+            backgroundColor: backgroundColor,
+            icon: icon,
+            textColor: effectiveTextColor,
+            onDismiss: () {
+              _currentOverlay?.remove();
+              _currentOverlay = null;
+            },
+          ),
     );
 
     overlay.insert(_currentOverlay!);
@@ -60,7 +63,11 @@ class CustomSnackBar {
     // Disabled as per user request
   }
 
-  static void showError(String message, {String title = 'Error', bool isApiError = false}) {
+  static void showError(
+    String message, {
+    String title = 'Error',
+    bool isApiError = false,
+  }) {
     if (!isApiError) return;
     _show(
       title: title,
@@ -141,7 +148,8 @@ class _SnackbarWidget extends StatefulWidget {
   State<_SnackbarWidget> createState() => _SnackbarWidgetState();
 }
 
-class _SnackbarWidgetState extends State<_SnackbarWidget> with SingleTickerProviderStateMixin {
+class _SnackbarWidgetState extends State<_SnackbarWidget>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _offsetAnimation;
   late Animation<double> _fadeAnimation;
@@ -159,9 +167,10 @@ class _SnackbarWidgetState extends State<_SnackbarWidget> with SingleTickerProvi
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
     _controller.forward();
 
@@ -198,7 +207,10 @@ class _SnackbarWidgetState extends State<_SnackbarWidget> with SingleTickerProvi
                 _controller.reverse().then((_) => widget.onDismiss());
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   color: widget.backgroundColor,
                   borderRadius: BorderRadius.circular(16),
@@ -218,7 +230,11 @@ class _SnackbarWidgetState extends State<_SnackbarWidget> with SingleTickerProvi
                         color: Colors.white.withOpacity(0.2),
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(widget.icon, color: widget.textColor, size: 20),
+                      child: Icon(
+                        widget.icon,
+                        color: widget.textColor,
+                        size: 20,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -247,7 +263,11 @@ class _SnackbarWidgetState extends State<_SnackbarWidget> with SingleTickerProvi
                       ),
                     ),
                     IconButton(
-                      icon: Icon(Icons.close, color: widget.textColor, size: 18),
+                      icon: Icon(
+                        Icons.close,
+                        color: widget.textColor,
+                        size: 18,
+                      ),
                       onPressed: () {
                         _controller.reverse().then((_) => widget.onDismiss());
                       },

@@ -31,7 +31,10 @@ class FinanceRepository implements FinanceRepositoryInterface {
   }
 
   @override
-  Future<ResponseModel> updateBankAccount(int id, Map<String, dynamic> data) async {
+  Future<ResponseModel> updateBankAccount(
+    int id,
+    Map<String, dynamic> data,
+  ) async {
     return await _remoteDataSource.updateBankAccount(id, data);
   }
 

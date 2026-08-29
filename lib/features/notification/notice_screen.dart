@@ -85,7 +85,7 @@ class NoticeScreen extends GetView<NoticeController> {
 
   Widget _buildNoticeCard(NoticeData notice) {
     final bool isHighPriority = notice.isUrgent;
-    
+
     return GestureDetector(
       onTap: () => Get.to(() => NoticeDetailScreen(notice: notice)),
       child: Container(
@@ -100,7 +100,10 @@ class NoticeScreen extends GetView<NoticeController> {
             ),
           ],
           border: Border.all(
-            color: isHighPriority ? Colors.red.withOpacity(0.1) : Colors.grey.shade100,
+            color:
+                isHighPriority
+                    ? Colors.red.withOpacity(0.1)
+                    : Colors.grey.shade100,
             width: isHighPriority ? 2 : 1,
           ),
         ),
@@ -111,7 +114,10 @@ class NoticeScreen extends GetView<NoticeController> {
                 top: 0,
                 right: 0,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
                   decoration: const BoxDecoration(
                     color: Colors.red,
                     borderRadius: BorderRadius.only(
@@ -180,7 +186,10 @@ class NoticeScreen extends GetView<NoticeController> {
                   ),
                   const SizedBox(height: 16),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.grey.shade50,
                       borderRadius: BorderRadius.circular(8),
@@ -203,21 +212,31 @@ class NoticeScreen extends GetView<NoticeController> {
 
   Color _getTypeColor(String type) {
     switch (type.toLowerCase()) {
-      case 'maintenance': return Colors.blue;
-      case 'account': return Colors.green;
-      case 'policy': return Colors.orange;
-      case 'community': return Colors.purple;
-      default: return Colors.grey;
+      case 'maintenance':
+        return Colors.blue;
+      case 'account':
+        return Colors.green;
+      case 'policy':
+        return Colors.orange;
+      case 'community':
+        return Colors.purple;
+      default:
+        return Colors.grey;
     }
   }
 
   IconData _getTypeIcon(String type) {
     switch (type.toLowerCase()) {
-      case 'maintenance': return Iconsax.setting_2;
-      case 'account': return Iconsax.wallet_2;
-      case 'policy': return Iconsax.document_text;
-      case 'community': return Iconsax.people;
-      default: return Iconsax.notification;
+      case 'maintenance':
+        return Iconsax.setting_2;
+      case 'account':
+        return Iconsax.wallet_2;
+      case 'policy':
+        return Iconsax.document_text;
+      case 'community':
+        return Iconsax.people;
+      default:
+        return Iconsax.notification;
     }
   }
 }

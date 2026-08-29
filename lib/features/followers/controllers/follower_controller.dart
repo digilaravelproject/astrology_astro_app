@@ -14,9 +14,9 @@ class FollowerController extends GetxController {
     required GetFollowersUseCase getFollowersUseCase,
     required GetFavoritesUseCase getFavoritesUseCase,
     required ToggleLikeUseCase toggleLikeUseCase,
-  })  : _getFollowersUseCase = getFollowersUseCase,
-        _getFavoritesUseCase = getFavoritesUseCase,
-        _toggleLikeUseCase = toggleLikeUseCase;
+  }) : _getFollowersUseCase = getFollowersUseCase,
+       _getFavoritesUseCase = getFavoritesUseCase,
+       _toggleLikeUseCase = toggleLikeUseCase;
 
   final isLoading = false.obs;
   final followers = <FollowerModel>[].obs;
@@ -49,13 +49,13 @@ class FollowerController extends GetxController {
   }
 
   Future<void> getAllData() async {
-    await Future.wait([
-      getFollowers(reset: true),
-      getFavorites(reset: true),
-    ]);
+    await Future.wait([getFollowers(reset: true), getFavorites(reset: true)]);
   }
 
-  Future<void> getFollowers({bool showLoading = true, bool reset = false}) async {
+  Future<void> getFollowers({
+    bool showLoading = true,
+    bool reset = false,
+  }) async {
     if (reset) {
       followerCurrentPage.value = 1;
     }
@@ -84,7 +84,9 @@ class FollowerController extends GetxController {
   }
 
   Future<void> loadMoreFollowers() async {
-    if (isFollowerMoreLoading.value || followerCurrentPage.value >= followerLastPage.value) return;
+    if (isFollowerMoreLoading.value ||
+        followerCurrentPage.value >= followerLastPage.value)
+      return;
 
     try {
       isFollowerMoreLoading.value = true;
@@ -97,7 +99,10 @@ class FollowerController extends GetxController {
     }
   }
 
-  Future<void> getFavorites({bool showLoading = true, bool reset = false}) async {
+  Future<void> getFavorites({
+    bool showLoading = true,
+    bool reset = false,
+  }) async {
     if (reset) {
       favoriteCurrentPage.value = 1;
     }
@@ -126,7 +131,9 @@ class FollowerController extends GetxController {
   }
 
   Future<void> loadMoreFavorites() async {
-    if (isFavoriteMoreLoading.value || favoriteCurrentPage.value >= favoriteLastPage.value) return;
+    if (isFavoriteMoreLoading.value ||
+        favoriteCurrentPage.value >= favoriteLastPage.value)
+      return;
 
     try {
       isFavoriteMoreLoading.value = true;

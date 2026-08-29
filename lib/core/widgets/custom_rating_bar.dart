@@ -26,15 +26,16 @@ class CustomRatingBar extends StatelessWidget {
       children: [
         ...List.generate(maxRating, (index) {
           return GestureDetector(
-            onTap: onRatingUpdate != null
-                ? () => onRatingUpdate!(index + 1.0)
-                : null,
+            onTap:
+                onRatingUpdate != null
+                    ? () => onRatingUpdate!(index + 1.0)
+                    : null,
             child: Icon(
               index < rating.floor()
                   ? Icons.star
                   : index < rating
-                      ? Icons.star_half
-                      : Icons.star_border,
+                  ? Icons.star_half
+                  : Icons.star_border,
               color: color ?? AppColors.goldAccent,
               size: size,
             ),

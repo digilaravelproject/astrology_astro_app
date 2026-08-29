@@ -6,12 +6,8 @@ class AppLogo extends StatelessWidget {
   final double? height;
   final BoxFit fit;
 
-  const AppLogo({
-    Key? key,
-    this.width,
-    this.height,
-    this.fit = BoxFit.contain,
-  }) : super(key: key);
+  const AppLogo({Key? key, this.width, this.height, this.fit = BoxFit.contain})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {

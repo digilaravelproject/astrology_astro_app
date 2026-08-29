@@ -18,7 +18,8 @@ class LiveScheduleScreen extends StatefulWidget {
   State<LiveScheduleScreen> createState() => _LiveScheduleScreenState();
 }
 
-class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTickerProviderStateMixin {
+class _LiveScheduleScreenState extends State<LiveScheduleScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late LiveController _controller;
 
@@ -37,288 +38,409 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
 
   void _showAddSessionSheet({LiveSessionModel? session}) {
     final titleController = TextEditingController(text: session?.title);
-    final descriptionController = TextEditingController(text: session?.description);
-    final durationController = TextEditingController(text: session != null ? session.durationMinutes.toString() : '60');
-    final participantsController = TextEditingController(text: session != null ? session.maxParticipants.toString() : '100');
+    final descriptionController = TextEditingController(
+      text: session?.description,
+    );
+    final durationController = TextEditingController(
+      text: session != null ? session.durationMinutes.toString() : '60',
+    );
+    final participantsController = TextEditingController(
+      text: session != null ? session.maxParticipants.toString() : '100',
+    );
     DateTime? selectedDateTime = session?.scheduledAt;
-    String selectedDateText = session != null ? DateFormat('dd MMM yyyy').format(session.scheduledAt) : 'Select Date';
-    String selectedTimeText = session != null ? DateFormat('hh:mm a').format(session.scheduledAt) : 'Select Time';
+    String selectedDateText =
+        session != null
+            ? DateFormat('dd MMM yyyy').format(session.scheduledAt)
+            : 'Select Date';
+    String selectedTimeText =
+        session != null
+            ? DateFormat('hh:mm a').format(session.scheduledAt)
+            : 'Select Time';
     bool isInstant = false;
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setSheetState) => Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(30),
-                topRight: Radius.circular(30),
-              ),
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 50,
-                      height: 5,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(10),
+      builder:
+          (context) => StatefulBuilder(
+            builder:
+                (context, setSheetState) => Padding(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  AppText(session != null ? 'Update Live Session'.tr : 'Schedule Live Session'.tr, fontSize: 20, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
-                  const SizedBox(height: 24),
-                  
-                  // Topic Input
-                  _buildLabel('Session Topic'.tr),
-                  const SizedBox(height: 8),
-                  _buildTextField(titleController, 'Enter session topic...'.tr),
-                  const SizedBox(height: 16),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Center(
+                            child: Container(
+                              width: 50,
+                              height: 5,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade200,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          AppText(
+                            session != null
+                                ? 'Update Live Session'.tr
+                                : 'Schedule Live Session'.tr,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFF2E1A47),
+                          ),
+                          const SizedBox(height: 24),
 
-                  // Description Input
-                  _buildLabel('Description'.tr),
-                  const SizedBox(height: 8),
-                  _buildTextField(descriptionController, 'Enter session description...'.tr, maxLines: 3),
-                  const SizedBox(height: 16),
+                          // Topic Input
+                          _buildLabel('Session Topic'.tr),
+                          const SizedBox(height: 8),
+                          _buildTextField(
+                            titleController,
+                            'Enter session topic...'.tr,
+                          ),
+                          const SizedBox(height: 16),
 
-                  // Instant toggle (Only for new sessions)
-                  if (session == null) ...[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildLabel('Go Live Instantly'.tr),
-                            const SizedBox(height: 4),
-                            AppText('Start streaming immediately'.tr, fontSize: 11, color: Colors.grey.shade500),
-                          ],
-                        ),
-                        Switch(
-                          value: isInstant,
-                          activeColor: AppColors.primaryColor,
-                          onChanged: (val) {
-                            setSheetState(() {
-                              isInstant = val;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                  ],
+                          // Description Input
+                          _buildLabel('Description'.tr),
+                          const SizedBox(height: 8),
+                          _buildTextField(
+                            descriptionController,
+                            'Enter session description...'.tr,
+                            maxLines: 3,
+                          ),
+                          const SizedBox(height: 16),
 
-                  // Duration & Participants Row
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildLabel('Duration (Mins)'.tr),
-                            const SizedBox(height: 8),
-                            _buildTextField(durationController, '60', isNumeric: true),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildLabel('Max Participants'.tr),
-                            const SizedBox(height: 8),
-                            _buildTextField(participantsController, '100', isNumeric: true),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Date & Time Row (Only if not instant)
-                  if (!isInstant) ...[
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildLabel('Date'.tr),
-                              const SizedBox(height: 8),
-                              _buildPickerTrigger(
-                                text: selectedDateText,
-                                icon: Iconsax.calendar_copy,
-                                onTap: () async {
-                                  final date = await showDatePicker(
-                                    context: context,
-                                    initialDate: DateTime.now(),
-                                    firstDate: DateTime.now(),
-                                    lastDate: DateTime.now().add(const Duration(days: 90)),
-                                  );
-                                  if (date != null) {
+                          // Instant toggle (Only for new sessions)
+                          if (session == null) ...[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    _buildLabel('Go Live Instantly'.tr),
+                                    const SizedBox(height: 4),
+                                    AppText(
+                                      'Start streaming immediately'.tr,
+                                      fontSize: 11,
+                                      color: Colors.grey.shade500,
+                                    ),
+                                  ],
+                                ),
+                                Switch(
+                                  value: isInstant,
+                                  activeColor: AppColors.primaryColor,
+                                  onChanged: (val) {
                                     setSheetState(() {
-                                      selectedDateText = DateFormat('dd MMM yyyy').format(date);
-                                      if (selectedDateTime != null) {
-                                        selectedDateTime = DateTime(date.year, date.month, date.day, selectedDateTime!.hour, selectedDateTime!.minute);
-                                      } else {
-                                        selectedDateTime = DateTime(date.year, date.month, date.day);
-                                      }
+                                      isInstant = val;
                                     });
-                                  }
-                                },
+                                  },
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                          ],
+
+                          // Duration & Participants Row
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    _buildLabel('Duration (Mins)'.tr),
+                                    const SizedBox(height: 8),
+                                    _buildTextField(
+                                      durationController,
+                                      '60',
+                                      isNumeric: true,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    _buildLabel('Max Participants'.tr),
+                                    const SizedBox(height: 8),
+                                    _buildTextField(
+                                      participantsController,
+                                      '100',
+                                      isNumeric: true,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildLabel('Time'.tr),
-                              const SizedBox(height: 8),
-                              _buildPickerTrigger(
-                                text: selectedTimeText,
-                                icon: Iconsax.clock_copy,
-                                onTap: () async {
-                                  final time = await showTimePicker(
-                                    context: context,
-                                    initialTime: TimeOfDay.now(),
+                          const SizedBox(height: 16),
+
+                          // Date & Time Row (Only if not instant)
+                          if (!isInstant) ...[
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      _buildLabel('Date'.tr),
+                                      const SizedBox(height: 8),
+                                      _buildPickerTrigger(
+                                        text: selectedDateText,
+                                        icon: Iconsax.calendar_copy,
+                                        onTap: () async {
+                                          final date = await showDatePicker(
+                                            context: context,
+                                            initialDate: DateTime.now(),
+                                            firstDate: DateTime.now(),
+                                            lastDate: DateTime.now().add(
+                                              const Duration(days: 90),
+                                            ),
+                                          );
+                                          if (date != null) {
+                                            setSheetState(() {
+                                              selectedDateText = DateFormat(
+                                                'dd MMM yyyy',
+                                              ).format(date);
+                                              if (selectedDateTime != null) {
+                                                selectedDateTime = DateTime(
+                                                  date.year,
+                                                  date.month,
+                                                  date.day,
+                                                  selectedDateTime!.hour,
+                                                  selectedDateTime!.minute,
+                                                );
+                                              } else {
+                                                selectedDateTime = DateTime(
+                                                  date.year,
+                                                  date.month,
+                                                  date.day,
+                                                );
+                                              }
+                                            });
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      _buildLabel('Time'.tr),
+                                      const SizedBox(height: 8),
+                                      _buildPickerTrigger(
+                                        text: selectedTimeText,
+                                        icon: Iconsax.clock_copy,
+                                        onTap: () async {
+                                          final time = await showTimePicker(
+                                            context: context,
+                                            initialTime: TimeOfDay.now(),
+                                          );
+                                          if (time != null) {
+                                            final now = DateTime.now();
+                                            DateTime tempDateTime;
+                                            if (selectedDateTime != null) {
+                                              tempDateTime = DateTime(
+                                                selectedDateTime!.year,
+                                                selectedDateTime!.month,
+                                                selectedDateTime!.day,
+                                                time.hour,
+                                                time.minute,
+                                              );
+                                            } else {
+                                              tempDateTime = DateTime(
+                                                now.year,
+                                                now.month,
+                                                now.day,
+                                                time.hour,
+                                                time.minute,
+                                              );
+                                            }
+
+                                            if (tempDateTime.isBefore(
+                                              now.add(
+                                                const Duration(minutes: 10),
+                                              ),
+                                            )) {
+                                              CustomSnackBar.showError(
+                                                'Please select a time at least 10 minutes from now',
+                                              );
+                                              return;
+                                            }
+
+                                            setSheetState(() {
+                                              selectedTimeText = time.format(
+                                                context,
+                                              );
+                                              selectedDateTime = tempDateTime;
+                                            });
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 32),
+                          ] else ...[
+                            const SizedBox(height: 16),
+                          ],
+
+                          Obx(
+                            () => CustomButton(
+                              text:
+                                  session != null
+                                      ? 'Update Now'.tr
+                                      : (isInstant
+                                          ? 'Go Live Now'.tr
+                                          : 'Schedule Now'.tr),
+                              isLoading: _controller.isCreating.value,
+                              onPressed: () {
+                                if (titleController.text.trim().isEmpty) {
+                                  CustomSnackBar.showError(
+                                    'Please enter a session topic',
                                   );
-                                  if (time != null) {
-                                    final now = DateTime.now();
-                                    DateTime tempDateTime;
-                                    if (selectedDateTime != null) {
-                                      tempDateTime = DateTime(selectedDateTime!.year, selectedDateTime!.month, selectedDateTime!.day, time.hour, time.minute);
-                                    } else {
-                                      tempDateTime = DateTime(now.year, now.month, now.day, time.hour, time.minute);
-                                    }
+                                  return;
+                                }
 
-                                    if (tempDateTime.isBefore(now.add(const Duration(minutes: 10)))) {
-                                      CustomSnackBar.showError('Please select a time at least 10 minutes from now');
-                                      return;
-                                    }
+                                if (descriptionController.text.trim().isEmpty) {
+                                  CustomSnackBar.showError(
+                                    'Please enter a session description',
+                                  );
+                                  return;
+                                }
 
-                                    setSheetState(() {
-                                      selectedTimeText = time.format(context);
-                                      selectedDateTime = tempDateTime;
-                                    });
+                                if (!isInstant) {
+                                  if (selectedDateText == 'Select Date') {
+                                    CustomSnackBar.showError(
+                                      'Please select a date for the session',
+                                    );
+                                    return;
                                   }
-                                },
-                              ),
-                            ],
+
+                                  if (selectedTimeText == 'Select Time') {
+                                    CustomSnackBar.showError(
+                                      'Please select a time for the session',
+                                    );
+                                    return;
+                                  }
+
+                                  if (selectedDateTime == null) {
+                                    CustomSnackBar.showError(
+                                      'Invalid date and time selected',
+                                    );
+                                    return;
+                                  }
+
+                                  final now = DateTime.now();
+                                  if (session == null &&
+                                      selectedDateTime!.isBefore(
+                                        now.add(const Duration(minutes: 5)),
+                                      )) {
+                                    CustomSnackBar.showError(
+                                      'Session must be scheduled at least 5 minutes in advance',
+                                    );
+                                    return;
+                                  }
+                                }
+
+                                final duration =
+                                    int.tryParse(durationController.text) ?? 60;
+                                if (duration < 15) {
+                                  CustomSnackBar.showError(
+                                    'Duration must be at least 15 minutes',
+                                  );
+                                  return;
+                                }
+
+                                final participants =
+                                    int.tryParse(participantsController.text) ??
+                                    100;
+                                if (participants < 1) {
+                                  CustomSnackBar.showError(
+                                    'Max participants must be at least 1',
+                                  );
+                                  return;
+                                }
+
+                                if (session != null) {
+                                  _controller.updateSession(
+                                    id: session.id,
+                                    title: titleController.text,
+                                    description: descriptionController.text,
+                                    scheduledAt: selectedDateTime!,
+                                    sessionType: 'public',
+                                    duration: duration,
+                                    maxParticipants: participants,
+                                  );
+                                } else {
+                                  _controller.createSession(
+                                    title: titleController.text,
+                                    description: descriptionController.text,
+                                    scheduledAt:
+                                        isInstant
+                                            ? DateTime.now()
+                                            : selectedDateTime,
+                                    sessionType: 'public',
+                                    duration: duration,
+                                    maxParticipants: participants,
+                                    isInstant: isInstant,
+                                  );
+                                }
+                              },
+                              backgroundColor:
+                                  isInstant
+                                      ? Colors.red
+                                      : AppColors.primaryColor,
+                              borderRadius: 100,
+                            ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 20),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 32),
-                  ] else ...[
-                    const SizedBox(height: 16),
-                  ],
-                  
-                  Obx(() => CustomButton(
-                    text: session != null 
-                        ? 'Update Now'.tr 
-                        : (isInstant ? 'Go Live Now'.tr : 'Schedule Now'.tr),
-                    isLoading: _controller.isCreating.value,
-                    onPressed: () {
-                      if (titleController.text.trim().isEmpty) {
-                        CustomSnackBar.showError('Please enter a session topic');
-                        return;
-                      }
-                      
-                      if (descriptionController.text.trim().isEmpty) {
-                        CustomSnackBar.showError('Please enter a session description');
-                        return;
-                      }
-
-                      if (!isInstant) {
-                        if (selectedDateText == 'Select Date') {
-                          CustomSnackBar.showError('Please select a date for the session');
-                          return;
-                        }
-
-                        if (selectedTimeText == 'Select Time') {
-                          CustomSnackBar.showError('Please select a time for the session');
-                          return;
-                        }
-
-                        if (selectedDateTime == null) {
-                          CustomSnackBar.showError('Invalid date and time selected');
-                          return;
-                        }
-
-                        final now = DateTime.now();
-                        if (session == null && selectedDateTime!.isBefore(now.add(const Duration(minutes: 5)))) {
-                          CustomSnackBar.showError('Session must be scheduled at least 5 minutes in advance');
-                          return;
-                        }
-                      }
-
-                      final duration = int.tryParse(durationController.text) ?? 60;
-                      if (duration < 15) {
-                        CustomSnackBar.showError('Duration must be at least 15 minutes');
-                        return;
-                      }
-
-                      final participants = int.tryParse(participantsController.text) ?? 100;
-                      if (participants < 1) {
-                        CustomSnackBar.showError('Max participants must be at least 1');
-                        return;
-                      }
-
-                      if (session != null) {
-                        _controller.updateSession(
-                          id: session.id,
-                          title: titleController.text,
-                          description: descriptionController.text,
-                          scheduledAt: selectedDateTime!,
-                          sessionType: 'public',
-                          duration: duration,
-                          maxParticipants: participants,
-                        );
-                      } else {
-                        _controller.createSession(
-                          title: titleController.text,
-                          description: descriptionController.text,
-                          scheduledAt: isInstant ? DateTime.now() : selectedDateTime,
-                          sessionType: 'public',
-                          duration: duration,
-                          maxParticipants: participants,
-                          isInstant: isInstant,
-                        );
-                      }
-                    },
-                    backgroundColor: isInstant ? Colors.red : AppColors.primaryColor,
-                    borderRadius: 100,
-                  )),
-                  const SizedBox(height: 20),
-                ],
-              ),
-            ),
+                  ),
+                ),
           ),
-        ),
-      ),
     );
   }
 
   Widget _buildLabel(String text) {
-    return AppText(text, fontSize: 13, fontWeight: FontWeight.w600, color: Colors.grey.shade700);
+    return AppText(
+      text,
+      fontSize: 13,
+      fontWeight: FontWeight.w600,
+      color: Colors.grey.shade700,
+    );
   }
 
-  Widget _buildTextField(TextEditingController controller, String hint, {int maxLines = 1, bool isNumeric = false}) {
+  Widget _buildTextField(
+    TextEditingController controller,
+    String hint, {
+    int maxLines = 1,
+    bool isNumeric = false,
+  }) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
@@ -329,7 +451,8 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
         controller: controller,
         maxLines: maxLines,
         keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
-        inputFormatters: isNumeric ? [FilteringTextInputFormatter.digitsOnly] : null,
+        inputFormatters:
+            isNumeric ? [FilteringTextInputFormatter.digitsOnly] : null,
         style: const TextStyle(fontSize: 14),
         decoration: InputDecoration(
           hintText: hint,
@@ -340,7 +463,11 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
     );
   }
 
-  Widget _buildPickerTrigger({required String text, required IconData icon, required VoidCallback onTap}) {
+  Widget _buildPickerTrigger({
+    required String text,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(14),
@@ -360,7 +487,10 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
                 text,
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
-                color: text.contains('Select') ? Colors.grey : const Color(0xFF2E1A47),
+                color:
+                    text.contains('Select')
+                        ? Colors.grey
+                        : const Color(0xFF2E1A47),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -374,9 +504,7 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
-      appBar: CustomAppBar(
-        title: 'Live Schedule'.tr,
-      ),
+      appBar: CustomAppBar(title: 'Live Schedule'.tr),
       body: Column(
         children: [
           Container(
@@ -390,21 +518,23 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
               unselectedLabelColor: Colors.grey,
               indicatorColor: AppColors.primaryColor,
               indicatorSize: TabBarIndicatorSize.tab,
-              labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, fontFamily: 'Poppins'),
-              unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 13, fontFamily: 'Poppins'),
-              tabs: [
-                Tab(text: "Upcoming".tr),
-                Tab(text: "Completed".tr),
-              ],
+              labelStyle: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+                fontFamily: 'Poppins',
+              ),
+              unselectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.normal,
+                fontSize: 13,
+                fontFamily: 'Poppins',
+              ),
+              tabs: [Tab(text: "Upcoming".tr), Tab(text: "Completed".tr)],
             ),
           ),
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: [
-                _buildUpcomingList(),
-                _buildCompletedList(),
-              ],
+              children: [_buildUpcomingList(), _buildCompletedList()],
             ),
           ),
         ],
@@ -413,7 +543,12 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
         onPressed: _showAddSessionSheet,
         backgroundColor: AppColors.primaryColor,
         icon: const Icon(Icons.add, color: Colors.white),
-        label: AppText('Schedule Live'.tr, color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14),
+        label: AppText(
+          'Schedule Live'.tr,
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+          fontSize: 14,
+        ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
       ),
     );
@@ -454,7 +589,10 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
           padding: const EdgeInsets.all(20),
           itemCount: _controller.completedSessions.length,
           itemBuilder: (context, index) {
-            return _buildSessionCard(_controller.completedSessions[index], false);
+            return _buildSessionCard(
+              _controller.completedSessions[index],
+              false,
+            );
           },
         ),
       );
@@ -493,18 +631,26 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: session.status == 'ongoing' 
-                            ? Colors.red.shade50 
-                            : (isUpcoming ? AppColors.primaryColor.withOpacity(0.1) : Colors.grey.shade100),
+                        color:
+                            session.status == 'ongoing'
+                                ? Colors.red.shade50
+                                : (isUpcoming
+                                    ? AppColors.primaryColor.withOpacity(0.1)
+                                    : Colors.grey.shade100),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Icon(
                         session.status == 'ongoing'
                             ? Iconsax.video_play_copy
-                            : (isUpcoming ? Iconsax.video_play_copy : Iconsax.video_tick_copy),
-                        color: session.status == 'ongoing'
-                            ? Colors.red
-                            : (isUpcoming ? AppColors.primaryColor : Colors.grey.shade400),
+                            : (isUpcoming
+                                ? Iconsax.video_play_copy
+                                : Iconsax.video_tick_copy),
+                        color:
+                            session.status == 'ongoing'
+                                ? Colors.red
+                                : (isUpcoming
+                                    ? AppColors.primaryColor
+                                    : Colors.grey.shade400),
                         size: 26,
                       ),
                     ),
@@ -528,11 +674,16 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
                               if (session.status == 'ongoing') ...[
                                 const SizedBox(width: 8),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: Colors.red.shade50,
                                     borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: Colors.red.shade200),
+                                    border: Border.all(
+                                      color: Colors.red.shade200,
+                                    ),
                                   ),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
@@ -562,7 +713,11 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
                           if (session.sessionType == 'private')
                             Row(
                               children: [
-                                Icon(Iconsax.lock_copy, size: 10, color: Colors.amber.shade700),
+                                Icon(
+                                  Iconsax.lock_copy,
+                                  size: 10,
+                                  color: Colors.amber.shade700,
+                                ),
                                 const SizedBox(width: 4),
                                 AppText(
                                   'Private Session',
@@ -577,7 +732,8 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
                     ),
                   ],
                 ),
-                if (session.description != null && session.description!.isNotEmpty) ...[
+                if (session.description != null &&
+                    session.description!.isNotEmpty) ...[
                   const SizedBox(height: 16),
                   AppText(
                     session.description!,
@@ -597,22 +753,31 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
                   children: [
                     Row(
                       children: [
-                        _buildInfoTag(Iconsax.calendar_copy, DateFormat('dd MMM yyyy').format(session.scheduledAt)),
+                        _buildInfoTag(
+                          Iconsax.calendar_copy,
+                          DateFormat('dd MMM yyyy').format(session.scheduledAt),
+                        ),
                         const SizedBox(width: 16),
-                        _buildInfoTag(Iconsax.clock_copy, DateFormat('hh:mm a').format(session.scheduledAt)),
+                        _buildInfoTag(
+                          Iconsax.clock_copy,
+                          DateFormat('hh:mm a').format(session.scheduledAt),
+                        ),
                       ],
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.grey.shade50,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: AppText(
-                        '${session.durationMinutes}m', 
-                        fontSize: 12, 
-                        fontWeight: FontWeight.w700, 
-                        color: Colors.grey.shade500
+                        '${session.durationMinutes}m',
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.grey.shade500,
                       ),
                     ),
                   ],
@@ -633,7 +798,7 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
                     onPressed: () => _controller.startSession(session.id),
                     borderRadius: 12,
                   ),
-                ]
+                ],
               ],
             ),
           ),
@@ -656,7 +821,11 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
                             color: AppColors.primaryColor.withOpacity(0.05),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Icon(Iconsax.edit_copy, color: AppColors.primaryColor, size: 18),
+                          child: Icon(
+                            Iconsax.edit_copy,
+                            color: AppColors.primaryColor,
+                            size: 18,
+                          ),
                         ),
                       ),
                     ),
@@ -673,7 +842,11 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
                           color: Colors.red.shade50.withOpacity(0.5),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Icon(Iconsax.trash_copy, color: Colors.red.shade300, size: 18),
+                        child: Icon(
+                          Iconsax.trash_copy,
+                          color: Colors.red.shade300,
+                          size: 18,
+                        ),
                       ),
                     ),
                   ),
@@ -692,10 +865,10 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
         Icon(icon, size: 14, color: AppColors.primaryColor.withOpacity(0.8)),
         const SizedBox(width: 6),
         AppText(
-          label, 
-          fontSize: 12, 
-          fontWeight: FontWeight.w700, 
-          color: const Color(0xFF2E1A47).withOpacity(0.7)
+          label,
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+          color: const Color(0xFF2E1A47).withOpacity(0.7),
         ),
       ],
     );
@@ -704,48 +877,74 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
   void _confirmDelete(int sessionId) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const AppText('Delete Session?', fontWeight: FontWeight.w700, fontSize: 18),
-        content: const AppText('Are you sure you want to delete this live session? This action cannot be undone.'),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const AppText('Cancel', color: Colors.grey),
+      builder:
+          (context) => AlertDialog(
+            title: const AppText(
+              'Delete Session?',
+              fontWeight: FontWeight.w700,
+              fontSize: 18,
+            ),
+            content: const AppText(
+              'Are you sure you want to delete this live session? This action cannot be undone.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Get.back(),
+                child: const AppText('Cancel', color: Colors.grey),
+              ),
+              TextButton(
+                onPressed: () {
+                  Get.back();
+                  _controller.deleteSession(sessionId);
+                },
+                child: const AppText(
+                  'Delete',
+                  color: Colors.red,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
           ),
-          TextButton(
-            onPressed: () {
-              Get.back();
-              _controller.deleteSession(sessionId);
-            },
-            child: const AppText('Delete', color: Colors.red, fontWeight: FontWeight.w700),
-          ),
-        ],
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      ),
     );
   }
 
   void _confirmStop(int sessionId) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const AppText('Stop Live Session?', fontWeight: FontWeight.w700, fontSize: 18),
-        content: const AppText('Are you sure you want to stop this live session? This will complete the session.'),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const AppText('Cancel', color: Colors.grey),
+      builder:
+          (context) => AlertDialog(
+            title: const AppText(
+              'Stop Live Session?',
+              fontWeight: FontWeight.w700,
+              fontSize: 18,
+            ),
+            content: const AppText(
+              'Are you sure you want to stop this live session? This will complete the session.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Get.back(),
+                child: const AppText('Cancel', color: Colors.grey),
+              ),
+              TextButton(
+                onPressed: () {
+                  Get.back();
+                  _controller.stopSession(sessionId);
+                },
+                child: const AppText(
+                  'Stop',
+                  color: Colors.red,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
           ),
-          TextButton(
-            onPressed: () {
-              Get.back();
-              _controller.stopSession(sessionId);
-            },
-            child: const AppText('Stop', color: Colors.red, fontWeight: FontWeight.w700),
-          ),
-        ],
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      ),
     );
   }
 
@@ -756,7 +955,12 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen> with SingleTick
         children: [
           Icon(Iconsax.video_slash_copy, size: 64, color: Colors.grey.shade200),
           const SizedBox(height: 16),
-          AppText(message, fontSize: 14, color: Colors.grey.shade400, fontWeight: FontWeight.w500),
+          AppText(
+            message,
+            fontSize: 14,
+            color: Colors.grey.shade400,
+            fontWeight: FontWeight.w500,
+          ),
         ],
       ),
     );

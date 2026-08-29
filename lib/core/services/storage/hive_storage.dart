@@ -39,7 +39,10 @@ class HiveStorage {
     return box.values.toList();
   }
 
-  static Future<void> putAll(String boxName, Map<dynamic, dynamic> entries) async {
+  static Future<void> putAll(
+    String boxName,
+    Map<dynamic, dynamic> entries,
+  ) async {
     final box = await openBox(boxName);
     await box.putAll(entries);
   }

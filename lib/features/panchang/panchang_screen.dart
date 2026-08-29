@@ -21,17 +21,19 @@ class PanchangScreen extends GetView<PanchangController> {
     print('[PCB_APP] [DEBUG] PanchangScreen build called');
     return Scaffold(
       backgroundColor: const Color(0xFFFDF9F5),
-      appBar: const CustomAppBar(
-        title: 'Panchang',
-      ),
+      appBar: const CustomAppBar(title: 'Panchang'),
       body: Column(
         children: [
           _buildCalendarSection(),
           Expanded(
             child: Obx(() {
-              print('[PCB_APP] [DEBUG] Obx rebuild - isLoading: ${controller.isLoading.value}');
-              print('[PCB_APP] [DEBUG] Obx rebuild - panchangData null: ${controller.panchangData.value == null}');
-              
+              print(
+                '[PCB_APP] [DEBUG] Obx rebuild - isLoading: ${controller.isLoading.value}',
+              );
+              print(
+                '[PCB_APP] [DEBUG] Obx rebuild - panchangData null: ${controller.panchangData.value == null}',
+              );
+
               if (controller.isLoading.value) {
                 print('[PCB_APP] [DEBUG] Showing shimmer loading indicator');
                 return _buildShimmerLoading();
@@ -56,14 +58,24 @@ class PanchangScreen extends GetView<PanchangController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildGuidanceSection(controller.panchangData.value!.data.guidance),
+                    _buildGuidanceSection(
+                      controller.panchangData.value!.data.guidance,
+                    ),
                     _buildSunMoonSection(),
                     const SizedBox(height: 16),
                     _buildCorePanchangSection(),
                     const SizedBox(height: 24),
-                    _buildMuhurtaSection("Shubh Muhurta", _getAuspiciousTimings(), Colors.green),
+                    _buildMuhurtaSection(
+                      "Shubh Muhurta",
+                      _getAuspiciousTimings(),
+                      Colors.green,
+                    ),
                     const SizedBox(height: 16),
-                    _buildMuhurtaSection("Ashubh Muhurta", _getInauspiciousTimings(), Colors.red),
+                    _buildMuhurtaSection(
+                      "Ashubh Muhurta",
+                      _getInauspiciousTimings(),
+                      Colors.red,
+                    ),
                     const SizedBox(height: 24),
                   ],
                 ),
@@ -82,62 +94,70 @@ class PanchangScreen extends GetView<PanchangController> {
         color: Colors.white,
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(30)),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 15, offset: const Offset(0, 5)),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
         ],
       ),
-      child: Obx(() => Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AppText(
-                          "${DateFormat('MMMM').format(controller.selectedDate.value).tr} ${DateFormat('yyyy').format(controller.selectedDate.value)}",
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                          color: const Color(0xFF2E1A47),
-                        ),
-                        AppText(
-                          "${DateFormat('EEEE').format(controller.selectedDate.value).tr}, ${DateFormat('dd').format(controller.selectedDate.value)} ${DateFormat('MMM').format(controller.selectedDate.value).tr}",
-                          fontSize: 13,
-                          color: Colors.grey.shade500,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: Icon(
-                            controller.showFullCalendar.value ? Iconsax.arrow_up_2_copy : Iconsax.calendar_copy,
-                            color: AppColors.primaryColor,
-                          ),
-                          onPressed: controller.toggleCalendar,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              if (controller.showFullCalendar.value)
-                SizedBox(
-                  height: 300,
-                  child: CalendarDatePicker(
-                    initialDate: controller.selectedDate.value,
-                    firstDate: DateTime(1900),
-                    lastDate: DateTime(2100),
-                    onDateChanged: controller.selectDate,
+      child: Obx(
+        () => Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppText(
+                        "${DateFormat('MMMM').format(controller.selectedDate.value).tr} ${DateFormat('yyyy').format(controller.selectedDate.value)}",
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF2E1A47),
+                      ),
+                      AppText(
+                        "${DateFormat('EEEE').format(controller.selectedDate.value).tr}, ${DateFormat('dd').format(controller.selectedDate.value)} ${DateFormat('MMM').format(controller.selectedDate.value).tr}",
+                        fontSize: 13,
+                        color: Colors.grey.shade500,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ],
                   ),
-                )
-              else
-                _buildDateStrip(),
-              const SizedBox(height: 15),
-            ],
-          )),
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          controller.showFullCalendar.value
+                              ? Iconsax.arrow_up_2_copy
+                              : Iconsax.calendar_copy,
+                          color: AppColors.primaryColor,
+                        ),
+                        onPressed: controller.toggleCalendar,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            if (controller.showFullCalendar.value)
+              SizedBox(
+                height: 300,
+                child: CalendarDatePicker(
+                  initialDate: controller.selectedDate.value,
+                  firstDate: DateTime(1900),
+                  lastDate: DateTime(2100),
+                  onDateChanged: controller.selectDate,
+                ),
+              )
+            else
+              _buildDateStrip(),
+            const SizedBox(height: 15),
+          ],
+        ),
+      ),
     );
   }
 
@@ -151,7 +171,8 @@ class PanchangScreen extends GetView<PanchangController> {
         itemCount: 30,
         itemBuilder: (context, index) {
           final date = DateTime.now().add(Duration(days: index - 5));
-          final isSelected = date.day == controller.selectedDate.value.day &&
+          final isSelected =
+              date.day == controller.selectedDate.value.day &&
               date.month == controller.selectedDate.value.month &&
               date.year == controller.selectedDate.value.year;
 
@@ -162,18 +183,29 @@ class PanchangScreen extends GetView<PanchangController> {
               width: 55,
               margin: const EdgeInsets.only(right: 12),
               decoration: BoxDecoration(
-                gradient: isSelected
-                    ? LinearGradient(
-                        colors: [AppColors.primaryColor, AppColors.primaryColor.withOpacity(0.8)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      )
-                    : null,
+                gradient:
+                    isSelected
+                        ? LinearGradient(
+                          colors: [
+                            AppColors.primaryColor,
+                            AppColors.primaryColor.withOpacity(0.8),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        )
+                        : null,
                 color: isSelected ? null : const Color(0xFFF9F9F9),
                 borderRadius: BorderRadius.circular(18),
-                boxShadow: isSelected
-                    ? [BoxShadow(color: AppColors.primaryColor.withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 4))]
-                    : null,
+                boxShadow:
+                    isSelected
+                        ? [
+                          BoxShadow(
+                            color: AppColors.primaryColor.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ]
+                        : null,
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -202,16 +234,21 @@ class PanchangScreen extends GetView<PanchangController> {
 
   Widget _buildSunMoonSection() {
     final data = controller.panchangData.value?.data;
-    print('[PCB_APP] [DEBUG] _buildSunMoonSection - data null: ${data == null}');
+    print(
+      '[PCB_APP] [DEBUG] _buildSunMoonSection - data null: ${data == null}',
+    );
     if (data == null) return const SizedBox.shrink();
 
     // Hide Sun & Moon timing section if they are all empty
-    if (data.sunrise.isEmpty && data.sunset.isEmpty && data.moonrise.isEmpty && data.moonset.isEmpty) {
+    if (data.sunrise.isEmpty &&
+        data.sunset.isEmpty &&
+        data.moonrise.isEmpty &&
+        data.moonset.isEmpty) {
       return const SizedBox.shrink();
     }
 
     print('[PCB_APP] [DEBUG] Sunrise: ${data.sunrise}, Sunset: ${data.sunset}');
-    
+
     return Row(
       children: [
         if (data.sunrise.isNotEmpty || data.sunset.isNotEmpty)
@@ -220,13 +257,24 @@ class PanchangScreen extends GetView<PanchangController> {
               title: "Sun Timings",
               items: [
                 if (data.sunrise.isNotEmpty)
-                  {"label": "Sunrise", "time": controller.formatTime(data.sunrise), "icon": Icons.wb_sunny_rounded, "color": Colors.orange},
+                  {
+                    "label": "Sunrise",
+                    "time": controller.formatTime(data.sunrise),
+                    "icon": Icons.wb_sunny_rounded,
+                    "color": Colors.orange,
+                  },
                 if (data.sunset.isNotEmpty)
-                  {"label": "Sunset", "time": controller.formatTime(data.sunset), "icon": Icons.wb_twilight_rounded, "color": Colors.deepOrange},
+                  {
+                    "label": "Sunset",
+                    "time": controller.formatTime(data.sunset),
+                    "icon": Icons.wb_twilight_rounded,
+                    "color": Colors.deepOrange,
+                  },
               ],
             ),
           ),
-        if ((data.sunrise.isNotEmpty || data.sunset.isNotEmpty) && (data.moonrise.isNotEmpty || data.moonset.isNotEmpty))
+        if ((data.sunrise.isNotEmpty || data.sunset.isNotEmpty) &&
+            (data.moonrise.isNotEmpty || data.moonset.isNotEmpty))
           const SizedBox(width: 12),
         if (data.moonrise.isNotEmpty || data.moonset.isNotEmpty)
           Expanded(
@@ -234,9 +282,19 @@ class PanchangScreen extends GetView<PanchangController> {
               title: "Moon Timings",
               items: [
                 if (data.moonrise.isNotEmpty)
-                  {"label": "Moonrise", "time": controller.formatTime(data.moonrise), "icon": Icons.nightlight_round, "color": Colors.blueGrey},
+                  {
+                    "label": "Moonrise",
+                    "time": controller.formatTime(data.moonrise),
+                    "icon": Icons.nightlight_round,
+                    "color": Colors.blueGrey,
+                  },
                 if (data.moonset.isNotEmpty)
-                  {"label": "Moonset", "time": controller.formatTime(data.moonset), "icon": Icons.mode_night_rounded, "color": Colors.indigo},
+                  {
+                    "label": "Moonset",
+                    "time": controller.formatTime(data.moonset),
+                    "icon": Icons.mode_night_rounded,
+                    "color": Colors.indigo,
+                  },
               ],
             ),
           ),
@@ -244,37 +302,55 @@ class PanchangScreen extends GetView<PanchangController> {
     );
   }
 
-  Widget _buildTimingCard({required String title, required List<Map<String, dynamic>> items}) {
+  Widget _buildTimingCard({
+    required String title,
+    required List<Map<String, dynamic>> items,
+  }) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppText(title, fontSize: 14, fontWeight: FontWeight.w700, color: Colors.grey.shade800),
+          AppText(
+            title,
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: Colors.grey.shade800,
+          ),
           const SizedBox(height: 12),
-          ...items.map((item) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  children: [
-                    Icon(item['icon'], size: 16, color: item['color']),
-                    const SizedBox(width: 8),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AppText(item['label'], fontSize: 11, color: Colors.grey),
-                        AppText(item['time'], fontSize: 13, fontWeight: FontWeight.bold),
-                      ],
-                    ),
-                  ],
-                ),
-              )),
+          ...items.map(
+            (item) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                children: [
+                  Icon(item['icon'], size: 16, color: item['color']),
+                  const SizedBox(width: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppText(item['label'], fontSize: 11, color: Colors.grey),
+                      AppText(
+                        item['time'],
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -297,7 +373,11 @@ class PanchangScreen extends GetView<PanchangController> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Column(
@@ -305,7 +385,11 @@ class PanchangScreen extends GetView<PanchangController> {
         children: [
           Row(
             children: [
-              const Icon(Icons.auto_awesome, color: Colors.orangeAccent, size: 20),
+              const Icon(
+                Icons.auto_awesome,
+                color: Colors.orangeAccent,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               const Expanded(
                 child: AppText(
@@ -319,7 +403,10 @@ class PanchangScreen extends GetView<PanchangController> {
               const SizedBox(width: 8),
               if (guidance.overallAuspiciousness.isNotEmpty)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: badgeColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -335,58 +422,110 @@ class PanchangScreen extends GetView<PanchangController> {
             ],
           ),
           const SizedBox(height: 12),
-          AppText(guidance.summary, fontSize: 13, color: Colors.black87, height: 1.4),
+          AppText(
+            guidance.summary,
+            fontSize: 13,
+            color: Colors.black87,
+            height: 1.4,
+          ),
           if (guidance.bestActivities.isNotEmpty) ...[
             const SizedBox(height: 16),
-            AppText("Best Activities Today:".tr, fontSize: 12, fontWeight: FontWeight.bold, color: Colors.green),
+            AppText(
+              "Best Activities Today:".tr,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.green,
+            ),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: guidance.bestActivities.map((act) => Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.green.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: AppText(act, fontSize: 11, color: Colors.green.shade900, fontWeight: FontWeight.w600),
-              )).toList(),
+              children:
+                  guidance.bestActivities
+                      .map(
+                        (act) => Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.green.shade50,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: AppText(
+                            act,
+                            fontSize: 11,
+                            color: Colors.green.shade900,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      )
+                      .toList(),
             ),
           ],
           if (guidance.activitiesToAvoid.isNotEmpty) ...[
             const SizedBox(height: 16),
-            AppText("Activities to Avoid:".tr, fontSize: 12, fontWeight: FontWeight.bold, color: Colors.red),
+            AppText(
+              "Activities to Avoid:".tr,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.red,
+            ),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: guidance.activitiesToAvoid.map((act) => Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.red.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: AppText(act, fontSize: 11, color: Colors.red.shade900, fontWeight: FontWeight.w600),
-              )).toList(),
+              children:
+                  guidance.activitiesToAvoid
+                      .map(
+                        (act) => Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.red.shade50,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: AppText(
+                            act,
+                            fontSize: 11,
+                            color: Colors.red.shade900,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      )
+                      .toList(),
             ),
           ],
           if (guidance.tips.isNotEmpty) ...[
             const SizedBox(height: 16),
-            AppText("Daily Tips:".tr, fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey),
+            AppText(
+              "Daily Tips:".tr,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+            ),
             const SizedBox(height: 8),
-            ...guidance.tips.map((tip) => Padding(
-              padding: const EdgeInsets.only(bottom: 6),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(Icons.check_circle_outline, size: 14, color: AppColors.primaryColor),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: AppText(tip, fontSize: 12, color: Colors.black87),
-                  ),
-                ],
+            ...guidance.tips.map(
+              (tip) => Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.check_circle_outline,
+                      size: 14,
+                      color: AppColors.primaryColor,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: AppText(tip, fontSize: 12, color: Colors.black87),
+                    ),
+                  ],
+                ),
               ),
-            )),
+            ),
           ],
         ],
       ),
@@ -402,15 +541,22 @@ class PanchangScreen extends GetView<PanchangController> {
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 12),
-          child: AppText('Panchang Components'.tr, fontSize: 16, fontWeight: FontWeight.bold),
+          child: AppText(
+            'Panchang Components'.tr,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        
+
         // Tithi Card
         _buildPanchangCard(
           title: "TITHI",
-          subtitle: data.tithi.endTime.isNotEmpty
-              ? "Upto ${controller.formatTime(data.tithi.endTime)}"
-              : (data.tithi.paksha.name.isNotEmpty ? "${data.tithi.paksha.name} Paksha" : ""),
+          subtitle:
+              data.tithi.endTime.isNotEmpty
+                  ? "Upto ${controller.formatTime(data.tithi.endTime)}"
+                  : (data.tithi.paksha.name.isNotEmpty
+                      ? "${data.tithi.paksha.name} Paksha"
+                      : ""),
           name: data.tithi.name,
           deity: data.tithi.deity,
           meaning: data.tithi.interpretation.meaning,
@@ -424,10 +570,15 @@ class PanchangScreen extends GetView<PanchangController> {
         // Nakshatra Card
         _buildPanchangCard(
           title: "NAKSHATRA",
-          subtitle: data.nakshatra.endTime.isNotEmpty
-              ? "Upto ${controller.formatTime(data.nakshatra.endTime)}"
-              : (data.nakshatra.gana.isNotEmpty ? "Gana: ${data.nakshatra.gana}" : ""),
-          name: data.nakshatra.name + (data.nakshatra.pada > 0 ? " (Pada ${data.nakshatra.pada})" : ""),
+          subtitle:
+              data.nakshatra.endTime.isNotEmpty
+                  ? "Upto ${controller.formatTime(data.nakshatra.endTime)}"
+                  : (data.nakshatra.gana.isNotEmpty
+                      ? "Gana: ${data.nakshatra.gana}"
+                      : ""),
+          name:
+              data.nakshatra.name +
+              (data.nakshatra.pada > 0 ? " (Pada ${data.nakshatra.pada})" : ""),
           deity: data.nakshatra.deity,
           meaning: data.nakshatra.interpretation.meaning,
           energy: data.nakshatra.interpretation.energy,
@@ -440,9 +591,10 @@ class PanchangScreen extends GetView<PanchangController> {
         // Yoga Card
         _buildPanchangCard(
           title: "YOGA",
-          subtitle: data.yoga.endTime.isNotEmpty
-              ? "Upto ${controller.formatTime(data.yoga.endTime)}"
-              : data.yoga.quality,
+          subtitle:
+              data.yoga.endTime.isNotEmpty
+                  ? "Upto ${controller.formatTime(data.yoga.endTime)}"
+                  : data.yoga.quality,
           name: data.yoga.name,
           deity: "",
           meaning: data.yoga.interpretation.meaning,
@@ -454,13 +606,17 @@ class PanchangScreen extends GetView<PanchangController> {
         // Karana Card
         _buildPanchangCard(
           title: "KARANA",
-          subtitle: data.karana.endTime.isNotEmpty
-              ? "Upto ${controller.formatTime(data.karana.endTime)}"
-              : data.karana.type,
+          subtitle:
+              data.karana.endTime.isNotEmpty
+                  ? "Upto ${controller.formatTime(data.karana.endTime)}"
+                  : data.karana.type,
           name: data.karana.name,
           deity: "",
           meaning: data.karana.interpretation.meaning,
-          energy: data.karana.interpretation.nature.isNotEmpty ? "Nature: ${data.karana.interpretation.nature}" : "",
+          energy:
+              data.karana.interpretation.nature.isNotEmpty
+                  ? "Nature: ${data.karana.interpretation.nature}"
+                  : "",
           tip: data.karana.interpretation.tip,
           bestFor: data.karana.interpretation.bestFor,
           avoid: data.karana.interpretation.avoid,
@@ -547,7 +703,10 @@ class PanchangScreen extends GetView<PanchangController> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: themeColor.withOpacity(0.08),
                     borderRadius: BorderRadius.circular(12),
@@ -569,7 +728,10 @@ class PanchangScreen extends GetView<PanchangController> {
                 ),
                 if (subtitle.isNotEmpty)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.grey.shade50,
                       borderRadius: BorderRadius.circular(12),
@@ -615,7 +777,10 @@ class PanchangScreen extends GetView<PanchangController> {
                             child: Container(
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
-                                  colors: [themeColor, themeColor.withOpacity(0.6)],
+                                  colors: [
+                                    themeColor,
+                                    themeColor.withOpacity(0.6),
+                                  ],
                                 ),
                                 borderRadius: BorderRadius.circular(3),
                               ),
@@ -634,25 +799,42 @@ class PanchangScreen extends GetView<PanchangController> {
                   ),
                 ],
                 const SizedBox(height: 8),
-                const Divider(color: Color(0xFFF9F7F5), height: 16, thickness: 1),
-                
+                const Divider(
+                  color: Color(0xFFF9F7F5),
+                  height: 16,
+                  thickness: 1,
+                ),
+
                 if (deity.isNotEmpty) ...[
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Icon(Icons.spa_outlined, size: 14, color: Colors.amber.shade700),
+                      Icon(
+                        Icons.spa_outlined,
+                        size: 14,
+                        color: Colors.amber.shade700,
+                      ),
                       const SizedBox(width: 8),
                       RichText(
                         text: TextSpan(
-                          style: const TextStyle(fontFamily: 'Outfit', fontSize: 13),
+                          style: const TextStyle(
+                            fontFamily: 'Outfit',
+                            fontSize: 13,
+                          ),
                           children: [
                             TextSpan(
                               text: "${"Deity/Lord:".tr} ",
-                              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey.shade700),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey.shade700,
+                              ),
                             ),
                             TextSpan(
                               text: deity.tr,
-                              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
                             ),
                           ],
                         ),
@@ -661,12 +843,15 @@ class PanchangScreen extends GetView<PanchangController> {
                   ),
                   const SizedBox(height: 6),
                 ],
-                
+
                 if (meaning.isNotEmpty) ...[
                   const SizedBox(height: 4),
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 6,
+                      horizontal: 10,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFFAF8F5),
                       borderRadius: BorderRadius.circular(8),
@@ -688,16 +873,27 @@ class PanchangScreen extends GetView<PanchangController> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.bolt, size: 16, color: Colors.orangeAccent),
+                        const Icon(
+                          Icons.bolt,
+                          size: 16,
+                          color: Colors.orangeAccent,
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: RichText(
                             text: TextSpan(
-                              style: const TextStyle(fontFamily: 'Outfit', fontSize: 13, color: Colors.black87, height: 1.4),
+                              style: const TextStyle(
+                                fontFamily: 'Outfit',
+                                fontSize: 13,
+                                color: Colors.black87,
+                                height: 1.4,
+                              ),
                               children: [
                                 TextSpan(
                                   text: "${"Energy:".tr} ",
-                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                                 TextSpan(text: energy.tr),
                               ],
@@ -721,27 +917,43 @@ class PanchangScreen extends GetView<PanchangController> {
                   Wrap(
                     spacing: 6,
                     runSpacing: 6,
-                    children: bestFor.map((item) => Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEAF2F1).withOpacity(0.7),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xFFD4EFDF)),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.check, size: 10, color: Color(0xFF1E8449)),
-                          const SizedBox(width: 4),
-                          AppText(
-                            item,
-                            fontSize: 11,
-                            color: const Color(0xFF1E8449),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ],
-                      ),
-                    )).toList(),
+                    children:
+                        bestFor
+                            .map(
+                              (item) => Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(
+                                    0xFFEAF2F1,
+                                  ).withOpacity(0.7),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: const Color(0xFFD4EFDF),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.check,
+                                      size: 10,
+                                      color: Color(0xFF1E8449),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    AppText(
+                                      item,
+                                      fontSize: 11,
+                                      color: const Color(0xFF1E8449),
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                            .toList(),
                   ),
                   const SizedBox(height: 8),
                 ],
@@ -758,27 +970,43 @@ class PanchangScreen extends GetView<PanchangController> {
                   Wrap(
                     spacing: 6,
                     runSpacing: 6,
-                    children: avoid.map((item) => Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFDEDEC).withOpacity(0.7),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xFFFADBD8)),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.close, size: 10, color: Color(0xFFCB4335)),
-                          const SizedBox(width: 4),
-                          AppText(
-                            item,
-                            fontSize: 11,
-                            color: const Color(0xFFCB4335),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ],
-                      ),
-                    )).toList(),
+                    children:
+                        avoid
+                            .map(
+                              (item) => Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(
+                                    0xFFFDEDEC,
+                                  ).withOpacity(0.7),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: const Color(0xFFFADBD8),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.close,
+                                      size: 10,
+                                      color: Color(0xFFCB4335),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    AppText(
+                                      item,
+                                      fontSize: 11,
+                                      color: const Color(0xFFCB4335),
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                            .toList(),
                   ),
                   const SizedBox(height: 8),
                 ],
@@ -794,7 +1022,9 @@ class PanchangScreen extends GetView<PanchangController> {
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 color: themeColor.withOpacity(0.04),
-                borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
+                borderRadius: const BorderRadius.vertical(
+                  bottom: Radius.circular(24),
+                ),
                 border: Border(
                   top: BorderSide(color: themeColor.withOpacity(0.08)),
                 ),
@@ -850,7 +1080,10 @@ class PanchangScreen extends GetView<PanchangController> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: themeColor.withOpacity(0.08),
                     borderRadius: BorderRadius.circular(12),
@@ -872,7 +1105,10 @@ class PanchangScreen extends GetView<PanchangController> {
                 ),
                 if (masa.englishEquivalent.isNotEmpty)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.grey.shade50,
                       borderRadius: BorderRadius.circular(12),
@@ -917,7 +1153,7 @@ class PanchangScreen extends GetView<PanchangController> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                
+
                 // Properties Row
                 Row(
                   children: [
@@ -926,7 +1162,11 @@ class PanchangScreen extends GetView<PanchangController> {
                         child: _buildPropertyTile(
                           icon: Icons.brightness_5_outlined,
                           label: "Sun Sign",
-                          value: masa.sunSign + (masa.sunSignHindi.isNotEmpty ? " (${masa.sunSignHindi})" : ""),
+                          value:
+                              masa.sunSign +
+                              (masa.sunSignHindi.isNotEmpty
+                                  ? " (${masa.sunSignHindi})"
+                                  : ""),
                           iconColor: Colors.orange.shade700,
                         ),
                       ),
@@ -943,8 +1183,12 @@ class PanchangScreen extends GetView<PanchangController> {
                     ],
                   ],
                 ),
-                
-                const Divider(color: Color(0xFFF9F7F5), height: 20, thickness: 1),
+
+                const Divider(
+                  color: Color(0xFFF9F7F5),
+                  height: 20,
+                  thickness: 1,
+                ),
 
                 if (masa.interpretation.significance.isNotEmpty) ...[
                   const SizedBox(height: 4),
@@ -984,27 +1228,41 @@ class PanchangScreen extends GetView<PanchangController> {
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: masa.interpretation.festivals.map((fest) => Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.amber.shade50.withOpacity(0.7),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.amber.shade100),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.celebration, size: 12, color: Colors.amber.shade900),
-                          const SizedBox(width: 6),
-                          AppText(
-                            fest,
-                            fontSize: 11.5,
-                            color: Colors.amber.shade900,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ],
-                      ),
-                    )).toList(),
+                    children:
+                        masa.interpretation.festivals
+                            .map(
+                              (fest) => Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.amber.shade50.withOpacity(0.7),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: Colors.amber.shade100,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.celebration,
+                                      size: 12,
+                                      color: Colors.amber.shade900,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    AppText(
+                                      fest,
+                                      fontSize: 11.5,
+                                      color: Colors.amber.shade900,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                            .toList(),
                   ),
                   const SizedBox(height: 16),
                 ],
@@ -1042,7 +1300,10 @@ class PanchangScreen extends GetView<PanchangController> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: themeColor.withOpacity(0.08),
                     borderRadius: BorderRadius.circular(12),
@@ -1064,7 +1325,10 @@ class PanchangScreen extends GetView<PanchangController> {
                 ),
                 if (ritu.englishName.isNotEmpty)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.grey.shade50,
                       borderRadius: BorderRadius.circular(12),
@@ -1113,14 +1377,33 @@ class PanchangScreen extends GetView<PanchangController> {
                 if (ritu.months.isNotEmpty) ...[
                   Row(
                     children: [
-                      const Icon(Icons.calendar_today_outlined, size: 13, color: Colors.grey),
+                      const Icon(
+                        Icons.calendar_today_outlined,
+                        size: 13,
+                        color: Colors.grey,
+                      ),
                       const SizedBox(width: 8),
                       RichText(
                         text: TextSpan(
-                          style: const TextStyle(fontFamily: 'Outfit', fontSize: 13, color: Colors.black87),
+                          style: const TextStyle(
+                            fontFamily: 'Outfit',
+                            fontSize: 13,
+                            color: Colors.black87,
+                          ),
                           children: [
-                            TextSpan(text: "Corresponding Months: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey.shade700)),
-                            TextSpan(text: ritu.months.join(', '), style: const TextStyle(fontWeight: FontWeight.bold)),
+                            TextSpan(
+                              text: "Corresponding Months: ",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey.shade700,
+                              ),
+                            ),
+                            TextSpan(
+                              text: ritu.months.join(', '),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -1148,7 +1431,11 @@ class PanchangScreen extends GetView<PanchangController> {
                 ],
 
                 if (ritu.characteristics.isNotEmpty) ...[
-                  const Divider(color: Color(0xFFF9F7F5), height: 16, thickness: 1),
+                  const Divider(
+                    color: Color(0xFFF9F7F5),
+                    height: 16,
+                    thickness: 1,
+                  ),
                   AppText(
                     "Seasonal Characteristics",
                     fontSize: 12,
@@ -1159,27 +1446,41 @@ class PanchangScreen extends GetView<PanchangController> {
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: ritu.characteristics.map((char) => Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: themeColor.withOpacity(0.04),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: themeColor.withOpacity(0.1)),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.circle, size: 6, color: themeColor),
-                          const SizedBox(width: 6),
-                          AppText(
-                            char,
-                            fontSize: 11.5,
-                            color: themeColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ],
-                      ),
-                    )).toList(),
+                    children:
+                        ritu.characteristics
+                            .map(
+                              (char) => Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: themeColor.withOpacity(0.04),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: themeColor.withOpacity(0.1),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.circle,
+                                      size: 6,
+                                      color: themeColor,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    AppText(
+                                      char,
+                                      fontSize: 11.5,
+                                      color: themeColor,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                            .toList(),
                   ),
                   const SizedBox(height: 16),
                 ],
@@ -1217,7 +1518,10 @@ class PanchangScreen extends GetView<PanchangController> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: themeColor.withOpacity(0.08),
                     borderRadius: BorderRadius.circular(12),
@@ -1278,7 +1582,11 @@ class PanchangScreen extends GetView<PanchangController> {
                 const SizedBox(height: 12),
 
                 if (dishaShool.safeDirections.isNotEmpty) ...[
-                  const Divider(color: Color(0xFFF9F7F5), height: 16, thickness: 1),
+                  const Divider(
+                    color: Color(0xFFF9F7F5),
+                    height: 16,
+                    thickness: 1,
+                  ),
                   AppText(
                     "Safe Directions to Travel Today",
                     fontSize: 12,
@@ -1289,27 +1597,41 @@ class PanchangScreen extends GetView<PanchangController> {
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: dishaShool.safeDirections.map((dir) => Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.green.shade50,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.green.shade100),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.check_circle, size: 12, color: Color(0xFF1E8449)),
-                          const SizedBox(width: 6),
-                          AppText(
-                            dir,
-                            fontSize: 11.5,
-                            color: const Color(0xFF1E8449),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ],
-                      ),
-                    )).toList(),
+                    children:
+                        dishaShool.safeDirections
+                            .map(
+                              (dir) => Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.green.shade50,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: Colors.green.shade100,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.check_circle,
+                                      size: 12,
+                                      color: Color(0xFF1E8449),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    AppText(
+                                      dir,
+                                      fontSize: 11.5,
+                                      color: const Color(0xFF1E8449),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                            .toList(),
                   ),
                   const SizedBox(height: 12),
                 ],
@@ -1323,24 +1645,30 @@ class PanchangScreen extends GetView<PanchangController> {
                     color: Colors.grey.shade700,
                   ),
                   const SizedBox(height: 8),
-                  ...dishaShool.remedies.map((rem) => Padding(
-                    padding: const EdgeInsets.only(bottom: 6),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(Icons.info_outline, size: 14, color: themeColor),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: AppText(
-                            rem,
-                            fontSize: 12,
-                            color: Colors.black87,
-                            height: 1.3,
+                  ...dishaShool.remedies.map(
+                    (rem) => Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(
+                            Icons.info_outline,
+                            size: 14,
+                            color: themeColor,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: AppText(
+                              rem,
+                              fontSize: 12,
+                              color: Colors.black87,
+                              height: 1.3,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  )),
+                  ),
                   const SizedBox(height: 12),
                 ],
               ],
@@ -1395,7 +1723,11 @@ class PanchangScreen extends GetView<PanchangController> {
     );
   }
 
-  Widget _buildMuhurtaSection(String title, List<Map<String, String>> timings, Color color) {
+  Widget _buildMuhurtaSection(
+    String title,
+    List<Map<String, String>> timings,
+    Color color,
+  ) {
     if (timings.isEmpty) return const SizedBox.shrink();
 
     return Column(
@@ -1411,29 +1743,48 @@ class PanchangScreen extends GetView<PanchangController> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
+              BoxShadow(
+                color: Colors.black.withOpacity(0.02),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
             ],
           ),
           child: Column(
-            children: timings
-                .map((t) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 8,
-                            height: 8,
-                            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: AppText(t['title']!, fontSize: 14, fontWeight: FontWeight.w600),
-                          ),
-                          AppText(t['time']!, fontSize: 13, color: color, fontWeight: FontWeight.w700),
-                        ],
+            children:
+                timings
+                    .map(
+                      (t) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                color: color,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: AppText(
+                                t['title']!,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            AppText(
+                              t['time']!,
+                              fontSize: 13,
+                              color: color,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ],
+                        ),
                       ),
-                    ))
-                .toList(),
+                    )
+                    .toList(),
           ),
         ),
       ],
@@ -1465,14 +1816,20 @@ class PanchangScreen extends GetView<PanchangController> {
     if (data.rahukaal.start.isNotEmpty && data.rahukaal.end.isNotEmpty) {
       timings.add({
         "title": "Rahu Kaal",
-        "time": controller.formatTimeRange(data.rahukaal.start, data.rahukaal.end),
+        "time": controller.formatTimeRange(
+          data.rahukaal.start,
+          data.rahukaal.end,
+        ),
       });
     }
 
     if (data.yamagandam.start.isNotEmpty && data.yamagandam.end.isNotEmpty) {
       timings.add({
         "title": "Yamagandam",
-        "time": controller.formatTimeRange(data.yamagandam.start, data.yamagandam.end),
+        "time": controller.formatTimeRange(
+          data.yamagandam.start,
+          data.yamagandam.end,
+        ),
       });
     }
 
@@ -1507,55 +1864,135 @@ class PanchangScreen extends GetView<PanchangController> {
                 children: [
                   Row(
                     children: [
-                      Container(width: 24, height: 24, decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle)),
+                      Container(
+                        width: 24,
+                        height: 24,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
                       const SizedBox(width: 8),
-                      Container(width: 150, height: 16, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+                      Container(
+                        width: 150,
+                        height: 16,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  Container(width: double.infinity, height: 12, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+                  Container(
+                    width: double.infinity,
+                    height: 12,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
                   const SizedBox(height: 8),
-                  Container(width: double.infinity, height: 12, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+                  Container(
+                    width: double.infinity,
+                    height: 12,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
                   const SizedBox(height: 8),
-                  Container(width: 200, height: 12, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+                  Container(
+                    width: 200,
+                    height: 12,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
                 ],
               ),
             ),
             const SizedBox(height: 24),
-            Container(width: 180, height: 16, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
-            const SizedBox(height: 16),
-            // 3 Component Card Shimmers
-            ...List.generate(3, (index) => Container(
-              margin: const EdgeInsets.only(bottom: 16),
-              padding: const EdgeInsets.all(16),
+            Container(
+              width: 180,
+              height: 16,
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(4),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(width: 50, height: 10, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
-                          const SizedBox(height: 6),
-                          Container(width: 100, height: 16, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
-                        ],
+            ),
+            const SizedBox(height: 16),
+            // 3 Component Card Shimmers
+            ...List.generate(
+              3,
+              (index) => Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: 50,
+                              height: 10,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Container(
+                              width: 100,
+                              height: 16,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          width: 80,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      width: double.infinity,
+                      height: 12,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(4),
                       ),
-                      Container(width: 80, height: 24, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8))),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Container(width: double.infinity, height: 12, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
-                  const SizedBox(height: 8),
-                  Container(width: 150, height: 12, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
-                ],
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      width: 150,
+                      height: 12,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            )),
+            ),
           ],
         ),
       ),

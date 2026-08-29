@@ -2,10 +2,7 @@ class NotificationCountModel {
   final int total;
   final int unread;
 
-  NotificationCountModel({
-    required this.total,
-    required this.unread,
-  });
+  NotificationCountModel({required this.total, required this.unread});
 
   factory NotificationCountModel.fromJson(Map<String, dynamic> json) {
     return NotificationCountModel(
@@ -15,9 +12,6 @@ class NotificationCountModel {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'total': total,
-      'unread': unread,
-    };
+    return {'total': total, 'unread': unread};
   }
 }

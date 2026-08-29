@@ -6,7 +6,7 @@ class BillingRepository implements BillingRepositoryInterface {
   final BillingRemoteDataSourceInterface dataSource;
 
   BillingRepository({required this.dataSource});
-  
+
   @override
   Future<ResponseModel> getBillingAddress() async {
     return await dataSource.getBillingAddress();

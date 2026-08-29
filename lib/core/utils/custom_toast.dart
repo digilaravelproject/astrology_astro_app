@@ -4,18 +4,21 @@ import '../theme/app_colors.dart';
 
 class CustomToast {
   static void show(
-      String message, {
-        Duration duration = const Duration(seconds: 2),
-        Color backgroundColor = AppColors.primaryColor,
-        Color? textColor,
-        double width = 0.8,
-      }) {
+    String message, {
+    Duration duration = const Duration(seconds: 2),
+    Color backgroundColor = AppColors.primaryColor,
+    Color? textColor,
+    double width = 0.8,
+  }) {
     final double screenWidth = Get.width;
     final double toastWidth = screenWidth * width;
 
     // Auto text color for readability
-    final Color effectiveTextColor = textColor ??
-        (backgroundColor.computeLuminance() > 0.5 ? Colors.black : Colors.white);
+    final Color effectiveTextColor =
+        textColor ??
+        (backgroundColor.computeLuminance() > 0.5
+            ? Colors.black
+            : Colors.white);
 
     final Widget toast = Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -32,7 +35,10 @@ class CustomToast {
       ),
       child: Text(
         message,
-        style: TextStyle(color: effectiveTextColor, fontWeight: FontWeight.w500),
+        style: TextStyle(
+          color: effectiveTextColor,
+          fontWeight: FontWeight.w500,
+        ),
         textAlign: TextAlign.center,
       ),
     );

@@ -10,7 +10,7 @@ class NoticeController extends GetxController {
   final GetNoticesUseCase _getNoticesUseCase;
 
   NoticeController({required GetNoticesUseCase getNoticesUseCase})
-      : _getNoticesUseCase = getNoticesUseCase;
+    : _getNoticesUseCase = getNoticesUseCase;
 
   final notices = <NoticeData>[].obs;
   final isLoading = false.obs;
@@ -28,7 +28,7 @@ class NoticeController extends GetxController {
     try {
       isLoading.value = true;
       final response = await _getNoticesUseCase.execute();
-      
+
       if (response.isSuccess && response.body != null) {
         final noticeModel = NoticeModel.fromJson(response.body);
         notices.assignAll(noticeModel.notices);

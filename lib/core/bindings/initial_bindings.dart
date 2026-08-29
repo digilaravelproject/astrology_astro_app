@@ -55,13 +55,31 @@ class InitialBindings extends Bindings {
     Get.lazyPut(() => ApiClient(), fenix: true);
     Get.lazyPut(() => Connectivity(), fenix: true);
     Get.lazyPut(() => NetworkInfo(Get.find<Connectivity>()), fenix: true);
-    Get.putAsync<WebSocketService>(() => WebSocketService().init(), permanent: true);
-    
+    Get.putAsync<WebSocketService>(
+      () => WebSocketService().init(),
+      permanent: true,
+    );
+
     // Chat global dependencies (needed by WebSocketService)
-    Get.lazyPut<IChatRemoteDataSource>(() => ChatRemoteDataSourceImpl(apiClient: Get.find<ApiClient>()), fenix: true);
-    Get.lazyPut<IChatLocalDataSource>(() => ChatLocalDataSourceImpl(), fenix: true);
-    Get.lazyPut<IChatRepository>(() => ChatRepositoryImpl(remoteDataSource: Get.find<IChatRemoteDataSource>(), localDataSource: Get.find<IChatLocalDataSource>()), fenix: true);
-    Get.lazyPut(() => SyncMessageStatusUseCase(Get.find<IChatRepository>()), fenix: true);
+    Get.lazyPut<IChatRemoteDataSource>(
+      () => ChatRemoteDataSourceImpl(apiClient: Get.find<ApiClient>()),
+      fenix: true,
+    );
+    Get.lazyPut<IChatLocalDataSource>(
+      () => ChatLocalDataSourceImpl(),
+      fenix: true,
+    );
+    Get.lazyPut<IChatRepository>(
+      () => ChatRepositoryImpl(
+        remoteDataSource: Get.find<IChatRemoteDataSource>(),
+        localDataSource: Get.find<IChatLocalDataSource>(),
+      ),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => SyncMessageStatusUseCase(Get.find<IChatRepository>()),
+      fenix: true,
+    );
 
     // Splash
     Get.lazyPut(() => SplashRepository(Get.find<ApiClient>()), fenix: true);
@@ -76,18 +94,36 @@ class InitialBindings extends Bindings {
     Get.lazyPut(() => VerifyOtpUseCase(Get.find<AuthService>()), fenix: true);
     Get.lazyPut(() => SendOtpUseCase(Get.find<AuthService>()), fenix: true);
     Get.lazyPut(() => LogoutUseCase(Get.find<AuthService>()), fenix: true);
-    Get.lazyPut(() => CheckLoginStatusUseCase(Get.find<AuthService>()), fenix: true);
+    Get.lazyPut(
+      () => CheckLoginStatusUseCase(Get.find<AuthService>()),
+      fenix: true,
+    );
     Get.lazyPut(() => GetUserInfoUseCase(Get.find<AuthService>()), fenix: true);
-    Get.lazyPut(() => AstrologerSignupUseCase(Get.find<AuthService>()), fenix: true);
+    Get.lazyPut(
+      () => AstrologerSignupUseCase(Get.find<AuthService>()),
+      fenix: true,
+    );
     Get.lazyPut(() => ResendOtpUseCase(Get.find<AuthService>()), fenix: true);
-    Get.lazyPut(() => UpdateProfilePhotoUseCase(Get.find<AuthService>()), fenix: true);
-    Get.lazyPut(() => UpdateProfileUseCase(Get.find<AuthService>()), fenix: true);
+    Get.lazyPut(
+      () => UpdateProfilePhotoUseCase(Get.find<AuthService>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => UpdateProfileUseCase(Get.find<AuthService>()),
+      fenix: true,
+    );
     Get.lazyPut(() => GetProfileUseCase(Get.find<AuthService>()), fenix: true);
-    Get.lazyPut(() => DeleteAccountUseCase(Get.find<AuthService>()), fenix: true);
-    Get.lazyPut(() => ToggleOnlineUseCase(Get.find<AuthService>()), fenix: true);
+    Get.lazyPut(
+      () => DeleteAccountUseCase(Get.find<AuthService>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => ToggleOnlineUseCase(Get.find<AuthService>()),
+      fenix: true,
+    );
 
     Get.lazyPut(
-          () => AuthController(
+      () => AuthController(
         loginUseCase: Get.find<LoginUseCase>(),
         registerUseCase: Get.find<RegisterUseCase>(),
         verifyOtpUseCase: Get.find<VerifyOtpUseCase>(),
@@ -100,7 +136,7 @@ class InitialBindings extends Bindings {
         updateProfilePhotoUseCase: Get.find<UpdateProfilePhotoUseCase>(),
         updateProfileUseCase: Get.find<UpdateProfileUseCase>(),
         getProfileUseCase: Get.find<GetProfileUseCase>(),
-            deleteAccountUseCase: Get.find<DeleteAccountUseCase>(),
+        deleteAccountUseCase: Get.find<DeleteAccountUseCase>(),
         toggleOnlineUseCase: Get.find<ToggleOnlineUseCase>(),
       ),
       fenix: true,
@@ -109,50 +145,140 @@ class InitialBindings extends Bindings {
     // Notification / Notice
     Get.lazyPut(() => NoticeRepository(Get.find<ApiClient>()), fenix: true);
     Get.lazyPut(() => NoticeService(Get.find<NoticeRepository>()), fenix: true);
-    Get.lazyPut(() => GetNoticesUseCase(Get.find<NoticeService>()), fenix: true);
-    Get.lazyPut(() => NoticeController(getNoticesUseCase: Get.find<GetNoticesUseCase>()), fenix: true);
+    Get.lazyPut(
+      () => GetNoticesUseCase(Get.find<NoticeService>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => NoticeController(getNoticesUseCase: Get.find<GetNoticesUseCase>()),
+      fenix: true,
+    );
 
     // Home / Dashboard
     Get.lazyPut(() => DashboardController(), fenix: true);
 
     Get.lazyPut(() => FollowerRepository(Get.find<ApiClient>()), fenix: true);
-    Get.lazyPut(() => FollowerService(Get.find<FollowerRepository>()), fenix: true);
-    Get.lazyPut(() => GetFollowersUseCase(Get.find<FollowerService>()), fenix: true);
-    Get.lazyPut(() => GetFavoritesUseCase(Get.find<FollowerService>()), fenix: true);
-    Get.lazyPut(() => ToggleLikeUseCase(Get.find<FollowerService>()), fenix: true);
-    Get.lazyPut(() => FollowerController(
-      getFollowersUseCase: Get.find<GetFollowersUseCase>(),
-      getFavoritesUseCase: Get.find<GetFavoritesUseCase>(),
-      toggleLikeUseCase: Get.find<ToggleLikeUseCase>(),
-    ), fenix: true);
+    Get.lazyPut(
+      () => FollowerService(Get.find<FollowerRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => GetFollowersUseCase(Get.find<FollowerService>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => GetFavoritesUseCase(Get.find<FollowerService>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => ToggleLikeUseCase(Get.find<FollowerService>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => FollowerController(
+        getFollowersUseCase: Get.find<GetFollowersUseCase>(),
+        getFavoritesUseCase: Get.find<GetFavoritesUseCase>(),
+        toggleLikeUseCase: Get.find<ToggleLikeUseCase>(),
+      ),
+      fenix: true,
+    );
 
     // Profile / Skills
-    Get.lazyPut(() => AstrologerSkillsRemoteDataSource(Get.find<ApiClient>()), fenix: true);
-    Get.lazyPut(() => AstrologerSkillsRepository(Get.find<AstrologerSkillsRemoteDataSource>()), fenix: true);
-    Get.lazyPut(() => UpdateAstrologerSkillsUseCase(Get.find<AstrologerSkillsRepository>()), fenix: true);
-    Get.lazyPut(() => AstrologerSkillsController(Get.find<UpdateAstrologerSkillsUseCase>()), fenix: true);
+    Get.lazyPut(
+      () => AstrologerSkillsRemoteDataSource(Get.find<ApiClient>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => AstrologerSkillsRepository(
+        Get.find<AstrologerSkillsRemoteDataSource>(),
+      ),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () =>
+          UpdateAstrologerSkillsUseCase(Get.find<AstrologerSkillsRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () =>
+          AstrologerSkillsController(Get.find<UpdateAstrologerSkillsUseCase>()),
+      fenix: true,
+    );
 
     // Training Videos
-    Get.lazyPut(() => TrainingVideoRemoteDataSource(Get.find<ApiClient>()), fenix: true);
-    Get.lazyPut(() => TrainingVideoRepository(Get.find<TrainingVideoRemoteDataSource>()), fenix: true);
-    Get.lazyPut(() => GetTrainingVideosUseCase(Get.find<TrainingVideoRepository>()), fenix: true);
-    Get.lazyPut(() => GetTrainingVideoDetailUseCase(Get.find<TrainingVideoRepository>()), fenix: true);
-    Get.lazyPut(() => TrainingVideoController(Get.find<GetTrainingVideosUseCase>()), fenix: true);
-    Get.lazyPut(() => TrainingVideoDetailController(Get.find<GetTrainingVideoDetailUseCase>()), fenix: true);
+    Get.lazyPut(
+      () => TrainingVideoRemoteDataSource(Get.find<ApiClient>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => TrainingVideoRepository(Get.find<TrainingVideoRemoteDataSource>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => GetTrainingVideosUseCase(Get.find<TrainingVideoRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => GetTrainingVideoDetailUseCase(Get.find<TrainingVideoRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => TrainingVideoController(Get.find<GetTrainingVideosUseCase>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => TrainingVideoDetailController(
+        Get.find<GetTrainingVideoDetailUseCase>(),
+      ),
+      fenix: true,
+    );
 
     // Schedule
-    Get.lazyPut(() => ScheduleRemoteDataSource(Get.find<ApiClient>()), fenix: true);
-    Get.lazyPut(() => ScheduleRepository(Get.find<ScheduleRemoteDataSource>()), fenix: true);
-    Get.lazyPut(() => SetSleepHoursUseCase(Get.find<ScheduleRepository>()), fenix: true);
-    Get.lazyPut(() => GetSleepHoursUseCase(Get.find<ScheduleRepository>()), fenix: true);
-    Get.lazyPut(() => ScheduleController(Get.find<SetSleepHoursUseCase>(), Get.find<GetSleepHoursUseCase>()), fenix: true);
+    Get.lazyPut(
+      () => ScheduleRemoteDataSource(Get.find<ApiClient>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => ScheduleRepository(Get.find<ScheduleRemoteDataSource>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => SetSleepHoursUseCase(Get.find<ScheduleRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => GetSleepHoursUseCase(Get.find<ScheduleRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => ScheduleController(
+        Get.find<SetSleepHoursUseCase>(),
+        Get.find<GetSleepHoursUseCase>(),
+      ),
+      fenix: true,
+    );
 
     // Notification Count & List
-    Get.lazyPut(() => NotificationRepository(Get.find<ApiClient>()), fenix: true);
-    Get.lazyPut(() => GetNotificationCountUseCase(Get.find<NotificationRepository>()), fenix: true);
-    Get.lazyPut(() => GetNotificationsUseCase(Get.find<NotificationRepository>()), fenix: true);
-    Get.lazyPut(() => GetNotificationDetailUseCase(Get.find<NotificationRepository>()), fenix: true);
-    Get.lazyPut(() => MarkNotificationReadUseCase(Get.find<NotificationRepository>()), fenix: true);
+    Get.lazyPut(
+      () => NotificationRepository(Get.find<ApiClient>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => GetNotificationCountUseCase(Get.find<NotificationRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => GetNotificationsUseCase(Get.find<NotificationRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => GetNotificationDetailUseCase(Get.find<NotificationRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => MarkNotificationReadUseCase(Get.find<NotificationRepository>()),
+      fenix: true,
+    );
     Get.put(
       NotificationController(
         Get.find<GetNotificationCountUseCase>(),

@@ -10,10 +10,12 @@ class PriceIncreaseHistoryScreen extends StatefulWidget {
   const PriceIncreaseHistoryScreen({super.key});
 
   @override
-  State<PriceIncreaseHistoryScreen> createState() => _PriceIncreaseHistoryScreenState();
+  State<PriceIncreaseHistoryScreen> createState() =>
+      _PriceIncreaseHistoryScreenState();
 }
 
-class _PriceIncreaseHistoryScreenState extends State<PriceIncreaseHistoryScreen> {
+class _PriceIncreaseHistoryScreenState
+    extends State<PriceIncreaseHistoryScreen> {
   late final PriceIncreaseController _controller;
 
   @override
@@ -37,9 +39,7 @@ class _PriceIncreaseHistoryScreenState extends State<PriceIncreaseHistoryScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
-      appBar: CustomAppBar(
-        title: 'Increase History'.tr,
-      ),
+      appBar: CustomAppBar(title: 'Increase History'.tr),
       body: Obx(() {
         if (_controller.isLoadingHistory.value) {
           return const Center(child: CircularProgressIndicator());
@@ -92,8 +92,16 @@ class _PriceIncreaseHistoryScreenState extends State<PriceIncreaseHistoryScreen>
         statusIcon = Icons.help_rounded;
     }
 
-    final oldPrice = double.tryParse(item['old_price']?.toString() ?? '0')?.toStringAsFixed(0) ?? '0';
-    final newPrice = double.tryParse(item['new_price']?.toString() ?? '0')?.toStringAsFixed(0) ?? '0';
+    final oldPrice =
+        double.tryParse(
+          item['old_price']?.toString() ?? '0',
+        )?.toStringAsFixed(0) ??
+        '0';
+    final newPrice =
+        double.tryParse(
+          item['new_price']?.toString() ?? '0',
+        )?.toStringAsFixed(0) ??
+        '0';
     final type = (item['price_type']?.toString() ?? 'chat').toUpperCase();
     final date = _formatDate(item['created_at']?.toString());
     final adminRemark = item['admin_remark']?.toString();
@@ -132,7 +140,11 @@ class _PriceIncreaseHistoryScreenState extends State<PriceIncreaseHistoryScreen>
                             color: Colors.grey.shade500,
                           ),
                           const SizedBox(width: 8),
-                          Icon(Icons.arrow_forward_rounded, size: 16, color: Colors.grey.shade300),
+                          Icon(
+                            Icons.arrow_forward_rounded,
+                            size: 16,
+                            color: Colors.grey.shade300,
+                          ),
                           const SizedBox(width: 8),
                           AppText(
                             '₹$newPrice',
@@ -166,7 +178,10 @@ class _PriceIncreaseHistoryScreenState extends State<PriceIncreaseHistoryScreen>
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: statusColor.withOpacity(0.05),
                     borderRadius: BorderRadius.circular(100),

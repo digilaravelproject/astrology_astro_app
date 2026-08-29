@@ -21,15 +21,20 @@ class KPData {
 
   factory KPData.fromJson(Map<String, dynamic> json) {
     return KPData(
-      cusps: json['cusps'] != null
-          ? (json['cusps'] as List).map((i) => KPCusp.fromJson(i)).toList()
-          : null,
-      planets: json['planets'] != null
-          ? (json['planets'] as List).map((i) => KPPlanet.fromJson(i)).toList()
-          : null,
-      rulingPlanets: json['rulingPlanets'] != null
-          ? KPRulingPlanets.fromJson(json['rulingPlanets'])
-          : null,
+      cusps:
+          json['cusps'] != null
+              ? (json['cusps'] as List).map((i) => KPCusp.fromJson(i)).toList()
+              : null,
+      planets:
+          json['planets'] != null
+              ? (json['planets'] as List)
+                  .map((i) => KPPlanet.fromJson(i))
+                  .toList()
+              : null,
+      rulingPlanets:
+          json['rulingPlanets'] != null
+              ? KPRulingPlanets.fromJson(json['rulingPlanets'])
+              : null,
     );
   }
 }
@@ -60,7 +65,10 @@ class KPCusp {
   factory KPCusp.fromJson(Map<String, dynamic> json) {
     return KPCusp(
       house: json['house'],
-      cuspLongitude: json['cuspLongitude'] != null ? (json['cuspLongitude'] as num).toDouble() : null,
+      cuspLongitude:
+          json['cuspLongitude'] != null
+              ? (json['cuspLongitude'] as num).toDouble()
+              : null,
       sign: json['sign'],
       signIndex: json['signIndex'],
       signLord: json['signLord'],
@@ -102,8 +110,12 @@ class KPPlanet {
   factory KPPlanet.fromJson(Map<String, dynamic> json) {
     return KPPlanet(
       planet: json['planet'],
-      degree: json['degree'] != null ? (json['degree'] as num).toDouble() : null,
-      longitude: json['longitude'] != null ? (json['longitude'] as num).toDouble() : null,
+      degree:
+          json['degree'] != null ? (json['degree'] as num).toDouble() : null,
+      longitude:
+          json['longitude'] != null
+              ? (json['longitude'] as num).toDouble()
+              : null,
       isRetrograde: json['isRetrograde'],
       sign: json['sign'],
       signIndex: json['signIndex'],

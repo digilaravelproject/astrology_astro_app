@@ -10,10 +10,7 @@ class ScheduleRemoteDataSource {
   Future<ResponseModel> setSleepHours(String startTime, String endTime) async {
     return await _apiClient.post(
       AppUrls.sleepHours,
-      data: {
-        'sleep_start_time': startTime,
-        'sleep_end_time': endTime,
-      },
+      data: {'sleep_start_time': startTime, 'sleep_end_time': endTime},
     );
   }
 

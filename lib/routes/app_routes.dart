@@ -19,7 +19,7 @@ class AppRoutes {
   static const String aboutUs = '/about-us';
   static const String feedback = '/feedback';
   static const String customerSupport = '/customer-support';
-  
+
   // Finance routes
   static const String bankAccounts = '/bank-accounts';
   static const String addBankAccount = '/add-bank-account';

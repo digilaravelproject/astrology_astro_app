@@ -1,10 +1,6 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-enum Environment {
-  development,
-  staging,
-  production,
-}
+enum Environment { development, staging, production }
 
 class EnvConfig {
   static late final Environment environment;
@@ -14,7 +10,6 @@ class EnvConfig {
 
     await dotenv.load(fileName: '.env');
     print("load() => ENV Loaded: ${dotenv.env['ENV']}");
-
 
     final envValue = dotenv.env['ENV']?.toLowerCase();
 
@@ -29,7 +24,9 @@ class EnvConfig {
         environment = Environment.development;
         break;
       default:
-        print('load() =>  ENV not found or invalid in .env file. Defaulting to development.');
+        print(
+          'load() =>  ENV not found or invalid in .env file. Defaulting to development.',
+        );
         environment = Environment.development;
         break;
     }
@@ -51,9 +48,6 @@ class EnvConfig {
     return dotenv.env['APP_NAME'] ?? '';
   }
 }
-
-
-
 
 // import 'package:astro_astrologer/core/constants/app_constants.dart';
 //

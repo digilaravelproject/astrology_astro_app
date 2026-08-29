@@ -6,7 +6,7 @@ class PanchangRepository {
   final AstrologyApiClient _client;
 
   PanchangRepository({AstrologyApiClient? client})
-      : _client = client ?? AstrologyApiClient();
+    : _client = client ?? AstrologyApiClient();
 
   Future<PanchangModel?> getPanchangDetails({
     required String datetime,
@@ -25,11 +25,12 @@ class PanchangRepository {
       final response = await _client.getPanchang(payload);
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> rawData = response.data is Map<String, dynamic> ? response.data : {};
-        
+        final Map<String, dynamic> rawData =
+            response.data is Map<String, dynamic> ? response.data : {};
+
         final tithiName = rawData['tithi']?['details']?['tithi_name'];
         final tithiId = rawData['tithi']?['details']?['tithi_number'];
-        
+
         final nakshatraName = rawData['nakshatra']?['details']?['nak_name'];
         final nakshatraId = rawData['nakshatra']?['details']?['nak_number'];
 
@@ -39,8 +40,14 @@ class PanchangRepository {
         final karanaName = rawData['karan']?['details']?['karan_name'];
         final karanaId = rawData['karan']?['details']?['karan_number'];
 
-        final masaName = rawData['hindu_maah']?['purnimanta'] ?? rawData['hindu_maah']?['amanta'] ?? 'N/A';
-        final masaId = rawData['hindu_maah']?['purnimanta_id'] ?? rawData['hindu_maah']?['amanta_id'] ?? 0;
+        final masaName =
+            rawData['hindu_maah']?['purnimanta'] ??
+            rawData['hindu_maah']?['amanta'] ??
+            'N/A';
+        final masaId =
+            rawData['hindu_maah']?['purnimanta_id'] ??
+            rawData['hindu_maah']?['amanta_id'] ??
+            0;
 
         final rituName = rawData['ritu'] ?? 'N/A';
 
@@ -59,7 +66,7 @@ class PanchangRepository {
             'timezone': payload['tzone']?.toString() ?? '+05:30',
             'sunrise': rawData['sunrise']?.toString(),
             'sunset': rawData['sunset']?.toString(),
-          }
+          },
         };
 
         return PanchangModel.fromJson(transformedJson);

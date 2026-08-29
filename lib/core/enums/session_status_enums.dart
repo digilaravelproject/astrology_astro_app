@@ -12,7 +12,7 @@ enum CallStatus {
   missed,
   timeout,
   failed,
-  idle
+  idle,
 }
 
 /// Represents the status of a chat session
@@ -26,16 +26,11 @@ enum ChatStatus {
   cancelled,
   missed,
   failed,
-  idle
+  idle,
 }
 
 /// Represents the high-level state of a prepaid package session
-enum PackageSessionState {
-  none,
-  inProgress,
-  paused,
-  terminated
-}
+enum PackageSessionState { none, inProgress, paused, terminated }
 
 /// Extensions to help with string conversions if needed
 extension CallStatusExtension on CallStatus {

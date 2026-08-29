@@ -90,4 +90,3 @@ class GetLiveCommentsUseCase {
     return await repository.getLiveComments(id);
   }
 }
-

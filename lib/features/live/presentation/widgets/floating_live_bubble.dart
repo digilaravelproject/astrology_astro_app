@@ -16,9 +16,11 @@ class FloatingLiveBubble {
 
   static bool _isActive = false;
   static bool get isActive => _isActive;
-  
+
   static StreamSubscription? _overlaySub;
-  static const MethodChannel _appRetainChannel = MethodChannel('com.suryapath.astrologer/app_retain');
+  static const MethodChannel _appRetainChannel = MethodChannel(
+    'com.suryapath.astrologer/app_retain',
+  );
 
   static ReceivePort? _receivePort;
 
@@ -26,12 +28,17 @@ class FloatingLiveBubble {
     if (_receivePort != null) return;
     _receivePort = ReceivePort();
     IsolateNameServer.removePortNameMapping('overlay_live_port');
-    IsolateNameServer.registerPortWithName(_receivePort!.sendPort, 'overlay_live_port');
+    IsolateNameServer.registerPortWithName(
+      _receivePort!.sendPort,
+      'overlay_live_port',
+    );
     _receivePort!.listen((message) async {
       if (message == 'tap') {
         debugPrint("==== LIVE OVERLAY TAPPED VIA ISOLATE PORT ====");
         try {
-          debugPrint("==== ATTEMPTING TO BRING APP TO FOREGROUND FOR LIVE ====");
+          debugPrint(
+            "==== ATTEMPTING TO BRING APP TO FOREGROUND FOR LIVE ====",
+          );
           await _appRetainChannel.invokeMethod('bringToForeground');
         } catch (e) {
           debugPrint("==== Error bringing app to foreground: $e ====");
@@ -58,7 +65,7 @@ class FloatingLiveBubble {
     required VoidCallback onTap,
   }) async {
     _setupIsolatePort();
-    
+
     if (_isActive && FloatingLiveBubble.sessionId == sessionId) {
       liveStatus.value = status;
       _syncData();
@@ -71,8 +78,6 @@ class FloatingLiveBubble {
     _isActive = true;
 
     try {
-
-
       if (await FlutterOverlayWindow.isActive()) {
         await FlutterOverlayWindow.shareData({
           'type': 'update',
@@ -94,7 +99,7 @@ class FloatingLiveBubble {
           height: 260,
           width: 260,
         );
-        
+
         await FlutterOverlayWindow.shareData({
           'type': 'init',
           'sessionId': sessionId,
@@ -106,7 +111,7 @@ class FloatingLiveBubble {
           'unreadCount': 0,
         });
       }
-      
+
       _overlaySub?.cancel();
       _overlaySub = FlutterOverlayWindow.overlayListener.listen((event) async {
         if (event != null && event is Map && event['action'] == 'tap') {
@@ -126,7 +131,6 @@ class FloatingLiveBubble {
           });
         }
       });
-
     } catch (e) {
       debugPrint("FloatingLiveBubble show error: $e");
     }

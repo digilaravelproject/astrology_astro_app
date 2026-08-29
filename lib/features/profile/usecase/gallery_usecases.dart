@@ -7,8 +7,14 @@ class GetGalleryImagesUseCase {
   final GalleryRepository repository;
   GetGalleryImagesUseCase({required this.repository});
 
-  Future<List<GalleryImage>> execute({int perPage = 15, String status = 'pending'}) async {
-    final response = await repository.getGalleryImages(perPage: perPage, status: status);
+  Future<List<GalleryImage>> execute({
+    int perPage = 15,
+    String status = 'pending',
+  }) async {
+    final response = await repository.getGalleryImages(
+      perPage: perPage,
+      status: status,
+    );
     if (response.isSuccess && response.body != null) {
       List<dynamic> dataList = [];
       if (response.body is List) {

@@ -13,7 +13,11 @@ class LoyalBadge extends StatelessWidget {
   }) : super(key: key);
 
   /// Top-left ribbon for cards — drop into a Stack
-  static Widget positioned({String label = 'Loyal', double top = -14, double left = -2}) {
+  static Widget positioned({
+    String label = 'Loyal',
+    double top = -14,
+    double left = -2,
+  }) {
     return Positioned(
       top: top,
       left: left,
@@ -26,19 +30,25 @@ class LoyalBadge extends StatelessWidget {
     final isCard = style == BadgeStyle.card;
 
     return Container(
-      padding: EdgeInsets.fromLTRB(isCard ? 10 : 8, isCard ? 4 : 3, isCard ? 14 : 10, isCard ? 4 : 3),
+      padding: EdgeInsets.fromLTRB(
+        isCard ? 10 : 8,
+        isCard ? 4 : 3,
+        isCard ? 14 : 10,
+        isCard ? 4 : 3,
+      ),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [Color(0xFFFF6F00), Color(0xFFFFB300)],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
-        borderRadius: isCard
-            ? const BorderRadius.only(
-                topLeft: Radius.circular(14),
-                bottomRight: Radius.circular(14),
-              )
-            : BorderRadius.circular(20),
+        borderRadius:
+            isCard
+                ? const BorderRadius.only(
+                  topLeft: Radius.circular(14),
+                  bottomRight: Radius.circular(14),
+                )
+                : BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFFFF6F00).withOpacity(0.4),
@@ -51,7 +61,11 @@ class LoyalBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.workspace_premium_rounded, size: 12, color: Colors.white),
+          const Icon(
+            Icons.workspace_premium_rounded,
+            size: 12,
+            color: Colors.white,
+          ),
           const SizedBox(width: 4),
           Text(
             label.toUpperCase(),

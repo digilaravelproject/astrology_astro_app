@@ -16,7 +16,8 @@ class AstromallOrdersScreen extends StatefulWidget {
   State<AstromallOrdersScreen> createState() => _AstromallOrdersScreenState();
 }
 
-class _AstromallOrdersScreenState extends State<AstromallOrdersScreen> with SingleTickerProviderStateMixin {
+class _AstromallOrdersScreenState extends State<AstromallOrdersScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   bool _isSearching = false;
   final TextEditingController _searchController = TextEditingController();
@@ -40,21 +41,25 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen> with Sing
       backgroundColor: Colors.grey.shade100,
       appBar: CustomAppBar(
         title: _isSearching ? '' : 'AstroMall Orders',
-        titleWidget: _isSearching
-            ? TextField(
-                controller: _searchController,
-                autofocus: true,
-                decoration: const InputDecoration(
-                  hintText: 'Search orders...',
-                  border: InputBorder.none,
-                  hintStyle: TextStyle(color: Colors.black54),
-                ),
-                style: const TextStyle(color: Colors.black87, fontSize: 16),
-              )
-            : null,
+        titleWidget:
+            _isSearching
+                ? TextField(
+                  controller: _searchController,
+                  autofocus: true,
+                  decoration: const InputDecoration(
+                    hintText: 'Search orders...',
+                    border: InputBorder.none,
+                    hintStyle: TextStyle(color: Colors.black54),
+                  ),
+                  style: const TextStyle(color: Colors.black87, fontSize: 16),
+                )
+                : null,
         actions: [
           IconButton(
-            icon: Icon(_isSearching ? Icons.close : Icons.search, color: Colors.black87),
+            icon: Icon(
+              _isSearching ? Icons.close : Icons.search,
+              color: Colors.black87,
+            ),
             onPressed: () {
               setState(() {
                 if (_isSearching) {
@@ -68,7 +73,10 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen> with Sing
           ),
           if (!_isSearching)
             IconButton(
-              icon: const Icon(Icons.filter_alt_outlined, color: Colors.black87),
+              icon: const Icon(
+                Icons.filter_alt_outlined,
+                color: Colors.black87,
+              ),
               onPressed: () {
                 showModalBottomSheet(
                   context: context,
@@ -93,21 +101,23 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen> with Sing
               unselectedLabelColor: Colors.grey,
               indicatorColor: AppColors.primaryColor,
               indicatorSize: TabBarIndicatorSize.tab,
-              labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, fontFamily: 'Poppins'),
-              unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 13, fontFamily: 'Poppins'),
-              tabs: const [
-                Tab(text: "Orders"),
-                Tab(text: "Chats"),
-              ],
+              labelStyle: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+                fontFamily: 'Poppins',
+              ),
+              unselectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.normal,
+                fontSize: 13,
+                fontFamily: 'Poppins',
+              ),
+              tabs: const [Tab(text: "Orders"), Tab(text: "Chats")],
             ),
           ),
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: [
-                _buildOrdersTab(),
-                _buildChatsTab(),
-              ],
+              children: [_buildOrdersTab(), _buildChatsTab()],
             ),
           ),
         ],
@@ -122,8 +132,20 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen> with Sing
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: const [
-            AppText('Astromall', fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white, height: 1.0),
-            AppText('Listings', fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white, height: 1.0),
+            AppText(
+              'Astromall',
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+              height: 1.0,
+            ),
+            AppText(
+              'Listings',
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+              height: 1.0,
+            ),
           ],
         ),
       ),
@@ -141,7 +163,10 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen> with Sing
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.symmetric(vertical: 8),
             decoration: BoxDecoration(
-              color: isSelected ? AppColors.primaryColor.withOpacity(0.8) : Colors.grey.shade300,
+              color:
+                  isSelected
+                      ? AppColors.primaryColor.withOpacity(0.8)
+                      : Colors.grey.shade300,
               borderRadius: BorderRadius.circular(25),
             ),
             child: Center(
@@ -165,10 +190,25 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen> with Sing
       itemBuilder: (context, index) {
         return _buildOrderCard(
           context,
-          orderId: index == 0 ? '1752982547415' : index == 1 ? '1752982206840' : '1752982123171',
-          date: index == 0 ? '20 Jul 25, 09:05 AM' : index == 1 ? '20 Jul 25, 09:00 AM' : '20 Jul 25, 08:58 AM',
+          orderId:
+              index == 0
+                  ? '1752982547415'
+                  : index == 1
+                  ? '1752982206840'
+                  : '1752982123171',
+          date:
+              index == 0
+                  ? '20 Jul 25, 09:05 AM'
+                  : index == 1
+                  ? '20 Jul 25, 09:00 AM'
+                  : '20 Jul 25, 08:58 AM',
           price: index == 1 ? '₹184.27' : '₹116.31',
-          productName: index == 0 ? 'Evil Eye Protection Bracelet' : index == 1 ? 'Money & Focus Combo' : 'Rose Quartz Bracelet with Buddha',
+          productName:
+              index == 0
+                  ? 'Evil Eye Protection Bracelet'
+                  : index == 1
+                  ? 'Money & Focus Combo'
+                  : 'Rose Quartz Bracelet with Buddha',
         );
       },
     );
@@ -176,7 +216,11 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen> with Sing
 
   Widget _buildChatsTab() {
     return Center(
-      child: AppText("No chats found :(", color: Colors.grey.shade500, fontSize: 16),
+      child: AppText(
+        "No chats found :(",
+        color: Colors.grey.shade500,
+        fontSize: 16,
+      ),
     );
   }
 
@@ -207,11 +251,25 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen> with Sing
             // Top Row (Status & Actions)
             Row(
               children: [
-                AppText('Indian', color: Colors.blue.shade700, fontWeight: FontWeight.w600, fontSize: 13),
+                AppText(
+                  'Indian',
+                  color: Colors.blue.shade700,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
                 const SizedBox(width: 8),
-                AppText('CLOSED', color: Colors.green.shade600, fontWeight: FontWeight.w600, fontSize: 13),
+                AppText(
+                  'CLOSED',
+                  color: Colors.green.shade600,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
                 const SizedBox(width: 4),
-                Icon(Icons.check_circle, color: Colors.green.shade600, size: 16),
+                Icon(
+                  Icons.check_circle,
+                  color: Colors.green.shade600,
+                  size: 16,
+                ),
                 const Spacer(),
                 InkWell(
                   onTap: () {
@@ -219,13 +277,18 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen> with Sing
                       context: context,
                       isScrollControlled: true,
                       backgroundColor: Colors.transparent,
-                      builder: (context) => const Padding(
-                        padding: EdgeInsets.only(top: 100),
-                        child: AddNoteBottomSheet(),
-                      ),
+                      builder:
+                          (context) => const Padding(
+                            padding: EdgeInsets.only(top: 100),
+                            child: AddNoteBottomSheet(),
+                          ),
                     );
                   },
-                  child: Icon(Iconsax.receipt_2_copy, color: AppColors.primaryColor.withOpacity(0.7), size: 20),
+                  child: Icon(
+                    Iconsax.receipt_2_copy,
+                    color: AppColors.primaryColor.withOpacity(0.7),
+                    size: 20,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 const AnimatedFavoriteButton(),
@@ -245,9 +308,16 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen> with Sing
                     children: [
                       RichText(
                         text: TextSpan(
-                          style: TextStyle(fontFamily: 'Poppins', color: Colors.grey.shade800, fontSize: 13),
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            color: Colors.grey.shade800,
+                            fontSize: 13,
+                          ),
                           children: [
-                            const TextSpan(text: 'Order Id: ', style: TextStyle(fontWeight: FontWeight.w600)),
+                            const TextSpan(
+                              text: 'Order Id: ',
+                              style: TextStyle(fontWeight: FontWeight.w600),
+                            ),
                             TextSpan(text: orderId),
                           ],
                         ),
@@ -261,7 +331,11 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen> with Sing
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     AppText(price, fontWeight: FontWeight.bold, fontSize: 16),
-                    AppText('Your Earnings', color: Colors.grey.shade600, fontSize: 10),
+                    AppText(
+                      'Your Earnings',
+                      color: Colors.grey.shade600,
+                      fontSize: 10,
+                    ),
                   ],
                 ),
               ],
@@ -270,25 +344,46 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen> with Sing
             Row(
               children: [
                 AppText('Name: ', color: Colors.grey.shade600, fontSize: 13),
-                const AppText('Kartikee (AT-GG4V2W8)', fontWeight: FontWeight.w600, fontSize: 13),
+                const AppText(
+                  'Kartikee (AT-GG4V2W8)',
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
                 const SizedBox(width: 6),
-                Icon(Icons.copy, size: 14, color: AppColors.primaryColor.withOpacity(0.6)),
+                Icon(
+                  Icons.copy,
+                  size: 14,
+                  color: AppColors.primaryColor.withOpacity(0.6),
+                ),
               ],
             ),
             const SizedBox(height: 4),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AppText('Product Name: ', color: Colors.grey.shade600, fontSize: 13),
+                AppText(
+                  'Product Name: ',
+                  color: Colors.grey.shade600,
+                  fontSize: 13,
+                ),
                 Expanded(
-                  child: AppText(productName, fontWeight: FontWeight.w600, fontSize: 13, maxLines: 2),
+                  child: AppText(
+                    productName,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                    maxLines: 2,
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 4),
             Row(
               children: [
-                AppText('Quantity: ', color: Colors.grey.shade600, fontSize: 13),
+                AppText(
+                  'Quantity: ',
+                  color: Colors.grey.shade600,
+                  fontSize: 13,
+                ),
                 const AppText('1', fontWeight: FontWeight.w600, fontSize: 13),
               ],
             ),
@@ -297,12 +392,24 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen> with Sing
             OutlinedButton(
               onPressed: () {},
               style: OutlinedButton.styleFrom(
-                side: BorderSide(color: AppColors.primaryColor.withOpacity(0.8)),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                side: BorderSide(
+                  color: AppColors.primaryColor.withOpacity(0.8),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 8,
+                ),
                 minimumSize: const Size(0, 36),
               ),
-              child: AppText('Call with User', color: Colors.grey.shade800, fontSize: 12, fontWeight: FontWeight.w500),
+              child: AppText(
+                'Call with User',
+                color: Colors.grey.shade800,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ],
         ),

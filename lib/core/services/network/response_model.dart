@@ -26,9 +26,8 @@ class ResponseModel {
     // 2. Parse Errors
     List<ErrorDetail>? errors;
     if (json['errors'] is List) {
-      errors = (json['errors'] as List)
-          .map((e) => ErrorDetail.fromJson(e))
-          .toList();
+      errors =
+          (json['errors'] as List).map((e) => ErrorDetail.fromJson(e)).toList();
     } else if (json['errors'] is Map) {
       errors = [];
       (json['errors'] as Map<String, dynamic>).forEach((key, value) {
@@ -62,8 +61,10 @@ class ResponseModel {
     } else {
       body = json['data']; // Fallback (likely String or null)
     }
-    
-    Logger.d('ResponseModel.fromJson parsed message: $message, isSuccess: ${success && (statusCode == null || statusCode! < 300)}');
+
+    Logger.d(
+      'ResponseModel.fromJson parsed message: $message, isSuccess: ${success && (statusCode == null || statusCode! < 300)}',
+    );
 
     return ResponseModel(
       isSuccess: success && (statusCode == null || statusCode! < 300),
@@ -126,10 +127,7 @@ class ErrorDetail {
     );
   }
 
-  Map<String, dynamic> toJson() => {
-    'code': code,
-    'message': message,
-  };
+  Map<String, dynamic> toJson() => {'code': code, 'message': message};
 
   @override
   String toString() => 'ErrorDetail(code: $code, message: $message)';

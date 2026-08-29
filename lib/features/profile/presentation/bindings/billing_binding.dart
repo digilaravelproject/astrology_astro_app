@@ -8,10 +8,14 @@ import '../controllers/billing_controller.dart';
 class BillingBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<BillingRemoteDataSourceInterface>(() => BillingRemoteDataSource(apiClient: Get.find()));
+    Get.lazyPut<BillingRemoteDataSourceInterface>(
+      () => BillingRemoteDataSource(apiClient: Get.find()),
+    );
     Get.lazyPut(() => BillingRepository(dataSource: Get.find()));
     Get.lazyPut(() => GetBillingAddressUseCase(Get.find<BillingRepository>()));
-    Get.lazyPut(() => UpdateBillingAddressUseCase(Get.find<BillingRepository>()));
+    Get.lazyPut(
+      () => UpdateBillingAddressUseCase(Get.find<BillingRepository>()),
+    );
     Get.put(BillingController(Get.find(), Get.find()));
   }
 }

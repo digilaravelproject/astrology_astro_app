@@ -31,10 +31,22 @@ class ReviewModel {
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
       review: json['review'] ?? '',
       reply: json['reply'],
-      replyAt: json['reply_at'] != null ? DateTime.tryParse(json['reply_at'].toString()) : null,
-      createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at'].toString()) ?? DateTime.now() : DateTime.now(),
-      updatedAt: json['updated_at'] != null ? DateTime.tryParse(json['updated_at'].toString()) ?? DateTime.now() : DateTime.now(),
-      user: json['user'] != null ? ReviewUserModel.fromJson(json['user']) : null,
+      replyAt:
+          json['reply_at'] != null
+              ? DateTime.tryParse(json['reply_at'].toString())
+              : null,
+      createdAt:
+          json['created_at'] != null
+              ? DateTime.tryParse(json['created_at'].toString()) ??
+                  DateTime.now()
+              : DateTime.now(),
+      updatedAt:
+          json['updated_at'] != null
+              ? DateTime.tryParse(json['updated_at'].toString()) ??
+                  DateTime.now()
+              : DateTime.now(),
+      user:
+          json['user'] != null ? ReviewUserModel.fromJson(json['user']) : null,
     );
   }
 }
@@ -44,11 +56,7 @@ class ReviewUserModel {
   final String name;
   final String? profilePhoto;
 
-  ReviewUserModel({
-    required this.id,
-    required this.name,
-    this.profilePhoto,
-  });
+  ReviewUserModel({required this.id, required this.name, this.profilePhoto});
 
   factory ReviewUserModel.fromJson(Map<String, dynamic> json) {
     return ReviewUserModel(

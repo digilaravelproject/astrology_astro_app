@@ -16,7 +16,9 @@ class DashaTab extends StatelessWidget {
       if (controller.isLoading.value && controller.breadcrumbs.isEmpty) {
         return const Padding(
           padding: EdgeInsets.all(20.0),
-          child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
+          child: Center(
+            child: CircularProgressIndicator(color: AppColors.primaryColor),
+          ),
         );
       }
 
@@ -32,11 +34,16 @@ class DashaTab extends StatelessWidget {
             Stack(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 16,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: AppColors.primaryColor.withOpacity(0.05)),
+                    border: Border.all(
+                      color: AppColors.primaryColor.withOpacity(0.05),
+                    ),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.04),
@@ -52,19 +59,40 @@ class DashaTab extends StatelessWidget {
                         padding: EdgeInsets.symmetric(vertical: 8),
                         child: Row(
                           children: [
-                            Expanded(child: AppText("Planet", fontWeight: FontWeight.bold, fontSize: 12)),
-                            Expanded(child: AppText("Start Date", fontWeight: FontWeight.bold, fontSize: 12)),
-                            Expanded(child: AppText("End Date", fontWeight: FontWeight.bold, fontSize: 12)),
+                            Expanded(
+                              child: AppText(
+                                "Planet",
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                            Expanded(
+                              child: AppText(
+                                "Start Date",
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                            Expanded(
+                              child: AppText(
+                                "End Date",
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
                             SizedBox(width: 24),
                           ],
                         ),
                       ),
                       const Divider(height: 1, color: Color(0xFFEEEEEE)),
 
-                      if (controller.currentDashaItems.isEmpty && !controller.isLoading.value)
+                      if (controller.currentDashaItems.isEmpty &&
+                          !controller.isLoading.value)
                         const Padding(
                           padding: EdgeInsets.all(20.0),
-                          child: Center(child: AppText("No dasha details available.")),
+                          child: Center(
+                            child: AppText("No dasha details available."),
+                          ),
                         )
                       else
                         ...controller.currentDashaItems.map((item) {
@@ -82,7 +110,9 @@ class DashaTab extends StatelessWidget {
                         borderRadius: BorderRadius.circular(18),
                       ),
                       child: const Center(
-                        child: CircularProgressIndicator(color: AppColors.primaryColor),
+                        child: CircularProgressIndicator(
+                          color: AppColors.primaryColor,
+                        ),
                       ),
                     ),
                   ),
@@ -104,7 +134,11 @@ class DashaTab extends StatelessWidget {
           children: [
             if (canGoBack)
               IconButton(
-                icon: const Icon(Icons.arrow_back_ios, size: 18, color: AppColors.primaryColor),
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  size: 18,
+                  color: AppColors.primaryColor,
+                ),
                 onPressed: () => controller.goBack(),
               ),
             AppText(
@@ -150,19 +184,33 @@ class DashaTab extends StatelessWidget {
                       if (index > 0)
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 4),
-                          child: Icon(Icons.chevron_right, size: 16, color: Colors.grey),
+                          child: Icon(
+                            Icons.chevron_right,
+                            size: 16,
+                            color: Colors.grey,
+                          ),
                         ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
-                          color: isLast ? AppColors.primaryColor.withOpacity(0.1) : Colors.transparent,
+                          color:
+                              isLast
+                                  ? AppColors.primaryColor.withOpacity(0.1)
+                                  : Colors.transparent,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: AppText(
                           displayTitle,
                           fontSize: 12,
-                          fontWeight: isLast ? FontWeight.w700 : FontWeight.w500,
-                          color: isLast ? AppColors.primaryColor : Colors.grey[700],
+                          fontWeight:
+                              isLast ? FontWeight.w700 : FontWeight.w500,
+                          color:
+                              isLast
+                                  ? AppColors.primaryColor
+                                  : Colors.grey[700],
                         ),
                       ),
                     ],
@@ -180,11 +228,12 @@ class DashaTab extends StatelessWidget {
     final isClickable = controller.currentLevel != DashaLevel.pranadasha;
 
     // Build planet hierarchy path from breadcrumbs
-    final selectedPlanets = controller.breadcrumbs
-        .where((b) => b.planet != null && b.planet!.isNotEmpty)
-        .map((b) => b.planet!)
-        .toList();
-    
+    final selectedPlanets =
+        controller.breadcrumbs
+            .where((b) => b.planet != null && b.planet!.isNotEmpty)
+            .map((b) => b.planet!)
+            .toList();
+
     final currentPlanet = item.planet ?? "N/A";
     final fullPlanetPath = [...selectedPlanets, currentPlanet].join(" - ");
 

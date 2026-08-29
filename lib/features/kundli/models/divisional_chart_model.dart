@@ -7,7 +7,10 @@ class DivisionalChartModel {
   factory DivisionalChartModel.fromJson(Map<String, dynamic> json) {
     return DivisionalChartModel(
       success: json['success'] ?? false,
-      data: json['data'] != null ? DivisionalChartData.fromJson(json['data']) : null,
+      data:
+          json['data'] != null
+              ? DivisionalChartData.fromJson(json['data'])
+              : null,
     );
   }
 }
@@ -21,9 +24,12 @@ class DivisionalChartData {
   factory DivisionalChartData.fromJson(Map<String, dynamic> json) {
     return DivisionalChartData(
       division: json['division'],
-      positions: json['positions'] != null 
-          ? (json['positions'] as List).map((i) => DivisionalPosition.fromJson(i)).toList() 
-          : null,
+      positions:
+          json['positions'] != null
+              ? (json['positions'] as List)
+                  .map((i) => DivisionalPosition.fromJson(i))
+                  .toList()
+              : null,
     );
   }
 }
@@ -44,7 +50,7 @@ class DivisionalPosition {
       signName: json['signName'],
     );
   }
-  
+
   // The API returns sign as 0-indexed (0=Aries). Our KundliChartWidget uses 1-indexed signNumbers for South Indian chart.
   int get signNumber => (sign ?? 0) + 1;
 }

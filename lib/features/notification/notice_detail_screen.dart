@@ -13,9 +13,7 @@ class NoticeDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(
-        title: 'Notice Details',
-      ),
+      appBar: const CustomAppBar(title: 'Notice Details'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -25,7 +23,10 @@ class NoticeDetailScreen extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.blue.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(100),
@@ -57,9 +58,9 @@ class NoticeDetailScreen extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Title
             AppText(
               notice.title,
@@ -68,9 +69,9 @@ class NoticeDetailScreen extends StatelessWidget {
               color: const Color(0xFF2E1A47),
               height: 1.3,
             ),
-            
+
             const SizedBox(height: 12),
-            
+
             // Tag
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -85,11 +86,11 @@ class NoticeDetailScreen extends StatelessWidget {
                 color: Colors.grey.shade600,
               ),
             ),
-            
+
             const SizedBox(height: 24),
             const Divider(color: Color(0xFFEEEEEE)),
             const SizedBox(height: 24),
-            
+
             // Message Body
             AppText(
               notice.body,

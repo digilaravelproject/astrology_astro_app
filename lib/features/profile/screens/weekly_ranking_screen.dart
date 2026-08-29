@@ -9,13 +9,16 @@ import 'package:astro_astrologer/features/wallet/presentation/controllers/weekly
 import 'package:astro_astrologer/features/wallet/domain/models/weekly_ranking_model.dart';
 import 'package:astro_astrologer/features/wallet/data/repositories/wallet_repository_impl.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
+import 'package:astro_astrologer/core/widgets/custom_image_widget.dart';
 
 class WeeklyRankingScreen extends StatelessWidget {
   WeeklyRankingScreen({super.key}) {
     if (!Get.isRegistered<WeeklyRankingController>()) {
-      Get.put(WeeklyRankingController(
-        WalletRepositoryImpl(apiClient: Get.find<ApiClient>()),
-      ));
+      Get.put(
+        WeeklyRankingController(
+          WalletRepositoryImpl(apiClient: Get.find<ApiClient>()),
+        ),
+      );
     }
   }
 
@@ -25,18 +28,17 @@ class WeeklyRankingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(
-        title: 'Weekly Ranking'.tr,
-        centerTitle: true,
-      ),
+      appBar: CustomAppBar(title: 'Weekly Ranking'.tr, centerTitle: true),
       body: Obx(() {
-        if (controller.isLoading.value && controller.rankingData.value == null) {
+        if (controller.isLoading.value &&
+            controller.rankingData.value == null) {
           return const Center(
             child: CircularProgressIndicator(color: AppColors.primaryColor),
           );
         }
 
-        if (controller.error.value.isNotEmpty && controller.rankingData.value == null) {
+        if (controller.error.value.isNotEmpty &&
+            controller.rankingData.value == null) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -45,7 +47,9 @@ class WeeklyRankingScreen extends StatelessWidget {
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: controller.fetchRankings,
-                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryColor),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryColor,
+                  ),
                   child: AppText('Retry'.tr, color: Colors.white),
                 ),
               ],
@@ -83,8 +87,18 @@ class WeeklyRankingScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  AppText('Rank'.tr, fontSize: 16, color: Colors.black54, fontWeight: FontWeight.w500),
-                  AppText('Earning'.tr, fontSize: 16, color: Colors.black54, fontWeight: FontWeight.w500),
+                  AppText(
+                    'Rank'.tr,
+                    fontSize: 16,
+                    color: Colors.black54,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  AppText(
+                    'Earning'.tr,
+                    fontSize: 16,
+                    color: Colors.black54,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ],
               ),
             ),
@@ -100,8 +114,9 @@ class WeeklyRankingScreen extends StatelessWidget {
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.only(bottom: 20),
                   itemCount: data.topAstrologers.length,
-                  separatorBuilder: (context, index) =>
-                      Divider(color: Colors.grey.shade200, height: 1),
+                  separatorBuilder:
+                      (context, index) =>
+                          Divider(color: Colors.grey.shade200, height: 1),
                   itemBuilder: (context, index) {
                     final astrologer = data.topAstrologers[index];
                     return _buildRankingRow(astrologer);
@@ -123,14 +138,26 @@ class WeeklyRankingScreen extends StatelessWidget {
     if (text.isEmpty) return text;
     return text
         .split(' ')
-        .map((w) => w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1).toLowerCase()}' : '')
+        .map(
+          (w) =>
+              w.isNotEmpty
+                  ? '${w[0].toUpperCase()}${w.substring(1).toLowerCase()}'
+                  : '',
+        )
         .join(' ');
   }
 
-  Widget _buildAvatar({required String name, required String? rawPhoto, double radius = 20}) {
-    final photoUrl = rawPhoto != null && rawPhoto.isNotEmpty
-        ? (rawPhoto.startsWith('http') ? rawPhoto : '${AppUrls.baseImageUrl}$rawPhoto')
-        : null;
+  Widget _buildAvatar({
+    required String name,
+    required String? rawPhoto,
+    double radius = 20,
+  }) {
+    final photoUrl =
+        rawPhoto != null && rawPhoto.isNotEmpty
+            ? (rawPhoto.startsWith('http')
+                ? rawPhoto
+                : '${AppUrls.baseImageUrl}$rawPhoto')
+            : null;
     final initials = name.isNotEmpty ? name[0].toUpperCase() : '?';
 
     Widget letterWidget = AppText(
@@ -143,21 +170,23 @@ class WeeklyRankingScreen extends StatelessWidget {
     return CircleAvatar(
       radius: radius,
       backgroundColor: AppColors.primaryColor.withValues(alpha: 0.15),
-      child: photoUrl != null
-          ? ClipOval(
-              child: Image.network(
-                photoUrl,
-                width: radius * 2,
-                height: radius * 2,
-                fit: BoxFit.cover,
-                // Image load fail ho to letter dikhao
-                errorBuilder: (_, __, ___) => letterWidget,
-                // Load hone tak bhi letter dikhao
-                loadingBuilder: (_, child, progress) =>
-                    progress == null ? child : letterWidget,
-              ),
-            )
-          : letterWidget,
+      child:
+          photoUrl != null
+              ? ClipOval(
+                child: CustomImageWidget(
+                  imagePath: photoUrl,
+                  width: radius * 2,
+                  height: radius * 2,
+                  fit: BoxFit.cover,
+                  // Image load fail ho to letter dikhao
+                  errorBuilder: (_, __, ___) => letterWidget,
+                  // Load hone tak bhi letter dikhao
+                  loadingBuilder:
+                      (_, child, progress) =>
+                          progress == null ? child : letterWidget,
+                ),
+              )
+              : letterWidget,
     );
   }
 
@@ -173,15 +202,24 @@ class WeeklyRankingScreen extends StatelessWidget {
           SizedBox(
             width: 28,
             height: 28,
-            child: isTopThree
-                ? Container(
-                    decoration: const BoxDecoration(
+            child:
+                isTopThree
+                    ? Container(
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFFFD700),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.star,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                    )
+                    : const Icon(
+                      Icons.emoji_events,
                       color: Color(0xFFFFD700),
-                      shape: BoxShape.circle,
+                      size: 24,
                     ),
-                    child: const Icon(Icons.star, color: Colors.white, size: 18),
-                  )
-                : const Icon(Icons.emoji_events, color: Color(0xFFFFD700), size: 24),
           ),
           const SizedBox(width: 10),
 
@@ -198,7 +236,10 @@ class WeeklyRankingScreen extends StatelessWidget {
           const SizedBox(width: 10),
 
           // Avatar
-          _buildAvatar(name: astrologer.name, rawPhoto: astrologer.profilePhoto),
+          _buildAvatar(
+            name: astrologer.name,
+            rawPhoto: astrologer.profilePhoto,
+          ),
           const SizedBox(width: 10),
 
           // Name
@@ -225,8 +266,11 @@ class WeeklyRankingScreen extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Icon(
-                astrologer.weeklyEarnings > 0 ? Icons.arrow_drop_up : Icons.remove,
-                color: astrologer.weeklyEarnings > 0 ? Colors.green : Colors.grey,
+                astrologer.weeklyEarnings > 0
+                    ? Icons.arrow_drop_up
+                    : Icons.remove,
+                color:
+                    astrologer.weeklyEarnings > 0 ? Colors.green : Colors.grey,
                 size: 20,
               ),
             ],
@@ -261,8 +305,17 @@ class WeeklyRankingScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                AppText('Your Weekly Earning'.tr, fontSize: 12, fontWeight: FontWeight.bold),
-                AppText('Your Rank'.tr, fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.goldAccent),
+                AppText(
+                  'Your Weekly Earning'.tr,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+                AppText(
+                  'Your Rank'.tr,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.goldAccent,
+                ),
               ],
             ),
             const SizedBox(height: 12),

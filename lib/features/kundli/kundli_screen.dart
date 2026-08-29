@@ -46,16 +46,25 @@ class KundliScreen extends StatefulWidget {
   State<KundliScreen> createState() => _KundliScreenState();
 }
 
-class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderStateMixin {
+class _KundliScreenState extends State<KundliScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final PanchangController _panchangController = Get.put(PanchangController());
   final DashaController _dashaController = Get.put(DashaController());
-  final PlanetPositionsController _planetPositionsController = Get.put(PlanetPositionsController());
-  final BirthChartController _birthChartController = Get.put(BirthChartController());
+  final PlanetPositionsController _planetPositionsController = Get.put(
+    PlanetPositionsController(),
+  );
+  final BirthChartController _birthChartController = Get.put(
+    BirthChartController(),
+  );
   final NavamshaController _navamshaController = Get.put(NavamshaController());
   final TransitController _transitController = Get.put(TransitController());
-  final DivisionalChartController _divisionalChartController = Get.put(DivisionalChartController());
-  final HouseCuspsController _houseCuspsController = Get.put(HouseCuspsController());
+  final DivisionalChartController _divisionalChartController = Get.put(
+    DivisionalChartController(),
+  );
+  final HouseCuspsController _houseCuspsController = Get.put(
+    HouseCuspsController(),
+  );
   final KPController _kpController = Get.put(KPController());
   final ManglikController _manglikController = Get.put(ManglikController());
 
@@ -69,7 +78,7 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
     "Divisional Chart",
     "KP",
     "Bhav Bala",
-    "Manglik Report"
+    "Manglik Report",
   ];
 
   String _selectedBasicSubTab = "Birth Details";
@@ -98,9 +107,13 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
       } catch (_) {}
     }
 
-    if (cleanTob.toUpperCase().contains('AM') || cleanTob.toUpperCase().contains('PM')) {
+    if (cleanTob.toUpperCase().contains('AM') ||
+        cleanTob.toUpperCase().contains('PM')) {
       final isPM = cleanTob.toUpperCase().contains('PM');
-      var t = cleanTob.replaceAll(RegExp(r'[APM\s]', caseSensitive: false), '').trim();
+      var t =
+          cleanTob
+              .replaceAll(RegExp(r'[APM\s]', caseSensitive: false), '')
+              .trim();
       final timeParts = t.split(':');
       if (timeParts.length >= 2) {
         int hour = int.parse(timeParts[0]);
@@ -143,8 +156,22 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
         final year = int.parse(parts[0]);
         final month = int.parse(parts[1]);
         final day = int.parse(parts[2]);
-        final months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        _dobStr = "${day.toString().padLeft(2, '0')} ${months[month - 1]} $year";
+        final months = [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ];
+        _dobStr =
+            "${day.toString().padLeft(2, '0')} ${months[month - 1]} $year";
       } else {
         _dobStr = cleanDob;
       }
@@ -168,25 +195,74 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
     final reqLat = lat;
     final reqLng = lng;
 
-    _panchangController.fetchPanchangDetails(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
-    _dashaController.fetchDashaDetails(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
-    _planetPositionsController.fetchPlanetPositions(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
-    _birthChartController.fetchBirthChart(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
-    _navamshaController.fetchNavamsha(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
-    _transitController.fetchTransit(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
-    _divisionalChartController.fetchDivisionalChart(division: 2, datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
-    _houseCuspsController.fetchHouseCusps(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
-    _kpController.fetchKPData(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
-    _manglikController.fetchManglikReport(datetime: dt, latitude: reqLat, longitude: reqLng, timezone: tz);
+    _panchangController.fetchPanchangDetails(
+      datetime: dt,
+      latitude: reqLat,
+      longitude: reqLng,
+      timezone: tz,
+    );
+    _dashaController.fetchDashaDetails(
+      datetime: dt,
+      latitude: reqLat,
+      longitude: reqLng,
+      timezone: tz,
+    );
+    _planetPositionsController.fetchPlanetPositions(
+      datetime: dt,
+      latitude: reqLat,
+      longitude: reqLng,
+      timezone: tz,
+    );
+    _birthChartController.fetchBirthChart(
+      datetime: dt,
+      latitude: reqLat,
+      longitude: reqLng,
+      timezone: tz,
+    );
+    _navamshaController.fetchNavamsha(
+      datetime: dt,
+      latitude: reqLat,
+      longitude: reqLng,
+      timezone: tz,
+    );
+    _transitController.fetchTransit(
+      datetime: dt,
+      latitude: reqLat,
+      longitude: reqLng,
+      timezone: tz,
+    );
+    _divisionalChartController.fetchDivisionalChart(
+      division: 2,
+      datetime: dt,
+      latitude: reqLat,
+      longitude: reqLng,
+      timezone: tz,
+    );
+    _houseCuspsController.fetchHouseCusps(
+      datetime: dt,
+      latitude: reqLat,
+      longitude: reqLng,
+      timezone: tz,
+    );
+    _kpController.fetchKPData(
+      datetime: dt,
+      latitude: reqLat,
+      longitude: reqLng,
+      timezone: tz,
+    );
+    _manglikController.fetchManglikReport(
+      datetime: dt,
+      latitude: reqLat,
+      longitude: reqLng,
+      timezone: tz,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFDF9F5),
-      appBar: CustomAppBar(
-        title: 'Kundli',
-      ),
+      appBar: CustomAppBar(title: 'Kundli'),
 
       body: Column(
         children: [
@@ -197,13 +273,21 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
               children: [
                 _buildBasicTab(),
                 Obx(() {
-                  final planets = _birthChartController.birthChartModel.value?.data?.planets ?? [];
-                  
+                  final planets =
+                      _birthChartController
+                          .birthChartModel
+                          .value
+                          ?.data
+                          ?.planets ??
+                      [];
+
                   // Map data for North Indian chart (key = house)
                   final northPlanetData = <int, List<String>>{};
                   for (var planet in planets) {
                     if (planet.house != null && planet.name != null) {
-                      northPlanetData.putIfAbsent(planet.house!, () => []).add(planet.name!.substring(0, 2));
+                      northPlanetData
+                          .putIfAbsent(planet.house!, () => [])
+                          .add(planet.name!.substring(0, 2));
                     }
                   }
 
@@ -211,7 +295,9 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
                   final southPlanetData = <int, List<String>>{};
                   for (var planet in planets) {
                     if (planet.signNumber != null && planet.name != null) {
-                      southPlanetData.putIfAbsent(planet.signNumber!, () => []).add(planet.name!.substring(0, 2));
+                      southPlanetData
+                          .putIfAbsent(planet.signNumber!, () => [])
+                          .add(planet.name!.substring(0, 2));
                     }
                   }
 
@@ -225,13 +311,17 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
                   );
                 }),
                 Obx(() {
-                  final planets = _navamshaController.navamshaModel.value?.data?.planets ?? [];
-                  
+                  final planets =
+                      _navamshaController.navamshaModel.value?.data?.planets ??
+                      [];
+
                   // Map data for North Indian chart (key = house)
                   final northPlanetData = <int, List<String>>{};
                   for (var planet in planets) {
                     if (planet.house != null && planet.name != null) {
-                      northPlanetData.putIfAbsent(planet.house!, () => []).add(planet.name!.substring(0, 2));
+                      northPlanetData
+                          .putIfAbsent(planet.house!, () => [])
+                          .add(planet.name!.substring(0, 2));
                     }
                   }
 
@@ -239,7 +329,9 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
                   final southPlanetData = <int, List<String>>{};
                   for (var planet in planets) {
                     if (planet.signNumber != null && planet.name != null) {
-                      southPlanetData.putIfAbsent(planet.signNumber!, () => []).add(planet.name!.substring(0, 2));
+                      southPlanetData
+                          .putIfAbsent(planet.signNumber!, () => [])
+                          .add(planet.name!.substring(0, 2));
                     }
                   }
 
@@ -253,13 +345,17 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
                   );
                 }),
                 Obx(() {
-                  final planets = _transitController.transitModel.value?.data?.planets ?? [];
-                  
+                  final planets =
+                      _transitController.transitModel.value?.data?.planets ??
+                      [];
+
                   // Map data for North Indian chart (key = houseFromLagna)
                   final northPlanetData = <int, List<String>>{};
                   for (var planet in planets) {
                     if (planet.houseFromLagna != null && planet.name != null) {
-                      northPlanetData.putIfAbsent(planet.houseFromLagna!, () => []).add(planet.name!.substring(0, 2));
+                      northPlanetData
+                          .putIfAbsent(planet.houseFromLagna!, () => [])
+                          .add(planet.name!.substring(0, 2));
                     }
                   }
 
@@ -267,7 +363,9 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
                   final southPlanetData = <int, List<String>>{};
                   for (var planet in planets) {
                     if (planet.signNumber != null && planet.name != null) {
-                      southPlanetData.putIfAbsent(planet.signNumber!, () => []).add(planet.name!.substring(0, 2));
+                      southPlanetData
+                          .putIfAbsent(planet.signNumber!, () => [])
+                          .add(planet.name!.substring(0, 2));
                     }
                   }
 
@@ -305,7 +403,10 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
         indicatorColor: AppColors.primaryColor,
         indicatorSize: TabBarIndicatorSize.label,
         labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 13),
+        unselectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.normal,
+          fontSize: 13,
+        ),
         tabs: _tabs.map((tab) => Tab(child: Text(tab.tr))).toList(),
       ),
     );
@@ -319,8 +420,10 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
           _buildSecondaryTabs(),
           const SizedBox(height: 12),
           if (_selectedBasicSubTab == "Birth Details") _buildBirthDetails(),
-          if (_selectedBasicSubTab == "Panchang Details") _buildPanchangDetails(),
-          if (_selectedBasicSubTab == "Avakhada Details") _buildAvakhadaDetails(),
+          if (_selectedBasicSubTab == "Panchang Details")
+            _buildPanchangDetails(),
+          if (_selectedBasicSubTab == "Avakhada Details")
+            _buildAvakhadaDetails(),
         ],
       ),
     );
@@ -333,7 +436,11 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Obx(() {
@@ -342,14 +449,18 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
         String timezoneDisplay = "GMT+05:30";
         if (rawTz.isNotEmpty) {
           if (rawTz.contains("+") || rawTz.contains("-")) {
-            timezoneDisplay = rawTz.startsWith("+") || rawTz.startsWith("-") ? rawTz : "+$rawTz";
+            timezoneDisplay =
+                rawTz.startsWith("+") || rawTz.startsWith("-")
+                    ? rawTz
+                    : "+$rawTz";
           } else {
             try {
               double val = double.parse(rawTz);
               int hours = val.abs().toInt();
               int minutes = ((val.abs() - hours) * 60).round();
               String sign = val >= 0 ? "+" : "-";
-              timezoneDisplay = "$sign${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}";
+              timezoneDisplay =
+                  "$sign${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}";
             } catch (_) {
               timezoneDisplay = rawTz;
             }
@@ -378,14 +489,20 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Obx(() {
         if (_panchangController.isLoading.value) {
           return const Padding(
             padding: EdgeInsets.all(20.0),
-            child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
+            child: Center(
+              child: CircularProgressIndicator(color: AppColors.primaryColor),
+            ),
           );
         }
 
@@ -419,16 +536,28 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Obx(() {
-        final planets = _planetPositionsController.planetPositionsModel.value?.data?.planets;
-        final moon = planets?.firstWhereOrNull((p) => p.name?.toLowerCase() == 'moon');
+        final planets =
+            _planetPositionsController
+                .planetPositionsModel
+                .value
+                ?.data
+                ?.planets;
+        final moon = planets?.firstWhereOrNull(
+          (p) => p.name?.toLowerCase() == 'moon',
+        );
         final panchang = _panchangController.panchangModel.value?.data;
 
         final sign = moon?.sign ?? "N/A";
-        final nakshatra = panchang?.nakshatra?.name ?? moon?.nakshatra?.name ?? "N/A";
+        final nakshatra =
+            panchang?.nakshatra?.name ?? moon?.nakshatra?.name ?? "N/A";
 
         return Column(
           children: [
@@ -478,7 +607,16 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
         decoration: BoxDecoration(
           color: isActive ? AppColors.primaryColor : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
-          boxShadow: isActive ? [BoxShadow(color: AppColors.primaryColor.withOpacity(0.2), blurRadius: 4, offset: const Offset(0, 2))] : null,
+          boxShadow:
+              isActive
+                  ? [
+                    BoxShadow(
+                      color: AppColors.primaryColor.withOpacity(0.2),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                  : null,
         ),
         child: Center(
           child: AppText(
@@ -497,8 +635,14 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
-          Expanded(flex: 2, child: AppText(label, fontSize: 12, color: Colors.grey.shade700)),
-          Expanded(flex: 3, child: AppText(value, fontSize: 12, fontWeight: FontWeight.w600)),
+          Expanded(
+            flex: 2,
+            child: AppText(label, fontSize: 12, color: Colors.grey.shade700),
+          ),
+          Expanded(
+            flex: 3,
+            child: AppText(value, fontSize: 12, fontWeight: FontWeight.w600),
+          ),
         ],
       ),
     );
@@ -510,11 +654,14 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
         if (_dashaController.isLoading.value) {
           return const Padding(
             padding: EdgeInsets.all(20.0),
-            child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
+            child: Center(
+              child: CircularProgressIndicator(color: AppColors.primaryColor),
+            ),
           );
         }
 
-        final dashaDataList = _dashaController.dashaModel.value?.data?.mahaDasha;
+        final dashaDataList =
+            _dashaController.dashaModel.value?.data?.mahaDasha;
         if (dashaDataList == null || dashaDataList.isEmpty) {
           return Padding(
             padding: const EdgeInsets.all(20.0),
@@ -526,16 +673,30 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              AppText(title.tr, fontSize: 16, fontWeight: FontWeight.w700, textAlign: TextAlign.center),
+              AppText(
+                title.tr,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 12),
               Container(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 16,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: AppColors.primaryColor.withOpacity(0.05)),
+                  border: Border.all(
+                    color: AppColors.primaryColor.withOpacity(0.05),
+                  ),
                   boxShadow: [
-                    BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 15, offset: const Offset(0, 6)),
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 15,
+                      offset: const Offset(0, 6),
+                    ),
                   ],
                 ),
                 child: Column(
@@ -544,9 +705,27 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       child: Row(
                         children: [
-                          Expanded(child: AppText("Planet".tr, fontWeight: FontWeight.bold, fontSize: 12)),
-                          Expanded(child: AppText("Start Date".tr, fontWeight: FontWeight.bold, fontSize: 12)),
-                          Expanded(child: AppText("End Date".tr, fontWeight: FontWeight.bold, fontSize: 12)),
+                          Expanded(
+                            child: AppText(
+                              "Planet".tr,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
+                          Expanded(
+                            child: AppText(
+                              "Start Date".tr,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
+                          Expanded(
+                            child: AppText(
+                              "End Date".tr,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
                           const SizedBox(width: 20),
                         ],
                       ),
@@ -580,16 +759,27 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          AppText(title, fontSize: 16, fontWeight: FontWeight.w700, textAlign: TextAlign.center),
+          AppText(
+            title,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: AppColors.primaryColor.withOpacity(0.05)),
+              border: Border.all(
+                color: AppColors.primaryColor.withOpacity(0.05),
+              ),
               boxShadow: [
-                BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 15, offset: const Offset(0, 6)),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 15,
+                  offset: const Offset(0, 6),
+                ),
               ],
             ),
             child: Column(
@@ -598,14 +788,34 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
                   padding: EdgeInsets.symmetric(vertical: 8),
                   child: Row(
                     children: [
-                      Expanded(child: AppText("Planet", fontWeight: FontWeight.bold, fontSize: 12)),
-                      Expanded(child: AppText("Start Date", fontWeight: FontWeight.bold, fontSize: 12)),
-                      Expanded(child: AppText("End Date", fontWeight: FontWeight.bold, fontSize: 12)),
+                      Expanded(
+                        child: AppText(
+                          "Planet",
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                      Expanded(
+                        child: AppText(
+                          "Start Date",
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                      Expanded(
+                        child: AppText(
+                          "End Date",
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
                       SizedBox(width: 20),
                     ],
                   ),
                 ),
-                ...dashaData.map((data) => _buildDashaRow(data[0], data[1], data[2])),
+                ...dashaData.map(
+                  (data) => _buildDashaRow(data[0], data[1], data[2]),
+                ),
               ],
             ),
           ),
@@ -619,9 +829,15 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         children: [
-          Expanded(child: AppText(planet, fontSize: 12, fontWeight: FontWeight.w500)),
-          Expanded(child: AppText(start, fontSize: 12, fontWeight: FontWeight.w500)),
-          Expanded(child: AppText(end, fontSize: 12, fontWeight: FontWeight.w500)),
+          Expanded(
+            child: AppText(planet, fontSize: 12, fontWeight: FontWeight.w500),
+          ),
+          Expanded(
+            child: AppText(start, fontSize: 12, fontWeight: FontWeight.w500),
+          ),
+          Expanded(
+            child: AppText(end, fontSize: 12, fontWeight: FontWeight.w500),
+          ),
           const Icon(Icons.chevron_right, size: 16, color: Colors.grey),
         ],
       ),
@@ -636,18 +852,18 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
     return "${d.toString().padLeft(2, '0')}° ${m.toString().padLeft(2, '0')}' ${s.toString().padLeft(2, '0')}\"";
   }
 
-
-
-
-
   Widget _buildDivisionalChartTab() {
     String t = widget.tob.isEmpty ? "00:00:00" : widget.tob;
     if (t.length == 5) t += ":00";
-    final dt = widget.dob.isNotEmpty ? "${widget.dob}T$t" : DateTime.now().toIso8601String().split('.')[0];
+    final dt =
+        widget.dob.isNotEmpty
+            ? "${widget.dob}T$t"
+            : DateTime.now().toIso8601String().split('.')[0];
     final lat = widget.latitude;
     final lng = widget.longitude;
     final panchangTz = _panchangController.panchangModel.value?.data?.timezone;
-    final tz = (panchangTz != null && panchangTz.isNotEmpty) ? panchangTz : "+05:30";
+    final tz =
+        (panchangTz != null && panchangTz.isNotEmpty) ? panchangTz : "+05:30";
 
     return DivisionalChartTab(
       datetime: dt,
@@ -669,4 +885,3 @@ class _KundliScreenState extends State<KundliScreen> with SingleTickerProviderSt
     return const ManglikReportTab();
   }
 }
-

@@ -9,6 +9,7 @@ import 'package:astro_astrologer/features/call/presentation/pages/call_screen.da
 import 'package:astro_astrologer/core/services/local_notification_service.dart';
 import 'package:astro_astrologer/core/services/foreground_task_service.dart';
 import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
+import 'package:astro_astrologer/core/widgets/custom_image_widget.dart';
 
 class FloatingCallBubble {
   static int? sessionId;
@@ -18,9 +19,11 @@ class FloatingCallBubble {
 
   static final RxBool _isActive = false.obs;
   static bool get isActive => _isActive.value;
-  
+
   static StreamSubscription? _overlaySub;
-  static const MethodChannel _appRetainChannel = MethodChannel('com.suryapath.astrologer/app_retain');
+  static const MethodChannel _appRetainChannel = MethodChannel(
+    'com.suryapath.astrologer/app_retain',
+  );
 
   static ReceivePort? _receivePort;
 
@@ -28,12 +31,17 @@ class FloatingCallBubble {
     if (_receivePort != null) return;
     _receivePort = ReceivePort();
     IsolateNameServer.removePortNameMapping('overlay_call_port');
-    IsolateNameServer.registerPortWithName(_receivePort!.sendPort, 'overlay_call_port');
+    IsolateNameServer.registerPortWithName(
+      _receivePort!.sendPort,
+      'overlay_call_port',
+    );
     _receivePort!.listen((message) async {
       if (message == 'tap') {
         debugPrint("==== CALL OVERLAY TAPPED VIA ISOLATE PORT ====");
         try {
-          debugPrint("==== ATTEMPTING TO BRING APP TO FOREGROUND FOR CALL ====");
+          debugPrint(
+            "==== ATTEMPTING TO BRING APP TO FOREGROUND FOR CALL ====",
+          );
           await _appRetainChannel.invokeMethod('bringToForeground');
         } catch (e) {
           debugPrint("==== Error bringing app to foreground: $e ====");
@@ -61,7 +69,13 @@ class FloatingCallBubble {
     required VoidCallback onTap,
   }) async {
     _setupIsolatePort();
-    
+
+    // Listen for foreground task tap events
+    ForegroundTaskService.listenTaskData((data) {
+      if (data is Map && data['action'] == 'tap') {
+        onTapCallback?.call();
+      }
+    });
     if (_isActive.value && FloatingCallBubble.sessionId == sessionId) {
       callStatus.value = status;
       _syncData();
@@ -74,13 +88,27 @@ class FloatingCallBubble {
     _isActive.value = true;
 
     try {
-      final String statusText = (status == 'ongoing') 
-          ? '$name • Call' 
-          : 'Incoming Call / Calling $name ($status)...';
+      DateTime? startedAtDate;
+      if (startedAt != null && startedAt.isNotEmpty) {
+        String isoUtc = startedAt.trim().replaceAll(' ', 'T');
+        if (!isoUtc.endsWith('Z') &&
+            !isoUtc.contains('+') &&
+            !isoUtc.contains('-')) {
+          isoUtc += 'Z';
+        }
+        startedAtDate = DateTime.tryParse(isoUtc)?.toLocal();
+      }
 
-      
-
-
+      final normalizedStatus = status.toLowerCase();
+      if (normalizedStatus == 'ongoing' || normalizedStatus == 'accepted') {
+        await ForegroundTaskService.startActiveSessionNotification(
+          title: 'Active Call with $name',
+          type: 'Call',
+          startedAt: startedAtDate,
+        );
+      } else {
+        await ForegroundTaskService.stopService();
+      }
 
       if (await FlutterOverlayWindow.isActive()) {
         await FlutterOverlayWindow.shareData({
@@ -107,7 +135,6 @@ class FloatingCallBubble {
     _overlaySub = null;
 
     if (stopForegroundService) {
-      
       try {
         await ForegroundTaskService.stopService();
       } catch (_) {}
@@ -155,7 +182,8 @@ class FloatingCallBubbleWidget extends StatefulWidget {
   });
 
   @override
-  State<FloatingCallBubbleWidget> createState() => _FloatingCallBubbleWidgetState();
+  State<FloatingCallBubbleWidget> createState() =>
+      _FloatingCallBubbleWidgetState();
 }
 
 class _FloatingCallBubbleWidgetState extends State<FloatingCallBubbleWidget> {
@@ -244,7 +272,8 @@ class _FloatingCallBubbleWidgetState extends State<FloatingCallBubbleWidget> {
   }
 
   Widget _buildInitialAvatar(String name) {
-    final String initial = name.trim().isNotEmpty ? name.trim()[0].toUpperCase() : 'U';
+    final String initial =
+        name.trim().isNotEmpty ? name.trim()[0].toUpperCase() : 'U';
     return Container(
       width: 36,
       height: 36,
@@ -293,15 +322,18 @@ class _FloatingCallBubbleWidgetState extends State<FloatingCallBubbleWidget> {
                       color: Colors.white24,
                       shape: BoxShape.circle,
                     ),
-                    child: widget.imageUrl.trim().isNotEmpty
-                        ? Image.network(
-                            widget.imageUrl,
-                            width: 36,
-                            height: 36,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => _buildInitialAvatar(widget.name),
-                          )
-                        : _buildInitialAvatar(widget.name),
+                    child:
+                        widget.imageUrl.trim().isNotEmpty
+                            ? CustomImageWidget(
+                              imagePath: widget.imageUrl,
+                              width: 36,
+                              height: 36,
+                              fit: BoxFit.cover,
+                              errorBuilder:
+                                  (_, __, ___) =>
+                                      _buildInitialAvatar(widget.name),
+                            )
+                            : _buildInitialAvatar(widget.name),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -352,7 +384,10 @@ class _FloatingCallBubbleWidgetState extends State<FloatingCallBubbleWidget> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),

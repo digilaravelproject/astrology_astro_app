@@ -1,5 +1,1 @@
-enum DataSource {
-  network,
-  cache,
-  local,
-}
+enum DataSource { network, cache, local }

@@ -16,7 +16,9 @@ class ShadBalaTab extends StatelessWidget {
       if (controller.isLoading.value) {
         return const Padding(
           padding: EdgeInsets.all(20.0),
-          child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
+          child: Center(
+            child: CircularProgressIndicator(color: AppColors.primaryColor),
+          ),
         );
       }
 
@@ -35,7 +37,11 @@ class ShadBalaTab extends StatelessWidget {
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
             ],
           ),
           child: Column(
@@ -45,18 +51,27 @@ class ShadBalaTab extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: const BoxDecoration(
                   color: AppColors.primaryColor, // color from screenshot
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    topRight: Radius.circular(12),
+                  ),
                 ),
                 child: const Center(
-                  child: AppText("Shad Bala", fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+                  child: AppText(
+                    "Shad Bala",
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
-                  children: shadbalaList.map((item) {
-                    return _buildBarRow(item);
-                  }).toList(),
+                  children:
+                      shadbalaList.map((item) {
+                        return _buildBarRow(item);
+                      }).toList(),
                 ),
               ),
             ],
@@ -72,7 +87,8 @@ class ShadBalaTab extends StatelessWidget {
     if (percentage > 1.0) percentage = 1.0;
 
     String label = item.planet ?? "N/A";
-    String scoreText = "${item.totalStrength?.round() ?? 0} / ${item.requiredMinimum?.round() ?? 0}";
+    String scoreText =
+        "${item.totalStrength?.round() ?? 0} / ${item.requiredMinimum?.round() ?? 0}";
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -88,7 +104,9 @@ class ShadBalaTab extends StatelessWidget {
                 Container(
                   height: 30,
                   decoration: BoxDecoration(
-                    color: Colors.grey.withOpacity(0.2), // background for the required minimum
+                    color: Colors.grey.withOpacity(
+                      0.2,
+                    ), // background for the required minimum
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -107,7 +125,12 @@ class ShadBalaTab extends StatelessWidget {
                   top: 0,
                   bottom: 0,
                   child: Center(
-                    child: AppText(scoreText, fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black87),
+                    child: AppText(
+                      scoreText,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
                   ),
                 ),
               ],

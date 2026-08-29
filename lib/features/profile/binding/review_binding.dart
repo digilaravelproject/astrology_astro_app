@@ -8,11 +8,18 @@ class ReviewBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut(() => ReviewRepository(apiClient: Get.find<ApiClient>()));
-    Get.lazyPut(() => GetReviewsUseCase(repository: Get.find<ReviewRepository>()));
-    Get.lazyPut(() => PostReplyUseCase(repository: Get.find<ReviewRepository>()));
-    Get.lazyPut(() => ReviewController(
-      getReviewsUseCase: Get.find<GetReviewsUseCase>(),
-      postReplyUseCase: Get.find<PostReplyUseCase>(),
-    ), fenix: true);
+    Get.lazyPut(
+      () => GetReviewsUseCase(repository: Get.find<ReviewRepository>()),
+    );
+    Get.lazyPut(
+      () => PostReplyUseCase(repository: Get.find<ReviewRepository>()),
+    );
+    Get.lazyPut(
+      () => ReviewController(
+        getReviewsUseCase: Get.find<GetReviewsUseCase>(),
+        postReplyUseCase: Get.find<PostReplyUseCase>(),
+      ),
+      fenix: true,
+    );
   }
 }

@@ -13,6 +13,11 @@ class RemedyBinding extends Bindings {
     Get.lazyPut(() => RemedyRepository(Get.find<RemedyRemoteDataSource>()));
     Get.lazyPut(() => GetRemediesUseCase(Get.find<RemedyRepository>()));
     Get.lazyPut(() => GetRemedyDetailsUseCase(Get.find<RemedyRepository>()));
-    Get.lazyPut(() => RemedyController(Get.find<GetRemediesUseCase>(), Get.find<GetRemedyDetailsUseCase>()));
+    Get.lazyPut(
+      () => RemedyController(
+        Get.find<GetRemediesUseCase>(),
+        Get.find<GetRemedyDetailsUseCase>(),
+      ),
+    );
   }
 }

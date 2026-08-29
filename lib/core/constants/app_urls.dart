@@ -2,7 +2,8 @@ class AppUrls {
   static const String baseUrl = "https://suryapathkundli.com/api/v1";
   //static const String baseUrl = "https://darkgoldenrod-peafowl-305286.hostingersite.com/api/v1";
   static const String baseImageUrl = "https://suryapathkundli.com/storage/";
-  static const String webSocketUrl = "wss://suryapathkundli.com/app/astrology-key?protocol=7&client=js&version=8.4.0-rc2&flash=false";
+  static const String webSocketUrl =
+      "wss://suryapathkundli.com/app/astrology-key?protocol=7&client=js&version=8.4.0-rc2&flash=false";
   static const String broadcastingAuth = "/broadcasting/auth";
 
   static const String sendOtp = "/astrologer/send-otp";
@@ -25,17 +26,24 @@ class AppUrls {
   static const String getAstroSkills = "/astrologer/profile/skills";
   static const String registerDeviceToken = "/astrologer/device-token";
   static const String removeDeviceToken = "/astrologer/remove-token";
-  static String getNotificationCount(int userId) => "/user/notifications/count?user_id=$userId";
-  static String getNotifications(int userId) => "/user/notifications?user_id=$userId";
+  static String getNotificationCount(int userId) =>
+      "/user/notifications/count?user_id=$userId";
+  static String getNotifications(int userId) =>
+      "/user/notifications?user_id=$userId";
   static const String bankAccounts = "/astrologer/bank-accounts";
-  static String setDefaultBankAccount(int id) => "/astrologer/bank-accounts/$id/set-default";
+  static String setDefaultBankAccount(int id) =>
+      "/astrologer/bank-accounts/$id/set-default";
   static const String availability = "/astrologer/availability";
   static const String phoneNumbers = "/astrologer/phone-numbers";
-  static String verifyPhoneNumber(int id) => "/astrologer/phone-numbers/$id/verify";
-  static String setDefaultPhoneNumber(int id) => "/astrologer/phone-numbers/$id/set-default";
+  static String verifyPhoneNumber(int id) =>
+      "/astrologer/phone-numbers/$id/verify";
+  static String setDefaultPhoneNumber(int id) =>
+      "/astrologer/phone-numbers/$id/set-default";
 
-  static String getNotificationDetail(int id, int userId) => "/user/notifications/$id?user_id=$userId";
-  static String markNotificationRead(int id, int userId) => "/user/notifications/$id/mark-read?user_id=$userId";
+  static String getNotificationDetail(int id, int userId) =>
+      "/user/notifications/$id?user_id=$userId";
+  static String markNotificationRead(int id, int userId) =>
+      "/user/notifications/$id/mark-read?user_id=$userId";
 
   static const String faqs = '/faqs';
   static const String privacyPolicy = '/privacy-policy';
@@ -45,21 +53,28 @@ class AppUrls {
   static const String feedback = '/feedback';
   static const String customerSupport = '/static-pages/customer_support';
 
-  static String toggleLike(int id) => "/astrologer/community/followers/$id/toggle-like";
+  static String toggleLike(int id) =>
+      "/astrologer/community/followers/$id/toggle-like";
   static String getProfile(int id) => "/astrologer/profile/$id";
-  static String trainingVideoDetail(int id) => "/astrologer/training-videos/$id";
+  static String trainingVideoDetail(int id) =>
+      "/astrologer/training-videos/$id";
   static const String toggleOnline = "/astrologer/toggle-online";
   static const String updateOtherDetails = "/astrologer/profile/other-details";
 
-  static const String packageSpawnChannel = '/astrologer/packages/session/spawn-channel';
-  static const String packageTerminateChannel = '/astrologer/packages/session/terminate-channel';
-  static const String packageHeartbeat = '/astrologer/packages/session/heartbeat';
-  static const String packageActiveBanner = '/astrologer/packages/active-banner';
+  static const String packageSpawnChannel =
+      '/astrologer/packages/session/spawn-channel';
+  static const String packageTerminateChannel =
+      '/astrologer/packages/session/terminate-channel';
+  static const String packageHeartbeat =
+      '/astrologer/packages/session/heartbeat';
+  static const String packageActiveBanner =
+      '/astrologer/packages/active-banner';
 
   // Gallery
   static const String uploadGallery = "/astrologer/gallery/upload";
   static const String galleryList = "/astrologer/gallery";
-  static String toggleGalleryVisibility(int id) => "/astrologer/gallery/$id/toggle-visibility";
+  static String toggleGalleryVisibility(int id) =>
+      "/astrologer/gallery/$id/toggle-visibility";
   static String deleteGalleryImage(int id) => "/astrologer/gallery/$id";
 
   // Reviews
@@ -74,7 +89,8 @@ class AppUrls {
   static String stopLiveSession(int id) => "/astrologer/live/$id/stop";
   static String startBroadcast(int id) => "/astrologer/live/$id/broadcast";
   static String stopBroadcast(int id) => "/astrologer/live/$id/stop-broadcast";
-  static String reportMediaStatus(int id) => "/astrologer/live/$id/media-status";
+  static String reportMediaStatus(int id) =>
+      "/astrologer/live/$id/media-status";
   static String getLiveComments(int id) => "/astrologer/live/$id/comments";
 
   static String updateLiveSession(int id) => "/astrologer/live/$id";
@@ -92,10 +108,14 @@ class AppUrls {
 
   // Default Messages
   static const String defaultMessages = "/astrologer/default-messages";
-  static const String activeDefaultMessage = "/astrologer/default-messages/active";
-  static String defaultMessageUpdate(int id) => "/astrologer/default-messages/$id";
-  static String defaultMessageDelete(int id) => "/astrologer/default-messages/$id";
-  static String setDefaultMessageActive(int id) => "/astrologer/default-messages/$id/set-default";
+  static const String activeDefaultMessage =
+      "/astrologer/default-messages/active";
+  static String defaultMessageUpdate(int id) =>
+      "/astrologer/default-messages/$id";
+  static String defaultMessageDelete(int id) =>
+      "/astrologer/default-messages/$id";
+  static String setDefaultMessageActive(int id) =>
+      "/astrologer/default-messages/$id/set-default";
 
   // Chat
   static String loadChatHistory(int sessionId) => "/chat/$sessionId/messages";
@@ -110,15 +130,19 @@ class AppUrls {
 
   // Wallet
   static const String walletSummary = "/astrologer/wallet";
-  static const String walletWithdrawalConfig = "/astrologer/wallet/withdrawal-config";
+  static const String walletWithdrawalConfig =
+      "/astrologer/wallet/withdrawal-config";
   static const String walletEarnings = "/astrologer/wallet/earnings";
   static const String walletWithdrawals = "/astrologer/wallet/withdrawals";
   static const String walletWithdraw = "/astrologer/wallet/withdraw";
-  static String downloadWithdrawalReceipt(int id) => "/astrologer/wallet/withdrawals/$id/receipt";
-  static const String walletWeeklyRankings = "/astrologer/wallet/weekly-rankings";
+  static String downloadWithdrawalReceipt(int id) =>
+      "/astrologer/wallet/withdrawals/$id/receipt";
+  static const String walletWeeklyRankings =
+      "/astrologer/wallet/weekly-rankings";
   static const String walletInvoices = "/astrologer/wallet/invoices";
-  static String downloadInvoice(int year, int month) => "/astrologer/wallet/invoices/$year/${month.toString().padLeft(2, '0')}/download";
-  
+  static String downloadInvoice(int year, int month) =>
+      "/astrologer/wallet/invoices/$year/${month.toString().padLeft(2, '0')}/download";
+
   static const String getCurrentSession = "/chat/sessions/current";
   static String markChatRead(int sessionId) => "/chat/$sessionId/read";
   static String syncChatStatus(int sessionId) => "/chat/$sessionId/sync-status";
@@ -134,8 +158,10 @@ class AppUrls {
   static String deleteKundali(int id) => '/kundli/$id';
 
   // WebSocket / Pusher Events
-  static const String pusherConnectionEstablished = 'pusher:connection_established';
-  static const String pusherSubscriptionSucceeded = 'pusher_internal:subscription_succeeded';
+  static const String pusherConnectionEstablished =
+      'pusher:connection_established';
+  static const String pusherSubscriptionSucceeded =
+      'pusher_internal:subscription_succeeded';
   static const String pusherSubscribe = 'pusher:subscribe';
   static const String pusherPing = 'pusher:ping';
   static const String pusherPong = '{"event":"pusher:pong"}';
@@ -145,10 +171,13 @@ class AppUrls {
   static const String eventChatQueueUpdated = 'ChatQueueUpdated';
   static const String eventChatAccepted = 'ChatAccepted';
   static const String eventChatEnded = 'ChatEnded';
-  static const String eventPackageSubSessionStarted = 'PackageSubSessionStarted';
+  static const String eventPackageSubSessionStarted =
+      'PackageSubSessionStarted';
   static const String eventPackageSubSessionEnded = 'PackageSubSessionEnded';
-  static const String eventPackageSessionTerminated = 'PackageSessionTerminated';
-  static const String eventPackageSessionStateUpdated = 'PackageSessionStateUpdated';
+  static const String eventPackageSessionTerminated =
+      'PackageSessionTerminated';
+  static const String eventPackageSessionStateUpdated =
+      'PackageSessionStateUpdated';
   static const String eventMessageSent = 'MessageSent';
   static const String eventMessageStatusUpdated = 'MessageStatusUpdated';
   static const String eventPresenceUpdated = 'PresenceUpdated';
@@ -164,7 +193,8 @@ class AppUrls {
   static String rejectCall(int sessionId) => '/call/$sessionId/reject';
   static String cancelCall(int sessionId) => '/call/$sessionId/cancel';
   static String endCallSession(int sessionId) => '/call/$sessionId/end';
-  static String sendIceCandidate(int sessionId) => '/call/$sessionId/ice-candidate';
+  static String sendIceCandidate(int sessionId) =>
+      '/call/$sessionId/ice-candidate';
   static const String currentCallSession = '/call/current-session';
   static const String pendingCallSessions = '/call/pending';
   static const String userCallSessions = '/call/sessions/user';
@@ -181,30 +211,41 @@ class AppUrls {
   static const String eventUserJoinedLiveSession = 'UserJoinedLiveSession';
   static const String eventUserLeftLiveSession = 'UserLeftLiveSession';
   static const String eventLiveSessionEnded = 'LiveSessionEnded';
-  static const String eventAstrologerMediaStatusChanged = 'AstrologerMediaStatusChanged';
+  static const String eventAstrologerMediaStatusChanged =
+      'AstrologerMediaStatusChanged';
   static const String eventLiveSessionStarted = 'LiveSessionStarted';
   static const String eventViewerCountUpdated = 'ViewerCountUpdated';
   static const String eventNewLiveComment = 'NewLiveComment';
   static const String eventSuperChatReceived = 'SuperChatReceived';
-  static const String eventAstrologerBroadcastStarted = 'AstrologerBroadcastStarted';
+  static const String eventAstrologerBroadcastStarted =
+      'AstrologerBroadcastStarted';
 
   // Chat Assistance API Endpoints
   static const String chatAssistanceSessions = '/chat-assistance/sessions';
-  static String getChatAssistanceMessages(int sessionId) => '/chat-assistance/$sessionId/messages';
-  static String sendChatAssistanceMessage(int sessionId) => '/chat-assistance/$sessionId/message';
-  static String syncChatAssistanceStatus(int sessionId) => '/chat-assistance/$sessionId/sync-status';
-  static const String getAstrologerChatAssistanceStatus = '/chat-assistance/astrologer/limits-status';
+  static String getChatAssistanceMessages(int sessionId) =>
+      '/chat-assistance/$sessionId/messages';
+  static String sendChatAssistanceMessage(int sessionId) =>
+      '/chat-assistance/$sessionId/message';
+  static String syncChatAssistanceStatus(int sessionId) =>
+      '/chat-assistance/$sessionId/sync-status';
+  static const String getAstrologerChatAssistanceStatus =
+      '/chat-assistance/astrologer/limits-status';
 
   // Chat Assistance System Events
   static const String eventChatAssistanceInitiated = 'ChatAssistanceInitiated';
-  static const String eventChatAssistanceMessageSent = 'ChatAssistanceMessageSent';
-  static const String eventChatAssistanceMessageStatusUpdated = 'ChatAssistanceMessageStatusUpdated';
-  static const String eventChatAssistanceLimitReached = 'ChatAssistanceLimitReached';
+  static const String eventChatAssistanceMessageSent =
+      'ChatAssistanceMessageSent';
+  static const String eventChatAssistanceMessageStatusUpdated =
+      'ChatAssistanceMessageStatusUpdated';
+  static const String eventChatAssistanceLimitReached =
+      'ChatAssistanceLimitReached';
 
   // Price Increase Request
   static const String priceIncreaseStatus = "/astrologer/price-increase/status";
-  static const String priceIncreaseRequest = "/astrologer/price-increase/request";
-  static const String priceIncreaseHistory = "/astrologer/price-increase/history";
+  static const String priceIncreaseRequest =
+      "/astrologer/price-increase/request";
+  static const String priceIncreaseHistory =
+      "/astrologer/price-increase/history";
 
   // Offers & Commissions
   static const String astrologerOffers = "/astrologer/offers";

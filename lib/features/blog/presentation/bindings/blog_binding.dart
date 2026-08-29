@@ -9,19 +9,27 @@ class BlogBinding extends Bindings {
   @override
   void dependencies() {
     // Data Source
-    Get.lazyPut<BlogRemoteDataSourceInterface>(() => BlogRemoteDataSource(apiClient: Get.find()));
+    Get.lazyPut<BlogRemoteDataSourceInterface>(
+      () => BlogRemoteDataSource(apiClient: Get.find()),
+    );
 
     // Repository
-    Get.lazyPut<BlogRepository>(() => BlogRepository(remoteDataSource: Get.find<BlogRemoteDataSourceInterface>()));
+    Get.lazyPut<BlogRepository>(
+      () => BlogRepository(
+        remoteDataSource: Get.find<BlogRemoteDataSourceInterface>(),
+      ),
+    );
 
     // UseCases
     Get.lazyPut(() => GetBlogsUseCase(Get.find<BlogRepository>()));
     Get.lazyPut(() => GetBlogDetailsUseCase(Get.find<BlogRepository>()));
 
     // Controller
-    Get.lazyPut(() => BlogController(
-          getBlogsUseCase: Get.find(),
-          getBlogDetailsUseCase: Get.find(),
-        ));
+    Get.lazyPut(
+      () => BlogController(
+        getBlogsUseCase: Get.find(),
+        getBlogDetailsUseCase: Get.find(),
+      ),
+    );
   }
 }

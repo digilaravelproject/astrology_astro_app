@@ -19,7 +19,8 @@ class OfferRepositoryImpl implements OfferRepository {
     final response = await apiClient.get(AppUrls.astrologerOffers);
     if (response.isSuccess) {
       final data = response.body;
-      final List<dynamic> listData = data is List ? data : (data is Map ? data['data'] ?? [] : []);
+      final List<dynamic> listData =
+          data is List ? data : (data is Map ? data['data'] ?? [] : []);
       return listData.map((json) => OfferModel.fromJson(json)).toList();
     } else {
       throw Exception(response.message ?? "Failed to fetch offers");
@@ -43,7 +44,8 @@ class OfferRepositoryImpl implements OfferRepository {
     final response = await apiClient.get(AppUrls.offerHistory);
     if (response.isSuccess) {
       final data = response.body;
-      final List<dynamic> listData = data is List ? data : (data is Map ? data['data'] ?? [] : []);
+      final List<dynamic> listData =
+          data is List ? data : (data is Map ? data['data'] ?? [] : []);
       return listData.map((json) => OfferHistoryModel.fromJson(json)).toList();
     } else {
       throw Exception(response.message ?? "Failed to fetch offer history");

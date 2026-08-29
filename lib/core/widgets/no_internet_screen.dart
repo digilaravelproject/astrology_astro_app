@@ -53,8 +53,11 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
       }
     } catch (e) {
       debugPrint('Error opening settings: $e');
-      CustomSnackBar.disabledSnackbar('Error', 'Unable to open settings',
-          snackPosition: SnackPosition.BOTTOM);
+      CustomSnackBar.disabledSnackbar(
+        'Error',
+        'Unable to open settings',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
@@ -121,24 +124,26 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: _isChecking
-                        ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor:
-                        AlwaysStoppedAnimation<Color>(Colors.white),
-                      ),
-                    )
-                        : const Text(
-                      'Retry',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
+                    child:
+                        _isChecking
+                            ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                              ),
+                            )
+                            : const Text(
+                              'Retry',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
                   ),
                 ),
 

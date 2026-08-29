@@ -10,6 +10,9 @@ class RequestWithdrawalUseCase {
     required double amount,
     required int bankAccountId,
   }) {
-    return _repository.requestWithdrawal(amount: amount, bankAccountId: bankAccountId);
+    return _repository.requestWithdrawal(
+      amount: amount,
+      bankAccountId: bankAccountId,
+    );
   }
 }

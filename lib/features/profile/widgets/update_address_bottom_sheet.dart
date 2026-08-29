@@ -11,7 +11,8 @@ class UpdateAddressBottomSheet extends StatefulWidget {
   const UpdateAddressBottomSheet({super.key});
 
   @override
-  State<UpdateAddressBottomSheet> createState() => _UpdateAddressBottomSheetState();
+  State<UpdateAddressBottomSheet> createState() =>
+      _UpdateAddressBottomSheetState();
 }
 
 class _UpdateAddressBottomSheetState extends State<UpdateAddressBottomSheet> {
@@ -26,7 +27,7 @@ class _UpdateAddressBottomSheetState extends State<UpdateAddressBottomSheet> {
       BillingBinding().dependencies();
     }
     _controller = Get.find<BillingController>();
-    
+
     // Fetch data every time the bottom sheet opens
     _controller.fetchBillingAddress();
   }
@@ -69,7 +70,11 @@ class _UpdateAddressBottomSheetState extends State<UpdateAddressBottomSheet> {
                           color: Colors.grey.withOpacity(0.1),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.close, size: 20, color: Colors.grey),
+                        child: const Icon(
+                          Icons.close,
+                          size: 20,
+                          color: Colors.grey,
+                        ),
                       ),
                     ),
                   ],
@@ -80,7 +85,11 @@ class _UpdateAddressBottomSheetState extends State<UpdateAddressBottomSheet> {
                     color: AppColors.primaryColor.withOpacity(0.08),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Iconsax.location_copy, color: AppColors.primaryColor, size: 30),
+                  child: Icon(
+                    Iconsax.location_copy,
+                    color: AppColors.primaryColor,
+                    size: 30,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 AppText(
@@ -91,7 +100,8 @@ class _UpdateAddressBottomSheetState extends State<UpdateAddressBottomSheet> {
                 ),
                 const SizedBox(height: 8),
                 AppText(
-                  'Please share your address for invoice and compliance purposes.'.tr,
+                  'Please share your address for invoice and compliance purposes.'
+                      .tr,
                   fontSize: 14,
                   textAlign: TextAlign.center,
                   color: Colors.grey.shade500,
@@ -145,19 +155,21 @@ class _UpdateAddressBottomSheetState extends State<UpdateAddressBottomSheet> {
                   ],
                 ),
                 const SizedBox(height: 32),
-                
-                Obx(() => CustomButton(
-                  text: 'Submit'.tr,
-                  isLoading: _controller.isLoading.value,
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      _controller.updateAddress();
-                    }
-                  },
-                  backgroundColor: AppColors.primaryColor,
-                  borderRadius: 12,
-                )),
-                
+
+                Obx(
+                  () => CustomButton(
+                    text: 'Submit'.tr,
+                    isLoading: _controller.isLoading.value,
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        _controller.updateAddress();
+                      }
+                    },
+                    backgroundColor: AppColors.primaryColor,
+                    borderRadius: 12,
+                  ),
+                ),
+
                 const SizedBox(height: 10),
               ],
             ),
@@ -176,7 +188,11 @@ class _UpdateAddressBottomSheetState extends State<UpdateAddressBottomSheet> {
     return TextFormField(
       controller: controller,
       maxLines: maxLines,
-      style: const TextStyle(fontSize: 15, color: Color(0xFF2E1A47), fontWeight: FontWeight.w500),
+      style: const TextStyle(
+        fontSize: 15,
+        color: Color(0xFF2E1A47),
+        fontWeight: FontWeight.w500,
+      ),
       validator: (value) {
         if (isRequired && (value == null || value.isEmpty)) {
           return 'This field is required'.tr;
@@ -186,7 +202,10 @@ class _UpdateAddressBottomSheetState extends State<UpdateAddressBottomSheet> {
       decoration: InputDecoration(
         hintText: placeholder.tr,
         hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         filled: true,
         fillColor: Colors.white,
         enabledBorder: OutlineInputBorder(
@@ -215,9 +234,12 @@ void showUpdateAddressBottomSheet(BuildContext context) {
     context: context,
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
-    builder: (context) => Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      child: const UpdateAddressBottomSheet(),
-    ),
+    builder:
+        (context) => Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: const UpdateAddressBottomSheet(),
+        ),
   );
 }

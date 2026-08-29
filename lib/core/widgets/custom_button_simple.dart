@@ -46,7 +46,13 @@ class CustomButton extends StatelessWidget {
           height: height,
           padding: padding,
           decoration: BoxDecoration(
-            color: backgroundColor ?? (gradient == null ? (textColor == AppColors.deepPink ? Colors.white : AppColors.primaryColor) : null),
+            color:
+                backgroundColor ??
+                (gradient == null
+                    ? (textColor == AppColors.deepPink
+                        ? Colors.white
+                        : AppColors.primaryColor)
+                    : null),
             gradient: gradient,
             borderRadius: BorderRadius.circular(borderRadius ?? height / 2),
             boxShadow: [
@@ -58,37 +64,38 @@ class CustomButton extends StatelessWidget {
             ],
           ),
           child: Center(
-            child: isLoading
-                ? const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
-                    ),
-                  )
-                : Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (icon != null) ...[
-                        Icon(
-                          icon,
-                          color: textColor ?? Colors.white,
-                          size: fontSize + 2,
-                        ),
-                        const SizedBox(width: 8),
-                      ],
-                      Text(
-                        text,
-                        style: TextStyle(
-                          color: textColor ?? Colors.white,
-                          fontSize: fontSize,
-                          fontWeight: fontWeight,
-                          letterSpacing: 0.5,
-                        ),
+            child:
+                isLoading
+                    ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
                       ),
-                    ],
-                  ),
+                    )
+                    : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (icon != null) ...[
+                          Icon(
+                            icon,
+                            color: textColor ?? Colors.white,
+                            size: fontSize + 2,
+                          ),
+                          const SizedBox(width: 8),
+                        ],
+                        Text(
+                          text,
+                          style: TextStyle(
+                            color: textColor ?? Colors.white,
+                            fontSize: fontSize,
+                            fontWeight: fontWeight,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
           ),
         ),
       ),

@@ -43,11 +43,12 @@ class AstrologerOrderModel {
       orderId: json['order_id'] ?? 0,
       userId: json['user_id'] ?? 0,
       userName: json['user_name'] ?? 'User',
-      userProfileImage: json['user_profile_image'] != null
-          ? (json['user_profile_image'].toString().startsWith('http')
-              ? json['user_profile_image'].toString()
-              : '${AppUrls.baseImageUrl}${json['user_profile_image']}')
-          : null,
+      userProfileImage:
+          json['user_profile_image'] != null
+              ? (json['user_profile_image'].toString().startsWith('http')
+                  ? json['user_profile_image'].toString()
+                  : '${AppUrls.baseImageUrl}${json['user_profile_image']}')
+              : null,
       requestType: json['request_type'] ?? 'chat',
       status: json['status'] ?? 'pending',
       requestedAt: json['requested_at'],

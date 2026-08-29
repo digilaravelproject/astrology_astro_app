@@ -22,12 +22,17 @@ class KundliListResponseModel {
   factory KundliListResponseModel.fromJson(Map<String, dynamic> json) {
     print('[KUNDLI_APP] [DEBUG] Model: Parsing response JSON');
     print('[KUNDLI_APP] [DEBUG] Model: current_page = ${json['current_page']}');
-    print('[KUNDLI_APP] [DEBUG] Model: data type = ${json['data'].runtimeType}');
-    print('[KUNDLI_APP] [DEBUG] Model: data length = ${(json['data'] as List?)?.length}');
-    
+    print(
+      '[KUNDLI_APP] [DEBUG] Model: data type = ${json['data'].runtimeType}',
+    );
+    print(
+      '[KUNDLI_APP] [DEBUG] Model: data length = ${(json['data'] as List?)?.length}',
+    );
+
     return KundliListResponseModel(
       currentPage: json['current_page'] ?? 1,
-      data: (json['data'] as List?)
+      data:
+          (json['data'] as List?)
               ?.map((item) => KundliItem.fromJson(item as Map<String, dynamic>))
               .toList() ??
           [],
@@ -69,7 +74,9 @@ class KundliItem {
   });
 
   factory KundliItem.fromJson(Map<String, dynamic> json) {
-    print('[KUNDLI_APP] [DEBUG] KundliItem: Parsing item - name: ${json['name']}, gender: ${json['gender']}');
+    print(
+      '[KUNDLI_APP] [DEBUG] KundliItem: Parsing item - name: ${json['name']}, gender: ${json['gender']}',
+    );
     return KundliItem(
       id: json['id'] ?? 0,
       name: json['name'] ?? '',
@@ -86,7 +93,8 @@ class KundliItem {
   }
 
   String get formattedIsoDate {
-    if (datetime.isNotEmpty && RegExp(r'^\d{4}-\d{2}-\d{2}').hasMatch(datetime)) {
+    if (datetime.isNotEmpty &&
+        RegExp(r'^\d{4}-\d{2}-\d{2}').hasMatch(datetime)) {
       return datetime.split(' ')[0].split('T')[0];
     }
     try {
@@ -102,25 +110,51 @@ class KundliItem {
 
   String get formattedDate {
     try {
-      if (datetime.isNotEmpty && RegExp(r'^\d{4}-\d{2}-\d{2}').hasMatch(datetime)) {
+      if (datetime.isNotEmpty &&
+          RegExp(r'^\d{4}-\d{2}-\d{2}').hasMatch(datetime)) {
         final datePart = datetime.split(' ')[0].split('T')[0];
         final parts = datePart.split('-');
         if (parts.length == 3) {
           final year = int.parse(parts[0]);
           final month = int.parse(parts[1]);
           final day = int.parse(parts[2]);
-          final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          final months = [
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'May',
+            'Jun',
+            'Jul',
+            'Aug',
+            'Sep',
+            'Oct',
+            'Nov',
+            'Dec',
+          ];
           return '$day-${months[month - 1]}-$year';
         }
       }
       final date = DateTime.parse(birthDate).toLocal();
-      final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      final months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ];
       return '${date.day}-${months[date.month - 1]}-${date.year}';
     } catch (e) {
       return birthDate;
     }
   }
-
 
   // Helper method to format time for display
   String get formattedTime {

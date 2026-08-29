@@ -1,7 +1,10 @@
 import '../../../../core/services/network/response_model.dart';
 
 abstract class LiveRepository {
-  Future<ResponseModel> getLiveSessions({String filter = 'all', int perPage = 15});
+  Future<ResponseModel> getLiveSessions({
+    String filter = 'all',
+    int perPage = 15,
+  });
   Future<ResponseModel> getCurrentLiveSession();
   Future<ResponseModel> createLiveSession(Map<String, dynamic> data);
   Future<ResponseModel> deleteLiveSession(int id);
@@ -12,4 +15,3 @@ abstract class LiveRepository {
   Future<ResponseModel> stopBroadcast(int id);
   Future<ResponseModel> getLiveComments(int id);
 }
-

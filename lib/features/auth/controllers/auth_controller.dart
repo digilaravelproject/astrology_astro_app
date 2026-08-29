@@ -45,24 +45,24 @@ class AuthController extends GetxController {
     required GetProfileUseCase getProfileUseCase,
     required DeleteAccountUseCase deleteAccountUseCase,
     required ToggleOnlineUseCase toggleOnlineUseCase,
-  })  : _loginUseCase = loginUseCase,
-        _registerUseCase = registerUseCase,
-        _verifyOtpUseCase = verifyOtpUseCase,
-        _sendOtpUseCase = sendOtpUseCase,
-        _logoutUseCase = logoutUseCase,
-        _checkLoginStatusUseCase = checkLoginStatusUseCase,
-        _getUserInfoUseCase = getUserInfoUseCase,
-        _astrologerSignupUseCase = astrologerSignupUseCase,
-        _resendOtpUseCase = resendOtpUseCase,
-        _updateProfilePhotoUseCase = updateProfilePhotoUseCase,
-        _getProfileUseCase = getProfileUseCase,
-        _updateProfileUseCase = updateProfileUseCase,
-        _deleteAccountUseCase = deleteAccountUseCase,
-        _toggleOnlineUseCase = toggleOnlineUseCase;
-
+  }) : _loginUseCase = loginUseCase,
+       _registerUseCase = registerUseCase,
+       _verifyOtpUseCase = verifyOtpUseCase,
+       _sendOtpUseCase = sendOtpUseCase,
+       _logoutUseCase = logoutUseCase,
+       _checkLoginStatusUseCase = checkLoginStatusUseCase,
+       _getUserInfoUseCase = getUserInfoUseCase,
+       _astrologerSignupUseCase = astrologerSignupUseCase,
+       _resendOtpUseCase = resendOtpUseCase,
+       _updateProfilePhotoUseCase = updateProfilePhotoUseCase,
+       _getProfileUseCase = getProfileUseCase,
+       _updateProfileUseCase = updateProfileUseCase,
+       _deleteAccountUseCase = deleteAccountUseCase,
+       _toggleOnlineUseCase = toggleOnlineUseCase;
 
   final isLoading = false.obs;
-  final isSendingOtp = false.obs; // sirf OTP button ke liye — kabhi kabhi click nahi hota tha
+  final isSendingOtp =
+      false.obs; // sirf OTP button ke liye — kabhi kabhi click nahi hota tha
   final togglingServices = <String>{}.obs;
   final currentMobile = ''.obs;
   Rx<UserModel?> currentUser = Rx<UserModel?>(null);
@@ -109,23 +109,30 @@ class AuthController extends GetxController {
       final response = await _getProfileUseCase.execute(id);
       if (response.isSuccess && response.body != null) {
         final Map<String, dynamic> body =
-            response.body is Map ? Map<String, dynamic>.from(response.body) : {};
+            response.body is Map
+                ? Map<String, dynamic>.from(response.body)
+                : {};
         final Map<String, dynamic> data =
-            body['data'] is Map ? Map<String, dynamic>.from(body['data']) : body;
+            body['data'] is Map
+                ? Map<String, dynamic>.from(body['data'])
+                : body;
         final userData = data['user'];
         if (userData != null) {
           UserModel user = UserModel.fromJson(userData);
           if (user.astrologer != null) {
-            final otherData = user.astrologer?.otherDetails ??
+            final otherData =
+                user.astrologer?.otherDetails ??
                 data['other_details'] ??
                 data['other-details'];
             if (otherData != null) {
-              final otherModel = otherData is OtherDetailsModel
-                  ? otherData
-                  : OtherDetailsModel.fromJson(
-                      otherData is Map
-                          ? Map<String, dynamic>.from(otherData)
-                          : {});
+              final otherModel =
+                  otherData is OtherDetailsModel
+                      ? otherData
+                      : OtherDetailsModel.fromJson(
+                        otherData is Map
+                            ? Map<String, dynamic>.from(otherData)
+                            : {},
+                      );
               user = user.copyWith(
                 astrologer: user.astrologer!.copyWith(otherDetails: otherModel),
               );
@@ -210,12 +217,12 @@ class AuthController extends GetxController {
 
   Future<void> sendOtp() async {
     try {
-      isSendingOtp.value = true;   // sirf OTP button disable hoga
+      isSendingOtp.value = true; // sirf OTP button disable hoga
       final response = await _sendOtpUseCase.execute(
         mobileController.text.trim(),
         '1234',
       );
-      
+
       if (response.isSuccess) {
         final mobile = mobileController.text.trim();
         currentMobile.value = mobile;
@@ -223,7 +230,8 @@ class AuthController extends GetxController {
         CustomSnackBar.showSuccess(response.message);
         Get.toNamed(RouteHelper.getOtpRoute());
       } else {
-        if (response.message == "Astrologer with this phone not found." || response.statusCode == 404) {
+        if (response.message == "Astrologer with this phone not found." ||
+            response.statusCode == 404) {
           Get.toNamed(RouteHelper.getRegistrationNameRoute());
         } else {
           CustomSnackBar.showError(response.message);
@@ -291,8 +299,12 @@ class AuthController extends GetxController {
           currentUser.value = UserModel.fromJson(userData);
           // Save updated user data to SharedPreferences
           await Get.find<AuthService>().saveUserInfo(currentUser.value!);
-          print('[AUTH_CONTROLLER] User profile updated and saved to SharedPreferences');
-          print('[AUTH_CONTROLLER] Updated user: ${currentUser.value?.name}, Phone: ${currentUser.value?.phone}');
+          print(
+            '[AUTH_CONTROLLER] User profile updated and saved to SharedPreferences',
+          );
+          print(
+            '[AUTH_CONTROLLER] Updated user: ${currentUser.value?.name}, Phone: ${currentUser.value?.phone}',
+          );
           Get.back();
         }
         CustomSnackBar.showSuccess(response.message);
@@ -313,37 +325,57 @@ class AuthController extends GetxController {
       final response = await _getProfileUseCase.execute(id);
       if (response.isSuccess && response.body != null) {
         // Log the root to be sure
-        final Map<String, dynamic> body = response.body is Map ? Map<String, dynamic>.from(response.body) : {};
-        Logger.d('AuthController: getProfile FULL BODY KEYS: ${body.keys.toList()}');
-        
+        final Map<String, dynamic> body =
+            response.body is Map
+                ? Map<String, dynamic>.from(response.body)
+                : {};
+        Logger.d(
+          'AuthController: getProfile FULL BODY KEYS: ${body.keys.toList()}',
+        );
+
         // Structure is usually {status: success, data: {user: ..., astrologer: ..., other_details: ...}}
-        final Map<String, dynamic> data = body['data'] is Map ? Map<String, dynamic>.from(body['data']) : body;
+        final Map<String, dynamic> data =
+            body['data'] is Map
+                ? Map<String, dynamic>.from(body['data'])
+                : body;
         final userData = data['user'];
 
         if (userData != null) {
           UserModel user = UserModel.fromJson(userData);
-          
+
           // Patch otherDetails from any available level
           if (user.astrologer != null) {
-             final otherData = user.astrologer?.otherDetails ?? data['other_details'] ?? data['other-details'];
-             if (otherData != null) {
-               Logger.d('AuthController: Successfully found other_details. Applying to model...');
-               final otherModel = otherData is OtherDetailsModel ? otherData : OtherDetailsModel.fromJson(otherData is Map ? Map<String, dynamic>.from(otherData) : {});
-               
-               user = user.copyWith(
-                 astrologer: user.astrologer!.copyWith(
-                   otherDetails: otherModel,
-                 ),
-               );
-             }
+            final otherData =
+                user.astrologer?.otherDetails ??
+                data['other_details'] ??
+                data['other-details'];
+            if (otherData != null) {
+              Logger.d(
+                'AuthController: Successfully found other_details. Applying to model...',
+              );
+              final otherModel =
+                  otherData is OtherDetailsModel
+                      ? otherData
+                      : OtherDetailsModel.fromJson(
+                        otherData is Map
+                            ? Map<String, dynamic>.from(otherData)
+                            : {},
+                      );
+
+              user = user.copyWith(
+                astrologer: user.astrologer!.copyWith(otherDetails: otherModel),
+              );
+            }
           }
-          
+
           currentUser.value = user;
-          
+
           // Save fresh data to local storage for future app starts
           await Get.find<AuthService>().saveUserInfo(user);
-          
-          Logger.d('AuthController: Profile synced and saved to LocalStorage. Has otherDetails: ${currentUser.value?.astrologer?.otherDetails != null}');
+
+          Logger.d(
+            'AuthController: Profile synced and saved to LocalStorage. Has otherDetails: ${currentUser.value?.astrologer?.otherDetails != null}',
+          );
         }
       } else {
         CustomSnackBar.showError(response.message);
@@ -373,11 +405,13 @@ class AuthController extends GetxController {
         final userData = response.body['user'];
         if (userData != null) {
           currentUser.value = UserModel.fromJson(userData);
-          print('[AUTH_CONTROLLER] User data stored: ${currentUser.value?.name}');
+          print(
+            '[AUTH_CONTROLLER] User data stored: ${currentUser.value?.name}',
+          );
         }
         otpController.clear();
         CustomSnackBar.showSuccess('OTP verified successfully');
-        
+
         // Delay to ensure data is saved before navigation
         await Future.delayed(const Duration(milliseconds: 500));
         // Connect WebSocket & Register FCM Token after successful login
@@ -400,7 +434,7 @@ class AuthController extends GetxController {
       isLoading.value = true;
       await FCMNotificationService.removeDeviceToken();
       final response = await _logoutUseCase.execute();
-      
+
       if (response.isSuccess) {
         currentUser.value = null;
         CustomSnackBar.showSuccess(response.message);
@@ -434,7 +468,11 @@ class AuthController extends GetxController {
                   color: Colors.red.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.delete_forever_rounded, color: Colors.red, size: 32),
+                child: const Icon(
+                  Icons.delete_forever_rounded,
+                  color: Colors.red,
+                  size: 32,
+                ),
               ),
               const SizedBox(height: 20),
               const AppText(
@@ -460,9 +498,16 @@ class AuthController extends GetxController {
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         side: BorderSide(color: Colors.grey[300]!),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                      child: AppText('Cancel', fontSize: 14, fontWeight: FontWeight.w600, color: Colors.grey[600]),
+                      child: AppText(
+                        'Cancel',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey[600],
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -472,7 +517,8 @@ class AuthController extends GetxController {
                         Get.back(); // Close dialog
                         try {
                           isLoading.value = true;
-                          final response = await _deleteAccountUseCase.execute();
+                          final response =
+                              await _deleteAccountUseCase.execute();
 
                           if (response.isSuccess) {
                             currentUser.value = null;
@@ -482,15 +528,25 @@ class AuthController extends GetxController {
                             nameController.clear();
                             Get.offAllNamed(RouteHelper.getLoginRoute());
 
-                            Future.delayed(const Duration(milliseconds: 300), () {
-                              CustomSnackBar.showSuccess(response.message ?? 'Account deleted successfully');
-                            });
+                            Future.delayed(
+                              const Duration(milliseconds: 300),
+                              () {
+                                CustomSnackBar.showSuccess(
+                                  response.message ??
+                                      'Account deleted successfully',
+                                );
+                              },
+                            );
                           } else {
-                            CustomSnackBar.showError(response.message ?? 'Failed to delete account');
+                            CustomSnackBar.showError(
+                              response.message ?? 'Failed to delete account',
+                            );
                           }
                         } catch (e) {
                           print('Delete account error: $e');
-                          CustomSnackBar.showError('An error occurred during account deletion');
+                          CustomSnackBar.showError(
+                            'An error occurred during account deletion',
+                          );
                         } finally {
                           isLoading.value = false;
                         }
@@ -499,9 +555,16 @@ class AuthController extends GetxController {
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         backgroundColor: Colors.red,
                         elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                      child: const AppText('Delete', fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
+                      child: const AppText(
+                        'Delete',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ],
@@ -513,7 +576,6 @@ class AuthController extends GetxController {
     );
   }
 
-
   Future<void> toggleOnline(bool isOnline, String type) async {
     final originalUser = currentUser.value;
     if (originalUser == null || originalUser.astrologer == null) return;
@@ -521,7 +583,7 @@ class AuthController extends GetxController {
     // Optimistic Update
     final int onlineInt = isOnline ? 1 : 0;
     AstrologerModel updatedAstro = originalUser.astrologer!;
-    
+
     if (type == 'chat') {
       updatedAstro = updatedAstro.copyWith(isChatEnabled: isOnline);
     } else if (type == 'call') {
@@ -536,7 +598,9 @@ class AuthController extends GetxController {
       if (response.isSuccess) {
         // After successful toggle, fetch fresh profile data to keep app in sync
         await getProfile(originalUser.id);
-        Logger.d('toggleOnline success for $type: $isOnline, Profile re-fetched.');
+        Logger.d(
+          'toggleOnline success for $type: $isOnline, Profile re-fetched.',
+        );
       } else {
         // Revert on failure
         currentUser.value = originalUser;
@@ -677,7 +741,6 @@ class GetProfileUseCase {
     return await _authService.getProfile(id);
   }
 }
-
 
 class DeleteAccountUseCase {
   final AuthService _authService;

@@ -21,7 +21,8 @@ class PricingDetail {
       discountedRatePerMinute: json['discounted_price_per_minute'] ?? 0,
       astrologerSharePercentage: json['astrologer_share_percentage'] ?? 0,
       adminSharePercentage: json['admin_share_percentage'] ?? 0,
-      estimatedAstrologerEarningPerMinute: json['astrologer_payout_per_minute'] ?? 0,
+      estimatedAstrologerEarningPerMinute:
+          json['astrologer_payout_per_minute'] ?? 0,
       estimatedAdminEarningPerMinute: json['admin_revenue_per_minute'] ?? 0,
     );
   }
@@ -65,7 +66,9 @@ class OfferModel {
       discountPercentage: json['discount_percentage'] ?? 0,
       expiresAt: json['expires_at'],
       isCurrentlyActiveForMe: json['is_currently_active'] ?? false,
-      calculatedPricing: CalculatedPricing.fromJson(json), // chat and call are at root
+      calculatedPricing: CalculatedPricing.fromJson(
+        json,
+      ), // chat and call are at root
     );
   }
 }

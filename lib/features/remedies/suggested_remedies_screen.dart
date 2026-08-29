@@ -7,12 +7,14 @@ import '../../core/widgets/custom_app_bar.dart';
 import 'presentation/controllers/remedy_controller.dart';
 import 'presentation/bindings/remedy_binding.dart';
 import 'presentation/screens/remedy_detail_screen.dart';
+import 'package:astro_astrologer/core/widgets/custom_image_widget.dart';
 
 class SuggestedRemediesScreen extends StatefulWidget {
   const SuggestedRemediesScreen({super.key});
 
   @override
-  State<SuggestedRemediesScreen> createState() => _SuggestedRemediesScreenState();
+  State<SuggestedRemediesScreen> createState() =>
+      _SuggestedRemediesScreenState();
 }
 
 class _SuggestedRemediesScreenState extends State<SuggestedRemediesScreen> {
@@ -31,54 +33,56 @@ class _SuggestedRemediesScreenState extends State<SuggestedRemediesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
-      appBar: const CustomAppBar(
-        title: 'Suggested Remedies',
-      ),
+      appBar: const CustomAppBar(title: 'Suggested Remedies'),
       body: SafeArea(
         top: false,
         child: Obx(() {
           if (_controller.isLoading.value) {
-            return const Center(
-              child: CircularProgressIndicator(),
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (_controller.remedies.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.healing_outlined,
+                    size: 64,
+                    color: Colors.grey.shade400,
+                  ),
+                  const SizedBox(height: 16),
+                  AppText(
+                    'No remedies available',
+                    fontSize: 16,
+                    color: Colors.grey.shade600,
+                  ),
+                ],
+              ),
             );
           }
 
-        if (_controller.remedies.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.healing_outlined, size: 64, color: Colors.grey.shade400),
-                const SizedBox(height: 16),
-                AppText(
-                  'No remedies available',
-                  fontSize: 16,
-                  color: Colors.grey.shade600,
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: _controller.remedies.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 16),
+            itemBuilder: (context, index) {
+              final remedy = _controller.remedies[index];
+              return InkWell(
+                onTap:
+                    () => Get.to(() => RemedyDetailScreen(remedyId: remedy.id)),
+                borderRadius: BorderRadius.circular(16),
+                child: RemedyCard(
+                  title: remedy.title,
+                  description: remedy.description,
+                  image: remedy.image,
+                  isActive: remedy.isActive,
                 ),
-              ],
-            ),
+              );
+            },
           );
-        }
-
-        return ListView.separated(
-          padding: const EdgeInsets.all(16),
-          itemCount: _controller.remedies.length,
-          separatorBuilder: (context, index) => const SizedBox(height: 16),
-          itemBuilder: (context, index) {
-            final remedy = _controller.remedies[index];
-            return InkWell(
-              onTap: () => Get.to(() => RemedyDetailScreen(remedyId: remedy.id)),
-              borderRadius: BorderRadius.circular(16),
-              child: RemedyCard(
-                title: remedy.title,
-                description: remedy.description,
-                image: remedy.image,
-                isActive: remedy.isActive,
-              ),
-            );
-          },
-        );
-      })),
+        }),
+      ),
     );
   }
 }
@@ -121,8 +125,11 @@ class RemedyCard extends StatelessWidget {
                 topLeft: Radius.circular(16),
                 topRight: Radius.circular(16),
               ),
-              child: Image.network(
-                image!.startsWith('http') ? image! : '${AppUrls.baseImageUrl}$image',
+              child: CustomImageWidget(
+                imagePath:
+                    image!.startsWith('http')
+                        ? image!
+                        : '${AppUrls.baseImageUrl}$image',
                 width: double.infinity,
                 height: 180,
                 fit: BoxFit.cover,
@@ -146,10 +153,11 @@ class RemedyCard extends StatelessWidget {
                     color: Colors.grey.shade200,
                     child: Center(
                       child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                                loadingProgress.expectedTotalBytes!
-                            : null,
+                        value:
+                            loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                                : null,
                       ),
                     ),
                   );
@@ -194,11 +202,15 @@ class RemedyCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
-                        color: isActive
-                            ? Colors.green.withValues(alpha: 0.1)
-                            : Colors.red.withValues(alpha: 0.1),
+                        color:
+                            isActive
+                                ? Colors.green.withValues(alpha: 0.1)
+                                : Colors.red.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: AppText(

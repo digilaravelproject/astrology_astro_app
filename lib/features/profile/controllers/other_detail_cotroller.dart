@@ -43,23 +43,29 @@ class OtherDetailsController extends GetxController {
   void refreshData() {
     final authController = Get.find<AuthController>();
     final user = authController.currentUser.value;
-    
-    Logger.d('OtherDetailsController: refreshData called. User: ${user?.name}, Has Astrologer: ${user?.astrologer != null}');
-    
+
+    Logger.d(
+      'OtherDetailsController: refreshData called. User: ${user?.name}, Has Astrologer: ${user?.astrologer != null}',
+    );
+
     if (user != null) {
       gender.value = user.gender ?? '';
       dateOfBirth.value = user.dateOfBirth ?? '';
-      
+
       if (user.astrologer != null) {
         final ast = user.astrologer!;
         bio.value = ast.bio ?? '';
-        
-        Logger.d('OtherDetailsController: Astrologer found. Has otherDetails: ${ast.otherDetails != null}');
-        
+
+        Logger.d(
+          'OtherDetailsController: Astrologer found. Has otherDetails: ${ast.otherDetails != null}',
+        );
+
         if (ast.otherDetails != null) {
           final other = ast.otherDetails!;
-          Logger.d('OtherDetailsController: Mapping otherDetails. Address: ${other.currentAddress}');
-          
+          Logger.d(
+            'OtherDetailsController: Mapping otherDetails. Address: ${other.currentAddress}',
+          );
+
           gender.value = other.gender ?? gender.value;
           currentAddress.value = other.currentAddress ?? '';
           dateOfBirth.value = other.dateOfBirth ?? dateOfBirth.value;
@@ -67,11 +73,15 @@ class OtherDetailsController extends GetxController {
           websiteLink.value = other.websiteLink ?? '';
           instagramUsername.value = other.instagramUsername ?? '';
         } else {
-          Logger.d('OtherDetailsController: otherDetails is NULL in AstrologerModel');
+          Logger.d(
+            'OtherDetailsController: otherDetails is NULL in AstrologerModel',
+          );
         }
       }
-      
-      Logger.d('OtherDetailsController: Final values - Address: ${currentAddress.value}, Bio: ${bio.value}');
+
+      Logger.d(
+        'OtherDetailsController: Final values - Address: ${currentAddress.value}, Bio: ${bio.value}',
+      );
     }
   }
 
@@ -92,15 +102,19 @@ class OtherDetailsController extends GetxController {
 
       if (response.isSuccess) {
         CustomSnackBar.showSuccess(response.message ?? "Updated successfully");
-        
+
         // Refresh profile to get updated data
         final authController = Get.find<AuthController>();
         if (authController.currentUser.value != null) {
           await authController.getProfile(authController.currentUser.value!.id);
-          
+
           // Save updated user data to SharedPreferences
-          await Get.find<AuthService>().saveUserInfo(authController.currentUser.value!);
-          Logger.d('OtherDetailsController: Updated data saved to SharedPreferences');
+          await Get.find<AuthService>().saveUserInfo(
+            authController.currentUser.value!,
+          );
+          Logger.d(
+            'OtherDetailsController: Updated data saved to SharedPreferences',
+          );
         }
         return true;
       } else {

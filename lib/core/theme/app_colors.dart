@@ -2,15 +2,23 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // Light theme colors - Saffron / Bagwa Theme
-  static const Color primaryColor = Color(0xFFFF6F00);   // Deep Saffron
+  static const Color primaryColor = Color(0xFFFF6F00); // Deep Saffron
   static const Color secondaryColor = Color(0xFFFF8F00); // Amber-Saffron
-  static const Color accentColor = Color(0xFFFFB300);    // Golden Amber
-  static const Color lightPink = Color(0xFFFFF3E0);      // Very Light Orange (replaces lightPink)
-  static const Color softPink = Color(0xFFFFE0B2);       // Soft Peach (replaces softPink)
-  static const Color deepPink = Color(0xFFE65100);       // Deep Saffron Dark
-  static const Color goldAccent = Color(0xFFFFD700);     // Gold for premium feel
-  static const Color fieldBackground = Color(0xFFF9F9F9); // Light off-white for inputs
-  static const Color lightYellow = Color(0xFFFFF9C4);    // Light yellow for banners
+  static const Color accentColor = Color(0xFFFFB300); // Golden Amber
+  static const Color lightPink = Color(
+    0xFFFFF3E0,
+  ); // Very Light Orange (replaces lightPink)
+  static const Color softPink = Color(
+    0xFFFFE0B2,
+  ); // Soft Peach (replaces softPink)
+  static const Color deepPink = Color(0xFFE65100); // Deep Saffron Dark
+  static const Color goldAccent = Color(0xFFFFD700); // Gold for premium feel
+  static const Color fieldBackground = Color(
+    0xFFF9F9F9,
+  ); // Light off-white for inputs
+  static const Color lightYellow = Color(
+    0xFFFFF9C4,
+  ); // Light yellow for banners
   static const Color premiumGold = Color(0xFFFFD700);
   static const Color surfaceColor = Color(0xFFF5F5F5);
 
@@ -26,9 +34,13 @@ class AppColors {
   static const Color dividerColor = Color(0xFFE0E0E0);
 
   // Dark theme colors
-  static const Color darkPrimaryColor = Color(0xFFFF8F00);   // Amber-Saffron for dark model
+  static const Color darkPrimaryColor = Color(
+    0xFFFF8F00,
+  ); // Amber-Saffron for dark model
   static const Color darkSecondaryColor = Color(0xFFFFB300); // Golden for dark
-  static const Color darkAccentColor = Color(0xFFFFD54F);    // Amber-light for contrast
+  static const Color darkAccentColor = Color(
+    0xFFFFD54F,
+  ); // Amber-light for contrast
 
   static const Color darkBackgroundColor = Color(0xFF121212);
   static const Color darkCardColor = Color(0xFF1E1E1E);
@@ -42,10 +54,10 @@ class AppColors {
   static const Color darkDividerColor = Color(0xFF333333);
 
   // Common colors
-  static const Color errorColor = Color(0xFFD32F2F);  // Red
+  static const Color errorColor = Color(0xFFD32F2F); // Red
   static const Color successColor = Color(0xFF388E3C); // Green
   static const Color warningColor = Color(0xFFFFA000); // Amber
-  static const Color infoColor = Color(0xFF1976D2);   // Blue
+  static const Color infoColor = Color(0xFF1976D2); // Blue
   static const Color white = Colors.white;
   static const Color black = Colors.black;
   static const Color transparent = Colors.transparent;
@@ -73,10 +85,7 @@ class AppColors {
   );
 
   static LinearGradient pinkWhiteMixGradient = LinearGradient(
-    colors: [
-      primaryColor,
-      Colors.white,
-    ],
+    colors: [primaryColor, Colors.white],
     stops: const [0.8, 1.0],
     begin: Alignment.centerLeft,
     end: Alignment.centerRight,

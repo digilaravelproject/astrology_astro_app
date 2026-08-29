@@ -14,7 +14,8 @@ class AudioRecordScreen extends StatefulWidget {
   State<AudioRecordScreen> createState() => _AudioRecordScreenState();
 }
 
-class _AudioRecordScreenState extends State<AudioRecordScreen> with SingleTickerProviderStateMixin {
+class _AudioRecordScreenState extends State<AudioRecordScreen>
+    with SingleTickerProviderStateMixin {
   bool isRecording = false;
   Duration duration = Duration.zero;
   Timer? timer;
@@ -86,7 +87,7 @@ class _AudioRecordScreenState extends State<AudioRecordScreen> with SingleTicker
             color: Colors.grey.shade600,
           ),
           const Spacer(),
-          
+
           // Timer
           AppText(
             formatDuration(duration),
@@ -94,37 +95,44 @@ class _AudioRecordScreenState extends State<AudioRecordScreen> with SingleTicker
             fontWeight: FontWeight.w900,
             color: const Color(0xFFFFA2A2),
           ),
-          
+
           const SizedBox(height: 30),
-          
+
           // Mock Waveform
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(20, (index) {
               return ScaleTransition(
-                scale: isRecording 
-                  ? Tween(begin: 0.5, end: 1.5).animate(
-                      CurvedAnimation(
-                        parent: pulseController, 
-                        curve: Interval(index / 20, 1.0, curve: Curves.easeInOut)
-                      )
-                    )
-                  : const AlwaysStoppedAnimation(1.0),
+                scale:
+                    isRecording
+                        ? Tween(begin: 0.5, end: 1.5).animate(
+                          CurvedAnimation(
+                            parent: pulseController,
+                            curve: Interval(
+                              index / 20,
+                              1.0,
+                              curve: Curves.easeInOut,
+                            ),
+                          ),
+                        )
+                        : const AlwaysStoppedAnimation(1.0),
                 child: Container(
                   width: 4,
                   height: 30 + (index % 5 * 10).toDouble(),
                   margin: const EdgeInsets.symmetric(horizontal: 2),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFA2A2).withOpacity(isRecording ? 1.0 : 0.3),
+                    color: const Color(
+                      0xFFFFA2A2,
+                    ).withOpacity(isRecording ? 1.0 : 0.3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
               );
             }),
           ),
-          
+
           const Spacer(),
-          
+
           // Record Button
           GestureDetector(
             onTap: isRecording ? stopRecording : startRecording,
@@ -133,11 +141,13 @@ class _AudioRecordScreenState extends State<AudioRecordScreen> with SingleTicker
               width: 100,
               height: 100,
               decoration: BoxDecoration(
-                color: isRecording ? Colors.red.shade400 : const Color(0xFFFFA2A2),
+                color:
+                    isRecording ? Colors.red.shade400 : const Color(0xFFFFA2A2),
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: (isRecording ? Colors.red : const Color(0xFFFFA2A2)).withOpacity(0.4),
+                    color: (isRecording ? Colors.red : const Color(0xFFFFA2A2))
+                        .withOpacity(0.4),
                     blurRadius: 20,
                     spreadRadius: isRecording ? 10 : 0,
                   ),
@@ -150,9 +160,9 @@ class _AudioRecordScreenState extends State<AudioRecordScreen> with SingleTicker
               ),
             ),
           ),
-          
+
           const SizedBox(height: 50),
-          
+
           // Submit Button (Using CustomButton from core/widgets)
           Padding(
             padding: const EdgeInsets.all(20),
@@ -163,7 +173,7 @@ class _AudioRecordScreenState extends State<AudioRecordScreen> with SingleTicker
                   Get.back();
                   Get.back();
                   CustomSnackBar.disabledSnackbar(
-                    'Success', 
+                    'Success',
                     'Audio submitted successfully!',
                     backgroundColor: Colors.black87,
                     colorText: Colors.white,
@@ -172,7 +182,10 @@ class _AudioRecordScreenState extends State<AudioRecordScreen> with SingleTicker
                   );
                 }
               },
-              backgroundColor: duration.inSeconds > 0 && !isRecording ? AppColors.primaryColor : Colors.grey.shade300,
+              backgroundColor:
+                  duration.inSeconds > 0 && !isRecording
+                      ? AppColors.primaryColor
+                      : Colors.grey.shade300,
             ),
           ),
           const SizedBox(height: 20),

@@ -23,10 +23,11 @@ class LocalNotificationService {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    const InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: DarwinInitializationSettings(),
-    );
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
+          android: initializationSettingsAndroid,
+          iOS: DarwinInitializationSettings(),
+        );
 
     await _notificationsPlugin.initialize(
       initializationSettings,
@@ -38,11 +39,18 @@ class LocalNotificationService {
               final callController = Get.find<CallController>();
               final currentStatus = callController.status.value;
 
-              if (currentStatus == 'completed' || currentStatus == 'ended' || currentStatus == 'cancelled' || currentStatus == 'idle') {
-                debugPrint('[LocalNotificationService] Stale call notification tapped, cancelling...');
-                final sessionIdStr = response.payload!.replaceFirst('call_', '');
+              if (currentStatus == 'completed' ||
+                  currentStatus == 'ended' ||
+                  currentStatus == 'cancelled' ||
+                  currentStatus == 'idle') {
+                debugPrint(
+                  '[LocalNotificationService] Stale call notification tapped, cancelling...',
+                );
+                final sessionIdStr = response.payload!.replaceFirst(
+                  'call_',
+                  '',
+                );
                 final int? sessionId = int.tryParse(sessionIdStr);
-                
               } else if (currentStatus == 'ongoing') {
                 // Active call — go straight to CallScreen
                 Get.to(() => const CallScreen());
@@ -61,10 +69,11 @@ class LocalNotificationService {
               }
             } else {
               // CallController not registered, likely stale or cold start
-              debugPrint('[LocalNotificationService] Stale call notification tapped (no controller), cancelling...');
+              debugPrint(
+                '[LocalNotificationService] Stale call notification tapped (no controller), cancelling...',
+              );
               final sessionIdStr = response.payload!.replaceFirst('call_', '');
               final int? sessionId = int.tryParse(sessionIdStr);
-              
             }
           } else if (response.payload!.startsWith('live_')) {
             if (Get.isRegistered<LiveController>()) {
@@ -75,7 +84,9 @@ class LocalNotificationService {
               final ongoingSession = liveController.currentActiveSession.value;
               if (ongoingSession != null) {
                 liveController.isRoomOpen = true;
-                Get.to(() => LiveRoomScreen(session: ongoingSession))?.then((_) {
+                Get.to(() => LiveRoomScreen(session: ongoingSession))?.then((
+                  _,
+                ) {
                   liveController.isRoomOpen = false;
                 });
               } else {
@@ -89,19 +100,24 @@ class LocalNotificationService {
           } else {
             final int? sId = int.tryParse(response.payload!);
             if (sId != null) {
-              String uName = FloatingChatBubble.name?.isNotEmpty == true
-                  ? FloatingChatBubble.name!
-                  : 'User';
-              String uStatus = FloatingChatBubble.chatStatus.value.isNotEmpty
-                  ? FloatingChatBubble.chatStatus.value
-                  : 'ongoing';
+              String uName =
+                  FloatingChatBubble.name?.isNotEmpty == true
+                      ? FloatingChatBubble.name!
+                      : 'User';
+              String uStatus =
+                  FloatingChatBubble.chatStatus.value.isNotEmpty
+                      ? FloatingChatBubble.chatStatus.value
+                      : 'ongoing';
 
-              Get.to(() => ChatScreen(
-                    userName: uName,
-                    userImage: '',
-                    sessionId: sId,
-                    initialStatus: uStatus,
-                  ), binding: ChatBinding());
+              Get.to(
+                () => ChatScreen(
+                  userName: uName,
+                  userImage: '',
+                  sessionId: sId,
+                  initialStatus: uStatus,
+                ),
+                binding: ChatBinding(),
+              );
             }
           }
         }
@@ -110,9 +126,11 @@ class LocalNotificationService {
 
     // Pre-create notification channels explicitly
 
-
-    final androidPlugin = _notificationsPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+    final androidPlugin =
+        _notificationsPlugin
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >();
 
     if (androidPlugin != null) {
       await androidPlugin.createNotificationChannel(
@@ -227,32 +245,28 @@ class LocalNotificationService {
   static const int ACTIVE_CHAT_NOTIFICATION_ID = 777777;
   static const int ACTIVE_CALL_NOTIFICATION_ID = 888888;
 
-  
-  
-  
-  
-  
-  
   static Future<void> showOngoingLiveNotification({
     required int sessionId,
     required String title,
     required String body,
     int? startedAtMillis,
   }) async {
-    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'active_live_channel_v1',
-      'Active Live Sessions',
-      channelDescription: 'Ongoing notification for active live stream sessions',
-      icon: '@mipmap/ic_launcher',
-      importance: Importance.max,
-      priority: Priority.high,
-      ongoing: true,
-      autoCancel: false,
-      onlyAlertOnce: true,
-      showWhen: true,
-      usesChronometer: startedAtMillis != null,
-      when: startedAtMillis,
-    );
+    final AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          'active_live_channel_v1',
+          'Active Live Sessions',
+          channelDescription:
+              'Ongoing notification for active live stream sessions',
+          icon: '@mipmap/ic_launcher',
+          importance: Importance.max,
+          priority: Priority.high,
+          ongoing: true,
+          autoCancel: false,
+          onlyAlertOnce: true,
+          showWhen: true,
+          usesChronometer: startedAtMillis != null,
+          when: startedAtMillis,
+        );
 
     final NotificationDetails notificationDetails = NotificationDetails(
       android: androidDetails,
@@ -275,5 +289,4 @@ class LocalNotificationService {
   static Future<void> cancelOngoingLiveNotification(int sessionId) async {
     await _notificationsPlugin.cancel(sessionId + 300000);
   }
-
-  }
+}

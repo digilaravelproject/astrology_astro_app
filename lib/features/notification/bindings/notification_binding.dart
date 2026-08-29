@@ -11,15 +11,25 @@ class NotificationBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut(() => NotificationRepository(Get.find<ApiClient>()));
-    Get.lazyPut(() => GetNotificationCountUseCase(Get.find<NotificationRepository>()));
-    Get.lazyPut(() => GetNotificationsUseCase(Get.find<NotificationRepository>()));
-    Get.lazyPut(() => GetNotificationDetailUseCase(Get.find<NotificationRepository>()));
-    Get.lazyPut(() => MarkNotificationReadUseCase(Get.find<NotificationRepository>()));
-    Get.lazyPut(() => NotificationController(
-      Get.find<GetNotificationCountUseCase>(),
-      Get.find<GetNotificationsUseCase>(),
-      Get.find<GetNotificationDetailUseCase>(),
-      Get.find<MarkNotificationReadUseCase>(),
-    ));
+    Get.lazyPut(
+      () => GetNotificationCountUseCase(Get.find<NotificationRepository>()),
+    );
+    Get.lazyPut(
+      () => GetNotificationsUseCase(Get.find<NotificationRepository>()),
+    );
+    Get.lazyPut(
+      () => GetNotificationDetailUseCase(Get.find<NotificationRepository>()),
+    );
+    Get.lazyPut(
+      () => MarkNotificationReadUseCase(Get.find<NotificationRepository>()),
+    );
+    Get.lazyPut(
+      () => NotificationController(
+        Get.find<GetNotificationCountUseCase>(),
+        Get.find<GetNotificationsUseCase>(),
+        Get.find<GetNotificationDetailUseCase>(),
+        Get.find<MarkNotificationReadUseCase>(),
+      ),
+    );
   }
 }

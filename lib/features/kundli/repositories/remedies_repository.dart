@@ -6,7 +6,7 @@ class RemediesRepository {
   final AstrologyApiClient _client;
 
   RemediesRepository({AstrologyApiClient? client})
-      : _client = client ?? AstrologyApiClient();
+    : _client = client ?? AstrologyApiClient();
 
   Future<RemediesModel?> getGemstoneRemedies({
     required String datetime,
@@ -25,10 +25,11 @@ class RemediesRepository {
       final response = await _client.getGemstoneRemedies(payload);
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> rawData = response.data is Map<String, dynamic> ? response.data : {};
-        
+        final Map<String, dynamic> rawData =
+            response.data is Map<String, dynamic> ? response.data : {};
+
         final List<Map<String, dynamic>> crystals = [];
-        
+
         rawData.forEach((key, val) {
           if (val is Map) {
             crystals.add({
@@ -46,16 +47,14 @@ class RemediesRepository {
               'mantra': {
                 'mantra': 'Om Sham Shanaishcharaye Namah',
                 'japaCount': 108,
-              }
+              },
             });
           }
         });
 
         final transformedJson = {
           'success': true,
-          'data': {
-            'crystals': crystals,
-          }
+          'data': {'crystals': crystals},
         };
 
         return RemediesModel.fromJson(transformedJson);

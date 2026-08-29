@@ -7,9 +7,14 @@ class LiveRemoteDataSource {
 
   LiveRemoteDataSource(this._apiClient);
 
-  Future<ResponseModel> getLiveSessions({String filter = 'all', int perPage = 15}) async {
+  Future<ResponseModel> getLiveSessions({
+    String filter = 'all',
+    int perPage = 15,
+  }) async {
     print('[LIVE_DS] Getting live sessions: filter=$filter, perPage=$perPage');
-    final result = await _apiClient.get('${AppUrls.liveSessions}?filter=$filter&per_page=$perPage');
+    final result = await _apiClient.get(
+      '${AppUrls.liveSessions}?filter=$filter&per_page=$perPage',
+    );
     print('[LIVE_DS] Get live sessions response: ${result.toString()}');
     return result;
   }
@@ -37,7 +42,10 @@ class LiveRemoteDataSource {
 
   Future<ResponseModel> startLiveSession(int id) async {
     print('[LIVE_DS] Starting live session: $id');
-    final result = await _apiClient.post(AppUrls.startLiveSession(id), data: {});
+    final result = await _apiClient.post(
+      AppUrls.startLiveSession(id),
+      data: {},
+    );
     print('[LIVE_DS] Start response: ${result.toString()}');
     return result;
   }
@@ -49,9 +57,15 @@ class LiveRemoteDataSource {
     return result;
   }
 
-  Future<ResponseModel> updateLiveSession(int id, Map<String, dynamic> data) async {
+  Future<ResponseModel> updateLiveSession(
+    int id,
+    Map<String, dynamic> data,
+  ) async {
     print('[LIVE_DS] Updating live session: $id, $data');
-    final result = await _apiClient.put(AppUrls.updateLiveSession(id), data: data);
+    final result = await _apiClient.put(
+      AppUrls.updateLiveSession(id),
+      data: data,
+    );
     print('[LIVE_DS] Update response: ${result.toString()}');
     return result;
   }
@@ -77,4 +91,3 @@ class LiveRemoteDataSource {
     return result;
   }
 }
-

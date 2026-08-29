@@ -3,5 +3,7 @@ import '../models/availability_model.dart';
 
 abstract class AvailabilityRepositoryInterface {
   Future<ResponseModel> getAvailability();
-  Future<ResponseModel> updateAvailability(List<AvailabilityModel> availability);
+  Future<ResponseModel> updateAvailability(
+    List<AvailabilityModel> availability,
+  );
 }

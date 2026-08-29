@@ -11,14 +11,19 @@ class WeeklyRankingData {
 
   factory WeeklyRankingData.fromJson(Map<String, dynamic> json) {
     return WeeklyRankingData(
-      topAstrologers: (json['top_astrologers'] as List?)
+      topAstrologers:
+          (json['top_astrologers'] as List?)
               ?.map((e) => WeeklyRankingModel.fromJson(e))
               .toList() ??
           [],
-      myRank: json['my_rank'] != null ? int.tryParse(json['my_rank'].toString()) : null,
-      myWeeklyEarnings: json['my_weekly_earnings'] != null
-          ? double.tryParse(json['my_weekly_earnings'].toString())
-          : null,
+      myRank:
+          json['my_rank'] != null
+              ? int.tryParse(json['my_rank'].toString())
+              : null,
+      myWeeklyEarnings:
+          json['my_weekly_earnings'] != null
+              ? double.tryParse(json['my_weekly_earnings'].toString())
+              : null,
     );
   }
 }
@@ -47,7 +52,8 @@ class WeeklyRankingModel {
       userId: int.parse(json['user_id'].toString()),
       name: json['name']?.toString() ?? 'Astrologer',
       profilePhoto: json['profile_photo']?.toString(),
-      weeklyEarnings: double.tryParse(json['weekly_earnings'].toString()) ?? 0.0,
+      weeklyEarnings:
+          double.tryParse(json['weekly_earnings'].toString()) ?? 0.0,
     );
   }
 }

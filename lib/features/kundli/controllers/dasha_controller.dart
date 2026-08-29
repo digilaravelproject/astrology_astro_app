@@ -15,11 +15,7 @@ class DashaBreadcrumb {
   final String title;
   final String? planet;
 
-  DashaBreadcrumb({
-    required this.level,
-    required this.title,
-    this.planet,
-  });
+  DashaBreadcrumb({required this.level, required this.title, this.planet});
 }
 
 class DashaController extends GetxController {
@@ -28,19 +24,18 @@ class DashaController extends GetxController {
   var isLoading = false.obs;
   var dashaModel = Rxn<DashaModel>();
   var currentDashaItems = <DashaItem>[].obs;
-  
+
   // Navigation stack state
   var breadcrumbs = <DashaBreadcrumb>[].obs;
-  
+
   // Stored birth parameters for sub-dasha API calls
   String? _datetime;
   double? _latitude;
   double? _longitude;
   String _timezone = "+05:30";
 
-  DashaLevel get currentLevel => breadcrumbs.isNotEmpty
-      ? breadcrumbs.last.level
-      : DashaLevel.mahadasha;
+  DashaLevel get currentLevel =>
+      breadcrumbs.isNotEmpty ? breadcrumbs.last.level : DashaLevel.mahadasha;
 
   String get currentTitle {
     switch (currentLevel) {
@@ -70,7 +65,9 @@ class DashaController extends GetxController {
 
     isLoading.value = true;
     breadcrumbs.clear();
-    breadcrumbs.add(DashaBreadcrumb(level: DashaLevel.mahadasha, title: "Mahadasha"));
+    breadcrumbs.add(
+      DashaBreadcrumb(level: DashaLevel.mahadasha, title: "Mahadasha"),
+    );
 
     try {
       final result = await _repository.getDashaDetails(
@@ -112,7 +109,9 @@ class DashaController extends GetxController {
         timezone: _timezone,
         md: md,
       );
-      breadcrumbs.add(DashaBreadcrumb(level: DashaLevel.antardasha, title: md, planet: md));
+      breadcrumbs.add(
+        DashaBreadcrumb(level: DashaLevel.antardasha, title: md, planet: md),
+      );
       currentDashaItems.value = items;
     } finally {
       isLoading.value = false;
@@ -131,7 +130,13 @@ class DashaController extends GetxController {
         md: md,
         ad: ad,
       );
-      breadcrumbs.add(DashaBreadcrumb(level: DashaLevel.pratyantardasha, title: ad, planet: ad));
+      breadcrumbs.add(
+        DashaBreadcrumb(
+          level: DashaLevel.pratyantardasha,
+          title: ad,
+          planet: ad,
+        ),
+      );
       currentDashaItems.value = items;
     } finally {
       isLoading.value = false;
@@ -152,7 +157,9 @@ class DashaController extends GetxController {
         ad: ad,
         pd: pd,
       );
-      breadcrumbs.add(DashaBreadcrumb(level: DashaLevel.sookshmadasha, title: pd, planet: pd));
+      breadcrumbs.add(
+        DashaBreadcrumb(level: DashaLevel.sookshmadasha, title: pd, planet: pd),
+      );
       currentDashaItems.value = items;
     } finally {
       isLoading.value = false;
@@ -175,7 +182,9 @@ class DashaController extends GetxController {
         pd: pd,
         sd: sd,
       );
-      breadcrumbs.add(DashaBreadcrumb(level: DashaLevel.pranadasha, title: sd, planet: sd));
+      breadcrumbs.add(
+        DashaBreadcrumb(level: DashaLevel.pranadasha, title: sd, planet: sd),
+      );
       currentDashaItems.value = items;
     } finally {
       isLoading.value = false;
@@ -193,7 +202,7 @@ class DashaController extends GetxController {
 
   Future<void> navigateToBreadcrumbIndex(int index) async {
     if (index < 0 || index >= breadcrumbs.length - 1) return;
-    
+
     final targetBreadcrumb = breadcrumbs[index];
     breadcrumbs.removeRange(index + 1, breadcrumbs.length);
 

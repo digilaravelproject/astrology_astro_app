@@ -9,7 +9,7 @@ abstract class FinanceRepositoryInterface {
     required String ifscCode,
     File? passbookDocument,
   });
-  
+
   Future<ResponseModel> getBankAccounts();
   Future<ResponseModel> updateBankAccount(int id, Map<String, dynamic> data);
   Future<ResponseModel> deleteBankAccount(int id);

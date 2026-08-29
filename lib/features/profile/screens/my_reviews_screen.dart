@@ -26,9 +26,7 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(
-        title: 'My Reviews'.tr,
-      ),
+      appBar: CustomAppBar(title: 'My Reviews'.tr),
       body: RefreshIndicator(
         onRefresh: () => controller.fetchReviews(),
         child: Column(
@@ -36,15 +34,25 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
             _buildRatingFilters(),
             Expanded(
               child: Obx(() {
-                final filteredReviews = _selectedRating == 0 
-                    ? controller.reviews 
-                    : controller.reviews.where((r) => r.rating.toInt() == _selectedRating).toList();
+                final filteredReviews =
+                    _selectedRating == 0
+                        ? controller.reviews
+                        : controller.reviews
+                            .where((r) => r.rating.toInt() == _selectedRating)
+                            .toList();
 
                 if (filteredReviews.isEmpty) {
                   return ListView(
                     children: [
                       SizedBox(height: Get.height * 0.2),
-                      Center(child: AppText(_selectedRating == 0 ? 'No reviews found'.tr : 'No $_selectedRating star reviews found'.tr, color: Colors.grey)),
+                      Center(
+                        child: AppText(
+                          _selectedRating == 0
+                              ? 'No reviews found'.tr
+                              : 'No $_selectedRating star reviews found'.tr,
+                          color: Colors.grey,
+                        ),
+                      ),
                     ],
                   );
                 }
@@ -64,7 +72,6 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
     );
   }
 
-
   Widget _buildRatingFilters() {
     return Container(
       height: 60,
@@ -76,29 +83,41 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
         itemBuilder: (context, index) {
           final isAll = index == 0;
           final isSelected = _selectedRating == index;
-          
+
           return GestureDetector(
             onTap: () => setState(() => _selectedRating = index),
             child: Container(
               margin: const EdgeInsets.only(right: 12),
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
               decoration: BoxDecoration(
-                color: isSelected ? AppColors.primaryColor.withOpacity(0.05) : Colors.white,
+                color:
+                    isSelected
+                        ? AppColors.primaryColor.withOpacity(0.05)
+                        : Colors.white,
                 borderRadius: BorderRadius.circular(25),
-                border: Border.all(color: isSelected ? AppColors.primaryColor : Colors.grey.shade300),
+                border: Border.all(
+                  color:
+                      isSelected
+                          ? AppColors.primaryColor
+                          : Colors.grey.shade300,
+                ),
               ),
               child: Row(
                 children: [
                   Icon(
-                    Icons.star_rounded, 
-                    size: 18, 
-                    color: isSelected ? AppColors.goldAccent : Colors.grey.shade400
+                    Icons.star_rounded,
+                    size: 18,
+                    color:
+                        isSelected
+                            ? AppColors.goldAccent
+                            : Colors.grey.shade400,
                   ),
                   const SizedBox(width: 6),
                   AppText(
                     isAll ? 'All'.tr : '$index ${"Star".tr}',
                     fontSize: 13,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    fontWeight:
+                        isSelected ? FontWeight.bold : FontWeight.normal,
                     color: isSelected ? AppColors.primaryColor : Colors.black87,
                   ),
                 ],
@@ -112,7 +131,7 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
 
   Widget _buildReviewCard(ReviewModel review) {
     String formattedDate = DateFormat('dd MMM yyyy').format(review.createdAt);
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -181,23 +200,27 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                             AppColors.primaryColor.withOpacity(0.2),
                           ],
                         ),
-                        image: review.user?.profilePhoto != null 
-                            ? DecorationImage(
-                                image: CachedNetworkImageProvider('${AppUrls.baseImageUrl}${review.user!.profilePhoto}'),
-                                fit: BoxFit.cover,
-                              )
-                            : null,
+                        image:
+                            review.user?.profilePhoto != null
+                                ? DecorationImage(
+                                  image: CachedNetworkImageProvider(
+                                    '${AppUrls.baseImageUrl}${review.user!.profilePhoto}',
+                                  ),
+                                  fit: BoxFit.cover,
+                                )
+                                : null,
                       ),
-                      child: review.user?.profilePhoto == null 
-                          ? Center(
-                              child: AppText(
-                                review.user?.name[0].toUpperCase() ?? 'U', 
-                                color: AppColors.primaryColor, 
-                                fontWeight: FontWeight.w800,
-                                fontSize: 16,
-                              ),
-                            )
-                          : null,
+                      child:
+                          review.user?.profilePhoto == null
+                              ? Center(
+                                child: AppText(
+                                  review.user?.name[0].toUpperCase() ?? 'U',
+                                  color: AppColors.primaryColor,
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 16,
+                                ),
+                              )
+                              : null,
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -205,8 +228,8 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           AppText(
-                            review.user?.name ?? 'Anonymous', 
-                            fontSize: 15, 
+                            review.user?.name ?? 'Anonymous',
+                            fontSize: 15,
                             fontWeight: FontWeight.w700,
                             color: const Color(0xFF2E1A47),
                           ),
@@ -214,9 +237,12 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                           Row(
                             children: List.generate(5, (index) {
                               return Icon(
-                                Icons.star_rounded, 
-                                color: index < review.rating ? AppColors.goldAccent : Colors.grey.shade200, 
-                                size: 16
+                                Icons.star_rounded,
+                                color:
+                                    index < review.rating
+                                        ? AppColors.goldAccent
+                                        : Colors.grey.shade200,
+                                size: 16,
                               );
                             }),
                           ),
@@ -247,7 +273,10 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                       color: AppColors.primaryColor.withOpacity(0.04),
                       borderRadius: BorderRadius.circular(16),
                       border: Border(
-                        left: BorderSide(color: AppColors.primaryColor.withOpacity(0.4), width: 3),
+                        left: BorderSide(
+                          color: AppColors.primaryColor.withOpacity(0.4),
+                          width: 3,
+                        ),
                       ),
                     ),
                     child: Column(
@@ -255,12 +284,16 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                       children: [
                         Row(
                           children: [
-                            Icon(Iconsax.message_text_copy, size: 14, color: AppColors.primaryColor.withOpacity(0.7)),
+                            Icon(
+                              Iconsax.message_text_copy,
+                              size: 14,
+                              color: AppColors.primaryColor.withOpacity(0.7),
+                            ),
                             const SizedBox(width: 8),
                             AppText(
-                              'Your Response'.tr, 
-                              fontSize: 12, 
-                              fontWeight: FontWeight.w800, 
+                              'Your Response'.tr,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
                               color: AppColors.primaryColor,
                               letterSpacing: 0.3,
                             ),
@@ -268,8 +301,8 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                         ),
                         const SizedBox(height: 8),
                         AppText(
-                          review.reply!, 
-                          fontSize: 13, 
+                          review.reply!,
+                          fontSize: 13,
                           color: const Color(0xFF4A4A4A),
                           height: 1.4,
                         ),
@@ -279,7 +312,7 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                 ],
 
                 const SizedBox(height: 16),
-                
+
                 // Footer: Action
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -288,20 +321,27 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                       onTap: () => _showReplyDialog(review),
                       borderRadius: BorderRadius.circular(8),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 4,
+                          horizontal: 8,
+                        ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
-                              review.reply == null ? Icons.reply : Icons.edit_note_rounded, 
-                              size: 18, 
-                              color: AppColors.successColor
+                              review.reply == null
+                                  ? Icons.reply
+                                  : Icons.edit_note_rounded,
+                              size: 18,
+                              color: AppColors.successColor,
                             ),
                             const SizedBox(width: 6),
                             AppText(
-                              review.reply == null ? 'Reply to review'.tr : 'Edit Response'.tr, 
-                              fontSize: 13, 
-                              color: AppColors.successColor, 
+                              review.reply == null
+                                  ? 'Reply to review'.tr
+                                  : 'Edit Response'.tr,
+                              fontSize: 13,
+                              color: AppColors.successColor,
                               fontWeight: FontWeight.w700,
                             ),
                           ],
@@ -319,8 +359,10 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
   }
 
   void _showReplyDialog(ReviewModel review) {
-    final TextEditingController replyController = TextEditingController(text: review.reply ?? '');
-    
+    final TextEditingController replyController = TextEditingController(
+      text: review.reply ?? '',
+    );
+
     Get.dialog(
       Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
@@ -362,14 +404,30 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AppText('Review by ${review.user?.name ?? "User"}', fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87),
+                    AppText(
+                      'Review by ${review.user?.name ?? "User"}',
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
                     const SizedBox(height: 4),
-                    AppText(review.review, fontSize: 13, color: Colors.grey.shade600, maxLines: 3, overflow: TextOverflow.ellipsis),
+                    AppText(
+                      review.review,
+                      fontSize: 13,
+                      color: Colors.grey.shade600,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ],
                 ),
               ),
               const SizedBox(height: 20),
-              const AppText('Your Response', fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black87),
+              const AppText(
+                'Your Response',
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
               const SizedBox(height: 8),
               TextField(
                 controller: replyController,
@@ -377,7 +435,10 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                 style: const TextStyle(fontSize: 14, color: Colors.black87),
                 decoration: InputDecoration(
                   hintText: 'Type your message here...',
-                  hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+                  hintStyle: TextStyle(
+                    color: Colors.grey.shade400,
+                    fontSize: 14,
+                  ),
                   filled: true,
                   fillColor: Colors.grey.shade50,
                   border: OutlineInputBorder(
@@ -395,24 +456,47 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              Obx(() => SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  onPressed: controller.isReplying.value 
-                    ? null 
-                    : () => controller.submitReply(review.id, replyController.text),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryColor,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    elevation: 0,
+              Obx(
+                () => SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed:
+                        controller.isReplying.value
+                            ? null
+                            : () => controller.submitReply(
+                              review.id,
+                              replyController.text,
+                            ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryColor,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                    ),
+                    child:
+                        controller.isReplying.value
+                            ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                            : AppText(
+                              review.reply == null
+                                  ? 'Send Reply'
+                                  : 'Update Reply',
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                   ),
-                  child: controller.isReplying.value
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                    : AppText(review.reply == null ? 'Send Reply' : 'Update Reply', fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
-              )),
+              ),
             ],
           ),
         ),

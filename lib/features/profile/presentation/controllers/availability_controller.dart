@@ -32,11 +32,16 @@ class AvailabilityController extends GetxController {
 
       if (result.isSuccess) {
         final List<dynamic> data = result.body['availability'] ?? [];
-        availability.value = data.map((json) => AvailabilityModel.fromJson(json)).toList();
-        print('[AVAILABILITY] Loaded ${availability.length} availability records');
+        availability.value =
+            data.map((json) => AvailabilityModel.fromJson(json)).toList();
+        print(
+          '[AVAILABILITY] Loaded ${availability.length} availability records',
+        );
       } else {
         print('[AVAILABILITY] Failed to get availability: ${result.message}');
-        CustomSnackBar.showError(result.message ?? 'Failed to fetch availability');
+        CustomSnackBar.showError(
+          result.message ?? 'Failed to fetch availability',
+        );
       }
     } catch (e) {
       print('[AVAILABILITY] Exception in getAvailability: $e');
@@ -46,7 +51,9 @@ class AvailabilityController extends GetxController {
     }
   }
 
-  Future<void> updateAvailability(List<AvailabilityModel> updatedAvailability) async {
+  Future<void> updateAvailability(
+    List<AvailabilityModel> updatedAvailability,
+  ) async {
     try {
       isSaving.value = true;
       print('[AVAILABILITY] Updating availability...');
@@ -55,11 +62,15 @@ class AvailabilityController extends GetxController {
 
       if (result.isSuccess) {
         print('[AVAILABILITY] Availability updated successfully');
-        CustomSnackBar.showSuccess(result.message ?? 'Availability updated successfully');
+        CustomSnackBar.showSuccess(
+          result.message ?? 'Availability updated successfully',
+        );
         await getAvailability();
       } else {
         print('[AVAILABILITY] Failed to update: ${result.message}');
-        CustomSnackBar.showError(result.message ?? 'Failed to update availability');
+        CustomSnackBar.showError(
+          result.message ?? 'Failed to update availability',
+        );
       }
     } catch (e) {
       print('[AVAILABILITY] Exception in updateAvailability: $e');

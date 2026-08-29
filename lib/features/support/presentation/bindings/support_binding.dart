@@ -15,20 +15,37 @@ class SupportBinding extends Bindings {
   void dependencies() {
     Get.lazyPut(() => SupportRepository(apiClient: Get.find<ApiClient>()));
     Get.lazyPut(() => GetFAQUseCase(repository: Get.find<SupportRepository>()));
-    Get.lazyPut(() => GetPrivacyPolicyUseCase(repository: Get.find<SupportRepository>()));
-    Get.lazyPut(() => GetPaymentPolicyUseCase(repository: Get.find<SupportRepository>()));
-    Get.lazyPut(() => GetTermsAndConditionsUseCase(repository: Get.find<SupportRepository>()));
-    Get.lazyPut(() => GetAboutUsUseCase(repository: Get.find<SupportRepository>()));
-    Get.lazyPut(() => GetCustomerSupportUseCase(repository: Get.find<SupportRepository>()));
-    Get.lazyPut(() => SubmitFeedbackUseCase(repository: Get.find<SupportRepository>()));
-    Get.lazyPut(() => SupportController(
-          getFAQUseCase: Get.find<GetFAQUseCase>(),
-          getPrivacyPolicyUseCase: Get.find<GetPrivacyPolicyUseCase>(),
-          getPaymentPolicyUseCase: Get.find<GetPaymentPolicyUseCase>(),
-          getTermsAndConditionsUseCase: Get.find<GetTermsAndConditionsUseCase>(),
-          getAboutUsUseCase: Get.find<GetAboutUsUseCase>(),
-          getCustomerSupportUseCase: Get.find<GetCustomerSupportUseCase>(),
-          submitFeedbackUseCase: Get.find<SubmitFeedbackUseCase>(),
-        ));
+    Get.lazyPut(
+      () => GetPrivacyPolicyUseCase(repository: Get.find<SupportRepository>()),
+    );
+    Get.lazyPut(
+      () => GetPaymentPolicyUseCase(repository: Get.find<SupportRepository>()),
+    );
+    Get.lazyPut(
+      () => GetTermsAndConditionsUseCase(
+        repository: Get.find<SupportRepository>(),
+      ),
+    );
+    Get.lazyPut(
+      () => GetAboutUsUseCase(repository: Get.find<SupportRepository>()),
+    );
+    Get.lazyPut(
+      () =>
+          GetCustomerSupportUseCase(repository: Get.find<SupportRepository>()),
+    );
+    Get.lazyPut(
+      () => SubmitFeedbackUseCase(repository: Get.find<SupportRepository>()),
+    );
+    Get.lazyPut(
+      () => SupportController(
+        getFAQUseCase: Get.find<GetFAQUseCase>(),
+        getPrivacyPolicyUseCase: Get.find<GetPrivacyPolicyUseCase>(),
+        getPaymentPolicyUseCase: Get.find<GetPaymentPolicyUseCase>(),
+        getTermsAndConditionsUseCase: Get.find<GetTermsAndConditionsUseCase>(),
+        getAboutUsUseCase: Get.find<GetAboutUsUseCase>(),
+        getCustomerSupportUseCase: Get.find<GetCustomerSupportUseCase>(),
+        submitFeedbackUseCase: Get.find<SubmitFeedbackUseCase>(),
+      ),
+    );
   }
 }

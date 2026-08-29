@@ -17,7 +17,8 @@ class ChangeLanguageScreen extends StatefulWidget {
 }
 
 class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
-  final LocalizationController _localizationController = Get.find<LocalizationController>();
+  final LocalizationController _localizationController =
+      Get.find<LocalizationController>();
   int _selectedIndex = 0;
 
   @override
@@ -56,9 +57,7 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
     final languages = _localizationController.languages;
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(
-        title: 'Change Language',
-      ),
+      appBar: const CustomAppBar(title: 'Change Language'),
       body: Column(
         children: [
           Expanded(
@@ -69,7 +68,7 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
               itemBuilder: (context, index) {
                 final lang = languages[index];
                 final isSelected = _selectedIndex == index;
-                
+
                 return GestureDetector(
                   onTap: () {
                     setState(() {
@@ -80,10 +79,16 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
                     duration: const Duration(milliseconds: 200),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: isSelected ? AppColors.primaryColor.withOpacity(0.05) : Colors.white,
+                      color:
+                          isSelected
+                              ? AppColors.primaryColor.withOpacity(0.05)
+                              : Colors.white,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: isSelected ? AppColors.primaryColor : Colors.grey.shade200,
+                        color:
+                            isSelected
+                                ? AppColors.primaryColor
+                                : Colors.grey.shade200,
                         width: isSelected ? 1.5 : 1,
                       ),
                     ),
@@ -91,7 +96,10 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
                       children: [
                         CircleAvatar(
                           radius: 20,
-                          backgroundColor: isSelected ? AppColors.primaryColor : Colors.grey.shade50,
+                          backgroundColor:
+                              isSelected
+                                  ? AppColors.primaryColor
+                                  : Colors.grey.shade50,
                           child: AppText(
                             lang.languageName.substring(0, 1),
                             fontSize: 16,
@@ -119,9 +127,17 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
                         ),
                         const Spacer(),
                         if (isSelected)
-                          Icon(Icons.check_circle_rounded, color: AppColors.primaryColor, size: 24)
+                          Icon(
+                            Icons.check_circle_rounded,
+                            color: AppColors.primaryColor,
+                            size: 24,
+                          )
                         else
-                          Icon(Icons.radio_button_off_rounded, color: Colors.grey.shade300, size: 24),
+                          Icon(
+                            Icons.radio_button_off_rounded,
+                            color: Colors.grey.shade300,
+                            size: 24,
+                          ),
                       ],
                     ),
                   ),
@@ -135,17 +151,17 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
               text: 'Save Changes',
               onPressed: () {
                 _localizationController.setLanguage(languages[_selectedIndex]);
-                
+
                 CustomSnackBar.disabledSnackbar(
-                  'Success', 
-                  "Language changed to ${languages[_selectedIndex].languageName}", 
+                  'Success',
+                  "Language changed to ${languages[_selectedIndex].languageName}",
                   backgroundColor: Colors.green.withOpacity(0.1),
                   colorText: Colors.green,
                   snackPosition: SnackPosition.BOTTOM,
                   margin: const EdgeInsets.all(20),
                   duration: const Duration(seconds: 2),
                 );
-                
+
                 Get.back();
               },
             ),

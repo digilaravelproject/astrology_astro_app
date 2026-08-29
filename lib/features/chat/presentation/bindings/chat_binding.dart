@@ -17,11 +17,26 @@ class ChatBinding extends Bindings {
     // Data sources and Repositories are now provided globally in InitialBindings
 
     // 3. Use Cases
-    Get.lazyPut(() => LoadChatHistoryUseCase(Get.find<IChatRepository>()), fenix: true);
-    Get.lazyPut(() => SendTextMessageUseCase(Get.find<IChatRepository>()), fenix: true);
-    Get.lazyPut(() => SendAttachmentUseCase(Get.find<IChatRepository>()), fenix: true);
-    Get.lazyPut(() => MarkMessagesReadUseCase(Get.find<IChatRepository>()), fenix: true);
-    Get.lazyPut(() => EndChatSessionUseCase(Get.find<IChatRepository>()), fenix: true);
+    Get.lazyPut(
+      () => LoadChatHistoryUseCase(Get.find<IChatRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => SendTextMessageUseCase(Get.find<IChatRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => SendAttachmentUseCase(Get.find<IChatRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => MarkMessagesReadUseCase(Get.find<IChatRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => EndChatSessionUseCase(Get.find<IChatRepository>()),
+      fenix: true,
+    );
 
     // 4. Controller
     Get.lazyPut(

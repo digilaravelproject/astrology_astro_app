@@ -2,11 +2,10 @@ import 'dart:convert';
 
 class AstrologyApiConstants {
   static const String baseUrl = 'https://json.astrologyapi.com/v1';
-  
+
   static const String userId = '655788';
   //static const String apiKey = '9d553265802a9777a3cec203872ba41baf8bf58a';
   static const String apiKey = 'ak-2e92dd83da6e067eeb157dbf62a5475802e0cbd0';
-
 
   static String get basicAuth {
     final credentials = '$userId:$apiKey';

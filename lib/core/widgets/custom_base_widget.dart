@@ -55,7 +55,6 @@ class CustomBaseWidget extends StatefulWidget {
     this.drawer,
     this.scaffoldKey,
     Key? key,
-
   }) : super(key: key);
 
   @override
@@ -63,37 +62,40 @@ class CustomBaseWidget extends StatefulWidget {
 }
 
 class _CustomBaseWidgetState extends State<CustomBaseWidget> {
-
-
   @override
   Widget build(BuildContext context) {
-    Color textColor =widget.appBarColor ?? Theme.of(context).primaryColor;
-
+    Color textColor = widget.appBarColor ?? Theme.of(context).primaryColor;
 
     Widget scaffold = Scaffold(
       key: widget.scaffoldKey,
       resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
       backgroundColor:
-      widget.backgroundColor ?? Theme.of(context).colorScheme.surface,
+          widget.backgroundColor ?? Theme.of(context).colorScheme.surface,
       extendBodyBehindAppBar: widget.extendBodyBehindAppBar,
-      appBar: widget.showAppBar
-          ? (widget.appBar != null
-              ? PreferredSize(
-                  preferredSize: const Size.fromHeight(kToolbarHeight),
-                  child: widget.appBar!,
-                )
-              : CustomAppBar(
-                  title: widget.appBarTitle ?? "",
-                  actions: widget.actions,
-                  backgroundColor: widget.appBarColor ?? Colors.white,
-                  titleColor: widget.appBarTitleColor ?? const Color(0xFF2E1A47),
-                  iconColor: widget.appBarLeadingColor ?? widget.appBarItemColor,
-                  showLeading: widget.showLeadingAction || Navigator.canPop(context),
-                  onLeadingPressed: widget.onBackPressed != null ? () => widget.onBackPressed!() : null,
-                  elevation: widget.elevation ?? 0,
-                ))
-          : null,
-
+      appBar:
+          widget.showAppBar
+              ? (widget.appBar != null
+                  ? PreferredSize(
+                    preferredSize: const Size.fromHeight(kToolbarHeight),
+                    child: widget.appBar!,
+                  )
+                  : CustomAppBar(
+                    title: widget.appBarTitle ?? "",
+                    actions: widget.actions,
+                    backgroundColor: widget.appBarColor ?? Colors.white,
+                    titleColor:
+                        widget.appBarTitleColor ?? const Color(0xFF2E1A47),
+                    iconColor:
+                        widget.appBarLeadingColor ?? widget.appBarItemColor,
+                    showLeading:
+                        widget.showLeadingAction || Navigator.canPop(context),
+                    onLeadingPressed:
+                        widget.onBackPressed != null
+                            ? () => widget.onBackPressed!()
+                            : null,
+                    elevation: widget.elevation ?? 0,
+                  ))
+              : null,
 
       body: Column(
         children: [
@@ -107,7 +109,6 @@ class _CustomBaseWidgetState extends State<CustomBaseWidget> {
       floatingActionButton: widget.fab,
       bottomNavigationBar: widget.bottomNavigationBar,
       drawer: widget.drawer,
-
     );
 
     // return scaffold;

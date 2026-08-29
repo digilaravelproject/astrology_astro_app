@@ -78,7 +78,9 @@ class LocalizationController extends GetxController {
 
   Future<void> initLanguage() async {
     final languageCode = SharedPrefs.getString(AppConstants.language) ?? 'en';
-    final index = _languages.indexWhere((element) => element.languageCode == languageCode);
+    final index = _languages.indexWhere(
+      (element) => element.languageCode == languageCode,
+    );
 
     if (index != -1) {
       _selectedIndex.value = index;
@@ -87,20 +89,19 @@ class LocalizationController extends GetxController {
   }
 
   void setLanguage(LanguageModel language) {
-    final index = _languages.indexWhere((element) => element.languageCode == language.languageCode);
+    final index = _languages.indexWhere(
+      (element) => element.languageCode == language.languageCode,
+    );
 
     if (index != -1) {
       _selectedIndex.value = index;
 
-      Get.updateLocale(Locale(
-        language.languageCode,
-        language.countryCode,
-      ));
+      Get.updateLocale(Locale(language.languageCode, language.countryCode));
 
       Get.forceAppUpdate();
 
       SharedPrefs.setString(AppConstants.language, language.languageCode);
-      
+
       // Refresh APIs when language changes
       if (Get.isRegistered<BlogController>()) {
         Get.find<BlogController>().fetchBlogs();
@@ -110,7 +111,6 @@ class LocalizationController extends GetxController {
       }
     }
   }
-
 
   void showLanguageBottomSheet(BuildContext context) {
     Get.bottomSheet(

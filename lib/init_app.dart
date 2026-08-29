@@ -19,18 +19,17 @@ import 'core/services/fcm_notification_service.dart';
 Future<void> initApp() async {
   // Set environment configuration
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Initialize Crashlytics
   FlutterError.onError = (FlutterErrorDetails details) {
     final errorString = details.exceptionAsString();
     final bool isImageError = details.library == 'image resource service';
-    final bool isNetworkError = errorString.contains('HttpException') || 
-                                errorString.contains('SocketException') ||
-                                errorString.contains('ClientException') ||
-                                errorString.contains('HandshakeException');
+    final bool isNetworkError =
+        errorString.contains('HttpException') ||
+        errorString.contains('SocketException') ||
+        errorString.contains('ClientException') ||
+        errorString.contains('HandshakeException');
     final bool isAssetError = errorString.contains('Unable to load asset');
     final bool isUIWarning = errorString.contains('ListTile background');
 
@@ -49,10 +48,8 @@ Future<void> initApp() async {
   await EnvConfig.load();
   // EnvConfig.setEnvironment(Environment.development); // Change as needed
 
-
   // Initialize dynamic app icon manager
   // await DynamicAppIconManager.init();
-
 
   // Initialize shared preferences
   await SharedPrefs.init();

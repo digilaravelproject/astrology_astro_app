@@ -37,37 +37,52 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
   final Set<String> _subscribedChannels = {};
   int? _userId;
   String? _token;
-  
+
   static int? activeSessionId;
   static final RxMap<int, String> sessionStatusUpdates = <int, String>{}.obs;
   static int? currentUserId;
-  static final RxList<Map<String, dynamic>> incomingMessages = <Map<String, dynamic>>[].obs;
-  static final RxList<Map<String, dynamic>> messageStatusUpdates = <Map<String, dynamic>>[].obs;
-  static final RxList<Map<String, dynamic>> presenceUpdates = <Map<String, dynamic>>[].obs;
+  static final RxList<Map<String, dynamic>> incomingMessages =
+      <Map<String, dynamic>>[].obs;
+  static final RxList<Map<String, dynamic>> messageStatusUpdates =
+      <Map<String, dynamic>>[].obs;
+  static final RxList<Map<String, dynamic>> presenceUpdates =
+      <Map<String, dynamic>>[].obs;
   static final RxMap<int, String> sessionStartTimes = <int, String>{}.obs;
   // Signal: when set to a sessionId, that chat session has been ended remotely
   static final RxInt chatEndedSessionId = (-1).obs;
   static final RxInt chatDismissedSessionId = (-1).obs;
-  static final StreamController<Map<String, dynamic>> chatInitiatedEvent = StreamController.broadcast();
-  static final StreamController<Map<String, dynamic>> chatQueueUpdatedEvent = StreamController.broadcast();
-  static final RxMap<String, dynamic> chatEndedBilling = <String, dynamic>{}.obs;
+  static final StreamController<Map<String, dynamic>> chatInitiatedEvent =
+      StreamController.broadcast();
+  static final StreamController<Map<String, dynamic>> chatQueueUpdatedEvent =
+      StreamController.broadcast();
+  static final RxMap<String, dynamic> chatEndedBilling =
+      <String, dynamic>{}.obs;
   // Stores the last full senderData from ChatInitiated WebSocket event
   static Map<String, dynamic>? lastChatSenderData;
 
   // Call System State
-  static final RxMap<int, String> callSessionStatusUpdates = <int, String>{}.obs;
+  static final RxMap<int, String> callSessionStatusUpdates =
+      <int, String>{}.obs;
   static final RxInt callEndedSessionId = (-1).obs;
   static final RxInt callDismissedSessionId = (-1).obs;
-  static final StreamController<Map<String, dynamic>> callInitiatedEvent = StreamController.broadcast();
-  static final RxMap<String, dynamic> callDismissedData = <String, dynamic>{}.obs;
-  static final RxMap<String, dynamic> callAcceptedData = <String, dynamic>{}.obs;
+  static final StreamController<Map<String, dynamic>> callInitiatedEvent =
+      StreamController.broadcast();
+  static final RxMap<String, dynamic> callDismissedData =
+      <String, dynamic>{}.obs;
+  static final RxMap<String, dynamic> callAcceptedData =
+      <String, dynamic>{}.obs;
   static final RxMap<String, dynamic> callEndedData = <String, dynamic>{}.obs;
-  static final RxMap<String, dynamic> iceCandidateData = <String, dynamic>{}.obs;
-  
-  static final StreamController<Map<String, dynamic>> liveCommentsEvent = StreamController.broadcast();
-  static final StreamController<Map<String, dynamic>> superChatEvent = StreamController.broadcast();
-  static final StreamController<Map<String, dynamic>> userJoinedEvent = StreamController.broadcast();
-  static final StreamController<Map<String, dynamic>> userLeftEvent = StreamController.broadcast();
+  static final RxMap<String, dynamic> iceCandidateData =
+      <String, dynamic>{}.obs;
+
+  static final StreamController<Map<String, dynamic>> liveCommentsEvent =
+      StreamController.broadcast();
+  static final StreamController<Map<String, dynamic>> superChatEvent =
+      StreamController.broadcast();
+  static final StreamController<Map<String, dynamic>> userJoinedEvent =
+      StreamController.broadcast();
+  static final StreamController<Map<String, dynamic>> userLeftEvent =
+      StreamController.broadcast();
   static final RxMap<int, int> liveViewerCounts = <int, int>{}.obs;
 
   // Prepaid Package state
@@ -75,7 +90,7 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
   static final RxBool isPackageSessionTerminated = false.obs;
 
   final String _wsUrl = AppUrls.webSocketUrl;
-  
+
   bool get isConnected => _isConnected;
 
   @override
@@ -98,7 +113,9 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
       disconnect();
     } else if (state == AppLifecycleState.resumed) {
       if (!_isConnected && !_isConnecting) {
-        Logger.d('[WebSocketService] App resumed and socket disconnected, reconnecting.');
+        Logger.d(
+          '[WebSocketService] App resumed and socket disconnected, reconnecting.',
+        );
         connect();
       }
     }
@@ -123,12 +140,12 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
 
     try {
       _token = await TokenManager.getToken();
-      
+
       final userDataStr = SharedPrefs.getString(AppConstants.userData);
       if (userDataStr != null && userDataStr.isNotEmpty) {
-         final userModel = UserModel.fromJsonString(userDataStr);
-         _userId = userModel?.id;
-         currentUserId = _userId;
+        final userModel = UserModel.fromJsonString(userDataStr);
+        _userId = userModel?.id;
+        currentUserId = _userId;
       }
 
       if (_token == null || _token!.isEmpty || _userId == null) {
@@ -144,13 +161,15 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
       Logger.d('|🔌 WEBSOCKET CONNECTING');
       Logger.d('|📍 URL: $_wsUrl');
       Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      
+
       _channel = IOWebSocketChannel.connect(
         Uri.parse(_wsUrl),
         headers: {'Origin': 'https://suryapathkundli.com'},
-        pingInterval: const Duration(seconds: 25), // 🔥 Fix for weak networks (silent drops)
+        pingInterval: const Duration(
+          seconds: 25,
+        ), // 🔥 Fix for weak networks (silent drops)
       );
-      
+
       _channel?.stream.listen(
         (message) {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
@@ -195,10 +214,12 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
       try {
         final Map<String, dynamic> data = jsonDecode(message);
         final String? event = data['event'];
-        
+
         if (event == AppUrls.pusherConnectionEstablished) {
           final String connectionDataStr = data['data'];
-          final Map<String, dynamic> connectionData = jsonDecode(connectionDataStr);
+          final Map<String, dynamic> connectionData = jsonDecode(
+            connectionDataStr,
+          );
           _socketId = connectionData['socket_id'];
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|✅ WEBSOCKET ESTABLISHED');
@@ -229,24 +250,27 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleChatDismissed(data['data']);
-        } else if (event == AppUrls.eventMessageSent || event == 'App\\Events\\MessageSent') {
+        } else if (event == AppUrls.eventMessageSent ||
+            event == 'App\\Events\\MessageSent') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|🔔 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleMessageSent(data['data']);
-        } else if (event == AppUrls.eventChatInitiated || event == 'App\\Events\\ChatInitiated') {
+        } else if (event == AppUrls.eventChatInitiated ||
+            event == 'App\\Events\\ChatInitiated') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|🔔 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleChatInitiated(data['data']);
-        } else if (event == AppUrls.eventChatQueueUpdated || event == 'App\\Events\\ChatQueueUpdated') {
+        } else if (event == AppUrls.eventChatQueueUpdated ||
+            event == 'App\\Events\\ChatQueueUpdated') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|🔔 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-          
+
           Map<String, dynamic> parsedData = {};
           if (data['data'] is String) {
             parsedData = jsonDecode(data['data']);
@@ -254,111 +278,136 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
             parsedData = Map<String, dynamic>.from(data['data']);
           }
           chatQueueUpdatedEvent.add(parsedData);
-        } else if (event == AppUrls.eventMessageStatusUpdated || event == 'App\\Events\\MessageStatusUpdated') {
+        } else if (event == AppUrls.eventMessageStatusUpdated ||
+            event == 'App\\Events\\MessageStatusUpdated') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|🔔 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleMessageStatusUpdated(data['data']);
-        } else if (event == AppUrls.eventPresenceUpdated || event == 'App\\Events\\PresenceUpdated') {
+        } else if (event == AppUrls.eventPresenceUpdated ||
+            event == 'App\\Events\\PresenceUpdated') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|🔔 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handlePresenceUpdated(data['data']);
-        } else if (event == AppUrls.eventChatDismissed || event == 'App\\Events\\ChatDismissed' || event == '.ChatDismissed') {
+        } else if (event == AppUrls.eventChatDismissed ||
+            event == 'App\\Events\\ChatDismissed' ||
+            event == '.ChatDismissed') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|🔔 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleChatDismissed(data['data']);
-        } else if (event == AppUrls.eventCallInitiated || event == 'App\\Events\\CallInitiated' || event == '.CallInitiated') {
+        } else if (event == AppUrls.eventCallInitiated ||
+            event == 'App\\Events\\CallInitiated' ||
+            event == '.CallInitiated') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|📞 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleCallInitiated(data['data']);
-        } else if (event == AppUrls.eventCallAccepted || event == 'App\\Events\\CallAccepted') {
+        } else if (event == AppUrls.eventCallAccepted ||
+            event == 'App\\Events\\CallAccepted') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|📞 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleCallAccepted(data['data']);
-        } else if (event == AppUrls.eventCallDismissed || event == 'App\\Events\\CallDismissed') {
+        } else if (event == AppUrls.eventCallDismissed ||
+            event == 'App\\Events\\CallDismissed') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|📞 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleCallDismissed(data['data']);
-        } else if (event == AppUrls.eventCallEnded || event == 'App\\Events\\CallEnded') {
+        } else if (event == AppUrls.eventCallEnded ||
+            event == 'App\\Events\\CallEnded') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|📞 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleCallEnded(data['data']);
-        } else if (event == AppUrls.eventIceCandidateSent || event == 'App\\Events\\IceCandidateSent') {
+        } else if (event == AppUrls.eventIceCandidateSent ||
+            event == 'App\\Events\\IceCandidateSent') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|📞 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleIceCandidateSent(data['data']);
         } else if (event == AppUrls.pusherPing) {
-           _send(AppUrls.pusherPong);
-        } else if (event == AppUrls.eventViewerCountUpdated || event == 'App\\Events\\${AppUrls.eventViewerCountUpdated}' || event == '.${AppUrls.eventViewerCountUpdated}') {
+          _send(AppUrls.pusherPong);
+        } else if (event == AppUrls.eventViewerCountUpdated ||
+            event == 'App\\Events\\${AppUrls.eventViewerCountUpdated}' ||
+            event == '.${AppUrls.eventViewerCountUpdated}') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|📺 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleViewerCountUpdated(data['data']);
-        } else if (event == AppUrls.eventNewLiveComment || event == 'App\\Events\\${AppUrls.eventNewLiveComment}' || event == '.${AppUrls.eventNewLiveComment}') {
+        } else if (event == AppUrls.eventNewLiveComment ||
+            event == 'App\\Events\\${AppUrls.eventNewLiveComment}' ||
+            event == '.${AppUrls.eventNewLiveComment}') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|📺 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleNewLiveComment(data['data']);
-        } else if (event == AppUrls.eventSuperChatReceived || event == 'App\\Events\\${AppUrls.eventSuperChatReceived}' || event == '.${AppUrls.eventSuperChatReceived}') {
+        } else if (event == AppUrls.eventSuperChatReceived ||
+            event == 'App\\Events\\${AppUrls.eventSuperChatReceived}' ||
+            event == '.${AppUrls.eventSuperChatReceived}') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|📺 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleSuperChatReceived(data['data']);
-        } else if (event == AppUrls.eventUserJoinedLiveSession || event == 'App\\Events\\${AppUrls.eventUserJoinedLiveSession}' || event == '.${AppUrls.eventUserJoinedLiveSession}') {
+        } else if (event == AppUrls.eventUserJoinedLiveSession ||
+            event == 'App\\Events\\${AppUrls.eventUserJoinedLiveSession}' ||
+            event == '.${AppUrls.eventUserJoinedLiveSession}') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|📺 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleUserJoinedLiveSession(data['data']);
-        } else if (event == AppUrls.eventUserLeftLiveSession || event == 'App\\Events\\${AppUrls.eventUserLeftLiveSession}' || event == '.${AppUrls.eventUserLeftLiveSession}') {
+        } else if (event == AppUrls.eventUserLeftLiveSession ||
+            event == 'App\\Events\\${AppUrls.eventUserLeftLiveSession}' ||
+            event == '.${AppUrls.eventUserLeftLiveSession}') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|📺 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleUserLeftLiveSession(data['data']);
-        } else if (event == AppUrls.eventChatAssistanceMessageSent || event == 'App\\Events\\ChatAssistanceMessageSent') {
+        } else if (event == AppUrls.eventChatAssistanceMessageSent ||
+            event == 'App\\Events\\ChatAssistanceMessageSent') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|🔔 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleMessageSent(data['data']);
-        } else if (event == AppUrls.eventChatAssistanceMessageStatusUpdated || event == 'App\\Events\\ChatAssistanceMessageStatusUpdated') {
+        } else if (event == AppUrls.eventChatAssistanceMessageStatusUpdated ||
+            event == 'App\\Events\\ChatAssistanceMessageStatusUpdated') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|🔔 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleMessageStatusUpdated(data['data']);
-        } else if (event == AppUrls.eventChatAssistanceInitiated || event == 'App\\Events\\ChatAssistanceInitiated') {
+        } else if (event == AppUrls.eventChatAssistanceInitiated ||
+            event == 'App\\Events\\ChatAssistanceInitiated') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|🔔 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleChatAssistanceInitiated(data['data']);
-        } else if (event == AppUrls.eventChatAssistanceLimitReached || event == 'App\\Events\\ChatAssistanceLimitReached') {
+        } else if (event == AppUrls.eventChatAssistanceLimitReached ||
+            event == 'App\\Events\\ChatAssistanceLimitReached') {
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           Logger.d('|🔔 WEBSOCKET EVENT: $event');
           Logger.d('|📦 Data: ${data['data']}');
           Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
           _handleChatAssistanceLimitReached(data['data']);
-        } else if (event == 'PackageSubSessionStarted' || event == 'App\\Events\\PackageSubSessionStarted') {
+        } else if (event == 'PackageSubSessionStarted' ||
+            event == 'App\\Events\\PackageSubSessionStarted') {
           Logger.d('Prepaid Package session started: ${data['data']}');
           try {
             Map<String, dynamic> eventData = {};
@@ -367,13 +416,18 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
             } else if (data['data'] is Map) {
               eventData = Map<String, dynamic>.from(data['data'] as Map);
             }
-            final secs = eventData['remainingDuration'] ?? eventData['remaining_duration'] ?? eventData['subSession']?['purchase']?['remaining_duration'];
-            packageRemainingSeconds.value = int.tryParse(secs?.toString() ?? '') ?? 0;
+            final secs =
+                eventData['remainingDuration'] ??
+                eventData['remaining_duration'] ??
+                eventData['subSession']?['purchase']?['remaining_duration'];
+            packageRemainingSeconds.value =
+                int.tryParse(secs?.toString() ?? '') ?? 0;
             isPackageSessionTerminated.value = false;
           } catch (e) {
             Logger.e('Error handling PackageSubSessionStarted -> $e');
           }
-        } else if (event == 'PackageSubSessionEnded' || event == 'App\\Events\\PackageSubSessionEnded') {
+        } else if (event == 'PackageSubSessionEnded' ||
+            event == 'App\\Events\\PackageSubSessionEnded') {
           Logger.d('Prepaid Package session ended: ${data['data']}');
           try {
             Map<String, dynamic> eventData = {};
@@ -382,12 +436,18 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
             } else if (data['data'] is Map) {
               eventData = Map<String, dynamic>.from(data['data'] as Map);
             }
-            final secs = eventData['remainingDuration'] ?? eventData['remaining_duration'] ?? eventData['subSession']?['purchase']?['remaining_duration'];
-            packageRemainingSeconds.value = int.tryParse(secs?.toString() ?? '') ?? 0;
+            final secs =
+                eventData['remainingDuration'] ??
+                eventData['remaining_duration'] ??
+                eventData['subSession']?['purchase']?['remaining_duration'];
+            packageRemainingSeconds.value =
+                int.tryParse(secs?.toString() ?? '') ?? 0;
           } catch (e) {
             Logger.e('Error handling PackageSubSessionEnded -> $e');
           }
-        } else if (event == AppUrls.eventPackageSessionStateUpdated || event == 'App\\Events\\${AppUrls.eventPackageSessionStateUpdated}') {
+        } else if (event == AppUrls.eventPackageSessionStateUpdated ||
+            event ==
+                'App\\Events\\${AppUrls.eventPackageSessionStateUpdated}') {
           Logger.d('Prepaid Package state updated: ${data['data']}');
           try {
             Map<String, dynamic> eventData = {};
@@ -398,13 +458,15 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
             }
             final secs = eventData['remaining_seconds'];
             if (secs != null) {
-              packageRemainingSeconds.value = int.tryParse(secs?.toString() ?? '') ?? 0;
+              packageRemainingSeconds.value =
+                  int.tryParse(secs?.toString() ?? '') ?? 0;
             }
             // other UI syncs like call_status, chat_status can be added here if needed by the dashboard
           } catch (e) {
             Logger.e('Error handling PackageSessionStateUpdated -> $e');
           }
-        } else if (event == 'PackageSessionTerminated' || event == 'App\\Events\\PackageSessionTerminated') {
+        } else if (event == 'PackageSessionTerminated' ||
+            event == 'App\\Events\\PackageSessionTerminated') {
           Logger.d('Prepaid Package session terminated!');
           packageRemainingSeconds.value = 0;
           isPackageSessionTerminated.value = true;
@@ -415,9 +477,6 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
     }
   }
 
-
-
-
   void _handleViewerCountUpdated(dynamic rawData) {
     try {
       Map<String, dynamic> eventData = {};
@@ -426,13 +485,17 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
       } else if (rawData is Map) {
         eventData = Map<String, dynamic>.from(rawData);
       }
-      final int sessionId = eventData['live_session_id'] is int 
-          ? eventData['live_session_id'] 
-          : (int.tryParse(eventData['live_session_id']?.toString() ?? '') ?? 0);
-      final int count = eventData['viewer_count'] is int 
-          ? eventData['viewer_count'] 
-          : (int.tryParse(eventData['viewer_count']?.toString() ?? '') ?? 0);
-      
+      final int sessionId =
+          eventData['live_session_id'] is int
+              ? eventData['live_session_id']
+              : (int.tryParse(eventData['live_session_id']?.toString() ?? '') ??
+                  0);
+      final int count =
+          eventData['viewer_count'] is int
+              ? eventData['viewer_count']
+              : (int.tryParse(eventData['viewer_count']?.toString() ?? '') ??
+                  0);
+
       liveViewerCounts[sessionId] = count;
       liveViewerCounts.refresh();
 
@@ -445,16 +508,20 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
             description: controller.currentActiveSession.value!.description,
             scheduledAt: controller.currentActiveSession.value!.scheduledAt,
             sessionType: controller.currentActiveSession.value!.sessionType,
-            durationMinutes: controller.currentActiveSession.value!.durationMinutes,
-            maxParticipants: controller.currentActiveSession.value!.maxParticipants,
+            durationMinutes:
+                controller.currentActiveSession.value!.durationMinutes,
+            maxParticipants:
+                controller.currentActiveSession.value!.maxParticipants,
             status: controller.currentActiveSession.value!.status,
             createdAt: controller.currentActiveSession.value!.createdAt,
             startedAt: controller.currentActiveSession.value!.startedAt,
             endedAt: controller.currentActiveSession.value!.endedAt,
             streamKey: controller.currentActiveSession.value!.streamKey,
             viewerCount: count,
-            currentParticipants: controller.currentActiveSession.value!.currentParticipants,
-            isBroadcasting: controller.currentActiveSession.value!.isBroadcasting,
+            currentParticipants:
+                controller.currentActiveSession.value!.currentParticipants,
+            isBroadcasting:
+                controller.currentActiveSession.value!.isBroadcasting,
           );
           controller.currentActiveSession.refresh();
         }
@@ -533,10 +600,12 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
     if (_subscribedChannels.contains(channelName)) {
       _subscribedChannels.remove(channelName);
       if (_isConnected) {
-        _send(jsonEncode({
-          "event": "pusher:unsubscribe",
-          "data": { "channel": channelName }
-        }));
+        _send(
+          jsonEncode({
+            "event": "pusher:unsubscribe",
+            "data": {"channel": channelName},
+          }),
+        );
       }
     }
   }
@@ -556,15 +625,18 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
   }
 
   Future<void> _authenticateAndSubscribeToChannel(String channelName) async {
-    if (!channelName.startsWith('private-') && !channelName.startsWith('presence-')) {
+    if (!channelName.startsWith('private-') &&
+        !channelName.startsWith('presence-')) {
       Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       Logger.d('|✅ WEBSOCKET PUBLIC CHANNEL SUBSCRIPTION');
       Logger.d('|📺 Channel: $channelName');
       Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      _send(jsonEncode({
-        "event": AppUrls.pusherSubscribe,
-        "data": { "channel": channelName }
-      }));
+      _send(
+        jsonEncode({
+          "event": AppUrls.pusherSubscribe,
+          "data": {"channel": channelName},
+        }),
+      );
       return;
     }
 
@@ -575,23 +647,18 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
 
     try {
       final apiClient = Get.find<ApiClient>();
-      
+
       final response = await apiClient.post(
         AppUrls.broadcastingAuth,
-        data: {
-          'channel_name': channelName,
-          'socket_id': _socketId,
-        },
-        options: Options(
-          contentType: Headers.formUrlEncodedContentType,
-        ),
+        data: {'channel_name': channelName, 'socket_id': _socketId},
+        options: Options(contentType: Headers.formUrlEncodedContentType),
         handleError: false,
         showErrorScreen: false,
       );
 
       final authString = response.body?['auth']?.toString();
       final channelData = response.body?['channel_data'];
-      
+
       if (authString != null && authString.isNotEmpty) {
         Logger.d('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
         Logger.d('|✅ WEBSOCKET AUTH SUCCESS');
@@ -600,16 +667,16 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
 
         final Map<String, dynamic> subscribeData = {
           "channel": channelName,
-          "auth": authString
+          "auth": authString,
         };
         if (channelName.startsWith('presence-') && channelData != null) {
-          subscribeData["channel_data"] = channelData is String ? channelData : jsonEncode(channelData);
+          subscribeData["channel_data"] =
+              channelData is String ? channelData : jsonEncode(channelData);
         }
-        
-        _send(jsonEncode({
-          "event": AppUrls.pusherSubscribe,
-          "data": subscribeData
-        }));
+
+        _send(
+          jsonEncode({"event": AppUrls.pusherSubscribe, "data": subscribeData}),
+        );
       } else {
         Logger.e('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
         Logger.e('|❌ WEBSOCKET AUTH FAILED');
@@ -667,25 +734,27 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
       }
 
       Logger.d('_handleChatInitiated: eventData keys = ${eventData.keys}');
-      
+
       final session = eventData['session'];
       final senderData = eventData['senderData'];
-      
-      Logger.d('_handleChatInitiated: session=$session, senderData=$senderData');
+
+      Logger.d(
+        '_handleChatInitiated: session=$session, senderData=$senderData',
+      );
 
       if (session != null && senderData != null) {
         chatInitiatedEvent.add(Map<String, dynamic>.from(session));
-        
+
         // Store full sender details for later use (e.g. bubble tap)
         lastChatSenderData = Map<String, dynamic>.from(senderData);
-        
-        final int sessionId = session['id'] is int 
-            ? session['id'] 
-            : (int.tryParse(session['id']?.toString() ?? '') ?? 0);
+
+        final int sessionId =
+            session['id'] is int
+                ? session['id']
+                : (int.tryParse(session['id']?.toString() ?? '') ?? 0);
         final String name = senderData['name']?.toString() ?? 'User';
 
         // Trigger ongoing notification drawer item during ringing
-        
 
         WidgetsBinding.instance.addPostFrameCallback((_) {
           CallSummaryDialog.dismissIfOpen();
@@ -701,7 +770,9 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
           );
         });
       } else {
-        Logger.e('_handleChatInitiated: session or senderData is null! rawData=$rawData');
+        Logger.e(
+          '_handleChatInitiated: session or senderData is null! rawData=$rawData',
+        );
       }
     } catch (e) {
       Logger.e('Error handling ChatInitiated: $e');
@@ -720,9 +791,10 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
       final session = eventData['session'];
       if (session == null) return;
 
-      final int sessionId = session['id'] is int 
-          ? session['id'] 
-          : (int.tryParse(session['id']?.toString() ?? '') ?? 0);
+      final int sessionId =
+          session['id'] is int
+              ? session['id']
+              : (int.tryParse(session['id']?.toString() ?? '') ?? 0);
       final String? startedAt = session['started_at']?.toString();
       if (startedAt != null) {
         sessionStartTimes[sessionId] = startedAt;
@@ -731,19 +803,22 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
       sessionStatusUpdates.refresh();
 
       // Update FloatingChatBubble status directly!
-      if (FloatingChatBubble.isActive && FloatingChatBubble.sessionId == sessionId) {
+      if (FloatingChatBubble.isActive &&
+          FloatingChatBubble.sessionId == sessionId) {
         FloatingChatBubble.updateStatus('ongoing');
 
         // Show ongoing local notification since user minimized the chat and it just started!
         int? startedAtMillis;
         if (startedAt != null && startedAt.isNotEmpty) {
           String isoUtc = startedAt.trim().replaceAll(' ', 'T');
-          if (!isoUtc.endsWith('Z') && !isoUtc.contains('+') && !isoUtc.contains('-')) {
+          if (!isoUtc.endsWith('Z') &&
+              !isoUtc.contains('+') &&
+              !isoUtc.contains('-')) {
             isoUtc += 'Z';
           }
-          startedAtMillis = DateTime.tryParse(isoUtc)?.toLocal().millisecondsSinceEpoch;
+          startedAtMillis =
+              DateTime.tryParse(isoUtc)?.toLocal().millisecondsSinceEpoch;
         }
-        
       }
 
       // Update ChatController directly if registered
@@ -770,18 +845,24 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
       final session = eventData['session'];
       if (session == null) return;
 
-      final int sessionId = session['id'] is int 
-          ? session['id'] 
-          : (int.tryParse(session['id']?.toString() ?? '') ?? 0);
-      final int durationSeconds = session['duration_seconds'] is int 
-          ? session['duration_seconds'] 
-          : (int.tryParse(session['duration_seconds']?.toString() ?? '') ?? 0);
-      final double totalCost = double.tryParse(session['total_cost']?.toString() ?? '') ?? 0.0;
+      final int sessionId =
+          session['id'] is int
+              ? session['id']
+              : (int.tryParse(session['id']?.toString() ?? '') ?? 0);
+      final int durationSeconds =
+          session['duration_seconds'] is int
+              ? session['duration_seconds']
+              : (int.tryParse(session['duration_seconds']?.toString() ?? '') ??
+                  0);
+      final double totalCost =
+          double.tryParse(session['total_cost']?.toString() ?? '') ?? 0.0;
 
-      Logger.d('WebSocketService: ChatEnded for sessionId=$sessionId, active=$activeSessionId');
+      Logger.d(
+        'WebSocketService: ChatEnded for sessionId=$sessionId, active=$activeSessionId',
+      );
 
       // Cancel notification & floating bubble immediately
-      
+
       FloatingChatBubble.dismiss(stopForegroundService: true);
 
       if (activeSessionId == sessionId) {
@@ -809,7 +890,7 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
       Logger.d('WebSocketService: ChatDismissed for sessionId=$sessionId');
 
       // Cancel notification & floating bubble immediately
-      
+
       FloatingChatBubble.dismiss(stopForegroundService: true);
 
       // Propagate the ended/dismissed status so ChatScreen / ChatController can react
@@ -842,8 +923,15 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
         final map = Map<String, dynamic>.from(messageData);
         incomingMessages.add(map);
 
-        final int senderId = int.tryParse(map['sender_id']?.toString() ?? '') ?? 0;
-        final int sessionId = int.tryParse(map['chat_assistance_session_id']?.toString() ?? map['chat_session_id']?.toString() ?? '') ?? 0;
+        final int senderId =
+            int.tryParse(map['sender_id']?.toString() ?? '') ?? 0;
+        final int sessionId =
+            int.tryParse(
+              map['chat_assistance_session_id']?.toString() ??
+                  map['chat_session_id']?.toString() ??
+                  '',
+            ) ??
+            0;
 
         // Auto-refresh the assistant chat list if a new message arrives
         if (Get.isRegistered<AssistantChatListController>()) {
@@ -851,20 +939,23 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
         }
 
         if (senderId != currentUserId && activeSessionId != sessionId) {
-          if (FloatingChatBubble.isActive && FloatingChatBubble.sessionId == sessionId) {
+          if (FloatingChatBubble.isActive &&
+              FloatingChatBubble.sessionId == sessionId) {
             FloatingChatBubble.incrementUnreadCount();
           }
           _showInAppNotification(map);
-          
+
           final int messageId = int.tryParse(map['id']?.toString() ?? '') ?? 0;
           if (messageId > 0 && Get.isRegistered<SyncMessageStatusUseCase>()) {
-            Get.find<SyncMessageStatusUseCase>().execute(
-              sessionId: sessionId,
-              messageIds: [messageId],
-              status: 'delivered',
-            ).catchError((e) {
-              debugPrint('Error syncing message status: $e');
-            });
+            Get.find<SyncMessageStatusUseCase>()
+                .execute(
+                  sessionId: sessionId,
+                  messageIds: [messageId],
+                  status: 'delivered',
+                )
+                .catchError((e) {
+                  debugPrint('Error syncing message status: $e');
+                });
           }
         }
       }
@@ -874,9 +965,10 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
   }
 
   void _showInAppNotification(Map<String, dynamic> msg) {
-    final int sessionId = int.tryParse(msg['chat_session_id']?.toString() ?? '') ?? 0;
+    final int sessionId =
+        int.tryParse(msg['chat_session_id']?.toString() ?? '') ?? 0;
     final String text = msg['message'] ?? 'Sent an attachment';
-    
+
     try {
       CustomSnackBar.disabledSnackbar(
         'New Message',
@@ -894,12 +986,14 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
         ],
         duration: const Duration(seconds: 4),
         onTap: (_) {
-          Get.to(() => ChatScreen(
-            userName: "User",
-            userImage: "",
-            sessionId: sessionId,
-            initialStatus: 'ongoing',
-          ));
+          Get.to(
+            () => ChatScreen(
+              userName: "User",
+              userImage: "",
+              sessionId: sessionId,
+              initialStatus: 'ongoing',
+            ),
+          );
         },
       );
     } catch (e) {
@@ -970,9 +1064,10 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
       }
       final session = eventData['session'];
       if (session != null) {
-        final int sessionId = session['id'] is int 
-            ? session['id'] 
-            : (int.tryParse(session['id']?.toString() ?? '') ?? 0);
+        final int sessionId =
+            session['id'] is int
+                ? session['id']
+                : (int.tryParse(session['id']?.toString() ?? '') ?? 0);
         callSessionStatusUpdates[sessionId] = 'ongoing';
         callSessionStatusUpdates.refresh();
       }
@@ -993,9 +1088,10 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
       }
       final session = eventData['session'];
       if (session != null) {
-        final int sessionId = session['id'] is int 
-            ? session['id'] 
-            : (int.tryParse(session['id']?.toString() ?? '') ?? 0);
+        final int sessionId =
+            session['id'] is int
+                ? session['id']
+                : (int.tryParse(session['id']?.toString() ?? '') ?? 0);
         final String? reason = eventData['reason']?.toString();
         callSessionStatusUpdates[sessionId] = reason ?? 'dismissed';
         callSessionStatusUpdates.refresh();
@@ -1017,12 +1113,15 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
         eventData = Map<String, dynamic>.from(rawData);
       }
       final session = eventData['session'];
-      final int sessionId = session != null && session['id'] != null
-          ? (session['id'] is int ? session['id'] : (int.tryParse(session['id']?.toString() ?? '') ?? 0))
-          : 0;
+      final int sessionId =
+          session != null && session['id'] != null
+              ? (session['id'] is int
+                  ? session['id']
+                  : (int.tryParse(session['id']?.toString() ?? '') ?? 0))
+              : 0;
 
       // Cancel call notifications & bubbles immediately
-      
+
       FloatingCallBubble.dismiss(stopForegroundService: true);
 
       if (sessionId != 0) {
@@ -1058,7 +1157,9 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
         Get.find<AssistantChatListController>().fetchSessions();
       }
     } catch (e) {
-      Logger.e('WebSocketService: error handling ChatAssistanceInitiated -> $e');
+      Logger.e(
+        'WebSocketService: error handling ChatAssistanceInitiated -> $e',
+      );
     }
   }
 
@@ -1068,7 +1169,9 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
         Get.find<AssistanceChatRoomController>().limitReached.value = true;
       }
     } catch (e) {
-      Logger.e('WebSocketService: error handling ChatAssistanceLimitReached -> $e');
+      Logger.e(
+        'WebSocketService: error handling ChatAssistanceLimitReached -> $e',
+      );
     }
   }
 }

@@ -26,9 +26,7 @@ class LoginScreen extends StatelessWidget {
       child: Stack(
         children: [
           // Fixed white background layer
-          Positioned.fill(
-            child: Container(color: Colors.white),
-          ),
+          Positioned.fill(child: Container(color: Colors.white)),
           // Background image - Stays fixed behind everything (temporarily disabled)
           // Positioned.fill(
           //   child: Opacity(
@@ -58,7 +56,7 @@ class LoginScreen extends StatelessWidget {
                           height: 170,
                         ),
                       ),
-                      
+
                       const SizedBox(height: 30),
 
                       Column(
@@ -83,7 +81,7 @@ class LoginScreen extends StatelessWidget {
                       ),
 
                       const SizedBox(height: 20),
-                      
+
                       // Login using OTP text
                       AppText(
                         'Login using OTP',
@@ -91,60 +89,78 @@ class LoginScreen extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                         color: AppColors.errorColor,
                       ),
-                      
+
                       const SizedBox(height: 20),
-                      
+
                       // Phone Input
                       _buildPhoneInput(authController, errorMessage),
-                      
+
                       // Error message
-                      Obx(() => errorMessage.value.isNotEmpty
-                          ? Padding(
-                              padding: const EdgeInsets.only(top: 8, left: 20),
-                              child: AppText(
-                                errorMessage.value,
-                                fontSize: 12,
-                                color: Colors.red,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            )
-                          : const SizedBox.shrink()),
-                      
+                      Obx(
+                        () =>
+                            errorMessage.value.isNotEmpty
+                                ? Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 8,
+                                    left: 20,
+                                  ),
+                                  child: AppText(
+                                    errorMessage.value,
+                                    fontSize: 12,
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                )
+                                : const SizedBox.shrink(),
+                      ),
+
                       const SizedBox(height: 30),
-                      
+
                       // Send OTP Button
-                      Obx(() => CustomButton(
-                        text: 'Send OTP',
-                        isLoading: authController.isSendingOtp.value,
-                        borderRadius: 100,
-                        onPressed: () {
-                          // Validate mobile number before proceeding
-                          if (authController.mobileController.text.isEmpty) {
-                            errorMessage.value = 'Please enter mobile number';
-                            return;
-                          }
-                          
-                          if (authController.mobileController.text.length != 10) {
-                            errorMessage.value = 'Please enter valid 10-digit mobile number';
-                            return;
-                          }
-                          
-                          // Clear error and proceed
-                          errorMessage.value = '';
-                          // Call sendOtp API
-                          authController.sendOtp();
-                        },
-                      )),
-                      
+                      Obx(
+                        () => CustomButton(
+                          text: 'Send OTP',
+                          isLoading: authController.isSendingOtp.value,
+                          borderRadius: 100,
+                          onPressed: () {
+                            // Validate mobile number before proceeding
+                            if (authController.mobileController.text.isEmpty) {
+                              errorMessage.value = 'Please enter mobile number';
+                              return;
+                            }
+
+                            if (authController.mobileController.text.length !=
+                                10) {
+                              errorMessage.value =
+                                  'Please enter valid 10-digit mobile number';
+                              return;
+                            }
+
+                            // Clear error and proceed
+                            errorMessage.value = '';
+                            // Call sendOtp API
+                            authController.sendOtp();
+                          },
+                        ),
+                      ),
+
                       const SizedBox(height: 16),
 
                       // Sign Up link
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          AppText('New astrologer? ', fontSize: 13, color: Colors.black54),
+                          AppText(
+                            'New astrologer? ',
+                            fontSize: 13,
+                            color: Colors.black54,
+                          ),
                           GestureDetector(
-                            onTap: () => Get.to(() => const RegistrationScreen(), transition: Transition.rightToLeft),
+                            onTap:
+                                () => Get.to(
+                                  () => const RegistrationScreen(),
+                                  transition: Transition.rightToLeft,
+                                ),
                             child: AppText(
                               'Sign Up',
                               fontSize: 13,
@@ -157,7 +173,7 @@ class LoginScreen extends StatelessWidget {
 
                       const SizedBox(height: 20),
                       _buildBottomFeatures(),
-                      
+
                       const SizedBox(height: 30),
                     ],
                   ),
@@ -175,7 +191,10 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPhoneInput(AuthController authController, RxString errorMessage) {
+  Widget _buildPhoneInput(
+    AuthController authController,
+    RxString errorMessage,
+  ) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -226,17 +245,11 @@ class LoginScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          Container(
-            height: 1,
-            width: double.infinity,
-            color: Colors.black12,
-          ),
+          Container(height: 1, width: double.infinity, color: Colors.black12),
         ],
       ),
     );
   }
-
-
 
   Widget _buildBottomFeatures() {
     return Material(
@@ -257,10 +270,7 @@ class LoginScreen extends StatelessWidget {
             ],
           ),
           borderRadius: BorderRadius.circular(25),
-          border: Border.all(
-            color: Colors.white.withOpacity(0.3),
-            width: 1,
-          ),
+          border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
         ),
         child: IntrinsicHeight(
           child: Row(
@@ -330,11 +340,7 @@ class LoginScreen extends StatelessWidget {
                 color: color.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 32,
-              ),
+              child: Icon(icon, color: color, size: 32),
             ),
             Positioned(
               bottom: -2,
@@ -345,11 +351,7 @@ class LoginScreen extends StatelessWidget {
                   color: Colors.white,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  Icons.check_circle_rounded,
-                  color: color,
-                  size: 16,
-                ),
+                child: Icon(Icons.check_circle_rounded, color: color, size: 16),
               ),
             ),
           ],

@@ -18,7 +18,9 @@ class TrainingVideoBinding extends Bindings {
     final detailUseCase = GetTrainingVideoDetailUseCase(repository);
 
     Get.lazyPut(() => TrainingVideoController(listUseCase), fenix: true);
-    Get.lazyPut(() => TrainingVideoDetailController(detailUseCase), fenix: true);
-
+    Get.lazyPut(
+      () => TrainingVideoDetailController(detailUseCase),
+      fenix: true,
+    );
   }
 }

@@ -10,9 +10,7 @@ class DiscountedSessionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(
-        title: 'Discounted Session',
-      ),
+      appBar: const CustomAppBar(title: 'Discounted Session'),
       body: Column(
         children: [
           Expanded(
@@ -56,12 +54,19 @@ class DiscountedSessionScreen extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryColor,
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
-                child: const AppText('Share Session', color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                child: const AppText(
+                  'Share Session',
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

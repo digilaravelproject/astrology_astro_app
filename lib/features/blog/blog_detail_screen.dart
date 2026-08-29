@@ -9,6 +9,7 @@ import 'domain/models/blog_model.dart';
 import '../../core/constants/app_urls.dart';
 
 import 'presentation/controllers/blog_controller.dart';
+import 'package:astro_astrologer/core/widgets/custom_image_widget.dart';
 
 class BlogDetailScreen extends StatefulWidget {
   final BlogModel blog;
@@ -65,13 +66,15 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                 background: Stack(
                   fit: StackFit.expand,
                   children: [
-                    Image.network(
-                      '${AppUrls.baseImageUrl}${blog.blogImage}',
+                    CustomImageWidget(
+                      imagePath: '${AppUrls.baseImageUrl}${blog.blogImage}',
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Image.network(
-                        'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=1000',
-                        fit: BoxFit.cover,
-                      ),
+                      errorBuilder:
+                          (context, error, stackTrace) => CustomImageWidget(
+                            imagePath:
+                                'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=1000',
+                            fit: BoxFit.cover,
+                          ),
                     ),
                     Container(
                       decoration: BoxDecoration(
@@ -96,7 +99,10 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
                             decoration: BoxDecoration(
                               color: AppColors.primaryColor,
                               borderRadius: BorderRadius.circular(100),
@@ -119,7 +125,11 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                           const SizedBox(height: 12),
                           Row(
                             children: [
-                              const Icon(Iconsax.clock_copy, size: 14, color: Colors.white70),
+                              const Icon(
+                                Iconsax.clock_copy,
+                                size: 14,
+                                color: Colors.white70,
+                              ),
                               const SizedBox(width: 6),
                               AppText(
                                 '8 min read',
@@ -128,7 +138,11 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                                 fontWeight: FontWeight.w500,
                               ),
                               const SizedBox(width: 16),
-                              const Icon(Iconsax.calendar_1_copy, size: 14, color: Colors.white70),
+                              const Icon(
+                                Iconsax.calendar_1_copy,
+                                size: 14,
+                                color: Colors.white70,
+                              ),
                               const SizedBox(width: 6),
                               AppText(
                                 "${blog.createdAt.day} ${_getMonth(blog.createdAt.month)} ${blog.createdAt.year}",
@@ -145,7 +159,7 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                 ),
               ),
             ),
-            
+
             // Content
             SliverToBoxAdapter(
               child: Container(
@@ -164,7 +178,7 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                           padding: EdgeInsets.symmetric(vertical: 20),
                           child: Center(child: CircularProgressIndicator()),
                         ),
-                      
+
                       // Main Content
                       AppText(
                         blog.subtitle,
@@ -182,7 +196,7 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                         height: 1.8,
                       ),
                       const SizedBox(height: 40),
-                      
+
                       // Tags
                       Wrap(
                         spacing: 8,
@@ -194,7 +208,7 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                           _buildTag("Vedic"),
                         ],
                       ),
-                      
+
                       const SizedBox(height: 40),
                     ],
                   ),
@@ -225,7 +239,20 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
   }
 
   String _getMonth(int month) {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     return (month >= 1 && month <= 12) ? months[month - 1] : '';
   }
 }

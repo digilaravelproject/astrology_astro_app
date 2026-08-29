@@ -62,7 +62,7 @@ class InvoiceController extends GetxController {
       final pathSegments = uri.pathSegments;
       String year = '2026';
       String month = '08';
-      
+
       if (pathSegments.isNotEmpty) {
         if (pathSegments.length >= 3) {
           month = pathSegments[pathSegments.length - 2];
@@ -74,16 +74,16 @@ class InvoiceController extends GetxController {
           month = pathSegments[pathSegments.length - 1];
         }
       }
-      
+
       final String fileName = 'invoice_${year}_$month.pdf';
-      
+
       // Determine safe directory - external storage is safer for user visibility
       Directory? dir;
       if (Platform.isAndroid) {
         dir = await getExternalStorageDirectory();
       }
       dir ??= await getTemporaryDirectory();
-      
+
       final String savePath = '${dir.path}/$fileName';
 
       // Download file with Auth header
@@ -106,7 +106,9 @@ class InvoiceController extends GetxController {
           try {
             final result = await OpenFilex.open(savePath);
             if (result.type != ResultType.done) {
-              CustomSnackBar.showInfo('Downloaded to: $fileName. Opening manually is recommended.');
+              CustomSnackBar.showInfo(
+                'Downloaded to: $fileName. Opening manually is recommended.',
+              );
             }
           } catch (openEx) {
             // Fallback snackbar if default PDF handler crashes

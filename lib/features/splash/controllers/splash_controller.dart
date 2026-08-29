@@ -33,10 +33,13 @@ class SplashController extends GetxController {
         await Future.delayed(const Duration(seconds: 2));
 
         // Check if user is logged in and has user data
-        final isLoggedIn = SharedPrefs.getBool(AppConstants.isLoggedIn) ?? false;
+        final isLoggedIn =
+            SharedPrefs.getBool(AppConstants.isLoggedIn) ?? false;
         final userData = SharedPrefs.getString(AppConstants.userData);
 
-        print('[SPLASH] isLoggedIn: $isLoggedIn, hasUserData: ${userData != null && userData.isNotEmpty}');
+        print(
+          '[SPLASH] isLoggedIn: $isLoggedIn, hasUserData: ${userData != null && userData.isNotEmpty}',
+        );
 
         bool cameraGranted = await Permission.camera.isGranted;
         bool micGranted = await Permission.microphone.isGranted;

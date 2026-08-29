@@ -29,9 +29,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(
-        title: 'Feedback'.tr,
-      ),
+      appBar: CustomAppBar(title: 'Feedback'.tr),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -84,33 +82,49 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 maxLines: 6,
                 style: const TextStyle(fontSize: 14, color: Color(0xFF2E1A47)),
                 decoration: InputDecoration(
-                  hintText: "Tell us what you liked or how we can improve...".tr,
-                  hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+                  hintText:
+                      "Tell us what you liked or how we can improve...".tr,
+                  hintStyle: TextStyle(
+                    color: Colors.grey.shade400,
+                    fontSize: 13,
+                  ),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.all(20),
                 ),
               ),
             ),
             const SizedBox(height: 48),
-            Obx(() => CustomButton(
-              text: "Submit Feedback".tr,
-              isLoading: controller.isFeedbackSubmitting.value,
-              onPressed: () async {
-                if (_rating == 0) {
-                  CustomSnackBar.showError("Please select a star rating", title: "Rating Required");
-                  return;
-                }
-                
-                final success = await controller.submitFeedback(_rating, _feedbackController.text);
-                
-                if (success) {
-                  Get.back();
-                  CustomSnackBar.showSuccess("Your feedback has been submitted successfully!");
-                } else {
-                  CustomSnackBar.showError("Failed to submit feedback. Please try again.");
-                }
-              },
-            )),
+            Obx(
+              () => CustomButton(
+                text: "Submit Feedback".tr,
+                isLoading: controller.isFeedbackSubmitting.value,
+                onPressed: () async {
+                  if (_rating == 0) {
+                    CustomSnackBar.showError(
+                      "Please select a star rating",
+                      title: "Rating Required",
+                    );
+                    return;
+                  }
+
+                  final success = await controller.submitFeedback(
+                    _rating,
+                    _feedbackController.text,
+                  );
+
+                  if (success) {
+                    Get.back();
+                    CustomSnackBar.showSuccess(
+                      "Your feedback has been submitted successfully!",
+                    );
+                  } else {
+                    CustomSnackBar.showError(
+                      "Failed to submit feedback. Please try again.",
+                    );
+                  }
+                },
+              ),
+            ),
           ],
         ),
       ),

@@ -34,24 +34,36 @@ class PriceIncreaseController extends GetxController {
       final response = await _apiClient.get(AppUrls.priceIncreaseStatus);
       if (response.isSuccess && response.body != null) {
         final data = response.body;
-        totalBusyMinutes.value = double.tryParse(data['total_busy_minutes']?.toString() ?? '0.0') ?? 0.0;
-        
-        currentLevel.value = data['current_level'] as Map<String, dynamic>? ?? {};
+        totalBusyMinutes.value =
+            double.tryParse(data['total_busy_minutes']?.toString() ?? '0.0') ??
+            0.0;
+
+        currentLevel.value =
+            data['current_level'] as Map<String, dynamic>? ?? {};
         nextLevel.value = data['next_level'] as Map<String, dynamic>? ?? {};
-        currentRates.value = data['current_rates'] as Map<String, dynamic>? ?? {};
+        currentRates.value =
+            data['current_rates'] as Map<String, dynamic>? ?? {};
         final pendingList = data['pending_requests'] as List<dynamic>? ?? [];
         if (pendingList.isNotEmpty) {
           pendingRequest.assignAll(pendingList.first as Map<dynamic, dynamic>);
         } else if (data['pending_request'] != null) {
-          pendingRequest.assignAll(data['pending_request'] as Map<dynamic, dynamic>);
+          pendingRequest.assignAll(
+            data['pending_request'] as Map<dynamic, dynamic>,
+          );
         } else {
           pendingRequest.clear();
         }
-        
-        canRequestMap.assignAll(data['can_request'] as Map<dynamic, dynamic>? ?? {});
-        Logger.d('PriceIncreaseController: status loaded successfully, canRequestMap: $canRequestMap');
+
+        canRequestMap.assignAll(
+          data['can_request'] as Map<dynamic, dynamic>? ?? {},
+        );
+        Logger.d(
+          'PriceIncreaseController: status loaded successfully, canRequestMap: $canRequestMap',
+        );
       } else {
-        Logger.e('PriceIncreaseController: Failed to fetch status: ${response.message}');
+        Logger.e(
+          'PriceIncreaseController: Failed to fetch status: ${response.message}',
+        );
       }
     } catch (e) {
       Logger.e('PriceIncreaseController: fetchStatus error: $e');
@@ -68,7 +80,9 @@ class PriceIncreaseController extends GetxController {
         historyList.assignAll(response.body as List<dynamic>? ?? []);
         Logger.d('PriceIncreaseController: history loaded successfully');
       } else {
-        Logger.e('PriceIncreaseController: Failed to fetch history: ${response.message}');
+        Logger.e(
+          'PriceIncreaseController: Failed to fetch history: ${response.message}',
+        );
       }
     } catch (e) {
       Logger.e('PriceIncreaseController: fetchHistory error: $e');
@@ -82,17 +96,18 @@ class PriceIncreaseController extends GetxController {
     try {
       final response = await _apiClient.post(
         AppUrls.priceIncreaseRequest,
-        data: {
-          'price_type': priceType,
-          'increase_amount': increaseAmount,
-        },
+        data: {'price_type': priceType, 'increase_amount': increaseAmount},
       );
       if (response.isSuccess) {
-        CustomSnackBar.showSuccess(response.message ?? "Request submitted successfully.");
+        CustomSnackBar.showSuccess(
+          response.message ?? "Request submitted successfully.",
+        );
         await fetchStatus(); // Refresh status
         return true;
       } else {
-        CustomSnackBar.showError(response.message ?? "Failed to submit request.");
+        CustomSnackBar.showError(
+          response.message ?? "Failed to submit request.",
+        );
         return false;
       }
     } catch (e) {

@@ -20,9 +20,12 @@ class RemediesData {
 
   factory RemediesData.fromJson(Map<String, dynamic> json) {
     return RemediesData(
-      crystals: json['crystals'] != null
-          ? (json['crystals'] as List).map((i) => CrystalRemedy.fromJson(i)).toList()
-          : null,
+      crystals:
+          json['crystals'] != null
+              ? (json['crystals'] as List)
+                  .map((i) => CrystalRemedy.fromJson(i))
+                  .toList()
+              : null,
       system: json['system'],
     );
   }
@@ -49,9 +52,12 @@ class CrystalRemedy {
     return CrystalRemedy(
       planet: json['planet'],
       planetStrength: json['planetStrength'],
-      charity: json['charity'] != null ? Charity.fromJson(json['charity']) : null,
-      fasting: json['fasting'] != null ? Fasting.fromJson(json['fasting']) : null,
-      gemstone: json['gemstone'] != null ? Gemstone.fromJson(json['gemstone']) : null,
+      charity:
+          json['charity'] != null ? Charity.fromJson(json['charity']) : null,
+      fasting:
+          json['fasting'] != null ? Fasting.fromJson(json['fasting']) : null,
+      gemstone:
+          json['gemstone'] != null ? Gemstone.fromJson(json['gemstone']) : null,
       mantra: json['mantra'] != null ? Mantra.fromJson(json['mantra']) : null,
     );
   }

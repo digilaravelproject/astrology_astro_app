@@ -17,19 +17,25 @@ class NotificationRepository implements NotificationRepositoryInterface {
 
   @override
   Future<ResponseModel> getNotifications(int userId) async {
-    Logger.d('NotificationRepository: Fetching notifications for userId: $userId');
+    Logger.d(
+      'NotificationRepository: Fetching notifications for userId: $userId',
+    );
     return await _apiClient.get(AppUrls.getNotifications(userId));
   }
 
   @override
   Future<ResponseModel> getNotificationDetail(int id, int userId) async {
-    Logger.d('NotificationRepository: Fetching detail for notificationId: $id, userId: $userId');
+    Logger.d(
+      'NotificationRepository: Fetching detail for notificationId: $id, userId: $userId',
+    );
     return await _apiClient.get(AppUrls.getNotificationDetail(id, userId));
   }
 
   @override
   Future<ResponseModel> markNotificationRead(int id, int userId) async {
-    Logger.d('NotificationRepository: Marking as read notificationId: $id, userId: $userId');
+    Logger.d(
+      'NotificationRepository: Marking as read notificationId: $id, userId: $userId',
+    );
     return await _apiClient.put(AppUrls.markNotificationRead(id, userId));
   }
 }

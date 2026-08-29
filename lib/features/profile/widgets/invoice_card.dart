@@ -35,9 +35,13 @@ class InvoiceCard extends StatelessWidget {
             offset: const Offset(0, 3),
           ),
         ],
-        border: isFirst
-            ? Border.all(color: AppColors.primaryColor.withOpacity(0.4), width: 1.5)
-            : null,
+        border:
+            isFirst
+                ? Border.all(
+                  color: AppColors.primaryColor.withOpacity(0.4),
+                  width: 1.5,
+                )
+                : null,
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
@@ -46,15 +50,19 @@ class InvoiceCard extends StatelessWidget {
           child: ExpansionTile(
             initiallyExpanded: isExpanded,
             onExpansionChanged: onExpansionChanged,
-            tilePadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+            tilePadding: const EdgeInsets.symmetric(
+              horizontal: 18,
+              vertical: 6,
+            ),
             childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
             leading: Container(
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: isFirst
-                    ? AppColors.primaryColor.withOpacity(0.08)
-                    : const Color(0xFFF5F5F5),
+                color:
+                    isFirst
+                        ? AppColors.primaryColor.withOpacity(0.08)
+                        : const Color(0xFFF5F5F5),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
@@ -83,7 +91,10 @@ class InvoiceCard extends StatelessWidget {
               children: [
                 // Status Badge
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.primaryColor.withOpacity(0.08),
                     borderRadius: BorderRadius.circular(20),
@@ -114,7 +125,9 @@ class InvoiceCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: AppColors.primaryColor.withOpacity(0.02),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.primaryColor.withOpacity(0.2)),
+                  border: Border.all(
+                    color: AppColors.primaryColor.withOpacity(0.2),
+                  ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -162,7 +175,10 @@ class InvoiceCard extends StatelessWidget {
                           bottomRight: Radius.circular(11),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
                           child: Row(
                             children: [
                               const Icon(
@@ -209,10 +225,12 @@ class InvoiceCard extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(left: isRight ? 16 : 0, right: isRight ? 0 : 16),
       child: Column(
-        crossAxisAlignment: isRight ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment:
+            isRight ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: isRight ? MainAxisAlignment.end : MainAxisAlignment.start,
+            mainAxisAlignment:
+                isRight ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: [
               if (!isRight) ...[
                 Icon(icon, size: 13, color: Colors.grey.shade500),

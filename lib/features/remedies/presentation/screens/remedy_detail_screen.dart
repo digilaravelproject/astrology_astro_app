@@ -7,6 +7,7 @@ import '../../../../core/widgets/custom_app_bar.dart';
 import '../controllers/remedy_controller.dart';
 import '../../domain/models/remedy_model.dart';
 import '../../../../core/constants/app_urls.dart';
+import 'package:astro_astrologer/core/widgets/custom_image_widget.dart';
 
 class RemedyDetailScreen extends StatefulWidget {
   final int remedyId;
@@ -30,9 +31,7 @@ class _RemedyDetailScreenState extends State<RemedyDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(
-        title: 'Remedy Details',
-      ),
+      appBar: const CustomAppBar(title: 'Remedy Details'),
       body: Obx(() {
         if (_controller.isDetailLoading.value) {
           return const Center(child: CircularProgressIndicator());
@@ -40,7 +39,9 @@ class _RemedyDetailScreenState extends State<RemedyDetailScreen> {
 
         final remedy = _controller.selectedRemedy.value;
         if (remedy == null) {
-          return const Center(child: AppText('Details not found', color: Colors.grey));
+          return const Center(
+            child: AppText('Details not found', color: Colors.grey),
+          );
         }
 
         return SingleChildScrollView(
@@ -97,12 +98,17 @@ class _RemedyDetailScreenState extends State<RemedyDetailScreen> {
           ),
           child: Hero(
             tag: 'remedy_image_${remedy.id}',
-            child: Image.network(
-              remedy.image != null 
-                  ? (remedy.image!.startsWith('http') ? remedy.image! : '${AppUrls.baseImageUrl}${remedy.image}')
-                  : 'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=1000',
+            child: CustomImageWidget(
+              imagePath:
+                  remedy.image != null
+                      ? (remedy.image!.startsWith('http')
+                          ? remedy.image!
+                          : '${AppUrls.baseImageUrl}${remedy.image}')
+                      : 'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=1000',
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => const Icon(Icons.image, size: 100, color: Colors.grey),
+              errorBuilder:
+                  (context, error, stackTrace) =>
+                      const Icon(Icons.image, size: 100, color: Colors.grey),
             ),
           ),
         ),
@@ -157,8 +163,15 @@ class _RemedyDetailScreenState extends State<RemedyDetailScreen> {
       ),
       child: Column(
         children: [
-          _buildInfoRow(Iconsax.shield_tick_copy, 'Planetary Alignment', 'Positive'),
-          const Padding(padding: EdgeInsets.symmetric(vertical: 10), child: Divider(height: 1)),
+          _buildInfoRow(
+            Iconsax.shield_tick_copy,
+            'Planetary Alignment',
+            'Positive',
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 10),
+            child: Divider(height: 1),
+          ),
           _buildInfoRow(Iconsax.status_copy, 'Availability', 'In Stock'),
         ],
       ),
@@ -172,7 +185,12 @@ class _RemedyDetailScreenState extends State<RemedyDetailScreen> {
         const SizedBox(width: 12),
         AppText(label, fontSize: 14, color: Colors.grey.shade600),
         const Spacer(),
-        AppText(value, fontSize: 14, fontWeight: FontWeight.w700, color: Colors.black87),
+        AppText(
+          value,
+          fontSize: 14,
+          fontWeight: FontWeight.w700,
+          color: Colors.black87,
+        ),
       ],
     );
   }

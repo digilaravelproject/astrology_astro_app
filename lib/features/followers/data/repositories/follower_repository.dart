@@ -8,22 +8,36 @@ class FollowerRepository {
 
   FollowerRepository(this.apiClient);
 
-  Future<ResponseModel> getFollowers({String? query, int? page, int? perPage}) async {
+  Future<ResponseModel> getFollowers({
+    String? query,
+    int? page,
+    int? perPage,
+  }) async {
     final queryParams = <String, dynamic>{};
     if (query != null && query.isNotEmpty) queryParams['query'] = query;
     if (page != null) queryParams['page'] = page;
     if (perPage != null) queryParams['per_page'] = perPage;
 
-    return await apiClient.get(AppUrls.getFollowers, queryParameters: queryParams);
+    return await apiClient.get(
+      AppUrls.getFollowers,
+      queryParameters: queryParams,
+    );
   }
 
-  Future<ResponseModel> getFavorites({String? query, int? page, int? perPage}) async {
+  Future<ResponseModel> getFavorites({
+    String? query,
+    int? page,
+    int? perPage,
+  }) async {
     final queryParams = <String, dynamic>{};
     if (query != null && query.isNotEmpty) queryParams['query'] = query;
     if (page != null) queryParams['page'] = page;
     if (perPage != null) queryParams['per_page'] = perPage;
 
-    return await apiClient.get(AppUrls.getFavorites, queryParameters: queryParams);
+    return await apiClient.get(
+      AppUrls.getFavorites,
+      queryParameters: queryParams,
+    );
   }
 
   Future<ResponseModel> toggleLike(int id) async {

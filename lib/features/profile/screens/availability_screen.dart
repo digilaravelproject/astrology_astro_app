@@ -32,15 +32,17 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
 
   void _initializeSchedule() {
     if (_controller.availability.isNotEmpty) {
-      _schedule = _controller.availability.map((availability) {
-        return {
-          'day': availability.day,
-          'isOpen': availability.enabled,
-          'slots': availability.slots.map((slot) {
-            return {'start': slot.start, 'end': slot.end};
-          }).toList(),
-        };
-      }).toList();
+      _schedule =
+          _controller.availability.map((availability) {
+            return {
+              'day': availability.day,
+              'isOpen': availability.enabled,
+              'slots':
+                  availability.slots.map((slot) {
+                    return {'start': slot.start, 'end': slot.end};
+                  }).toList(),
+            };
+          }).toList();
     }
   }
 
@@ -48,7 +50,7 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
     final slot = _schedule[dayIndex]['slots'][slotIndex];
     final initialTimeStr = forStart ? slot['start'] : slot['end'];
     final timeParts = initialTimeStr.split(':');
-    
+
     final selectedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay(
@@ -70,7 +72,8 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
     );
 
     if (selectedTime != null) {
-      final formattedTime = '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}';
+      final formattedTime =
+          '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}';
       setState(() {
         if (forStart) {
           _schedule[dayIndex]['slots'][slotIndex]['start'] = formattedTime;
@@ -107,14 +110,10 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
-      appBar: CustomAppBar(
-        title: 'Availability Settings'.tr,
-      ),
+      appBar: CustomAppBar(title: 'Availability Settings'.tr),
       body: Obx(() {
         if (_controller.isLoading.value) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
 
         // Initialize schedule when data is loaded
@@ -180,16 +179,21 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
                                 dayData['day'],
                                 fontSize: 15,
                                 fontWeight: FontWeight.w700,
-                                color: isOpen ? const Color(0xFF2E1A47) : Colors
-                                    .grey.shade400,
+                                color:
+                                    isOpen
+                                        ? const Color(0xFF2E1A47)
+                                        : Colors.grey.shade400,
                               ),
                               const Spacer(),
                               if (!isOpen)
                                 Padding(
                                   padding: const EdgeInsets.only(right: 8),
-                                  child: AppText('Closed', fontSize: 13,
-                                      color: Colors.red.shade300,
-                                      fontWeight: FontWeight.w600),
+                                  child: AppText(
+                                    'Closed',
+                                    fontSize: 13,
+                                    color: Colors.red.shade300,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               Switch.adaptive(
                                 value: isOpen,
@@ -197,8 +201,8 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
                                 onChanged: (val) {
                                   setState(() {
                                     _schedule[dayIndex]['isOpen'] = val;
-                                    if (val && slots.isEmpty) _addSlot(
-                                        dayIndex);
+                                    if (val && slots.isEmpty)
+                                      _addSlot(dayIndex);
                                   });
                                 },
                               ),
@@ -220,32 +224,45 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
                                         Expanded(
                                           child: _buildTimeChip(
                                             time: slot['start'],
-                                            onTap: () =>
-                                                _selectTime(
-                                                    dayIndex, slotIndex, true),
+                                            onTap:
+                                                () => _selectTime(
+                                                  dayIndex,
+                                                  slotIndex,
+                                                  true,
+                                                ),
                                           ),
                                         ),
                                         const SizedBox(width: 8),
-                                        AppText('to', fontSize: 11,
-                                            color: Colors.grey.shade400,
-                                            fontWeight: FontWeight.w600),
+                                        AppText(
+                                          'to',
+                                          fontSize: 11,
+                                          color: Colors.grey.shade400,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                         const SizedBox(width: 8),
                                         Expanded(
                                           child: _buildTimeChip(
                                             time: slot['end'],
-                                            onTap: () =>
-                                                _selectTime(
-                                                    dayIndex, slotIndex, false),
+                                            onTap:
+                                                () => _selectTime(
+                                                  dayIndex,
+                                                  slotIndex,
+                                                  false,
+                                                ),
                                           ),
                                         ),
                                         const SizedBox(width: 4),
                                         IconButton(
-                                          onPressed: () =>
-                                              _removeSlot(dayIndex, slotIndex),
-                                          icon: const Icon(Icons
-                                              .remove_circle_outline_rounded,
-                                              size: 20,
-                                              color: Colors.redAccent),
+                                          onPressed:
+                                              () => _removeSlot(
+                                                dayIndex,
+                                                slotIndex,
+                                              ),
+                                          icon: const Icon(
+                                            Icons.remove_circle_outline_rounded,
+                                            size: 20,
+                                            color: Colors.redAccent,
+                                          ),
                                           padding: EdgeInsets.zero,
                                           constraints: const BoxConstraints(),
                                           visualDensity: VisualDensity.compact,
@@ -261,14 +278,17 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
                                     borderRadius: BorderRadius.circular(8),
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
-                                          vertical: 4, horizontal: 4),
+                                        vertical: 4,
+                                        horizontal: 4,
+                                      ),
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           const Icon(
-                                              Icons.add_circle_outline_rounded,
-                                              size: 18,
-                                              color: AppColors.primaryColor),
+                                            Icons.add_circle_outline_rounded,
+                                            size: 18,
+                                            color: AppColors.primaryColor,
+                                          ),
                                           const SizedBox(width: 6),
                                           AppText(
                                             'Add Slot',
@@ -291,18 +311,23 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
                 },
               ),
               const SizedBox(height: 32),
-              Obx(() => CustomButton(
-                text: _controller.isSaving.value ? 'Saving...'.tr : 'Save Availability'.tr,
-                onPressed: _controller.isSaving.value ? () {} : _saveAvailability,
-                backgroundColor: AppColors.primaryColor,
-                borderRadius: 100,
-              )),
+              Obx(
+                () => CustomButton(
+                  text:
+                      _controller.isSaving.value
+                          ? 'Saving...'.tr
+                          : 'Save Availability'.tr,
+                  onPressed:
+                      _controller.isSaving.value ? () {} : _saveAvailability,
+                  backgroundColor: AppColors.primaryColor,
+                  borderRadius: 100,
+                ),
+              ),
               const SizedBox(height: 40),
             ],
           ),
         );
-      }
-      )
+      }),
     );
   }
 
@@ -312,7 +337,9 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
       barrierDismissible: false,
       builder: (BuildContext dialogContext) {
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           child: Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
@@ -404,18 +431,20 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
   }
 
   void _performSave() {
-    final updatedAvailability = _schedule.map((day) {
-      return AvailabilityModel(
-        day: day['day'].toString().toLowerCase(),
-        enabled: day['isOpen'] as bool,
-        slots: (day['slots'] as List).map((slot) {
-          return TimeSlot(
-            start: slot['start'] as String,
-            end: slot['end'] as String,
+    final updatedAvailability =
+        _schedule.map((day) {
+          return AvailabilityModel(
+            day: day['day'].toString().toLowerCase(),
+            enabled: day['isOpen'] as bool,
+            slots:
+                (day['slots'] as List).map((slot) {
+                  return TimeSlot(
+                    start: slot['start'] as String,
+                    end: slot['end'] as String,
+                  );
+                }).toList(),
           );
-        }).toList(),
-      );
-    }).toList();
+        }).toList();
 
     _controller.updateAvailability(updatedAvailability);
   }

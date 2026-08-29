@@ -45,14 +45,8 @@ class RouteHelper {
   static String getPanchangRoute() => AppRoutes.panchangScreen;
 
   static List<GetPage> routes = [
-    GetPage(
-      name: AppRoutes.permission,
-      page: () => const PermissionScreen(),
-    ),
-    GetPage(
-      name: AppRoutes.splash,
-      page: () => const SplashScreen(),
-    ),
+    GetPage(name: AppRoutes.permission, page: () => const PermissionScreen()),
+    GetPage(name: AppRoutes.splash, page: () => const SplashScreen()),
     GetPage(
       name: AppRoutes.login,
       page: () => const LoginScreen(),

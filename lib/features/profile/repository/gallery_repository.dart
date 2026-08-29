@@ -10,7 +10,10 @@ class GalleryRepository {
 
   GalleryRepository({required this.apiClient});
 
-  Future<ResponseModel> getGalleryImages({int perPage = 15, String status = 'pending'}) async {
+  Future<ResponseModel> getGalleryImages({
+    int perPage = 15,
+    String status = 'pending',
+  }) async {
     String url = '${AppUrls.galleryList}?per_page=$perPage';
     if (status != 'all') {
       url += '&status=$status';
@@ -18,9 +21,15 @@ class GalleryRepository {
     return await apiClient.get(url);
   }
 
-  Future<ResponseModel> uploadGalleryImages(List<File> images, String status) async {
-    final List<MultipartBody> multipartBody = images.map((image) => MultipartBody('images[]', XFile(image.path))).toList();
-    
+  Future<ResponseModel> uploadGalleryImages(
+    List<File> images,
+    String status,
+  ) async {
+    final List<MultipartBody> multipartBody =
+        images
+            .map((image) => MultipartBody('images[]', XFile(image.path)))
+            .toList();
+
     return await apiClient.postMultipartData(
       AppUrls.uploadGallery,
       {'status': status},

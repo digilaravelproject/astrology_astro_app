@@ -8,10 +8,15 @@ class ReviewRepository {
   ReviewRepository({required this.apiClient});
 
   Future<ResponseModel> getReviews(int astrologerId) async {
-    return await apiClient.get('${AppUrls.reviewList}?astrologer_id=$astrologerId');
+    return await apiClient.get(
+      '${AppUrls.reviewList}?astrologer_id=$astrologerId',
+    );
   }
 
   Future<ResponseModel> postReply(int reviewId, String reply) async {
-    return await apiClient.post(AppUrls.replyReview(reviewId), data: {'reply': reply});
+    return await apiClient.post(
+      AppUrls.replyReview(reviewId),
+      data: {'reply': reply},
+    );
   }
 }

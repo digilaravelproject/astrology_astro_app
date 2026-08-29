@@ -10,10 +10,12 @@ class AstromallListingsScreen extends StatefulWidget {
   const AstromallListingsScreen({super.key});
 
   @override
-  State<AstromallListingsScreen> createState() => _AstromallListingsScreenState();
+  State<AstromallListingsScreen> createState() =>
+      _AstromallListingsScreenState();
 }
 
-class _AstromallListingsScreenState extends State<AstromallListingsScreen> with SingleTickerProviderStateMixin {
+class _AstromallListingsScreenState extends State<AstromallListingsScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   bool _isSearching = false;
   final TextEditingController _searchController = TextEditingController();
@@ -37,21 +39,25 @@ class _AstromallListingsScreenState extends State<AstromallListingsScreen> with 
       backgroundColor: Colors.grey.shade100,
       appBar: CustomAppBar(
         title: _isSearching ? '' : 'My Astromall Listings',
-        titleWidget: _isSearching
-            ? TextField(
-                controller: _searchController,
-                autofocus: true,
-                decoration: const InputDecoration(
-                  hintText: 'Search listings...',
-                  border: InputBorder.none,
-                  hintStyle: TextStyle(color: Colors.black54),
-                ),
-                style: const TextStyle(color: Colors.black87, fontSize: 16),
-              )
-            : null,
+        titleWidget:
+            _isSearching
+                ? TextField(
+                  controller: _searchController,
+                  autofocus: true,
+                  decoration: const InputDecoration(
+                    hintText: 'Search listings...',
+                    border: InputBorder.none,
+                    hintStyle: TextStyle(color: Colors.black54),
+                  ),
+                  style: const TextStyle(color: Colors.black87, fontSize: 16),
+                )
+                : null,
         actions: [
           IconButton(
-            icon: Icon(_isSearching ? Icons.close : Icons.search, color: Colors.black87),
+            icon: Icon(
+              _isSearching ? Icons.close : Icons.search,
+              color: Colors.black87,
+            ),
             onPressed: () {
               setState(() {
                 if (_isSearching) {
@@ -68,31 +74,33 @@ class _AstromallListingsScreenState extends State<AstromallListingsScreen> with 
       body: Column(
         children: [
           Container(
-                  color: Colors.white,
-                  width: double.infinity,
-                  child: TabBar(
-                    controller: _tabController,
-                    isScrollable: false,
-                    dividerColor: Colors.transparent,
-                    labelColor: Colors.black,
-                    unselectedLabelColor: Colors.grey,
-                    indicatorColor: AppColors.primaryColor,
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, fontFamily: 'Poppins'),
-                    unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 13, fontFamily: 'Poppins'),
-                    tabs: const [
-                      Tab(text: "Requests"),
-                      Tab(text: "Listed"),
-                    ],
-                  ),
+            color: Colors.white,
+            width: double.infinity,
+            child: TabBar(
+              controller: _tabController,
+              isScrollable: false,
+              dividerColor: Colors.transparent,
+              labelColor: Colors.black,
+              unselectedLabelColor: Colors.grey,
+              indicatorColor: AppColors.primaryColor,
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelStyle: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+                fontFamily: 'Poppins',
+              ),
+              unselectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.normal,
+                fontSize: 13,
+                fontFamily: 'Poppins',
+              ),
+              tabs: const [Tab(text: "Requests"), Tab(text: "Listed")],
             ),
+          ),
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: [
-                _buildRequestsTab(),
-                _buildListedTab(),
-              ],
+              children: [_buildRequestsTab(), _buildListedTab()],
             ),
           ),
         ],
@@ -103,7 +111,6 @@ class _AstromallListingsScreenState extends State<AstromallListingsScreen> with 
         elevation: 4,
         child: const Icon(Icons.add, color: Colors.white, size: 28),
       ),
-
     );
   }
 
@@ -113,8 +120,20 @@ class _AstromallListingsScreenState extends State<AstromallListingsScreen> with 
       itemCount: 4,
       itemBuilder: (context, index) {
         return _buildListingCard(
-          title: index == 0 ? 'Gemstone Consultation with Astrologer' : index == 1 ? 'Name Correction' : index == 2 ? 'Vastu for Home' : 'Vastu for Santaan Prapti',
-          price: index == 0 ? '499' : index == 1 ? '1000' : '2100',
+          title:
+              index == 0
+                  ? 'Gemstone Consultation with Astrologer'
+                  : index == 1
+                  ? 'Name Correction'
+                  : index == 2
+                  ? 'Vastu for Home'
+                  : 'Vastu for Santaan Prapti',
+          price:
+              index == 0
+                  ? '499'
+                  : index == 1
+                  ? '1000'
+                  : '2100',
           status: 'Pending for Approval',
           colorMode: 'yellow',
           image: _getImage(index),
@@ -129,20 +148,30 @@ class _AstromallListingsScreenState extends State<AstromallListingsScreen> with 
       itemCount: 3,
       itemBuilder: (context, index) {
         return _buildListingCard(
-            title: index == 0 ? 'Name Correction' : index == 1 ? 'Birth Time Rectification' : 'Kundali Matching',
-            price: index == 0 ? '577' : index == 1 ? '600' : '501',
-            status: 'Already Listed',
-            colorMode: 'green',
-            image: _getImage(index + 4),
+          title:
+              index == 0
+                  ? 'Name Correction'
+                  : index == 1
+                  ? 'Birth Time Rectification'
+                  : 'Kundali Matching',
+          price:
+              index == 0
+                  ? '577'
+                  : index == 1
+                  ? '600'
+                  : '501',
+          status: 'Already Listed',
+          colorMode: 'green',
+          image: _getImage(index + 4),
         );
       },
     );
   }
-  
+
   String _getImage(int index) {
-     // A placeholder logic to show different shapes/images if needed, using flutter's fallback or network images
-     // Using a solid color container in UI for now if assets aren't available, but user has assets so using a grey placeholder
-     return "placeholder_url";
+    // A placeholder logic to show different shapes/images if needed, using flutter's fallback or network images
+    // Using a solid color container in UI for now if assets aren't available, but user has assets so using a grey placeholder
+    return "placeholder_url";
   }
 
   Widget _buildListingCard({
@@ -153,9 +182,13 @@ class _AstromallListingsScreenState extends State<AstromallListingsScreen> with 
     required String image,
     String? category,
   }) {
-    Color bgColor = colorMode == 'yellow' ? const Color(0xFFFEFDF0) : const Color(0xFFF2FDF6);
-    Color statusColor = colorMode == 'yellow' ? Colors.grey.shade600 : Colors.green.shade600;
-    
+    Color bgColor =
+        colorMode == 'yellow'
+            ? const Color(0xFFFEFDF0)
+            : const Color(0xFFF2FDF6);
+    Color statusColor =
+        colorMode == 'yellow' ? Colors.grey.shade600 : Colors.green.shade600;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -186,7 +219,9 @@ class _AstromallListingsScreenState extends State<AstromallListingsScreen> with 
                         color: Colors.grey.shade300,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Center(child: Icon(Icons.image, color: Colors.grey)), // Placeholder for actual asset
+                      child: const Center(
+                        child: Icon(Icons.image, color: Colors.grey),
+                      ), // Placeholder for actual asset
                     ),
                     const SizedBox(width: 16),
                     Expanded(
@@ -194,9 +229,18 @@ class _AstromallListingsScreenState extends State<AstromallListingsScreen> with 
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 4),
-                          AppText(title, fontWeight: FontWeight.bold, fontSize: 13, maxLines: 2),
+                          AppText(
+                            title,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                            maxLines: 2,
+                          ),
                           const SizedBox(height: 8),
-                          AppText('Listed Price : ₹ $price', color: Colors.grey.shade800, fontSize: 12),
+                          AppText(
+                            'Listed Price : ₹ $price',
+                            color: Colors.grey.shade800,
+                            fontSize: 12,
+                          ),
                         ],
                       ),
                     ),
@@ -204,7 +248,12 @@ class _AstromallListingsScreenState extends State<AstromallListingsScreen> with 
                   ],
                 ),
                 const SizedBox(height: 12),
-                AppText(status, color: statusColor, fontSize: 11, fontWeight: FontWeight.w500),
+                AppText(
+                  status,
+                  color: statusColor,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                ),
               ],
             ),
           ),
@@ -212,22 +261,35 @@ class _AstromallListingsScreenState extends State<AstromallListingsScreen> with 
             top: 0,
             right: 0,
             child: PopupMenuButton<String>(
-              icon: Icon(Icons.more_vert, size: 20, color: Colors.grey.shade700),
+              icon: Icon(
+                Icons.more_vert,
+                size: 20,
+                color: Colors.grey.shade700,
+              ),
               padding: EdgeInsets.zero,
               onSelected: (value) {
                 if (value == 'Edit') {
-                  Get.to(() => AddAstromallListingScreen(
-                        isEditing: true,
-                        initialTitle: title,
-                        initialPrice: price,
-                        initialCategory: category ?? 'Astrology Service',
-                      ));
+                  Get.to(
+                    () => AddAstromallListingScreen(
+                      isEditing: true,
+                      initialTitle: title,
+                      initialPrice: price,
+                      initialCategory: category ?? 'Astrology Service',
+                    ),
+                  );
                 } else if (value == 'Delete') {
                   Get.defaultDialog(
                     title: 'Confirm Delete',
-                    titleStyle: const TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.bold, fontSize: 18),
+                    titleStyle: const TextStyle(
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
                     middleText: 'Are you sure you want to delete this listing?',
-                    middleTextStyle: const TextStyle(fontFamily: 'Poppins', fontSize: 14),
+                    middleTextStyle: const TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 14,
+                    ),
                     textCancel: 'No',
                     textConfirm: 'Yes',
                     confirmTextColor: Colors.white,
@@ -256,20 +318,29 @@ class _AstromallListingsScreenState extends State<AstromallListingsScreen> with 
                   );
                 }
               },
-              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                const PopupMenuItem<String>(
-                  value: 'Edit',
-                  child: AppText('Edit', fontSize: 13, color: Colors.black87),
-                ),
-                const PopupMenuItem<String>(
-                  value: 'Status',
-                  child: AppText('Turn On/Off', fontSize: 13, color: Colors.black87),
-                ),
-                const PopupMenuItem<String>(
-                  value: 'Delete',
-                  child: AppText('Delete', fontSize: 13, color: Colors.red),
-                ),
-              ],
+              itemBuilder:
+                  (BuildContext context) => <PopupMenuEntry<String>>[
+                    const PopupMenuItem<String>(
+                      value: 'Edit',
+                      child: AppText(
+                        'Edit',
+                        fontSize: 13,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const PopupMenuItem<String>(
+                      value: 'Status',
+                      child: AppText(
+                        'Turn On/Off',
+                        fontSize: 13,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const PopupMenuItem<String>(
+                      value: 'Delete',
+                      child: AppText('Delete', fontSize: 13, color: Colors.red),
+                    ),
+                  ],
             ),
           ),
         ],

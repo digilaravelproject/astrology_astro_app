@@ -49,21 +49,37 @@ class SadeSatiData {
   factory SadeSatiData.fromJson(Map<String, dynamic> json) {
     return SadeSatiData(
       description: json['description'],
-      effects: json['effects'] != null ? List<String>.from(json['effects']) : null,
-      guidance: json['guidance'] != null ? SadeSatiGuidance.fromJson(json['guidance']) : null,
+      effects:
+          json['effects'] != null ? List<String>.from(json['effects']) : null,
+      guidance:
+          json['guidance'] != null
+              ? SadeSatiGuidance.fromJson(json['guidance'])
+              : null,
       intensity: json['intensity'],
       isInSadeSati: json['is_in_sade_sati'],
-      moonSign: json['moon_sign'] != null ? SadeSatiSign.fromJson(json['moon_sign']) : null,
+      moonSign:
+          json['moon_sign'] != null
+              ? SadeSatiSign.fromJson(json['moon_sign'])
+              : null,
       phase: json['phase'],
       phaseName: json['phase_name'],
-      remedies: json['remedies'] != null ? List<dynamic>.from(json['remedies']) : null,
+      remedies:
+          json['remedies'] != null
+              ? List<dynamic>.from(json['remedies'])
+              : null,
       sadeSatiStatus: json['sade_sati_status'],
       startDate: json['start_date'],
       endDate: json['end_date'],
-      transitSaturn: json['transit_saturn'] != null ? TransitSaturn.fromJson(json['transit_saturn']) : null,
-      timeline: json['timeline'] != null
-          ? List<SadeSatiTimelineItem>.from(json['timeline'].map((x) => SadeSatiTimelineItem.fromJson(x)))
-          : null,
+      transitSaturn:
+          json['transit_saturn'] != null
+              ? TransitSaturn.fromJson(json['transit_saturn'])
+              : null,
+      timeline:
+          json['timeline'] != null
+              ? List<SadeSatiTimelineItem>.from(
+                json['timeline'].map((x) => SadeSatiTimelineItem.fromJson(x)),
+              )
+              : null,
     );
   }
 }
@@ -88,9 +104,16 @@ class SadeSatiTimelineItem {
     return SadeSatiTimelineItem(
       startDate: json['start_date'] ?? json['date'] ?? json['start'] ?? '',
       endDate: json['end_date'] ?? json['end'] ?? '',
-      signName: json['sign'] ?? json['sign_name'] ?? json['zodiac'] ?? json['zodiac_name'] ?? '',
+      signName:
+          json['sign'] ??
+          json['sign_name'] ??
+          json['zodiac'] ??
+          json['zodiac_name'] ??
+          '',
       type: typeStr,
-      isHighlight: typeStr.toString().toLowerCase().contains('peak') || json['is_highlight'] == true,
+      isHighlight:
+          typeStr.toString().toLowerCase().contains('peak') ||
+          json['is_highlight'] == true,
     );
   }
 }
@@ -120,10 +143,7 @@ class SadeSatiSign {
   SadeSatiSign({this.id, this.name});
 
   factory SadeSatiSign.fromJson(Map<String, dynamic> json) {
-    return SadeSatiSign(
-      id: json['id'],
-      name: json['name'],
-    );
+    return SadeSatiSign(id: json['id'], name: json['name']);
   }
 }
 

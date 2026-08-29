@@ -19,9 +19,12 @@ class DashaData {
 
   factory DashaData.fromJson(Map<String, dynamic> json) {
     return DashaData(
-      mahaDasha: json['maha_dasha'] != null
-          ? (json['maha_dasha'] as List).map((i) => DashaItem.fromJson(i)).toList()
-          : null,
+      mahaDasha:
+          json['maha_dasha'] != null
+              ? (json['maha_dasha'] as List)
+                  .map((i) => DashaItem.fromJson(i))
+                  .toList()
+              : null,
     );
   }
 }

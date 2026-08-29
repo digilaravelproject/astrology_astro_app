@@ -9,6 +9,7 @@ import 'domain/models/blog_model.dart';
 import 'presentation/controllers/blog_controller.dart';
 import 'presentation/bindings/blog_binding.dart';
 import '../../core/constants/app_urls.dart';
+import 'package:astro_astrologer/core/widgets/custom_image_widget.dart';
 
 class BlogScreen extends StatefulWidget {
   const BlogScreen({super.key});
@@ -43,14 +44,10 @@ class _BlogScreenState extends State<BlogScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFDF9F5),
-      appBar: CustomAppBar(
-        title: 'Astrology Blogs'.tr,
-      ),
+      appBar: CustomAppBar(title: 'Astrology Blogs'.tr),
       body: Obx(() {
         if (_controller.isLoading.value && _controller.allBlogs.isEmpty) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
 
         return RefreshIndicator(
@@ -61,16 +58,19 @@ class _BlogScreenState extends State<BlogScreen> {
               _buildSearchBar(),
               _buildCategoryFilter(),
               Expanded(
-                child: _controller.filteredBlogs.isEmpty
-                    ? _buildEmptyState()
-                    : ListView.builder(
-                        padding: const EdgeInsets.all(20),
-                        itemCount: _controller.filteredBlogs.length,
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          return _buildPremiumBlogCard(_controller.filteredBlogs[index]);
-                        },
-                      ),
+                child:
+                    _controller.filteredBlogs.isEmpty
+                        ? _buildEmptyState()
+                        : ListView.builder(
+                          padding: const EdgeInsets.all(20),
+                          itemCount: _controller.filteredBlogs.length,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            return _buildPremiumBlogCard(
+                              _controller.filteredBlogs[index],
+                            );
+                          },
+                        ),
               ),
             ],
           ),
@@ -88,7 +88,11 @@ class _BlogScreenState extends State<BlogScreen> {
         decoration: InputDecoration(
           hintText: 'Search blogs...'.tr,
           hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
-          prefixIcon: const Icon(Iconsax.search_normal_1_copy, size: 20, color: AppColors.primaryColor),
+          prefixIcon: const Icon(
+            Iconsax.search_normal_1_copy,
+            size: 20,
+            color: AppColors.primaryColor,
+          ),
           filled: true,
           fillColor: const Color(0xFFF8F8F8),
           border: OutlineInputBorder(
@@ -105,35 +109,46 @@ class _BlogScreenState extends State<BlogScreen> {
     return Container(
       height: 60,
       color: Colors.white,
-      child: Obx(() => ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        scrollDirection: Axis.horizontal,
-        itemCount: _controller.categories.length,
-        separatorBuilder: (context, index) => const SizedBox(width: 12),
-        itemBuilder: (context, index) {
-          final category = _controller.categories[index];
-          final isSelected = category == _controller.selectedCategory.value;
-          return GestureDetector(
-            onTap: () => _controller.updateCategory(category),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: isSelected ? AppColors.primaryColor : Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(100),
-                border: isSelected ? null : Border.all(color: Colors.grey.shade200),
-              ),
-              child: Center(
-                child: AppText(
-                  category.tr,
-                  fontSize: 12,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                  color: isSelected ? Colors.white : Colors.grey.shade600,
+      child: Obx(
+        () => ListView.separated(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          scrollDirection: Axis.horizontal,
+          itemCount: _controller.categories.length,
+          separatorBuilder: (context, index) => const SizedBox(width: 12),
+          itemBuilder: (context, index) {
+            final category = _controller.categories[index];
+            final isSelected = category == _controller.selectedCategory.value;
+            return GestureDetector(
+              onTap: () => _controller.updateCategory(category),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color:
+                      isSelected
+                          ? AppColors.primaryColor
+                          : Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(100),
+                  border:
+                      isSelected
+                          ? null
+                          : Border.all(color: Colors.grey.shade200),
+                ),
+                child: Center(
+                  child: AppText(
+                    category.tr,
+                    fontSize: 12,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                    color: isSelected ? Colors.white : Colors.grey.shade600,
+                  ),
                 ),
               ),
-            ),
-          );
-        },
-      )),
+            );
+          },
+        ),
+      ),
     );
   }
 
@@ -162,24 +177,29 @@ class _BlogScreenState extends State<BlogScreen> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(16),
-                  child: Image.network(
-                    '${AppUrls.baseImageUrl}${blog.blogImage}',
+                  child: CustomImageWidget(
+                    imagePath: '${AppUrls.baseImageUrl}${blog.blogImage}',
                     height: 110,
                     width: 110,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Image.network(
-                      'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=1000',
-                      height: 110,
-                      width: 110,
-                      fit: BoxFit.cover,
-                    ),
+                    errorBuilder:
+                        (context, error, stackTrace) => CustomImageWidget(
+                          imagePath:
+                              'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=1000',
+                          height: 110,
+                          width: 110,
+                          fit: BoxFit.cover,
+                        ),
                   ),
                 ),
                 Positioned(
                   top: 8,
                   left: 8,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.primaryColor.withOpacity(0.9),
                       borderRadius: BorderRadius.circular(8),
@@ -194,15 +214,15 @@ class _BlogScreenState extends State<BlogScreen> {
                 ),
               ],
             ),
-            
+
             const SizedBox(width: 16),
-            
+
             // Right: Content Section
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       AppText(
@@ -213,7 +233,11 @@ class _BlogScreenState extends State<BlogScreen> {
                       ),
                       Row(
                         children: [
-                          const Icon(Iconsax.clock_copy, size: 12, color: AppColors.primaryColor),
+                          const Icon(
+                            Iconsax.clock_copy,
+                            size: 12,
+                            color: AppColors.primaryColor,
+                          ),
                           const SizedBox(width: 4),
                           AppText(
                             '8m',
@@ -249,9 +273,13 @@ class _BlogScreenState extends State<BlogScreen> {
                     children: [
                       CircleAvatar(
                         radius: 10,
-                        backgroundColor: AppColors.primaryColor.withOpacity(0.1),
+                        backgroundColor: AppColors.primaryColor.withOpacity(
+                          0.1,
+                        ),
                         child: AppText(
-                          blog.author.isNotEmpty ? blog.author[0].toUpperCase() : 'A',
+                          blog.author.isNotEmpty
+                              ? blog.author[0].toUpperCase()
+                              : '',
                           fontSize: 8,
                           fontWeight: FontWeight.w800,
                           color: AppColors.primaryColor,
@@ -265,7 +293,11 @@ class _BlogScreenState extends State<BlogScreen> {
                         color: Colors.black87,
                       ),
                       const Spacer(),
-                      const Icon(Iconsax.arrow_right_3_copy, size: 14, color: AppColors.primaryColor),
+                      const Icon(
+                        Iconsax.arrow_right_3_copy,
+                        size: 14,
+                        color: AppColors.primaryColor,
+                      ),
                     ],
                   ),
                 ],
@@ -278,7 +310,20 @@ class _BlogScreenState extends State<BlogScreen> {
   }
 
   String _getMonth(int month) {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     return (month >= 1 && month <= 12) ? months[month - 1] : '';
   }
 
@@ -287,9 +332,17 @@ class _BlogScreenState extends State<BlogScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Iconsax.document_text_1_copy, size: 64, color: Colors.grey.shade300),
+          Icon(
+            Iconsax.document_text_1_copy,
+            size: 64,
+            color: Colors.grey.shade300,
+          ),
           const SizedBox(height: 16),
-          AppText('No blogs found'.tr, fontSize: 16, color: Colors.grey.shade500),
+          AppText(
+            'No blogs found'.tr,
+            fontSize: 16,
+            color: Colors.grey.shade500,
+          ),
         ],
       ),
     );

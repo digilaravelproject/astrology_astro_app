@@ -19,7 +19,9 @@ class KundliListScreen extends StatefulWidget {
 }
 
 class _KundliListScreenState extends State<KundliListScreen> {
-  final SavedKundliController _savedKundliController = Get.put(SavedKundliController());
+  final SavedKundliController _savedKundliController = Get.put(
+    SavedKundliController(),
+  );
   final Set<String> _selectedIds = {};
   final TextEditingController _searchController = TextEditingController();
   final RxString _searchQuery = ''.obs;
@@ -41,7 +43,11 @@ class _KundliListScreenState extends State<KundliListScreen> {
       return _savedKundliController.kundliList;
     }
     return _savedKundliController.kundliList
-        .where((item) => item.name.toLowerCase().contains(_searchQuery.value.toLowerCase()))
+        .where(
+          (item) => item.name.toLowerCase().contains(
+            _searchQuery.value.toLowerCase(),
+          ),
+        )
         .toList();
   }
 
@@ -126,16 +132,25 @@ class _KundliListScreenState extends State<KundliListScreen> {
         decoration: InputDecoration(
           hintText: "Search by name...".tr,
           hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
-          prefixIcon: Icon(sax.Iconsax.search_normal_1_copy, size: 18, color: AppColors.primaryColor.withOpacity(0.6)),
-          suffixIcon: _searchController.text.isNotEmpty
-              ? IconButton(
-                  icon: Icon(Icons.close_rounded, size: 18, color: Colors.grey.shade400),
-                  onPressed: () {
-                    _searchController.clear();
-                    _onSearchChanged("");
-                  },
-                )
-              : null,
+          prefixIcon: Icon(
+            sax.Iconsax.search_normal_1_copy,
+            size: 18,
+            color: AppColors.primaryColor.withOpacity(0.6),
+          ),
+          suffixIcon:
+              _searchController.text.isNotEmpty
+                  ? IconButton(
+                    icon: Icon(
+                      Icons.close_rounded,
+                      size: 18,
+                      color: Colors.grey.shade400,
+                    ),
+                    onPressed: () {
+                      _searchController.clear();
+                      _onSearchChanged("");
+                    },
+                  )
+                  : null,
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 15),
         ),
@@ -148,7 +163,11 @@ class _KundliListScreenState extends State<KundliListScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(sax.Iconsax.search_status_copy, size: 64, color: AppColors.primaryColor.withOpacity(0.1)),
+          Icon(
+            sax.Iconsax.search_status_copy,
+            size: 64,
+            color: AppColors.primaryColor.withOpacity(0.1),
+          ),
           const SizedBox(height: 16),
           AppText(
             "No Saved Kundlis".tr,
@@ -170,7 +189,8 @@ class _KundliListScreenState extends State<KundliListScreen> {
   Widget _buildKundliItem(KundliItem item) {
     final idStr = item.id.toString();
     final bool isSelected = _selectedIds.contains(idStr);
-    final String initial = item.name.isNotEmpty ? item.name[0].toUpperCase() : '?';
+    final String initial =
+        item.name.isNotEmpty ? item.name[0].toUpperCase() : '?';
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -180,15 +200,17 @@ class _KundliListScreenState extends State<KundliListScreen> {
         } else {
           String tobPart = item.birthTime;
           if (tobPart.length == 5) tobPart += ':00';
-          Get.to(() => KundliScreen(
-            fullName: item.name,
-            gender: item.gender,
-            dob: item.birthDate,
-            tob: tobPart,
-            place: item.displayPlace,
-            latitude: double.tryParse(item.latitude) ?? 0.0,
-            longitude: double.tryParse(item.longitude) ?? 0.0,
-          ));
+          Get.to(
+            () => KundliScreen(
+              fullName: item.name,
+              gender: item.gender,
+              dob: item.birthDate,
+              tob: tobPart,
+              place: item.displayPlace,
+              latitude: double.tryParse(item.latitude) ?? 0.0,
+              longitude: double.tryParse(item.longitude) ?? 0.0,
+            ),
+          );
         }
       },
       child: Container(
@@ -198,12 +220,17 @@ class _KundliListScreenState extends State<KundliListScreen> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(28),
           border: Border.all(
-            color: isSelected ? AppColors.primaryColor : AppColors.primaryColor.withOpacity(0.08),
+            color:
+                isSelected
+                    ? AppColors.primaryColor
+                    : AppColors.primaryColor.withOpacity(0.08),
             width: isSelected ? 2 : 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryColor.withOpacity(isSelected ? 0.12 : 0.04),
+              color: AppColors.primaryColor.withOpacity(
+                isSelected ? 0.12 : 0.04,
+              ),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -226,7 +253,9 @@ class _KundliListScreenState extends State<KundliListScreen> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                border: Border.all(color: AppColors.primaryColor.withOpacity(0.1)),
+                border: Border.all(
+                  color: AppColors.primaryColor.withOpacity(0.1),
+                ),
               ),
               child: Center(
                 child: AppText(
@@ -245,36 +274,60 @@ class _KundliListScreenState extends State<KundliListScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(child: AppText(item.name, fontSize: 17, fontWeight: FontWeight.bold, maxLines: 1, overflow: TextOverflow.ellipsis)),
+                      Expanded(
+                        child: AppText(
+                          item.name,
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                       Row(
                         children: [
                           GestureDetector(
                             onTap: () => _confirmDelete(context, item),
-                            child: Icon(Icons.delete_outline, color: Colors.redAccent.withOpacity(0.7), size: 24),
+                            child: Icon(
+                              Icons.delete_outline,
+                              color: Colors.redAccent.withOpacity(0.7),
+                              size: 24,
+                            ),
                           ),
                           const SizedBox(width: 8),
                           GestureDetector(
-                            onTap: () => Get.to(() => CreateKundliScreen(
-                                  initialIsMatching: false,
-                                  hideMatchingTab: true,
-                                  initialKundliData: {
-                                    'id': item.id.toString(),
-                                    'name': item.name,
-                                    'gender': item.gender,
-                                    'dob': item.formattedDate,
-                                    'time': item.formattedTime,
-                                    'place': item.displayPlace,
-                                    'latitude': item.latitude,
-                                    'longitude': item.longitude,
-                                  },
-                                )),
-                            child: Icon(Icons.edit_note_rounded, color: AppColors.primaryColor.withOpacity(0.5), size: 24),
+                            onTap:
+                                () => Get.to(
+                                  () => CreateKundliScreen(
+                                    initialIsMatching: false,
+                                    hideMatchingTab: true,
+                                    initialKundliData: {
+                                      'id': item.id.toString(),
+                                      'name': item.name,
+                                      'gender': item.gender,
+                                      'dob': item.formattedDate,
+                                      'time': item.formattedTime,
+                                      'place': item.displayPlace,
+                                      'latitude': item.latitude,
+                                      'longitude': item.longitude,
+                                    },
+                                  ),
+                                ),
+                            child: Icon(
+                              Icons.edit_note_rounded,
+                              color: AppColors.primaryColor.withOpacity(0.5),
+                              size: 24,
+                            ),
                           ),
                           if (widget.isMatchingMode) ...[
                             const SizedBox(width: 12),
                             Icon(
-                              isSelected ? Icons.check_box_rounded : Icons.check_box_outline_blank_rounded,
-                              color: isSelected ? AppColors.primaryColor : Colors.grey.shade300,
+                              isSelected
+                                  ? Icons.check_box_rounded
+                                  : Icons.check_box_outline_blank_rounded,
+                              color:
+                                  isSelected
+                                      ? AppColors.primaryColor
+                                      : Colors.grey.shade300,
                               size: 22,
                             ),
                           ],
@@ -285,7 +338,10 @@ class _KundliListScreenState extends State<KundliListScreen> {
                   const SizedBox(height: 8),
                   _buildDetailRow(sax.Iconsax.user_copy, item.gender),
                   const SizedBox(height: 4),
-                  _buildDetailRow(sax.Iconsax.calendar_1_copy, "${item.formattedDate} | ${item.formattedTime}"),
+                  _buildDetailRow(
+                    sax.Iconsax.calendar_1_copy,
+                    "${item.formattedDate} | ${item.formattedTime}",
+                  ),
                   const SizedBox(height: 4),
                   _buildDetailRow(sax.Iconsax.location_copy, item.displayPlace),
                   const SizedBox(height: 12),
@@ -295,18 +351,23 @@ class _KundliListScreenState extends State<KundliListScreen> {
                       onTap: () {
                         String tobPart = item.birthTime;
                         if (tobPart.length == 5) tobPart += ':00';
-                        Get.to(() => KundliScreen(
-                          fullName: item.name,
-                          gender: item.gender,
-                          dob: item.formattedIsoDate,
-                          tob: tobPart,
-                          place: item.displayPlace,
-                          latitude: double.tryParse(item.latitude) ?? 0.0,
-                          longitude: double.tryParse(item.longitude) ?? 0.0,
-                        ));
+                        Get.to(
+                          () => KundliScreen(
+                            fullName: item.name,
+                            gender: item.gender,
+                            dob: item.formattedIsoDate,
+                            tob: tobPart,
+                            place: item.displayPlace,
+                            latitude: double.tryParse(item.latitude) ?? 0.0,
+                            longitude: double.tryParse(item.longitude) ?? 0.0,
+                          ),
+                        );
                       },
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.primaryColor.withOpacity(0.05),
                           borderRadius: BorderRadius.circular(15),
@@ -321,7 +382,11 @@ class _KundliListScreenState extends State<KundliListScreen> {
                               fontWeight: FontWeight.w700,
                             ),
                             SizedBox(width: 4),
-                            Icon(Icons.arrow_forward_ios_rounded, size: 10, color: AppColors.primaryColor),
+                            Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              size: 10,
+                              color: AppColors.primaryColor,
+                            ),
                           ],
                         ),
                       ),
@@ -339,7 +404,11 @@ class _KundliListScreenState extends State<KundliListScreen> {
   Widget _buildDetailRow(IconData icon, String text) {
     return Row(
       children: [
-        Icon(icon, size: 14, color: AppColors.textColorSecondary.withOpacity(0.6)),
+        Icon(
+          icon,
+          size: 14,
+          color: AppColors.textColorSecondary.withOpacity(0.6),
+        ),
         const SizedBox(width: 6),
         Expanded(
           child: AppText(
@@ -364,147 +433,191 @@ class _KundliListScreenState extends State<KundliListScreen> {
           color: Colors.white,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
           boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, -10)),
-        ],
-      ),
-      child: Row(
-        children: [
-          if (widget.isMatchingMode) ...[
-            Expanded(
-              child: GestureDetector(
-                onTap: canMatch
-                    ? () {
-                        final selectedItems = _savedKundliController.kundliList
-                            .where((item) => _selectedIds.contains(item.id.toString()))
-                            .toList();
-                        Map<String, String>? boyData;
-                        Map<String, String>? girlData;
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 20,
+              offset: const Offset(0, -10),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            if (widget.isMatchingMode) ...[
+              Expanded(
+                child: GestureDetector(
+                  onTap:
+                      canMatch
+                          ? () {
+                            final selectedItems =
+                                _savedKundliController.kundliList
+                                    .where(
+                                      (item) => _selectedIds.contains(
+                                        item.id.toString(),
+                                      ),
+                                    )
+                                    .toList();
+                            Map<String, String>? boyData;
+                            Map<String, String>? girlData;
 
-                        Map<String, String> toMap(KundliItem item) => {
-                          'id': item.id.toString(),
-                          'name': item.name,
-                          'gender': item.gender,
-                          'dob': item.formattedDate,
-                          'time': item.formattedTime,
-                          'place': item.displayPlace,
-                          'latitude': item.latitude,
-                          'longitude': item.longitude,
-                        };
+                            Map<String, String> toMap(KundliItem item) => {
+                              'id': item.id.toString(),
+                              'name': item.name,
+                              'gender': item.gender,
+                              'dob': item.formattedDate,
+                              'time': item.formattedTime,
+                              'place': item.displayPlace,
+                              'latitude': item.latitude,
+                              'longitude': item.longitude,
+                            };
 
-                        if (selectedItems.length == 2) {
-                          if (selectedItems[0].gender.toLowerCase() == 'male' || selectedItems[1].gender.toLowerCase() == 'female') {
-                            boyData = toMap(selectedItems[0]);
-                            girlData = toMap(selectedItems[1]);
-                          } else {
-                            boyData = toMap(selectedItems[1]);
-                            girlData = toMap(selectedItems[0]);
+                            if (selectedItems.length == 2) {
+                              if (selectedItems[0].gender.toLowerCase() ==
+                                      'male' ||
+                                  selectedItems[1].gender.toLowerCase() ==
+                                      'female') {
+                                boyData = toMap(selectedItems[0]);
+                                girlData = toMap(selectedItems[1]);
+                              } else {
+                                boyData = toMap(selectedItems[1]);
+                                girlData = toMap(selectedItems[0]);
+                              }
+                            }
+
+                            Get.to(
+                              () => CreateKundliScreen(
+                                initialIsMatching: true,
+                                initialBoyData: boyData,
+                                initialGirlData: girlData,
+                              ),
+                            );
                           }
-                        }
-
-                        Get.to(() => CreateKundliScreen(
-                              initialIsMatching: true,
-                              initialBoyData: boyData,
-                              initialGirlData: girlData,
-                            ));
-                      }
-                    : null,
-                child: AnimatedOpacity(
-                  duration: const Duration(milliseconds: 300),
-                  opacity: canMatch ? 1.0 : 0.5,
-                  child: Container(
-                    height: 56,
-                    decoration: BoxDecoration(
-                      color: AppColors.lightPink.withOpacity(0.4),
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(sax.Iconsax.heart_copy, size: 18, color: canMatch ? AppColors.primaryColor : Colors.grey),
-                          const SizedBox(width: 8),
-                          AppText(
-                            "Match Making".tr,
-                            color: canMatch ? AppColors.primaryColor : Colors.grey,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                          ),
-                        ],
+                          : null,
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 300),
+                    opacity: canMatch ? 1.0 : 0.5,
+                    child: Container(
+                      height: 56,
+                      decoration: BoxDecoration(
+                        color: AppColors.lightPink.withOpacity(0.4),
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      child: Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              sax.Iconsax.heart_copy,
+                              size: 18,
+                              color:
+                                  canMatch
+                                      ? AppColors.primaryColor
+                                      : Colors.grey,
+                            ),
+                            const SizedBox(width: 8),
+                            AppText(
+                              "Match Making".tr,
+                              color:
+                                  canMatch
+                                      ? AppColors.primaryColor
+                                      : Colors.grey,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
-          ],
-          Expanded(
-            child: GestureDetector(
-              onTap: () => Get.to(() => CreateKundliScreen(
-                    initialIsMatching: false,
-                    hideMatchingTab: !widget.isMatchingMode,
-                  )),
-              child: Container(
-                height: 56,
-                decoration: BoxDecoration(
-                  gradient: AppColors.primaryGradient,
-                  borderRadius: BorderRadius.circular(18),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primaryColor.withOpacity(0.3),
-                      blurRadius: 12,
-                      offset: const Offset(0, 6),
+              const SizedBox(width: 12),
+            ],
+            Expanded(
+              child: GestureDetector(
+                onTap:
+                    () => Get.to(
+                      () => CreateKundliScreen(
+                        initialIsMatching: false,
+                        hideMatchingTab: !widget.isMatchingMode,
+                      ),
                     ),
-                  ],
-                ),
-                child: Center(
-                  child: AppText(
-                    "Create New".tr,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
+                child: Container(
+                  height: 56,
+                  decoration: BoxDecoration(
+                    gradient: AppColors.primaryGradient,
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primaryColor.withOpacity(0.3),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: AppText(
+                      "Create New".tr,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   void _confirmDelete(BuildContext context, KundliItem item) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: AppText('Delete Kundli'.tr, fontWeight: FontWeight.bold),
-        content: AppText('Are you sure you want to delete ${item.name}\'s Kundli?'.tr),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: AppText('Cancel'.tr, color: Colors.grey),
+      builder:
+          (context) => AlertDialog(
+            title: AppText('Delete Kundli'.tr, fontWeight: FontWeight.bold),
+            content: AppText(
+              'Are you sure you want to delete ${item.name}\'s Kundli?'.tr,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: AppText('Cancel'.tr, color: Colors.grey),
+              ),
+              Obx(() {
+                return TextButton(
+                  onPressed:
+                      _savedKundliController.isLoadingAction.value
+                          ? null
+                          : () async {
+                            final success = await _savedKundliController
+                                .deleteKundli(item.id);
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                            }
+                            if (success) {
+                              CustomSnackBar.showSuccess(
+                                'Kundli deleted successfully'.tr,
+                              );
+                            }
+                          },
+                  child:
+                      _savedKundliController.isLoadingAction.value
+                          ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                          : AppText(
+                            'Delete'.tr,
+                            color: Colors.redAccent,
+                            fontWeight: FontWeight.bold,
+                          ),
+                );
+              }),
+            ],
           ),
-          Obx(() {
-            return TextButton(
-              onPressed: _savedKundliController.isLoadingAction.value
-                  ? null
-                  : () async {
-                      final success = await _savedKundliController.deleteKundli(item.id);
-                      if (context.mounted) {
-                        Navigator.pop(context);
-                      }
-                      if (success) {
-                        CustomSnackBar.showSuccess('Kundli deleted successfully'.tr);
-                      }
-                    },
-              child: _savedKundliController.isLoadingAction.value
-                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                  : AppText('Delete'.tr, color: Colors.redAccent, fontWeight: FontWeight.bold),
-            );
-          }),
-        ],
-      ),
     );
   }
 }

@@ -30,7 +30,9 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
         return Obx(() {
           final isLoading = _controller.isLoading.value;
           return Dialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
             child: Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
@@ -61,7 +63,8 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
                   ),
                   const SizedBox(height: 12),
                   AppText(
-                    'Are you sure you want to set this as your default bank account?'.tr,
+                    'Are you sure you want to set this as your default bank account?'
+                        .tr,
                     fontSize: 14,
                     color: Colors.grey.shade600,
                     textAlign: TextAlign.center,
@@ -99,7 +102,9 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
                         Expanded(
                           child: TextButton(
                             onPressed: () async {
-                              await _controller.setDefaultBankAccount(accountId);
+                              await _controller.setDefaultBankAccount(
+                                accountId,
+                              );
                               if (dialogContext.mounted) {
                                 Navigator.of(dialogContext).pop();
                               }
@@ -134,14 +139,10 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
-      appBar: CustomAppBar(
-        title: 'Bank Details'.tr,
-      ),
+      appBar: CustomAppBar(title: 'Bank Details'.tr),
       body: Obx(() {
         if (_controller.isLoading.value) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
 
         if (_controller.bankAccounts.isEmpty) {
@@ -181,7 +182,11 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
               color: AppColors.primaryColor.withOpacity(0.05),
               shape: BoxShape.circle,
             ),
-            child: Icon(Iconsax.bank_copy, color: AppColors.primaryColor.withOpacity(0.2), size: 64),
+            child: Icon(
+              Iconsax.bank_copy,
+              color: AppColors.primaryColor.withOpacity(0.2),
+              size: 64,
+            ),
           ),
           const SizedBox(height: 24),
           AppText(
@@ -203,7 +208,8 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
 
   Widget _buildBankCard(dynamic bank, int index) {
     final bool isDefault = bank.isDefault;
-    final accountNumberMasked = 'XXXX XXXX ${bank.accountNumber.substring(bank.accountNumber.length - 4)}';
+    final accountNumberMasked =
+        'XXXX XXXX ${bank.accountNumber.substring(bank.accountNumber.length - 4)}';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -211,7 +217,10 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isDefault ? AppColors.primaryColor.withOpacity(0.2) : Colors.grey.shade200,
+          color:
+              isDefault
+                  ? AppColors.primaryColor.withOpacity(0.2)
+                  : Colors.grey.shade200,
           width: isDefault ? 1.5 : 1,
         ),
         boxShadow: [
@@ -238,7 +247,11 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
                         color: AppColors.primaryColor.withOpacity(0.08),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Iconsax.bank_copy, color: AppColors.primaryColor, size: 20),
+                      child: const Icon(
+                        Iconsax.bank_copy,
+                        color: AppColors.primaryColor,
+                        size: 20,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Column(
@@ -263,7 +276,10 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
                 ),
                 if (isDefault)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.primaryColor.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(100),
@@ -305,7 +321,9 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
                     onPressed: () => _setAsDefault(index, bank.id),
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                     child: const AppText(
                       'Set as Default',
@@ -317,7 +335,11 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
                 else
                   const Row(
                     children: [
-                      Icon(Icons.check_circle_rounded, color: Colors.green, size: 16),
+                      Icon(
+                        Icons.check_circle_rounded,
+                        color: Colors.green,
+                        size: 16,
+                      ),
                       SizedBox(width: 4),
                       AppText(
                         'Active',

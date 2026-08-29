@@ -41,10 +41,13 @@ class GalleryController extends GetxController {
 
   Future<void> uploadImages(List<File> files) async {
     if (files.isEmpty) return;
-    
+
     isUploading.value = true;
     try {
-      final response = await uploadGalleryImagesUseCase.execute(files, 'pending');
+      final response = await uploadGalleryImagesUseCase.execute(
+        files,
+        'pending',
+      );
       if (response.isSuccess) {
         CustomSnackBar.showSuccess('Images uploaded successfully');
         fetchImages();

@@ -69,18 +69,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
-        
-        final callController = Get.isRegistered<CallController>()
-            ? Get.find<CallController>()
-            : null;
-        final liveController = Get.isRegistered<LiveController>()
-            ? Get.find<LiveController>()
-            : null;
-            
+
+        final callController =
+            Get.isRegistered<CallController>()
+                ? Get.find<CallController>()
+                : null;
+        final liveController =
+            Get.isRegistered<LiveController>()
+                ? Get.find<LiveController>()
+                : null;
+
         if ((callController != null && callController.sessionId != null) ||
-            (liveController != null && liveController.currentActiveSession.value != null)) {
+            (liveController != null &&
+                liveController.currentActiveSession.value != null)) {
           try {
-            const channel = MethodChannel('com.suryapath.astrologer/app_retain');
+            const channel = MethodChannel(
+              'com.suryapath.astrologer/app_retain',
+            );
             await channel.invokeMethod('sendToBackground');
           } catch (e) {
             debugPrint("Error sending to background: $e");
@@ -99,208 +104,222 @@ class _DashboardScreenState extends State<DashboardScreen> {
           }
         }
       },
-      child: Obx(() => Scaffold(
-        extendBody: true,
-        body: Column(
-          children: [
-            Obx(() {
-              if (FloatingCallBubble.isActive &&
-                  FloatingCallBubble.sessionId != null &&
-                  FloatingCallBubble.name != null) {
-                return FloatingCallBubbleWidget(
-                  sessionId: FloatingCallBubble.sessionId!,
-                  name: FloatingCallBubble.name!,
-                  imageUrl: '',
-                );
-              } else if (FloatingChatBubble.isActive &&
-                  FloatingChatBubble.sessionId != null &&
-                  FloatingChatBubble.name != null) {
-                return FloatingChatBubbleWidget(
-                  sessionId: FloatingChatBubble.sessionId!,
-                  name: FloatingChatBubble.name!,
-                  imageUrl: '',
-                );
+      child: Obx(
+        () => Scaffold(
+          extendBody: true,
+          body: Column(
+            children: [
+              Obx(() {
+                if (FloatingCallBubble.isActive &&
+                    FloatingCallBubble.sessionId != null &&
+                    FloatingCallBubble.name != null) {
+                  return FloatingCallBubbleWidget(
+                    sessionId: FloatingCallBubble.sessionId!,
+                    name: FloatingCallBubble.name!,
+                    imageUrl: '',
+                  );
+                } else if (FloatingChatBubble.isActive &&
+                    FloatingChatBubble.sessionId != null &&
+                    FloatingChatBubble.name != null) {
+                  return FloatingChatBubbleWidget(
+                    sessionId: FloatingChatBubble.sessionId!,
+                    name: FloatingChatBubble.name!,
+                    imageUrl: '',
+                  );
+                }
+                return const SizedBox.shrink();
+              }),
+              Expanded(child: _screens[controller.selectedIndex.value]),
+            ],
+          ),
+          bottomNavigationBar: CustomBottomNavBar(
+            selectedIndex: controller.selectedIndex.value,
+            onItemSelected: (index) {
+              if (index == 2) {
+                _showGoLiveBottomSheet(context);
+              } else {
+                controller.changeIndex(index);
               }
-              return const SizedBox.shrink();
-            }),
-            Expanded(
-              child: _screens[controller.selectedIndex.value],
-            ),
-          ],
+            },
+            items: _navItems,
+          ),
         ),
-        bottomNavigationBar: CustomBottomNavBar(
-          selectedIndex: controller.selectedIndex.value,
-          onItemSelected: (index) {
-            if (index == 2) {
-              _showGoLiveBottomSheet(context);
-            } else {
-              controller.changeIndex(index);
-            }
-          },
-          items: _navItems,
-        ),
-      )),
+      ),
     );
   }
 
   Future<bool> _showExitDialog(BuildContext context) async {
     return await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const AppText(
-          'Exit App',
-          fontSize: 20,
-          fontWeight: FontWeight.w700,
-          color: Colors.white,
-        ),
-        content: const AppText(
-          'Are you sure you want to exit?',
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          color: Colors.grey,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: AppText(
-              'Cancel',
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey[600],
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const AppText(
-              'Exit',
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: AppColors.primaryColor,
-            ),
-          ),
-        ],
-      ),
-    ) ?? false;
+          context: context,
+          builder:
+              (context) => AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                title: const AppText(
+                  'Exit App',
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+                content: const AppText(
+                  'Are you sure you want to exit?',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey,
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: AppText(
+                      'Cancel',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(true),
+                    child: const AppText(
+                      'Exit',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primaryColor,
+                    ),
+                  ),
+                ],
+              ),
+        ) ??
+        false;
   }
 
   void _showGoLiveBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => SafeArea(
-        top: false,
-        child: Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
+      builder:
+          (context) => SafeArea(
+            top: false,
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
               ),
-            ),
-            const SizedBox(height: 25),
-            const AppText(
-              'Go Live',
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF2E1A47),
-            ),
-            const SizedBox(height: 12),
-            AppText(
-              'Would you like to go live instantly or schedule it for later?',
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: Colors.grey[600],
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 30),
-            
-            Obx(() {
-              final liveController = Get.find<LiveController>();
-              final isCreating = liveController.isCreating.value;
-              
-              return SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton(
-                  onPressed: isCreating
-                      ? null
-                      : () {
-                          liveController.createSession(
-                            title: "Instant Live Session",
-                            description: "Broadcasting Live",
-                            sessionType: "public",
-                            duration: 60,
-                            maxParticipants: 100,
-                            isInstant: true,
-                          );
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF4CAF50), // Green for Go Live
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-                  child: isCreating
-                      ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        )
-                      : const AppText(
-                          'Go Live Instantly',
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                ),
-              );
-            }),
-            
-            const SizedBox(height: 12),
-            
-            // Schedule for Later Button
-            SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: OutlinedButton(
-                onPressed: () {
-                  Get.back();
-                  Get.toNamed(AppRoutes.liveSchedule);
-                },
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Color(0xFF2196F3), width: 1.5), // Blue for Schedule
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                  const SizedBox(height: 25),
+                  const AppText(
+                    'Go Live',
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF2E1A47),
                   ),
-                ),
-                child: const AppText(
-                  'Schedule for Later',
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF2196F3),
-                ),
+                  const SizedBox(height: 12),
+                  AppText(
+                    'Would you like to go live instantly or schedule it for later?',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[600],
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 30),
+
+                  Obx(() {
+                    final liveController = Get.find<LiveController>();
+                    final isCreating = liveController.isCreating.value;
+
+                    return SizedBox(
+                      width: double.infinity,
+                      height: 55,
+                      child: ElevatedButton(
+                        onPressed:
+                            isCreating
+                                ? null
+                                : () {
+                                  liveController.createSession(
+                                    title: "Instant Live Session",
+                                    description: "Broadcasting Live",
+                                    sessionType: "public",
+                                    duration: 60,
+                                    maxParticipants: 100,
+                                    isInstant: true,
+                                  );
+                                },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(
+                            0xFF4CAF50,
+                          ), // Green for Go Live
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child:
+                            isCreating
+                                ? const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.5,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
+                                  ),
+                                )
+                                : const AppText(
+                                  'Go Live Instantly',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                      ),
+                    );
+                  }),
+
+                  const SizedBox(height: 12),
+
+                  // Schedule for Later Button
+                  SizedBox(
+                    width: double.infinity,
+                    height: 55,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Get.back();
+                        Get.toNamed(AppRoutes.liveSchedule);
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(
+                          color: Color(0xFF2196F3),
+                          width: 1.5,
+                        ), // Blue for Schedule
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: const AppText(
+                        'Schedule for Later',
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF2196F3),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
               ),
             ),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
-    ),
-  );
-}
+          ),
+    );
+  }
 }

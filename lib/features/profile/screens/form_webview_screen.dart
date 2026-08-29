@@ -8,10 +8,7 @@ import '../../../core/utils/custom_snackbar.dart';
 class FormWebViewScreen extends StatelessWidget {
   final String formName;
 
-  const FormWebViewScreen({
-    super.key,
-    required this.formName,
-  });
+  const FormWebViewScreen({super.key, required this.formName});
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +19,16 @@ class FormWebViewScreen extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              CustomSnackBar.showSuccess('Downloading $formName...', title: 'Started');
+              CustomSnackBar.showSuccess(
+                'Downloading $formName...',
+                title: 'Started',
+              );
             },
-            icon: const Icon(Iconsax.document_download_copy, color: Color(0xFF2E1A47), size: 22),
+            icon: const Icon(
+              Iconsax.document_download_copy,
+              color: Color(0xFF2E1A47),
+              size: 22,
+            ),
           ),
           const SizedBox(width: 8),
         ],

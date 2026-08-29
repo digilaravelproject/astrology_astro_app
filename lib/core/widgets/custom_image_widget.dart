@@ -37,6 +37,11 @@ extension ImageTypeExtension on String {
 
 /// A reusable custom image widget
 class CustomImageWidget extends StatelessWidget {
+  final int? memCacheWidth;
+  final Widget? fallbackWidget;
+  final Widget Function(BuildContext, Object, StackTrace?)? errorBuilder;
+  final Widget Function(BuildContext, Widget, ImageChunkEvent?)? loadingBuilder;
+
   const CustomImageWidget({
     Key? key,
     this.imagePath,
@@ -49,6 +54,10 @@ class CustomImageWidget extends StatelessWidget {
     this.radius,
     this.margin,
     this.border,
+    this.memCacheWidth,
+    this.fallbackWidget,
+    this.errorBuilder,
+    this.loadingBuilder,
     this.placeHolder = ImageConstants.imageNotFound,
   }) : super(key: key);
 
@@ -145,6 +154,14 @@ class CustomImageWidget extends StatelessWidget {
             fit: fit,
             imageUrl: imagePath!,
             color: color,
+            memCacheHeight: memCacheHeight ??
+                (height != null && height != double.infinity
+                    ? (height! * 2).toInt()
+                    : null),
+            memCacheWidth: memCacheWidth ??
+                (width != null && width != double.infinity
+                    ? (width! * 2).toInt()
+                    : null),
             placeholder: (context, url) => Center(
               child: SizedBox(
                 height: 30,
@@ -155,12 +172,20 @@ class CustomImageWidget extends StatelessWidget {
                 ),
               ),
             ),
-            errorWidget: (context, url, error) => Image.asset(
-              placeHolder,
-              height: height,
-              width: width,
-              fit: fit ?? BoxFit.cover,
-            ),
+            errorWidget: (context, url, error) {
+               if (errorBuilder != null) {
+                 return errorBuilder!(context, error, null);
+               }
+               if (fallbackWidget != null) {
+                 return fallbackWidget!;
+               }
+               return Image.asset(
+                 placeHolder,
+                 height: height,
+                 width: width,
+                 fit: fit ?? BoxFit.cover,
+               );
+            },
           );
         case ImageType.png:
           return Image.asset(
@@ -188,8 +213,8 @@ class CustomImageWidget extends StatelessWidget {
                   );
                 } else if (snapshot.hasError || !snapshot.hasData) {
                   // Agar cache fail ho gaya to normal network image use karo
-                  return Image.network(
-                    imagePath!,
+                  return CustomImageWidget(
+                    imagePath: imagePath!,
                     height: height,
                     width: width,
                     fit: fit ?? BoxFit.cover,
@@ -231,7 +256,6 @@ class CustomImageWidget extends StatelessWidget {
             );
           }
         case ImageType.unknown:
-        default:
           return Image.asset(
             placeHolder,
             height: height,

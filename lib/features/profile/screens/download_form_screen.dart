@@ -23,9 +23,7 @@ class DownloadFormScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
-      appBar: const CustomAppBar(
-        title: 'Download Form 16A',
-      ),
+      appBar: const CustomAppBar(title: 'Download Form 16A'),
       body: ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 8),
         itemCount: forms.length,

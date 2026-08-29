@@ -29,7 +29,8 @@ class WalletRepositoryImpl implements IWalletRepository {
     if (response.isSuccess) {
       final body = response.body;
       // ResponseModel extracts json['data'] as body, so it may be a Map or List
-      final dataMap = (body is Map<String, dynamic>) ? body : <String, dynamic>{};
+      final dataMap =
+          (body is Map<String, dynamic>) ? body : <String, dynamic>{};
       return InvoiceSummaryModel.fromJson(dataMap);
     } else {
       throw Exception(response.message);
@@ -43,7 +44,8 @@ class WalletRepositoryImpl implements IWalletRepository {
     if (response.isSuccess) {
       final body = response.body;
       // ResponseModel already extracts json['data'] as body, so body IS the data object
-      final dataMap = (body is Map<String, dynamic>) ? body : <String, dynamic>{};
+      final dataMap =
+          (body is Map<String, dynamic>) ? body : <String, dynamic>{};
       return WeeklyRankingData.fromJson(dataMap);
     } else {
       throw Exception(response.message);
@@ -73,9 +75,7 @@ class WalletRepositoryImpl implements IWalletRepository {
   }
 
   @override
-  Future<List<WalletTransactionModel>> getWithdrawals({
-    int? page,
-  }) async {
+  Future<List<WalletTransactionModel>> getWithdrawals({int? page}) async {
     final queryParams = <String, dynamic>{};
     if (page != null) queryParams['page'] = page;
 
@@ -99,10 +99,7 @@ class WalletRepositoryImpl implements IWalletRepository {
   }) async {
     final response = await _apiClient.post(
       AppUrls.walletWithdraw,
-      data: {
-        'amount': amount,
-        'bank_account_id': bankAccountId,
-      },
+      data: {'amount': amount, 'bank_account_id': bankAccountId},
     );
 
     if (response.isSuccess) {

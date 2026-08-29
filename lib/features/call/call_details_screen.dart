@@ -28,9 +28,7 @@ class CallDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(
-        title: title,
-      ),
+      appBar: CustomAppBar(title: title),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -58,11 +56,7 @@ class CallDetailsScreen extends StatelessWidget {
               color: Color(0xFF2E1A47),
             ),
             const SizedBox(height: 12),
-            AppText(
-              schedule,
-              fontSize: 14,
-              color: Colors.grey.shade800,
-            ),
+            AppText(schedule, fontSize: 14, color: Colors.grey.shade800),
             const SizedBox(height: 8),
             _buildDetailRow('Duration', duration),
             const SizedBox(height: 8),
@@ -77,17 +71,9 @@ class CallDetailsScreen extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AppText(
-          '$label: ',
-          fontSize: 14,
-          color: Colors.grey.shade700,
-        ),
+        AppText('$label: ', fontSize: 14, color: Colors.grey.shade700),
         Expanded(
-          child: AppText(
-            value,
-            fontSize: 14,
-            color: Colors.grey.shade800,
-          ),
+          child: AppText(value, fontSize: 14, color: Colors.grey.shade800),
         ),
       ],
     );

@@ -40,11 +40,14 @@ class PhoneNumberController extends GetxController {
 
       if (result.isSuccess) {
         final List<dynamic> data = result.body['numbers'] ?? [];
-        phoneNumbers.value = data.map((json) => PhoneNumberModel.fromJson(json)).toList();
+        phoneNumbers.value =
+            data.map((json) => PhoneNumberModel.fromJson(json)).toList();
         print('[PHONE] Loaded ${phoneNumbers.length} phone numbers');
       } else {
         print('[PHONE] Failed to get phone numbers: ${result.message}');
-        CustomSnackBar.showError(result.message ?? 'Failed to fetch phone numbers');
+        CustomSnackBar.showError(
+          result.message ?? 'Failed to fetch phone numbers',
+        );
       }
     } catch (e) {
       print('[PHONE] Exception in getPhoneNumbers: $e');
@@ -63,11 +66,15 @@ class PhoneNumberController extends GetxController {
 
       if (result.isSuccess) {
         print('[PHONE] Phone number added successfully');
-        CustomSnackBar.showSuccess(result.message ?? 'Phone number added successfully');
+        CustomSnackBar.showSuccess(
+          result.message ?? 'Phone number added successfully',
+        );
         await getPhoneNumbers();
       } else {
         print('[PHONE] Failed to add: ${result.message}');
-        CustomSnackBar.showError(result.message ?? 'Failed to add phone number');
+        CustomSnackBar.showError(
+          result.message ?? 'Failed to add phone number',
+        );
       }
       return result;
     } catch (e) {
@@ -88,12 +95,16 @@ class PhoneNumberController extends GetxController {
 
       if (result.isSuccess) {
         print('[PHONE] Phone number verified successfully');
-        CustomSnackBar.showSuccess(result.message ?? 'Phone number verified successfully');
+        CustomSnackBar.showSuccess(
+          result.message ?? 'Phone number verified successfully',
+        );
         await getPhoneNumbers();
         Get.back(); // Close bottom sheet
       } else {
         print('[PHONE] Failed to verify: ${result.message}');
-        CustomSnackBar.showError(result.message ?? 'Invalid OTP or verification failed');
+        CustomSnackBar.showError(
+          result.message ?? 'Invalid OTP or verification failed',
+        );
       }
     } catch (e) {
       print('[PHONE] Exception in verifyPhoneNumber: $e');
@@ -112,7 +123,9 @@ class PhoneNumberController extends GetxController {
 
       if (result.isSuccess) {
         print('[PHONE] Default phone number set successfully');
-        CustomSnackBar.showSuccess(result.message ?? 'Default phone number set successfully');
+        CustomSnackBar.showSuccess(
+          result.message ?? 'Default phone number set successfully',
+        );
         await getPhoneNumbers();
       } else {
         print('[PHONE] Failed to set default: ${result.message}');

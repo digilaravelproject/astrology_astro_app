@@ -10,13 +10,16 @@ class ScheduleBinding extends Bindings {
   @override
   void dependencies() {
     final apiClient = Get.find<ApiClient>();
-    
+
     final dataSource = ScheduleRemoteDataSource(apiClient);
     final repository = ScheduleRepository(dataSource);
-    
+
     final setSleepHoursUseCase = SetSleepHoursUseCase(repository);
     final getSleepHoursUseCase = GetSleepHoursUseCase(repository);
-    
-    Get.lazyPut(() => ScheduleController(setSleepHoursUseCase, getSleepHoursUseCase), fenix: true);
+
+    Get.lazyPut(
+      () => ScheduleController(setSleepHoursUseCase, getSleepHoursUseCase),
+      fenix: true,
+    );
   }
 }

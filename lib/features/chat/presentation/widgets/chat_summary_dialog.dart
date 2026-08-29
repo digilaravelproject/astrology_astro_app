@@ -62,7 +62,7 @@ class ChatSummaryDialog extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            
+
             // Title
             AppText(
               'Chat Session Ended',
@@ -78,24 +78,33 @@ class ChatSummaryDialog extends StatelessWidget {
               fontWeight: FontWeight.w500,
             ),
             const SizedBox(height: 24),
-            
+
             const Divider(color: Color(0xFFF1F1F1), height: 1),
             const SizedBox(height: 16),
-            
+
             // Session Details
             _buildSummaryRow(Icons.tag, 'Session ID', '#$sessionId'),
-            _buildSummaryRow(Icons.timer_outlined, 'Duration', _formatDuration(durationSeconds)),
+            _buildSummaryRow(
+              Icons.timer_outlined,
+              'Duration',
+              _formatDuration(durationSeconds),
+            ),
             if (totalCost > 0)
-              _buildSummaryRow(Icons.monetization_on_outlined, 'Total Charge', '₹${totalCost.toStringAsFixed(2)}'),
-            
+              _buildSummaryRow(
+                Icons.monetization_on_outlined,
+                'Total Charge',
+                '₹${totalCost.toStringAsFixed(2)}',
+              ),
+
             const SizedBox(height: 24),
-            
+
             // Close Button
             SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+                onPressed:
+                    () => Navigator.of(context, rootNavigator: true).pop(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryColor,
                   foregroundColor: Colors.white,

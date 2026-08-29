@@ -19,10 +19,10 @@ class OfferController extends GetxController {
 
   var offers = <OfferModel>[].obs;
   var history = <OfferHistoryModel>[].obs;
-  
+
   var isLoadingOffers = false.obs;
   var isLoadingHistory = false.obs;
-  
+
   // Track IDs of offers currently being toggled to show loading state on specific switches
   var togglingOfferIds = <int>[].obs;
 

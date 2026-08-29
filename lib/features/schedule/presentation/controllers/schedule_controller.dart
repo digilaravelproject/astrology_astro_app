@@ -25,12 +25,15 @@ class ScheduleController extends GetxController {
   Future<void> setSleepHours(TimeOfDay startTime, TimeOfDay endTime) async {
     try {
       isLoading.value = true;
-      
+
       final startTimeStr = _formatTimeForAPI(startTime);
       final endTimeStr = _formatTimeForAPI(endTime);
-      
-      final response = await _setSleepHoursUseCase.execute(startTimeStr, endTimeStr);
-      
+
+      final response = await _setSleepHoursUseCase.execute(
+        startTimeStr,
+        endTimeStr,
+      );
+
       if (response.isSuccess) {
         if (response.body != null) {
           sleepHours.value = SleepHoursModel.fromJson(response.body);
@@ -50,9 +53,9 @@ class ScheduleController extends GetxController {
   Future<void> getSleepHours() async {
     try {
       isLoading.value = true;
-      
+
       final response = await _getSleepHoursUseCase.execute();
-      
+
       if (response.isSuccess && response.body != null) {
         sleepHours.value = SleepHoursModel.fromJson(response.body);
       }

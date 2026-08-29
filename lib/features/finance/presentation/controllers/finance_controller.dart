@@ -34,11 +34,12 @@ class FinanceController extends GetxController {
       print('[FINANCE] Getting bank accounts...');
       final result = await _getBankAccountsUseCase.call();
       print('[FINANCE] Get bank accounts result: ${result.toString()}');
-      
+
       if (result.isSuccess) {
         final List<dynamic> data = result.body['bank_accounts'] ?? [];
         print('[FINANCE] Bank accounts data: $data');
-        bankAccounts.value = data.map((json) => BankAccountModel.fromJson(json)).toList();
+        bankAccounts.value =
+            data.map((json) => BankAccountModel.fromJson(json)).toList();
         print('[FINANCE] Parsed ${bankAccounts.length} bank accounts');
       } else {
         print('[FINANCE] Failed to get bank accounts: ${result.message}');
@@ -70,8 +71,10 @@ class FinanceController extends GetxController {
     try {
       isAddingAccount.value = true;
       print('[FINANCE] Adding bank account...');
-      print('[FINANCE] Account details: $accountHolderName, $bankName, $accountNumber, $ifscCode');
-      
+      print(
+        '[FINANCE] Account details: $accountHolderName, $bankName, $accountNumber, $ifscCode',
+      );
+
       final result = await _addBankAccountUseCase.call(
         accountHolderName: accountHolderName,
         bankName: bankName,
@@ -84,14 +87,16 @@ class FinanceController extends GetxController {
 
       if (result.isSuccess) {
         print('[FINANCE] Bank account added successfully');
-        
+
         // Add the new account to the list
-        final newAccount = BankAccountModel.fromJson(result.body['bank_account']);
+        final newAccount = BankAccountModel.fromJson(
+          result.body['bank_account'],
+        );
         bankAccounts.add(newAccount);
-        
+
         // Navigate back with success result
         Get.back(result: true);
-        
+
         // Show snackbar after navigation
         Future.delayed(const Duration(milliseconds: 300), () {
           CustomSnackBar.disabledSnackbar(
@@ -138,13 +143,13 @@ class FinanceController extends GetxController {
 
       if (result.isSuccess) {
         print('[FINANCE] Default bank account set successfully');
-        
+
         // Update the local list
         for (var account in bankAccounts) {
           account.isDefault = (account.id == id);
         }
         bankAccounts.refresh();
-        
+
         CustomSnackBar.disabledSnackbar(
           'Success',
           result.message ?? 'Default bank account set successfully',

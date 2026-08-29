@@ -12,7 +12,8 @@ class NotificationDetailScreen extends StatefulWidget {
   const NotificationDetailScreen({super.key, required this.notificationId});
 
   @override
-  State<NotificationDetailScreen> createState() => _NotificationDetailScreenState();
+  State<NotificationDetailScreen> createState() =>
+      _NotificationDetailScreenState();
 }
 
 class _NotificationDetailScreenState extends State<NotificationDetailScreen> {
@@ -81,18 +82,25 @@ class _NotificationDetailScreenState extends State<NotificationDetailScreen> {
                   const Spacer(),
                   // Read status badge
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
-                      color: notification.isRead
-                          ? Colors.grey.shade100
-                          : AppColors.lightPink.withOpacity(0.4),
+                      color:
+                          notification.isRead
+                              ? Colors.grey.shade100
+                              : AppColors.lightPink.withOpacity(0.4),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: AppText(
                       notification.isRead ? 'Read' : 'Unread',
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color: notification.isRead ? Colors.grey : AppColors.deepPink,
+                      color:
+                          notification.isRead
+                              ? Colors.grey
+                              : AppColors.deepPink,
                     ),
                   ),
                 ],
@@ -130,13 +138,22 @@ class _NotificationDetailScreenState extends State<NotificationDetailScreen> {
   String _getTypeFromTitle(String title) {
     final lower = title.toLowerCase();
     if (lower.contains('follow')) return 'follower';
-    if (lower.contains('wallet') || lower.contains('earning') || lower.contains('credit')) return 'wallet';
-    if (lower.contains('review') || lower.contains('rating') || lower.contains('star')) return 'review';
+    if (lower.contains('wallet') ||
+        lower.contains('earning') ||
+        lower.contains('credit'))
+      return 'wallet';
+    if (lower.contains('review') ||
+        lower.contains('rating') ||
+        lower.contains('star'))
+      return 'review';
     if (lower.contains('like') || lower.contains('liked')) return 'like';
     if (lower.contains('block')) return 'block';
     if (lower.contains('report')) return 'report';
     if (lower.contains('photo') || lower.contains('profile')) return 'profile';
-    if (lower.contains('otp') || lower.contains('login') || lower.contains('verif')) return 'auth';
+    if (lower.contains('otp') ||
+        lower.contains('login') ||
+        lower.contains('verif'))
+      return 'auth';
     return 'system';
   }
 

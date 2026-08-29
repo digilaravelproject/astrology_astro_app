@@ -37,7 +37,11 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
     );
 
     if (result.isSuccess) {
-      final newPhoneId = result.body['numbers']?.last['id'] ?? result.body['phone_number']?['id'] ?? result.body['id'] ?? phoneNumber.id;
+      final newPhoneId =
+          result.body['numbers']?.last['id'] ??
+          result.body['phone_number']?['id'] ??
+          result.body['id'] ??
+          phoneNumber.id;
       _showVerificationBottomSheet(
         newPhoneId,
         '${phoneNumber.countryCode} ${phoneNumber.phone}',
@@ -50,13 +54,16 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-        child: PhoneVerificationBottomSheet(
-          phoneId: phoneId,
-          phoneNumber: phoneNumber,
-        ),
-      ),
+      builder:
+          (context) => Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: PhoneVerificationBottomSheet(
+              phoneId: phoneId,
+              phoneNumber: phoneNumber,
+            ),
+          ),
     );
   }
 
@@ -64,20 +71,20 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(
-        title: 'Update Phone Number'.tr,
-      ),
+      appBar: CustomAppBar(title: 'Update Phone Number'.tr),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => showAddPhoneBottomSheet(context),
         backgroundColor: AppColors.primaryColor,
         icon: const Icon(Icons.add, color: Colors.white),
-        label: AppText('Add New'.tr, color: Colors.white, fontWeight: FontWeight.w600),
+        label: AppText(
+          'Add New'.tr,
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+        ),
       ),
       body: Obx(() {
         if (_controller.isLoading.value && _controller.phoneNumbers.isEmpty) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
 
         return SingleChildScrollView(
@@ -103,7 +110,7 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
                       }).toList(),
                       const SizedBox(height: 80), // Space for FAB
                     ],
-                    
+
                     if (_controller.phoneNumbers.isEmpty)
                       SizedBox(
                         height: MediaQuery.of(context).size.height * 0.6,
@@ -111,7 +118,11 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Iconsax.mobile_copy, size: 60, color: Colors.grey.shade300),
+                              Icon(
+                                Iconsax.mobile_copy,
+                                size: 60,
+                                color: Colors.grey.shade300,
+                              ),
                               const SizedBox(height: 16),
                               AppText(
                                 'No phone numbers added yet'.tr,
@@ -138,7 +149,8 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
       padding: const EdgeInsets.all(16),
       color: AppColors.lightPink,
       child: AppText(
-        'You will receive calls and chat alerts on your verified phone numbers.'.tr,
+        'You will receive calls and chat alerts on your verified phone numbers.'
+            .tr,
         fontSize: 12,
         color: Colors.black87,
         textAlign: TextAlign.center,
@@ -192,7 +204,10 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
                   GestureDetector(
                     onTap: () => _verifyExistingNumber(phoneNumber),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.orange.shade50,
                         borderRadius: BorderRadius.circular(10),
@@ -208,7 +223,10 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
                   )
                 else if (phoneNumber.isDefault)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.green.shade50,
                       borderRadius: BorderRadius.circular(10),
@@ -217,7 +235,11 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.check_circle_rounded, color: Colors.green, size: 14),
+                        Icon(
+                          Icons.check_circle_rounded,
+                          color: Colors.green,
+                          size: 14,
+                        ),
                         SizedBox(width: 4),
                         AppText(
                           'Active',
@@ -233,11 +255,16 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
                     onTap: () => _setAsDefault(phoneNumber.id),
                     borderRadius: BorderRadius.circular(10),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.primaryColor.withOpacity(0.05),
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: AppColors.primaryColor.withOpacity(0.2)),
+                        border: Border.all(
+                          color: AppColors.primaryColor.withOpacity(0.2),
+                        ),
                       ),
                       child: const AppText(
                         'Set Default',
@@ -263,7 +290,9 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
         return Obx(() {
           final isLoading = _controller.isLoading.value;
           return Dialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
             child: Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
@@ -338,7 +367,10 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
                               }
                             },
                             style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 12,
+                                horizontal: 8,
+                              ),
                               backgroundColor: AppColors.primaryColor,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),

@@ -24,9 +24,7 @@ class _PaySlipScreenState extends State<PaySlipScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(
-        title: 'Pay Slip'.tr,
-      ),
+      appBar: CustomAppBar(title: 'Pay Slip'.tr),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -47,11 +45,17 @@ class _PaySlipScreenState extends State<PaySlipScreen> {
             CustomButton(
               text: 'Send on Email'.tr,
               onPressed: () {
-                if (_startMonthController.text.isEmpty || _endMonthController.text.isEmpty) {
-                  CustomSnackBar.showError('Please select both start and end dates');
+                if (_startMonthController.text.isEmpty ||
+                    _endMonthController.text.isEmpty) {
+                  CustomSnackBar.showError(
+                    'Please select both start and end dates',
+                  );
                   return;
                 }
-                CustomSnackBar.showSuccess('Pay slip sent to your registered email', title: 'Success');
+                CustomSnackBar.showSuccess(
+                  'Pay slip sent to your registered email',
+                  title: 'Success',
+                );
               },
               backgroundColor: AppColors.primaryColor,
               borderRadius: 100,
@@ -92,9 +96,16 @@ class _PaySlipScreenState extends State<PaySlipScreen> {
                 AppText(
                   controller.text.isEmpty ? label : controller.text,
                   fontSize: 15,
-                  color: controller.text.isEmpty ? Colors.grey.shade400 : const Color(0xFF2E1A47),
+                  color:
+                      controller.text.isEmpty
+                          ? Colors.grey.shade400
+                          : const Color(0xFF2E1A47),
                 ),
-                Icon(Iconsax.calendar_1_copy, color: Colors.grey.shade400, size: 20),
+                Icon(
+                  Iconsax.calendar_1_copy,
+                  color: Colors.grey.shade400,
+                  size: 20,
+                ),
               ],
             ),
           ),
@@ -103,7 +114,10 @@ class _PaySlipScreenState extends State<PaySlipScreen> {
     );
   }
 
-  Future<void> _selectDate(BuildContext context, TextEditingController controller) async {
+  Future<void> _selectDate(
+    BuildContext context,
+    TextEditingController controller,
+  ) async {
     DateTime tempDate = DateTime.now();
 
     final result = await showDialog<DateTime>(
@@ -111,9 +125,12 @@ class _PaySlipScreenState extends State<PaySlipScreen> {
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (context, setModalState) {
-            final formattedHeader = "${_getDayName(tempDate.weekday)}, ${_getMonthShort(tempDate.month)} ${tempDate.day}, ${tempDate.year}";
+            final formattedHeader =
+                "${_getDayName(tempDate.weekday)}, ${_getMonthShort(tempDate.month)} ${tempDate.day}, ${tempDate.year}";
             return Dialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               child: Container(
                 width: 320,
                 padding: const EdgeInsets.all(16),
@@ -126,10 +143,15 @@ class _PaySlipScreenState extends State<PaySlipScreen> {
                   children: [
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 16,
+                      ),
                       decoration: const BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(12),
+                        ),
                       ),
                       child: Text(
                         formattedHeader,
@@ -140,7 +162,11 @@ class _PaySlipScreenState extends State<PaySlipScreen> {
                         ),
                       ),
                     ),
-                    const Divider(height: 1, color: AppColors.primaryColor, thickness: 1.5),
+                    const Divider(
+                      height: 1,
+                      color: AppColors.primaryColor,
+                      thickness: 1.5,
+                    ),
                     const SizedBox(height: 10),
                     SizedBox(
                       height: 180,
@@ -211,7 +237,20 @@ class _PaySlipScreenState extends State<PaySlipScreen> {
   }
 
   String _getMonthShort(int month) {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     return months[(month - 1) % 12];
   }
 }

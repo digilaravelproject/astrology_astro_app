@@ -49,25 +49,25 @@ class Styles {
 
   // Body text
   static TextStyle bodyTextStyle(BuildContext context) {
-    return Theme.of(context).textTheme.bodyMedium!.copyWith(
-      fontSize: Dimensions.font14,
-    );
+    return Theme.of(
+      context,
+    ).textTheme.bodyMedium!.copyWith(fontSize: Dimensions.font14);
   }
 
   // Small text
   static TextStyle smallTextStyle(BuildContext context) {
-    return Theme.of(context).textTheme.bodySmall!.copyWith(
-      fontSize: Dimensions.font12,
-    );
+    return Theme.of(
+      context,
+    ).textTheme.bodySmall!.copyWith(fontSize: Dimensions.font12);
   }
 
   // Input decoration
   static InputDecoration inputDecoration(
-      BuildContext context, {
-        required String hintText,
-        Widget? prefixIcon,
-        Widget? suffixIcon,
-      }) {
+    BuildContext context, {
+    required String hintText,
+    Widget? prefixIcon,
+    Widget? suffixIcon,
+  }) {
     final theme = Theme.of(context);
     return InputDecoration(
       hintText: hintText,

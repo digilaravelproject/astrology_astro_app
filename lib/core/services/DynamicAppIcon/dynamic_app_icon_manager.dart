@@ -25,7 +25,8 @@ class DynamicAppIconManager {
       // Mock data for testing
       final mockResponse = {
         "iconName": "ic_alternate", // Example alternate icon name
-        "iconUrl": "https://dummyimage.com/512x512/000/fff.png&text=icon_1" // Example URL
+        "iconUrl":
+            "https://dummyimage.com/512x512/000/fff.png&text=icon_1", // Example URL
       };
       return {
         'iconName': mockResponse['iconName'] ?? defaultIcon,
@@ -33,10 +34,7 @@ class DynamicAppIconManager {
       };
     } catch (e) {
       print("Backend fetch failed: $e");
-      return {
-        'iconName': defaultIcon,
-        'iconUrl': '',
-      };
+      return {'iconName': defaultIcon, 'iconUrl': ''};
     }
   }
 

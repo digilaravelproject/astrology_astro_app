@@ -8,7 +8,10 @@ class LiveRepositoryImpl implements LiveRepository {
   LiveRepositoryImpl(this.dataSource);
 
   @override
-  Future<ResponseModel> getLiveSessions({String filter = 'all', int perPage = 15}) async {
+  Future<ResponseModel> getLiveSessions({
+    String filter = 'all',
+    int perPage = 15,
+  }) async {
     return await dataSource.getLiveSessions(filter: filter, perPage: perPage);
   }
 
@@ -38,7 +41,10 @@ class LiveRepositoryImpl implements LiveRepository {
   }
 
   @override
-  Future<ResponseModel> updateLiveSession(int id, Map<String, dynamic> data) async {
+  Future<ResponseModel> updateLiveSession(
+    int id,
+    Map<String, dynamic> data,
+  ) async {
     return await dataSource.updateLiveSession(id, data);
   }
 
@@ -57,4 +63,3 @@ class LiveRepositoryImpl implements LiveRepository {
     return await dataSource.getLiveComments(id);
   }
 }
-

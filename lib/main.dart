@@ -25,11 +25,13 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     final title = message.notification?.title ?? '';
     final type = data['type']?.toString();
 
-    final String rawSessionId = data['session_id']?.toString() ??
+    final String rawSessionId =
+        data['session_id']?.toString() ??
         data['chat_session_id']?.toString() ??
         data['chat_assistance_session_id']?.toString() ??
         data['live_session_id']?.toString() ??
-        data['id']?.toString() ?? '';
+        data['id']?.toString() ??
+        '';
     final int parsedSessionId = int.tryParse(rawSessionId) ?? 0;
 
     if (title.contains('Chat Ended') ||
@@ -39,26 +41,26 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         type == 'chat_summary' ||
         type == 'CHAT_MISSED' ||
         type == 'CHAT_DISMISSED') {
-      } else if (title.contains('Call Ended') ||
+    } else if (title.contains('Call Ended') ||
         type == 'call_ended' ||
         type == 'CALL_ENDED' ||
         type == 'session_completed' ||
         type == 'CALL_FAILED' ||
-        type == 'CALL_DISMISSED') {
-      }
+        type == 'CALL_DISMISSED') {}
     if (data.containsKey('session')) {
-      final sessionData = data['session'] is String 
-          ? jsonDecode(data['session']) 
-          : data['session'];
-      final callerData = data['callerData'] is String 
-          ? jsonDecode(data['callerData']) 
-          : data['callerData'];
-          
+      final sessionData =
+          data['session'] is String
+              ? jsonDecode(data['session'])
+              : data['session'];
+      final callerData =
+          data['callerData'] is String
+              ? jsonDecode(data['callerData'])
+              : data['callerData'];
+
       final sessionId = int.tryParse(sessionData?['id']?.toString() ?? '') ?? 0;
       final consumerName = callerData?['name']?.toString() ?? 'User';
-      
-      if (sessionId > 0) {
-        }
+
+      if (sessionId > 0) {}
     }
   } catch (e) {
     debugPrint('Background message handling error: $e');
@@ -67,10 +69,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [
-    SystemUiOverlay.top,
-    SystemUiOverlay.bottom,
-  ]);
+  SystemChrome.setEnabledSystemUIMode(
+    SystemUiMode.manual,
+    overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
+  );
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await initApp();
   runApp(const MyApp());
@@ -85,44 +87,50 @@ void overlayMain() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-
   @override
   Widget build(BuildContext context) {
     final ThemeController themeController = Get.find();
     final LocalizationController localizationController = Get.find();
 
-    return Obx(() => GetMaterialApp(
-      title: AppConstants.appName,
-      debugShowCheckedModeBanner: false,
-      navigatorKey: Get.key,
-      initialBinding: InitialBindings(),
-      // theme: lightTheme,
-      // darkTheme: lightTheme,
-      // themeMode: ThemeMode.light,
-      initialRoute: '${RouteHelper.getSplashRoute()}',
-      getPages: RouteHelper.routes,
-      defaultTransition: Transition.fadeIn,
-      locale: Locale(
-        localizationController.languages[localizationController.selectedIndex].languageCode,
-        localizationController.languages[localizationController.selectedIndex].countryCode,
+    return Obx(
+      () => GetMaterialApp(
+        title: AppConstants.appName,
+        debugShowCheckedModeBanner: false,
+        navigatorKey: Get.key,
+        initialBinding: InitialBindings(),
+        // theme: lightTheme,
+        // darkTheme: lightTheme,
+        // themeMode: ThemeMode.light,
+        initialRoute: '${RouteHelper.getSplashRoute()}',
+        getPages: RouteHelper.routes,
+        defaultTransition: Transition.fadeIn,
+        locale: Locale(
+          localizationController
+              .languages[localizationController.selectedIndex]
+              .languageCode,
+          localizationController
+              .languages[localizationController.selectedIndex]
+              .countryCode,
+        ),
+        fallbackLocale: const Locale('en', 'US'),
+        translations: Get.find<Translations>(),
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales:
+            localizationController.languages
+                .map((lang) => Locale(lang.languageCode, lang.countryCode))
+                .toList(),
+        builder: (context, child) {
+          return SafeArea(
+            top: false,
+            bottom: true,
+            child: child ?? const SizedBox(),
+          );
+        },
       ),
-      fallbackLocale: const Locale('en', 'US'),
-      translations: Get.find<Translations>(),
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: localizationController.languages
-          .map((lang) => Locale(lang.languageCode, lang.countryCode))
-          .toList(),
-      builder: (context, child) {
-        return SafeArea(
-          top: false,
-          bottom: true,
-          child: child ?? const SizedBox(),
-        );
-      },
-    ));
+    );
   }
 }

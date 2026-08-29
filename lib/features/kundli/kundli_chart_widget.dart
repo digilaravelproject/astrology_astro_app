@@ -11,10 +11,10 @@ class KundliChartWidget extends StatefulWidget {
   final Map<int, List<String>>? northIndianPlanetData;
   final Map<int, List<String>>? southIndianPlanetData;
   final bool isLoading;
-  
+
   const KundliChartWidget({
-    super.key, 
-    required this.title, 
+    super.key,
+    required this.title,
     this.northIndianSvg,
     this.southIndianSvg,
     Map<int, List<String>>? planetData,
@@ -31,14 +31,19 @@ class _KundliChartWidgetState extends State<KundliChartWidget> {
   bool isNorthIndian = true;
 
   void _openFullScreenChart() {
-    final svgString = isNorthIndian ? widget.northIndianSvg : widget.southIndianSvg;
-    final fallbackData = isNorthIndian ? widget.northIndianPlanetData : widget.southIndianPlanetData;
+    final svgString =
+        isNorthIndian ? widget.northIndianSvg : widget.southIndianSvg;
+    final fallbackData =
+        isNorthIndian
+            ? widget.northIndianPlanetData
+            : widget.southIndianPlanetData;
 
     if (widget.isLoading || (svgString == null && fallbackData == null)) return;
 
     Get.to(
       () => FullScreenChartScreen(
-        title: "${widget.title.tr} (${(isNorthIndian ? 'North Indian' : 'South Indian').tr})",
+        title:
+            "${widget.title.tr} (${(isNorthIndian ? 'North Indian' : 'South Indian').tr})",
         svgString: svgString,
         isNorthIndian: isNorthIndian,
         fallbackPlanetData: fallbackData,
@@ -62,9 +67,17 @@ class _KundliChartWidgetState extends State<KundliChartWidget> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _buildToggleItem("North Indian".tr, isNorthIndian, () => setState(() => isNorthIndian = true)),
+                _buildToggleItem(
+                  "North Indian".tr,
+                  isNorthIndian,
+                  () => setState(() => isNorthIndian = true),
+                ),
                 const SizedBox(width: 4),
-                _buildToggleItem("South Indian".tr, !isNorthIndian, () => setState(() => isNorthIndian = false)),
+                _buildToggleItem(
+                  "South Indian".tr,
+                  !isNorthIndian,
+                  () => setState(() => isNorthIndian = false),
+                ),
               ],
             ),
           ),
@@ -81,9 +94,16 @@ class _KundliChartWidgetState extends State<KundliChartWidget> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.grey.withOpacity(0.12), width: 1),
+                      border: Border.all(
+                        color: Colors.grey.withOpacity(0.12),
+                        width: 1,
+                      ),
                       boxShadow: [
-                        BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 4)),
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.03),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
                       ],
                     ),
                     child: AspectRatio(
@@ -126,7 +146,11 @@ class _KundliChartWidgetState extends State<KundliChartWidget> {
                   decoration: TextDecoration.underline,
                 ),
                 const SizedBox(width: 6),
-                const Icon(Icons.zoom_in, size: 18, color: AppColors.primaryColor),
+                const Icon(
+                  Icons.zoom_in,
+                  size: 18,
+                  color: AppColors.primaryColor,
+                ),
               ],
             ),
           ),
@@ -134,23 +158,26 @@ class _KundliChartWidgetState extends State<KundliChartWidget> {
       ],
     );
   }
-  
+
   Widget _buildChartContent() {
     if (widget.isLoading) {
-      return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
-    }
-    
-    final svgString = isNorthIndian ? widget.northIndianSvg : widget.southIndianSvg;
-    
-    if (svgString != null && svgString.isNotEmpty) {
-      return SvgPicture.string(
-        svgString,
-        fit: BoxFit.contain,
+      return const Center(
+        child: CircularProgressIndicator(color: AppColors.primaryColor),
       );
     }
-    
+
+    final svgString =
+        isNorthIndian ? widget.northIndianSvg : widget.southIndianSvg;
+
+    if (svgString != null && svgString.isNotEmpty) {
+      return SvgPicture.string(svgString, fit: BoxFit.contain);
+    }
+
     // Fallback to manual CustomPainter if no SVG exists
-    final fallbackData = isNorthIndian ? widget.northIndianPlanetData : widget.southIndianPlanetData;
+    final fallbackData =
+        isNorthIndian
+            ? widget.northIndianPlanetData
+            : widget.southIndianPlanetData;
     if (fallbackData != null) {
       return CustomPaint(
         painter: KundliPainter(
@@ -159,8 +186,10 @@ class _KundliChartWidgetState extends State<KundliChartWidget> {
         ),
       );
     }
-    
-    return const Center(child: AppText("No chart available", color: Colors.grey));
+
+    return const Center(
+      child: AppText("No chart available", color: Colors.grey),
+    );
   }
 
   Widget _buildToggleItem(String label, bool isActive, VoidCallback onTap) {
@@ -172,9 +201,16 @@ class _KundliChartWidgetState extends State<KundliChartWidget> {
         decoration: BoxDecoration(
           color: isActive ? AppColors.primaryColor : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
-          boxShadow: isActive
-              ? [BoxShadow(color: AppColors.primaryColor.withOpacity(0.3), blurRadius: 4, offset: const Offset(0, 2))]
-              : [],
+          boxShadow:
+              isActive
+                  ? [
+                    BoxShadow(
+                      color: AppColors.primaryColor.withOpacity(0.3),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                  : [],
         ),
         child: AppText(
           label,
@@ -238,10 +274,7 @@ class FullScreenChartScreen extends StatelessWidget {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: AspectRatio(
-                aspectRatio: 1,
-                child: _buildChartContent(),
-              ),
+              child: AspectRatio(aspectRatio: 1, child: _buildChartContent()),
             ),
           ),
         ),
@@ -251,12 +284,9 @@ class FullScreenChartScreen extends StatelessWidget {
 
   Widget _buildChartContent() {
     if (svgString != null && svgString!.isNotEmpty) {
-      return SvgPicture.string(
-        svgString!,
-        fit: BoxFit.contain,
-      );
+      return SvgPicture.string(svgString!, fit: BoxFit.contain);
     }
-    
+
     if (fallbackPlanetData != null) {
       return CustomPaint(
         painter: KundliPainter(
@@ -265,26 +295,27 @@ class FullScreenChartScreen extends StatelessWidget {
         ),
       );
     }
-    
-    return const Center(child: AppText("No chart available", color: Colors.grey));
+
+    return const Center(
+      child: AppText("No chart available", color: Colors.grey),
+    );
   }
 }
 
 class KundliPainter extends CustomPainter {
   final bool isNorthIndian;
-  final Map<int, List<String>> planetData; // Key: house (North) or signNumber (South)
+  final Map<int, List<String>>
+  planetData; // Key: house (North) or signNumber (South)
 
-  KundliPainter({
-    required this.isNorthIndian,
-    required this.planetData,
-  });
+  KundliPainter({required this.isNorthIndian, required this.planetData});
 
   @override
   void paint(Canvas canvas, Size size) {
-    final Paint linePaint = Paint()
-      ..color = Colors.black
-      ..strokeWidth = 1.5
-      ..style = PaintingStyle.stroke;
+    final Paint linePaint =
+        Paint()
+          ..color = Colors.black
+          ..strokeWidth = 1.5
+          ..style = PaintingStyle.stroke;
 
     if (isNorthIndian) {
       _drawNorthIndianChart(canvas, size, linePaint);
@@ -351,7 +382,10 @@ class KundliPainter extends CustomPainter {
     }
 
     final Paint fillPaint = Paint()..color = Colors.white;
-    canvas.drawRect(Rect.fromLTWH(cellW, cellH, cellW * 2, cellH * 2), fillPaint);
+    canvas.drawRect(
+      Rect.fromLTWH(cellW, cellH, cellW * 2, cellH * 2),
+      fillPaint,
+    );
     canvas.drawRect(Rect.fromLTWH(cellW, cellH, cellW * 2, cellH * 2), paint);
 
     _drawPlanetsInSouthIndian(canvas, size);
@@ -401,7 +435,10 @@ class KundliPainter extends CustomPainter {
     textPainter.layout();
     textPainter.paint(
       canvas,
-      Offset(center.dx - (textPainter.width / 2), center.dy - (textPainter.height / 2)),
+      Offset(
+        center.dx - (textPainter.width / 2),
+        center.dy - (textPainter.height / 2),
+      ),
     );
   }
 

@@ -14,22 +14,22 @@ class SetSleepHoursScreen extends StatefulWidget {
 class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
   TimeOfDay startTime = const TimeOfDay(hour: 22, minute: 0); // 10:00 PM
   TimeOfDay endTime = const TimeOfDay(hour: 6, minute: 0); // 06:00 AM
-  
+
   late final ScheduleController _controller;
 
   @override
   void initState() {
     super.initState();
     _controller = Get.find<ScheduleController>();
-    
+
     // Load current values if already available in controller
     _loadCurrentSleepHours();
-    
+
     // Refresh sleep hours data when screen opens
     _controller.refreshSleepHours().then((_) {
       _loadCurrentSleepHours();
     });
-    
+
     // Listen to changes in sleep hours data
     ever(_controller.sleepHours, (sleepHours) {
       if (sleepHours != null && mounted) {
@@ -71,7 +71,7 @@ class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
   String _calculateSleepDuration() {
     final startMinutes = startTime.hour * 60 + startTime.minute;
     final endMinutes = endTime.hour * 60 + endTime.minute;
-    
+
     int durationMinutes;
     if (endMinutes > startMinutes) {
       // Same day (e.g., 2 AM to 6 AM)
@@ -80,10 +80,10 @@ class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
       // Next day (e.g., 10 PM to 6 AM)
       durationMinutes = (24 * 60) - startMinutes + endMinutes;
     }
-    
+
     final hours = durationMinutes ~/ 60;
     final minutes = durationMinutes % 60;
-    
+
     if (minutes == 0) {
       return '${hours}h';
     } else {
@@ -132,9 +132,7 @@ class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: AppColors.primaryGradient,
-          ),
+          decoration: const BoxDecoration(gradient: AppColors.primaryGradient),
         ),
         elevation: 0,
         leading: IconButton(
@@ -165,7 +163,8 @@ class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
                     ),
                     const SizedBox(height: 12),
                     AppText(
-                      'Choose your Sleep Time for up to 8 hours. Emergency sessions will be paused during your selected time.'.tr,
+                      'Choose your Sleep Time for up to 8 hours. Emergency sessions will be paused during your selected time.'
+                          .tr,
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
                       color: Colors.grey.shade600,
@@ -173,7 +172,7 @@ class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
                       height: 1.5,
                     ),
                     const SizedBox(height: 30),
-                    
+
                     // Start Sleep Time Card
                     GestureDetector(
                       onTap: () => _selectTime(context, true),
@@ -199,12 +198,16 @@ class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
                                 Container(
                                   padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
-                                    color: AppColors.primaryColor.withOpacity(0.1),
+                                    color: AppColors.primaryColor.withOpacity(
+                                      0.1,
+                                    ),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Icon(
                                     Icons.nights_stay_outlined,
-                                    color: AppColors.primaryColor.withOpacity(0.8),
+                                    color: AppColors.primaryColor.withOpacity(
+                                      0.8,
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(width: 16),
@@ -215,14 +218,14 @@ class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
                                   color: const Color(0xFF1A1A24),
                                 ),
                               ],
-                            )
+                            ),
                           ],
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     // Down Arrow Icon
                     Container(
                       padding: const EdgeInsets.all(8),
@@ -236,9 +239,9 @@ class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
                         size: 20,
                       ),
                     ),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     // End Sleep Time Card
                     GestureDetector(
                       onTap: () => _selectTime(context, false),
@@ -264,7 +267,9 @@ class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
                                 Container(
                                   padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFFFFF9C4), // Light yellow
+                                    color: const Color(
+                                      0xFFFFF9C4,
+                                    ), // Light yellow
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: const Icon(
@@ -280,17 +285,20 @@ class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
                                   color: const Color(0xFF1A1A24),
                                 ),
                               ],
-                            )
+                            ),
                           ],
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // Total Rest Badge
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.grey.shade100,
                         borderRadius: BorderRadius.circular(20),
@@ -298,7 +306,11 @@ class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.schedule, size: 14, color: Colors.grey.shade600),
+                          Icon(
+                            Icons.schedule,
+                            size: 14,
+                            color: Colors.grey.shade600,
+                          ),
                           const SizedBox(width: 6),
                           AppText(
                             'Total Rest: '.tr,
@@ -315,14 +327,18 @@ class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
                         ],
                       ),
                     ),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     // Remove sleep time
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.refresh, size: 16, color: Colors.grey.shade500),
+                        Icon(
+                          Icons.refresh,
+                          size: 16,
+                          color: Colors.grey.shade500,
+                        ),
                         const SizedBox(width: 6),
                         AppText(
                           'Remove sleep time'.tr,
@@ -332,9 +348,9 @@ class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
                         ),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 50),
-                    
+
                     // Repeat Daily Details
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -347,7 +363,8 @@ class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
                         ),
                         const SizedBox(height: 6),
                         AppText(
-                          'The Sleep Time you set will be automatically repeated daily.'.tr,
+                          'The Sleep Time you set will be automatically repeated daily.'
+                              .tr,
                           fontSize: 13,
                           fontWeight: FontWeight.w400,
                           color: Colors.grey.shade500,
@@ -360,7 +377,7 @@ class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
                 ),
               ),
             ),
-            
+
             // Save Button
             Container(
               padding: const EdgeInsets.all(16),
@@ -376,33 +393,40 @@ class _SetSleepHoursScreenState extends State<SetSleepHoursScreen> {
               ),
               child: SizedBox(
                 width: double.infinity,
-                child: Obx(() => ElevatedButton(
-                  onPressed: _controller.isLoading.value ? null : _saveSleepHours,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryColor, // Make it primary when active
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                child: Obx(
+                  () => ElevatedButton(
+                    onPressed:
+                        _controller.isLoading.value ? null : _saveSleepHours,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          AppColors.primaryColor, // Make it primary when active
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
+                    child:
+                        _controller.isLoading.value
+                            ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                              ),
+                            )
+                            : AppText(
+                              'Save Sleep Schedule'.tr,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
                   ),
-                  child: _controller.isLoading.value
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        )
-                      : AppText(
-                          'Save Sleep Schedule'.tr,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                )),
+                ),
               ),
             ),
           ],

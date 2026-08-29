@@ -56,16 +56,20 @@ class UserModel {
       timeOfBirth: json['time_of_birth'],
       placeOfBirth: json['place_of_birth'],
       languages: json['languages'],
-      profileCompleted: json['profile_completed'] == true || json['profile_completed'] == 1,
+      profileCompleted:
+          json['profile_completed'] == true || json['profile_completed'] == 1,
       userType: json['user_type'] ?? '',
       createdAt: json['created_at'] ?? '',
       updatedAt: json['updated_at'] ?? '',
-      astrologer: json['astrologer'] != null 
-          ? AstrologerModel.fromJson(json['astrologer']) 
-          : null,
+      astrologer:
+          json['astrologer'] != null
+              ? AstrologerModel.fromJson(json['astrologer'])
+              : null,
     );
     Logger.d('UserModel.fromJson keys: ${json.keys.toList()}');
-    Logger.d('UserModel.fromJson: Mapping complete. id: ${user.id}, Has astrologer: ${user.astrologer != null}');
+    Logger.d(
+      'UserModel.fromJson: Mapping complete. id: ${user.id}, Has astrologer: ${user.astrologer != null}',
+    );
     return user;
   }
 
@@ -203,12 +207,12 @@ class AstrologerModel {
       id: json['id'] ?? 0,
       userId: json['user_id'] ?? 0,
       yearsOfExperience: json['years_of_experience'] ?? 0,
-      areasOfExpertise: json['areas_of_expertise'] != null 
-          ? List<String>.from(json['areas_of_expertise']) 
-          : [],
-      languages: json['languages'] != null 
-          ? List<String>.from(json['languages']) 
-          : [],
+      areasOfExpertise:
+          json['areas_of_expertise'] != null
+              ? List<String>.from(json['areas_of_expertise'])
+              : [],
+      languages:
+          json['languages'] != null ? List<String>.from(json['languages']) : [],
       profilePhoto: json['profile_photo'],
       bio: json['bio'],
       idProof: json['id_proof'],
@@ -216,8 +220,10 @@ class AstrologerModel {
       idProofNumber: json['id_proof_number'],
       dateOfBirth: json['date_of_birth'],
       status: json['status'] ?? '',
-      isChatEnabled: json['is_chat_enabled'] == 1 || json['is_chat_enabled'] == true,
-      isCallEnabled: json['is_call_enabled'] == 1 || json['is_call_enabled'] == true,
+      isChatEnabled:
+          json['is_chat_enabled'] == 1 || json['is_chat_enabled'] == true,
+      isCallEnabled:
+          json['is_call_enabled'] == 1 || json['is_call_enabled'] == true,
       chatRate: json['chat_rate_per_minute']?.toString() ?? '0.00',
       callRate: json['call_rate_per_minute']?.toString() ?? '0.00',
       videoCallRate: json['video_call_rate_per_minute']?.toString() ?? '0.00',
@@ -228,11 +234,19 @@ class AstrologerModel {
       otpExpiresAt: json['otp_expires_at'],
       createdAt: json['created_at'] ?? '',
       updatedAt: json['updated_at'] ?? '',
-      skill: json['skill'] != null ? AstrologerSkillsModel.fromJson(json['skill']) : null,
-      otherDetails: json['other_details'] != null ? OtherDetailsModel.fromJson(json['other_details']) : null,
+      skill:
+          json['skill'] != null
+              ? AstrologerSkillsModel.fromJson(json['skill'])
+              : null,
+      otherDetails:
+          json['other_details'] != null
+              ? OtherDetailsModel.fromJson(json['other_details'])
+              : null,
     );
     Logger.d('AstrologerModel.fromJson keys: ${json.keys.toList()}');
-    Logger.d('AstrologerModel.fromJson: Mapping complete. id: ${ast.id}, Has otherDetails: ${ast.otherDetails != null}');
+    Logger.d(
+      'AstrologerModel.fromJson: Mapping complete. id: ${ast.id}, Has otherDetails: ${ast.otherDetails != null}',
+    );
     return ast;
   }
 

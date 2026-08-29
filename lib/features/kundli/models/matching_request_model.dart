@@ -2,16 +2,10 @@ class MatchingRequestModel {
   final PersonDetails male;
   final PersonDetails female;
 
-  MatchingRequestModel({
-    required this.male,
-    required this.female,
-  });
+  MatchingRequestModel({required this.male, required this.female});
 
   Map<String, dynamic> toJson() {
-    return {
-      'male': male.toJson(),
-      'female': female.toJson(),
-    };
+    return {'male': male.toJson(), 'female': female.toJson()};
   }
 }
 

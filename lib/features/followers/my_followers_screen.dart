@@ -20,20 +20,46 @@ class MyFollowersScreen extends StatefulWidget {
   State<MyFollowersScreen> createState() => _MyFollowersScreenState();
 }
 
-class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTickerProviderStateMixin {
+class _MyFollowersScreenState extends State<MyFollowersScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
   final FollowerController followerController = Get.find<FollowerController>();
   final ScrollController _followerScrollController = ScrollController();
   final ScrollController _favoriteScrollController = ScrollController();
-  
+
   // State for Always Online toggles
   final List<Map<String, dynamic>> _alwaysOnlineUsers = [
-    {'name': 'Rohini (AT-ZDXL297)', 'spent': '₹ 1,000+', 'lastSession': '20 Feb, 26', 'isOnline': false},
-    {'name': 'Pallavi (AT-MKK63GE)', 'spent': '₹ 1,000+', 'lastSession': '19 Feb, 26', 'isOnline': true},
-    {'name': 'Saurabh (AT-XYRQXZ7)', 'spent': '₹ 500+', 'lastSession': '19 Feb, 26', 'isOnline': false},
-    {'name': 'Pooja Desai (AT-VLQM7E)', 'spent': '₹ 1,000+', 'lastSession': '19 Feb, 26', 'isOnline': false},
-    {'name': 'HARSHADA PURUSHOTTAM PRATIKSHA (AT-V468LEM)', 'spent': null, 'lastSession': null, 'isOnline': false},
+    {
+      'name': 'Rohini (AT-ZDXL297)',
+      'spent': '₹ 1,000+',
+      'lastSession': '20 Feb, 26',
+      'isOnline': false,
+    },
+    {
+      'name': 'Pallavi (AT-MKK63GE)',
+      'spent': '₹ 1,000+',
+      'lastSession': '19 Feb, 26',
+      'isOnline': true,
+    },
+    {
+      'name': 'Saurabh (AT-XYRQXZ7)',
+      'spent': '₹ 500+',
+      'lastSession': '19 Feb, 26',
+      'isOnline': false,
+    },
+    {
+      'name': 'Pooja Desai (AT-VLQM7E)',
+      'spent': '₹ 1,000+',
+      'lastSession': '19 Feb, 26',
+      'isOnline': false,
+    },
+    {
+      'name': 'HARSHADA PURUSHOTTAM PRATIKSHA (AT-V468LEM)',
+      'spent': null,
+      'lastSession': null,
+      'isOnline': false,
+    },
   ];
 
   @override
@@ -46,13 +72,15 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
     });
 
     _followerScrollController.addListener(() {
-      if (_followerScrollController.position.pixels >= _followerScrollController.position.maxScrollExtent - 200) {
+      if (_followerScrollController.position.pixels >=
+          _followerScrollController.position.maxScrollExtent - 200) {
         followerController.loadMoreFollowers();
       }
     });
 
     _favoriteScrollController.addListener(() {
-      if (_favoriteScrollController.position.pixels >= _favoriteScrollController.position.maxScrollExtent - 200) {
+      if (_favoriteScrollController.position.pixels >=
+          _favoriteScrollController.position.maxScrollExtent - 200) {
         followerController.loadMoreFavorites();
       }
     });
@@ -71,19 +99,14 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(
-        title: 'My Community'.tr,
-      ),
+      appBar: CustomAppBar(title: 'My Community'.tr),
       body: Column(
         children: [
           _buildTabBar(),
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: [
-                _buildFollowersTab(),
-                _buildFavouritesTab(),
-              ],
+              children: [_buildFollowersTab(), _buildFavouritesTab()],
             ),
           ),
         ],
@@ -104,8 +127,16 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
         indicatorColor: AppColors.primaryColor,
         indicatorSize: TabBarIndicatorSize.tab,
         labelPadding: EdgeInsets.zero,
-        labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10, fontFamily: 'Poppins'),
-        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 10, fontFamily: 'Poppins'),
+        labelStyle: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 10,
+          fontFamily: 'Poppins',
+        ),
+        unselectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.normal,
+          fontSize: 10,
+          fontFamily: 'Poppins',
+        ),
         tabs: [
           Tab(
             child: Row(
@@ -114,7 +145,11 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
               children: [
                 Text('Followers'.tr),
                 const SizedBox(width: 2),
-                Obx(() => _buildCircularBadge(followerController.followerCount.value.toString())),
+                Obx(
+                  () => _buildCircularBadge(
+                    followerController.followerCount.value.toString(),
+                  ),
+                ),
               ],
             ),
           ),
@@ -125,7 +160,11 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
               children: [
                 Text('Favourites'.tr),
                 const SizedBox(width: 2),
-                Obx(() => _buildCircularBadge(followerController.favoriteCount.value.toString())),
+                Obx(
+                  () => _buildCircularBadge(
+                    followerController.favoriteCount.value.toString(),
+                  ),
+                ),
               ],
             ),
           ),
@@ -162,21 +201,26 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
             if (followerController.isLoading.value) {
               return const Center(child: CircularProgressIndicator());
             }
-            
+
             final list = followerController.followers;
-            
+
             if (list.isEmpty) {
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Iconsax.user_copy, size: 60, color: Colors.grey.shade300),
+                    Icon(
+                      Iconsax.user_copy,
+                      size: 60,
+                      color: Colors.grey.shade300,
+                    ),
                     const SizedBox(height: 16),
                     AppText(
-                      followerController.searchQuery.isNotEmpty 
-                        ? 'No followers match "${followerController.searchQuery.value}"' 
-                        : 'No followers found', 
-                      color: Colors.grey.shade600, fontSize: 16
+                      followerController.searchQuery.isNotEmpty
+                          ? 'No followers match "${followerController.searchQuery.value}"'
+                          : 'No followers found',
+                      color: Colors.grey.shade600,
+                      fontSize: 16,
                     ),
                   ],
                 ),
@@ -186,7 +230,9 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
             return ListView.builder(
               controller: _followerScrollController,
               padding: const EdgeInsets.all(16),
-              itemCount: list.length + (followerController.isFollowerMoreLoading.value ? 1 : 0),
+              itemCount:
+                  list.length +
+                  (followerController.isFollowerMoreLoading.value ? 1 : 0),
               itemBuilder: (context, index) {
                 if (index == list.length) {
                   return const Center(
@@ -205,7 +251,11 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.grey.shade200),
                     boxShadow: [
-                      BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 5, offset: const Offset(0, 2)),
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.02),
+                        blurRadius: 5,
+                        offset: const Offset(0, 2),
+                      ),
                     ],
                   ),
                   child: Row(
@@ -216,11 +266,17 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            AppText(follower.name, fontWeight: FontWeight.w600, fontSize: 14),
+                            AppText(
+                              follower.name,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
                             const SizedBox(height: 2),
                             if (follower.followedAt != null)
                               AppText(
-                                DateFormatter.formatDateTime(DateTime.parse(follower.followedAt!)),
+                                DateFormatter.formatDateTime(
+                                  DateTime.parse(follower.followedAt!),
+                                ),
                                 color: Colors.grey,
                                 fontSize: 12,
                               ),
@@ -229,7 +285,9 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
                       ),
                       AnimatedFavoriteButton(
                         isFavorite: follower.isLiked,
-                        onTap: () => followerController.toggleLike(follower.userId),
+                        onTap:
+                            () =>
+                                followerController.toggleLike(follower.userId),
                       ),
                     ],
                   ),
@@ -254,21 +312,26 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
             if (followerController.isLoading.value) {
               return const Center(child: CircularProgressIndicator());
             }
-            
+
             final list = followerController.favorites;
-            
+
             if (list.isEmpty) {
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Iconsax.heart_copy, size: 60, color: Colors.grey.shade300),
+                    Icon(
+                      Iconsax.heart_copy,
+                      size: 60,
+                      color: Colors.grey.shade300,
+                    ),
                     const SizedBox(height: 16),
                     AppText(
-                      followerController.searchQuery.isNotEmpty 
-                        ? 'No favorites match "${followerController.searchQuery.value}"' 
-                        : 'No Data Available'.tr, 
-                      color: Colors.grey.shade700, fontSize: 16
+                      followerController.searchQuery.isNotEmpty
+                          ? 'No favorites match "${followerController.searchQuery.value}"'
+                          : 'No Data Available'.tr,
+                      color: Colors.grey.shade700,
+                      fontSize: 16,
                     ),
                   ],
                 ),
@@ -278,7 +341,9 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
             return ListView.builder(
               controller: _favoriteScrollController,
               padding: const EdgeInsets.all(16),
-              itemCount: list.length + (followerController.isFavoriteMoreLoading.value ? 1 : 0),
+              itemCount:
+                  list.length +
+                  (followerController.isFavoriteMoreLoading.value ? 1 : 0),
               itemBuilder: (context, index) {
                 if (index == list.length) {
                   return const Center(
@@ -297,7 +362,11 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.grey.shade200),
                     boxShadow: [
-                      BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 5, offset: const Offset(0, 2)),
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.02),
+                        blurRadius: 5,
+                        offset: const Offset(0, 2),
+                      ),
                     ],
                   ),
                   child: Row(
@@ -308,13 +377,17 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            AppText(favorite.name, fontWeight: FontWeight.w600, fontSize: 14),
+                            AppText(
+                              favorite.name,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
                             const SizedBox(height: 2),
                             if (favorite.likedAt != null)
                               AppText(
-                                'Liked: ${DateFormatter.formatDateTime(DateTime.parse(favorite.likedAt!))}', 
-                                color: Colors.grey, 
-                                fontSize: 11
+                                'Liked: ${DateFormatter.formatDateTime(DateTime.parse(favorite.likedAt!))}',
+                                color: Colors.grey,
+                                fontSize: 11,
                               ),
                           ],
                         ),
@@ -341,7 +414,8 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
       Colors.pink.shade100,
     ];
     final int colorIndex = follower.name.length % avatarColors.length;
-    final String initial = follower.name.isNotEmpty ? follower.name[0].toUpperCase() : '?';
+    final String initial =
+        follower.name.isNotEmpty ? follower.name[0].toUpperCase() : '?';
 
     return Container(
       width: 45,
@@ -353,26 +427,48 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
       alignment: Alignment.center,
       child: Text(
         initial,
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white),
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+          color: Colors.white,
+        ),
       ),
     );
   }
 
-  Widget _buildSearchInput({TextEditingController? controller, Function(String)? onChanged}) {
+  Widget _buildSearchInput({
+    TextEditingController? controller,
+    Function(String)? onChanged,
+  }) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: TextField(
         controller: controller,
         onChanged: onChanged,
         decoration: InputDecoration(
-        hintText: 'Search by Name'.tr,
+          hintText: 'Search by Name'.tr,
           hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
           prefixIcon: null,
           suffixIcon: Icon(Icons.search, color: Colors.grey.shade400),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(30), borderSide: BorderSide(color: Colors.grey.shade300)),
-          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(30), borderSide: BorderSide(color: Colors.grey.shade300)),
-          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(30), borderSide: const BorderSide(color: AppColors.primaryColor, width: 1.5)),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 0,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: BorderSide(color: Colors.grey.shade300),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: BorderSide(color: Colors.grey.shade300),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: const BorderSide(
+              color: AppColors.primaryColor,
+              width: 1.5,
+            ),
+          ),
         ),
       ),
     );
@@ -406,7 +502,11 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: Colors.grey.shade200),
                   boxShadow: [
-                    BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 5, offset: const Offset(0, 2)),
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.02),
+                      blurRadius: 5,
+                      offset: const Offset(0, 2),
+                    ),
                   ],
                 ),
                 child: Column(
@@ -415,7 +515,13 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(child: AppText(user['name'] as String, fontWeight: FontWeight.bold, fontSize: 15)),
+                        Expanded(
+                          child: AppText(
+                            user['name'] as String,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
                         Transform.scale(
                           scale: 0.8,
                           child: Switch(
@@ -466,7 +572,12 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
             children: [
               const Icon(Icons.star, color: Colors.amber, size: 20),
               const SizedBox(width: 8),
-              AppText('Always Online', fontWeight: FontWeight.bold, fontSize: 14, color: Colors.grey.shade800),
+              AppText(
+                'Always Online',
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                color: Colors.grey.shade800,
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -488,9 +599,21 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
         hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
         suffixIcon: Icon(Icons.search, color: Colors.grey.shade400, size: 18),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.grey.shade300)),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.grey.shade300)),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.primaryColor, width: 1.5)),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(
+            color: AppColors.primaryColor,
+            width: 1.5,
+          ),
+        ),
       ),
     );
   }
@@ -502,10 +625,11 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
           context: context,
           isScrollControlled: true,
           backgroundColor: Colors.transparent,
-          builder: (context) => const Padding(
-            padding: EdgeInsets.only(top: 100),
-            child: AssistantChatSortBottomSheet(),
-          ),
+          builder:
+              (context) => const Padding(
+                padding: EdgeInsets.only(top: 100),
+                child: AssistantChatSortBottomSheet(),
+              ),
         );
       },
       child: Container(
@@ -519,7 +643,12 @@ class _MyFollowersScreenState extends State<MyFollowersScreen> with SingleTicker
           children: [
             Icon(Icons.swap_vert, color: AppColors.primaryColor, size: 18),
             const SizedBox(width: 4),
-            AppText('Sort', fontWeight: FontWeight.w600, fontSize: 14, color: Colors.black87),
+            AppText(
+              'Sort',
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+              color: Colors.black87,
+            ),
           ],
         ),
       ),

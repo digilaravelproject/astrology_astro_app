@@ -14,7 +14,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _floatController;
   late Animation<double> _floatAnimation;
 
@@ -26,7 +27,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       vsync: this,
       duration: const Duration(seconds: 3),
     )..repeat(reverse: true);
-    
+
     _floatAnimation = Tween<double>(begin: -5.0, end: 5.0).animate(
       CurvedAnimation(parent: _floatController, curve: Curves.easeInOut),
     );
@@ -60,7 +61,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Spacer(),
-                    
+
                     // Animated Logo
                     TweenAnimationBuilder<double>(
                       tween: Tween<double>(begin: 0, end: 1),
@@ -71,7 +72,12 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                           animation: _floatAnimation,
                           builder: (context, child) {
                             return Transform.translate(
-                              offset: Offset(0, value >= 0.99 ? _floatAnimation.value : -30 * (1 - value)),
+                              offset: Offset(
+                                0,
+                                value >= 0.99
+                                    ? _floatAnimation.value
+                                    : -30 * (1 - value),
+                              ),
                               child: Opacity(
                                 opacity: value.clamp(0.0, 1.0),
                                 child: ClipRRect(

@@ -41,41 +41,67 @@ class DashboardController extends GetxController {
 
   Future<void> checkCurrentActiveSession() async {
     try {
-      final response = await Get.find<ApiClient>().get(AppUrls.getCurrentSession);
+      final response = await Get.find<ApiClient>().get(
+        AppUrls.getCurrentSession,
+      );
       if (response.isSuccess && response.body != null) {
         final data = response.body;
-        final session = (data is Map)
-            ? (data['session'] ?? data['data']?['session'] ?? data['data'] ?? data)
-            : null;
+        final session =
+            (data is Map)
+                ? (data['session'] ??
+                    data['data']?['session'] ??
+                    data['data'] ??
+                    data)
+                : null;
         if (session != null && session is Map) {
           final sessionId = session['id'];
           final status = session['status'];
-          final startedAt = session['started_at'] ?? session['accepted_at'] ?? session['created_at'];
-          final name = session['consumer']?['name'] ?? session['user']?['name'] ?? 'User';
-          final imageUrl = session['consumer']?['image'] ?? session['user']?['image'] ?? session['consumer']?['avatar'] ?? '';
+          final startedAt =
+              session['started_at'] ??
+              session['accepted_at'] ??
+              session['created_at'];
+          final name =
+              session['consumer']?['name'] ??
+              session['user']?['name'] ??
+              'User';
+          final imageUrl =
+              session['consumer']?['image'] ??
+              session['user']?['image'] ??
+              session['consumer']?['avatar'] ??
+              '';
 
           if (sessionId != null && startedAt != null) {
-            WebSocketService.sessionStartTimes[sessionId] = startedAt.toString();
+            WebSocketService.sessionStartTimes[sessionId] =
+                startedAt.toString();
           }
 
           DateTime? parsedStart;
           if (startedAt != null) {
             String isoUtc = startedAt.toString().replaceAll(' ', 'T');
-            if (!isoUtc.endsWith('Z') && !isoUtc.contains('+') && !isoUtc.contains('-')) {
+            if (!isoUtc.endsWith('Z') &&
+                !isoUtc.contains('+') &&
+                !isoUtc.contains('-')) {
               isoUtc += 'Z';
             }
             parsedStart = DateTime.tryParse(isoUtc)?.toLocal();
           }
           final int? startedAtMillis = parsedStart?.millisecondsSinceEpoch;
 
-          if (sessionId != null && (status == 'ongoing' || status == 'initiated' || status == 'accepted')) {
-            final sessionType = session['session_type']?.toString().toLowerCase() ?? 
-                                session['type']?.toString().toLowerCase() ?? 
-                                session['mode']?.toString().toLowerCase() ?? '';
-            final isCall = sessionType == 'call' || sessionType == 'audio_call' || sessionType == 'video_call';
+          if (sessionId != null &&
+              (status == 'ongoing' ||
+                  status == 'initiated' ||
+                  status == 'accepted')) {
+            final sessionType =
+                session['session_type']?.toString().toLowerCase() ??
+                session['type']?.toString().toLowerCase() ??
+                session['mode']?.toString().toLowerCase() ??
+                '';
+            final isCall =
+                sessionType == 'call' ||
+                sessionType == 'audio_call' ||
+                sessionType == 'video_call';
 
             if (!isCall) {
-              
               FloatingChatBubble.show(
                 context: Get.context!,
                 sessionId: sessionId,

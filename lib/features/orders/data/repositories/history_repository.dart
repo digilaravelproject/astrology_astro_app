@@ -9,12 +9,15 @@ abstract class HistoryRepository {
 class HistoryRepositoryImpl implements HistoryRepository {
   final ApiClient _apiClient;
 
-  HistoryRepositoryImpl({required ApiClient apiClient}) : _apiClient = apiClient;
+  HistoryRepositoryImpl({required ApiClient apiClient})
+    : _apiClient = apiClient;
 
   @override
   Future<CallSessionListResponse> getCallSessions({int page = 1}) async {
     try {
-      final response = await _apiClient.get('${AppUrls.astrologerCallSessions}?page=$page');
+      final response = await _apiClient.get(
+        '${AppUrls.astrologerCallSessions}?page=$page',
+      );
       if (response.isSuccess && response.body != null) {
         return CallSessionListResponse.fromJson(response.body);
       } else {

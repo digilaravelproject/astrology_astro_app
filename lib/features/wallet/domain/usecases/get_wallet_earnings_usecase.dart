@@ -6,10 +6,7 @@ class GetWalletEarningsUseCase {
 
   GetWalletEarningsUseCase(this._repository);
 
-  Future<List<WalletTransactionModel>> execute({
-    String? filter,
-    int? page,
-  }) {
+  Future<List<WalletTransactionModel>> execute({String? filter, int? page}) {
     return _repository.getEarnings(filter: filter, page: page);
   }
 }

@@ -35,17 +35,19 @@ class AppText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // If a full style is provided, we merge it with Poppins. 
+    // If a full style is provided, we merge it with Poppins.
     // Otherwise, we use the individual parameters.
-    final baseStyle = style ?? TextStyle(
-      fontSize: fontSize,
-      fontWeight: fontWeight,
-      fontStyle: fontStyle,
-      color: color,
-      letterSpacing: letterSpacing,
-      height: height,
-      decoration: decoration,
-    );
+    final baseStyle =
+        style ??
+        TextStyle(
+          fontSize: fontSize,
+          fontWeight: fontWeight,
+          fontStyle: fontStyle,
+          color: color,
+          letterSpacing: letterSpacing,
+          height: height,
+          decoration: decoration,
+        );
 
     return Text(
       text.tr, // .tr is idempotent if already translated

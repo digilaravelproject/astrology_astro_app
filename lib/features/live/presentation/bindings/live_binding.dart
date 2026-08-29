@@ -68,4 +68,3 @@ class LiveBinding extends Bindings {
     );
   }
 }
-

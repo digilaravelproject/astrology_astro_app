@@ -19,8 +19,8 @@ class OrdersController extends GetxController {
   OrdersController({
     required GetAstrologerOrdersUseCase getAstrologerOrdersUseCase,
     required ApiClient apiClient,
-  })  : _getAstrologerOrdersUseCase = getAstrologerOrdersUseCase,
-        _apiClient = apiClient;
+  }) : _getAstrologerOrdersUseCase = getAstrologerOrdersUseCase,
+       _apiClient = apiClient;
 
   final RxList<AstrologerOrderModel> chatOrders = <AstrologerOrderModel>[].obs;
   final RxList<AstrologerOrderModel> callOrders = <AstrologerOrderModel>[].obs;
@@ -57,9 +57,11 @@ class OrdersController extends GetxController {
       fetchChatOrders(isRefresh: true);
     });
 
-    _chatQueueUpdatedSub = WebSocketService.chatQueueUpdatedEvent.stream.listen((_) {
-      fetchChatOrders(isRefresh: true);
-    });
+    _chatQueueUpdatedSub = WebSocketService.chatQueueUpdatedEvent.stream.listen(
+      (_) {
+        fetchChatOrders(isRefresh: true);
+      },
+    );
 
     // Auto-refresh call orders when a call is initiated, dismissed, or ended
     _callInitiatedSub = WebSocketService.callInitiatedEvent.stream.listen((_) {
@@ -103,7 +105,7 @@ class OrdersController extends GetxController {
         status: 'waiting',
         page: _currentChatPage,
       );
-      
+
       if (response.isNotEmpty) {
         chatOrders.addAll(response);
         _currentChatPage++;
@@ -134,7 +136,7 @@ class OrdersController extends GetxController {
         status: 'waiting',
         page: _currentCallPage,
       );
-      
+
       if (response.isNotEmpty) {
         callOrders.addAll(response);
         _currentCallPage++;
@@ -152,11 +154,14 @@ class OrdersController extends GetxController {
 
   Future<void> acceptChatOrder(AstrologerOrderModel order) async {
     try {
-      final response = await _apiClient.post(AppUrls.acceptChatSession(order.sessionId));
+      final response = await _apiClient.post(
+        AppUrls.acceptChatSession(order.sessionId),
+      );
       if (response.isSuccess) {
         // Ensure we have a valid start time
-        final startedAt = response.body?['data']?['session']?['started_at']?.toString() 
-                       ?? DateTime.now().toUtc().toIso8601String();
+        final startedAt =
+            response.body?['data']?['session']?['started_at']?.toString() ??
+            DateTime.now().toUtc().toIso8601String();
 
         WebSocketService.sessionStartTimes[order.sessionId] = startedAt;
 
@@ -174,7 +179,9 @@ class OrdersController extends GetxController {
           ratePerMinute: order.ratePerMinute,
           paymentStatus: order.paymentStatus,
         );
-        final index = chatOrders.indexWhere((e) => e.sessionId == order.sessionId);
+        final index = chatOrders.indexWhere(
+          (e) => e.sessionId == order.sessionId,
+        );
         if (index != -1) {
           chatOrders[index] = order;
         }
@@ -194,7 +201,10 @@ class OrdersController extends GetxController {
       }
     } catch (e) {
       debugPrint('Accept chat error: $e');
-      CustomSnackBar.disabledSnackbar('Error', 'Failed to accept chat request: $e');
+      CustomSnackBar.disabledSnackbar(
+        'Error',
+        'Failed to accept chat request: $e',
+      );
     }
   }
 
@@ -205,7 +215,10 @@ class OrdersController extends GetxController {
       fetchChatOrders(isRefresh: true);
     } catch (e) {
       debugPrint('Reject chat error: $e');
-      CustomSnackBar.disabledSnackbar('Error', 'Failed to reject chat request: $e');
+      CustomSnackBar.disabledSnackbar(
+        'Error',
+        'Failed to reject chat request: $e',
+      );
     }
   }
 
@@ -235,14 +248,18 @@ class OrdersController extends GetxController {
 
         // ── Step 2: Try fetching SDP from /call/current-session ──
         if (offerSdp == null || offerSdp.isEmpty) {
-          debugPrint('[Orders] No incomingOfferSdp — fetching from current-session...');
+          debugPrint(
+            '[Orders] No incomingOfferSdp — fetching from current-session...',
+          );
           offerSdp = await callController.fetchOfferSdpFromCurrentSession();
         }
 
         bool success;
         if (offerSdp != null && offerSdp.isNotEmpty) {
           // ── Same path as IncomingCallDialog Accept ──
-          debugPrint('[Orders] SDP found (length: ${offerSdp.length}). Using acceptCall()...');
+          debugPrint(
+            '[Orders] SDP found (length: ${offerSdp.length}). Using acceptCall()...',
+          );
           success = await callController.acceptCall(offerSdp);
         } else {
           // ── Step 3: Fallback — no SDP available, generate our own offer ──
@@ -253,8 +270,11 @@ class OrdersController extends GetxController {
         if (success) {
           Get.to(() => const CallScreen());
         } else {
-          CustomSnackBar.disabledSnackbar('Error', 'Failed to accept call. Please try again.',
-              snackPosition: SnackPosition.TOP);
+          CustomSnackBar.disabledSnackbar(
+            'Error',
+            'Failed to accept call. Please try again.',
+            snackPosition: SnackPosition.TOP,
+          );
           fetchCallOrders(isRefresh: true);
         }
       } else {
@@ -276,13 +296,19 @@ class OrdersController extends GetxController {
       showErrorScreen: false,
     );
     if (response.isSuccess) {
-      CustomSnackBar.disabledSnackbar('Call Accepted', 'Connecting to ${order.userName}...',
-          backgroundColor: Colors.green.shade50,
-          colorText: Colors.green.shade800,
-          snackPosition: SnackPosition.TOP);
+      CustomSnackBar.disabledSnackbar(
+        'Call Accepted',
+        'Connecting to ${order.userName}...',
+        backgroundColor: Colors.green.shade50,
+        colorText: Colors.green.shade800,
+        snackPosition: SnackPosition.TOP,
+      );
       Get.to(() => const CallScreen());
     } else {
-      CustomSnackBar.disabledSnackbar('Error', 'Failed to accept call: ${response.message}');
+      CustomSnackBar.disabledSnackbar(
+        'Error',
+        'Failed to accept call: ${response.message}',
+      );
       fetchCallOrders(isRefresh: true);
     }
   }
@@ -313,7 +339,10 @@ class OrdersController extends GetxController {
           duration: const Duration(seconds: 2),
         );
       } else {
-        CustomSnackBar.disabledSnackbar('Error', 'Failed to reject call: ${response.message}');
+        CustomSnackBar.disabledSnackbar(
+          'Error',
+          'Failed to reject call: ${response.message}',
+        );
         fetchCallOrders(isRefresh: true);
       }
     } catch (e) {

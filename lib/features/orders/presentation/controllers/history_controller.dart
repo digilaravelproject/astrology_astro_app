@@ -35,8 +35,10 @@ class HistoryController extends GetxController {
 
     try {
       isLoading.value = true;
-      final response = await _getAstrologerCallSessionsUseCase.execute(page: _currentPage);
-      
+      final response = await _getAstrologerCallSessionsUseCase.execute(
+        page: _currentPage,
+      );
+
       if (response.data.isNotEmpty) {
         callSessions.addAll(response.data);
         _currentPage++;

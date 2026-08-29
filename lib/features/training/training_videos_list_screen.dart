@@ -7,12 +7,14 @@ import '../../../core/widgets/custom_app_bar.dart';
 import 'controller/training_video_controller.dart';
 import 'model/training_videos_model.dart';
 import 'training_video_detail_screen.dart';
+import 'package:astro_astrologer/core/widgets/custom_image_widget.dart';
 
 class TrainingVideosListScreen extends StatefulWidget {
   const TrainingVideosListScreen({super.key});
 
   @override
-  State<TrainingVideosListScreen> createState() => _TrainingVideosListScreenState();
+  State<TrainingVideosListScreen> createState() =>
+      _TrainingVideosListScreenState();
 }
 
 class _TrainingVideosListScreenState extends State<TrainingVideosListScreen> {
@@ -47,18 +49,30 @@ class _TrainingVideosListScreenState extends State<TrainingVideosListScreen> {
                 return const Center(child: CircularProgressIndicator());
               }
 
-              final filteredVideos = controller.videoList
-                  .where((v) => v.type.toLowerCase() == _selectedFilter.toLowerCase())
-                  .toList();
+              final filteredVideos =
+                  controller.videoList
+                      .where(
+                        (v) =>
+                            v.type.toLowerCase() ==
+                            _selectedFilter.toLowerCase(),
+                      )
+                      .toList();
 
               if (filteredVideos.isEmpty) {
                 return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.video_library_outlined, size: 64, color: Colors.grey.shade300),
+                      Icon(
+                        Icons.video_library_outlined,
+                        size: 64,
+                        color: Colors.grey.shade300,
+                      ),
                       const SizedBox(height: 16),
-                      AppText('${"No videos found for".tr} ${_selectedFilter.tr}', color: Colors.grey),
+                      AppText(
+                        '${"No videos found for".tr} ${_selectedFilter.tr}',
+                        color: Colors.grey,
+                      ),
                     ],
                   ),
                 );
@@ -106,10 +120,16 @@ class _TrainingVideosListScreenState extends State<TrainingVideosListScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
               decoration: BoxDecoration(
-                color: isSelected ? AppColors.primaryColor.withOpacity(0.05) : Colors.white,
+                color:
+                    isSelected
+                        ? AppColors.primaryColor.withOpacity(0.05)
+                        : Colors.white,
                 borderRadius: BorderRadius.circular(100),
                 border: Border.all(
-                  color: isSelected ? AppColors.primaryColor : Colors.grey.shade300,
+                  color:
+                      isSelected
+                          ? AppColors.primaryColor
+                          : Colors.grey.shade300,
                   width: 1.2,
                 ),
               ),
@@ -130,15 +150,21 @@ class _TrainingVideosListScreenState extends State<TrainingVideosListScreen> {
 
   Widget _buildVideoCard(TrainingVideoModel video, int index) {
     return GestureDetector(
-      onTap: () => Get.to(
-        () => TrainingVideoDetailScreen(
-          videoId: video.id,
-          preloadedVideo: video,
-        ),
-      ),
+      onTap:
+          () => Get.to(
+            () => TrainingVideoDetailScreen(
+              videoId: video.id,
+              preloadedVideo: video,
+            ),
+          ),
       child: Container(
         decoration: BoxDecoration(
-          color: index % 3 == 0 ? const Color(0xFFFFEB3B) : (index % 3 == 1 ? const Color(0xFFFFF176) : const Color(0xFFFFF9C4)),
+          color:
+              index % 3 == 0
+                  ? const Color(0xFFFFEB3B)
+                  : (index % 3 == 1
+                      ? const Color(0xFFFFF176)
+                      : const Color(0xFFFFF9C4)),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -160,7 +186,9 @@ class _TrainingVideosListScreenState extends State<TrainingVideosListScreen> {
                 height: 120,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(18),
+                  ),
                   border: Border.all(color: Colors.black87, width: 2),
                 ),
                 padding: const EdgeInsets.all(4),
@@ -168,14 +196,32 @@ class _TrainingVideosListScreenState extends State<TrainingVideosListScreen> {
                   clipBehavior: Clip.antiAlias,
                   decoration: BoxDecoration(
                     color: Colors.grey.shade50,
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(14),
+                    ),
                   ),
-                  child: video.thumbnailUrl.isNotEmpty
-                      ? Image.network(AppUrls.baseImageUrl+video.thumbnailUrl, fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Center(child: Icon(Icons.videocam_outlined, color: Colors.grey.shade300, size: 30)))
-                      : Center(
-                          child: Icon(Icons.smartphone_rounded, color: Colors.grey.shade300, size: 30),
-                        ),
+                  child:
+                      video.thumbnailUrl.isNotEmpty
+                          ? CustomImageWidget(
+                            imagePath:
+                                AppUrls.baseImageUrl + video.thumbnailUrl,
+                            fit: BoxFit.cover,
+                            errorBuilder:
+                                (_, __, ___) => Center(
+                                  child: Icon(
+                                    Icons.videocam_outlined,
+                                    color: Colors.grey.shade300,
+                                    size: 30,
+                                  ),
+                                ),
+                          )
+                          : Center(
+                            child: Icon(
+                              Icons.smartphone_rounded,
+                              color: Colors.grey.shade300,
+                              size: 30,
+                            ),
+                          ),
                 ),
               ),
             ),
@@ -215,6 +261,3 @@ class _TrainingVideosListScreenState extends State<TrainingVideosListScreen> {
     );
   }
 }
-
-
-

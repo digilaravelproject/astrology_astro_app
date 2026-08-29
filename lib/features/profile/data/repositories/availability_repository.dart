@@ -14,7 +14,9 @@ class AvailabilityRepository implements AvailabilityRepositoryInterface {
   }
 
   @override
-  Future<ResponseModel> updateAvailability(List<AvailabilityModel> availability) async {
+  Future<ResponseModel> updateAvailability(
+    List<AvailabilityModel> availability,
+  ) async {
     return await _remoteDataSource.updateAvailability(availability);
   }
 }

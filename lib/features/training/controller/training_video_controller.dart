@@ -25,13 +25,19 @@ class TrainingVideoController extends GetxController {
         // Handle nested 'data' key if present
         final dynamic bodyData = response.body['data'] ?? response.body;
         final dynamic videosData = bodyData['videos'];
-        
-        final List list = videosData is List
-            ? videosData
-            : (videosData != null ? [videosData] : []);
+
+        final List list =
+            videosData is List
+                ? videosData
+                : (videosData != null ? [videosData] : []);
 
         videoList.value =
-            list.map((e) => TrainingVideoModel.fromJson(e as Map<String, dynamic>?)).toList();
+            list
+                .map(
+                  (e) =>
+                      TrainingVideoModel.fromJson(e as Map<String, dynamic>?),
+                )
+                .toList();
       } else {
         CustomSnackBar.showError(response.message);
       }

@@ -7,10 +7,12 @@ class AssistantChatSortBottomSheet extends StatefulWidget {
   const AssistantChatSortBottomSheet({super.key});
 
   @override
-  State<AssistantChatSortBottomSheet> createState() => _AssistantChatSortBottomSheetState();
+  State<AssistantChatSortBottomSheet> createState() =>
+      _AssistantChatSortBottomSheetState();
 }
 
-class _AssistantChatSortBottomSheetState extends State<AssistantChatSortBottomSheet> {
+class _AssistantChatSortBottomSheetState
+    extends State<AssistantChatSortBottomSheet> {
   String _selectedSort = 'Recent Users';
 
   @override
@@ -55,7 +57,11 @@ class _AssistantChatSortBottomSheetState extends State<AssistantChatSortBottomSh
                       color: Colors.grey.shade100,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.close, color: Colors.black54, size: 20),
+                    child: const Icon(
+                      Icons.close,
+                      color: Colors.black54,
+                      size: 20,
+                    ),
                   ),
                 ),
               ],
@@ -79,9 +85,16 @@ class _AssistantChatSortBottomSheetState extends State<AssistantChatSortBottomSh
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   elevation: 0,
                   shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
-                child: const AppText('Apply Changes', color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                child: const AppText(
+                  'Apply Changes',
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
@@ -101,7 +114,10 @@ class _AssistantChatSortBottomSheetState extends State<AssistantChatSortBottomSh
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primaryColor.withOpacity(0.05) : Colors.transparent,
+          color:
+              isSelected
+                  ? AppColors.primaryColor.withOpacity(0.05)
+                  : Colors.transparent,
         ),
         child: Row(
           children: [
@@ -114,7 +130,10 @@ class _AssistantChatSortBottomSheetState extends State<AssistantChatSortBottomSh
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: isSelected ? AppColors.primaryColor : Colors.grey.shade300,
+                      color:
+                          isSelected
+                              ? AppColors.primaryColor
+                              : Colors.grey.shade300,
                       width: 2,
                     ),
                   ),
@@ -141,7 +160,7 @@ class _AssistantChatSortBottomSheetState extends State<AssistantChatSortBottomSh
               ),
             ),
             if (isSelected)
-               Icon(Icons.check, color: AppColors.primaryColor, size: 18),
+              Icon(Icons.check, color: AppColors.primaryColor, size: 18),
           ],
         ),
       ),

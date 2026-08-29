@@ -9,7 +9,8 @@ class AstromallEarningsScreen extends StatefulWidget {
   const AstromallEarningsScreen({super.key});
 
   @override
-  State<AstromallEarningsScreen> createState() => _AstromallEarningsScreenState();
+  State<AstromallEarningsScreen> createState() =>
+      _AstromallEarningsScreenState();
 }
 
 class _AstromallEarningsScreenState extends State<AstromallEarningsScreen> {
@@ -19,9 +20,7 @@ class _AstromallEarningsScreenState extends State<AstromallEarningsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.fieldBackground,
-      appBar: const CustomAppBar(
-        title: 'Astromall Earnings',
-      ),
+      appBar: const CustomAppBar(title: 'Astromall Earnings'),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -79,7 +78,7 @@ class _AstromallEarningsScreenState extends State<AstromallEarningsScreen> {
 
   Widget _buildWeeklyRankCard() {
     return GestureDetector(
-      onTap: () => Get.to(() =>  WeeklyRankingScreen()),
+      onTap: () => Get.to(() => WeeklyRankingScreen()),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -93,9 +92,18 @@ class _AstromallEarningsScreenState extends State<AstromallEarningsScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
-                AppText('Weekly Earnings', fontSize: 13, fontWeight: FontWeight.bold),
+                AppText(
+                  'Weekly Earnings',
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                ),
                 SizedBox(height: 8),
-                AppText('₹0', fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.successColor),
+                AppText(
+                  '₹0',
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.successColor,
+                ),
               ],
             ),
             Row(
@@ -103,13 +111,22 @@ class _AstromallEarningsScreenState extends State<AstromallEarningsScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: const [
-                    AppText('Rank', fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.goldAccent),
+                    AppText(
+                      'Rank',
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.goldAccent,
+                    ),
                     SizedBox(height: 4),
                     AppText('5629', fontSize: 16, fontWeight: FontWeight.bold),
                   ],
                 ),
                 const SizedBox(width: 8),
-                Icon(Icons.arrow_forward_ios_rounded, size: 18, color: Colors.grey.shade300),
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 18,
+                  color: Colors.grey.shade300,
+                ),
               ],
             ),
           ],
@@ -118,7 +135,11 @@ class _AstromallEarningsScreenState extends State<AstromallEarningsScreen> {
     );
   }
 
-  Widget _buildMetricCard(String title, String value, {bool showArrow = false}) {
+  Widget _buildMetricCard(
+    String title,
+    String value, {
+    bool showArrow = false,
+  }) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -135,11 +156,21 @@ class _AstromallEarningsScreenState extends State<AstromallEarningsScreen> {
               children: [
                 AppText(title, fontSize: 12, fontWeight: FontWeight.bold),
                 const SizedBox(height: 8),
-                AppText(value, fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.successColor),
+                AppText(
+                  value,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.successColor,
+                ),
               ],
             ),
           ),
-          if (showArrow) Icon(Icons.arrow_forward_ios_rounded, size: 18, color: Colors.grey.shade300),
+          if (showArrow)
+            Icon(
+              Icons.arrow_forward_ios_rounded,
+              size: 18,
+              color: Colors.grey.shade300,
+            ),
         ],
       ),
     );
@@ -152,12 +183,16 @@ class _AstromallEarningsScreenState extends State<AstromallEarningsScreen> {
           _selectedPeriod = value;
         });
       },
-      itemBuilder: (context) => [
-        const PopupMenuItem(value: 'Today', child: AppText('Today')),
-        const PopupMenuItem(value: 'Weekly', child: AppText('Weekly')),
-        const PopupMenuItem(value: 'Monthly', child: AppText('Monthly')),
-        const PopupMenuItem(value: 'Last 3 Months', child: AppText('Last 3 Months')),
-      ],
+      itemBuilder:
+          (context) => [
+            const PopupMenuItem(value: 'Today', child: AppText('Today')),
+            const PopupMenuItem(value: 'Weekly', child: AppText('Weekly')),
+            const PopupMenuItem(value: 'Monthly', child: AppText('Monthly')),
+            const PopupMenuItem(
+              value: 'Last 3 Months',
+              child: AppText('Last 3 Months'),
+            ),
+          ],
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -170,7 +205,12 @@ class _AstromallEarningsScreenState extends State<AstromallEarningsScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const SizedBox(width: 24), // Spacer to center text
-            AppText(_selectedPeriod, fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.primaryColor),
+            AppText(
+              _selectedPeriod,
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primaryColor,
+            ),
             const Icon(Icons.arrow_drop_down, color: Colors.grey),
           ],
         ),

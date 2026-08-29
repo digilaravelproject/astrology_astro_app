@@ -21,14 +21,16 @@ class InvoiceSummaryModel {
       totalWithdrawn: _parseDouble(json['total_withdrawn']),
       totalInvoices: json['total_invoices'] ?? 0,
       status: json['status']?.toString() ?? '',
-      currentMonth: json['current_month'] != null
-          ? InvoiceItemModel.fromJson(json['current_month'])
-          : null,
-      invoices: json['invoices'] != null
-          ? (json['invoices'] as List)
-              .map((e) => InvoiceItemModel.fromJson(e))
-              .toList()
-          : [],
+      currentMonth:
+          json['current_month'] != null
+              ? InvoiceItemModel.fromJson(json['current_month'])
+              : null,
+      invoices:
+          json['invoices'] != null
+              ? (json['invoices'] as List)
+                  .map((e) => InvoiceItemModel.fromJson(e))
+                  .toList()
+              : [],
     );
   }
 
@@ -69,32 +71,45 @@ class InvoiceItemModel {
   });
 
   factory InvoiceItemModel.fromJson(Map<String, dynamic> json) {
-    double gross = InvoiceSummaryModel._parseDouble(json['gross_earnings'] ?? json['gross_amount']);
+    double gross = InvoiceSummaryModel._parseDouble(
+      json['gross_earnings'] ?? json['gross_amount'],
+    );
     double tds = InvoiceSummaryModel._parseDouble(json['tds_amount']);
     double tdsPct = InvoiceSummaryModel._parseDouble(json['tds_percent']);
-    
+
     // Calculate tds_percent dynamically if missing but tds_amount is provided
     if (tdsPct == 0.0 && gross > 0 && tds > 0) {
       tdsPct = (tds / gross) * 100.0;
     }
-    
-    double net = InvoiceSummaryModel._parseDouble(json['net_payable'] ?? json['net_paid_amount']);
+
+    double net = InvoiceSummaryModel._parseDouble(
+      json['net_payable'] ?? json['net_paid_amount'],
+    );
     if (net == 0.0 && gross > 0) {
       net = gross - tds;
     }
 
     return InvoiceItemModel(
-      monthName: json['month_name']?.toString() ?? json['payout_number']?.toString() ?? json['payment_date']?.toString() ?? '',
+      monthName:
+          json['month_name']?.toString() ??
+          json['payout_number']?.toString() ??
+          json['payment_date']?.toString() ??
+          '',
       grossEarnings: gross,
       tdsAmount: tds,
       tdsPercent: tdsPct,
       netPayable: net,
-      totalWithdrawn: InvoiceSummaryModel._parseDouble(json['total_withdrawn'] ?? json['net_paid_amount']),
+      totalWithdrawn: InvoiceSummaryModel._parseDouble(
+        json['total_withdrawn'] ?? json['net_paid_amount'],
+      ),
       status: json['status']?.toString() ?? 'completed',
       payoutNumber: json['payout_number']?.toString(),
       paymentMode: json['payment_mode']?.toString(),
       utrNumber: json['utr_number']?.toString(),
-      downloadUrl: json['download_url']?.toString() ?? json['invoice_url']?.toString() ?? json['receipt_proof_url']?.toString(),
+      downloadUrl:
+          json['download_url']?.toString() ??
+          json['invoice_url']?.toString() ??
+          json['receipt_proof_url']?.toString(),
     );
   }
 }

@@ -25,13 +25,13 @@ class SupportController extends GetxController {
     required GetAboutUsUseCase getAboutUsUseCase,
     required GetCustomerSupportUseCase getCustomerSupportUseCase,
     required SubmitFeedbackUseCase submitFeedbackUseCase,
-  })  : _getFAQUseCase = getFAQUseCase,
-        _getPrivacyPolicyUseCase = getPrivacyPolicyUseCase,
-        _getPaymentPolicyUseCase = getPaymentPolicyUseCase,
-        _getTermsAndConditionsUseCase = getTermsAndConditionsUseCase,
-        _getAboutUsUseCase = getAboutUsUseCase,
-        _getCustomerSupportUseCase = getCustomerSupportUseCase,
-        _submitFeedbackUseCase = submitFeedbackUseCase;
+  }) : _getFAQUseCase = getFAQUseCase,
+       _getPrivacyPolicyUseCase = getPrivacyPolicyUseCase,
+       _getPaymentPolicyUseCase = getPaymentPolicyUseCase,
+       _getTermsAndConditionsUseCase = getTermsAndConditionsUseCase,
+       _getAboutUsUseCase = getAboutUsUseCase,
+       _getCustomerSupportUseCase = getCustomerSupportUseCase,
+       _submitFeedbackUseCase = submitFeedbackUseCase;
 
   final Rx<FAQModel?> faqData = Rx<FAQModel?>(null);
   final Rx<FAQModel?> privacyPolicyData = Rx<FAQModel?>(null);
@@ -39,7 +39,7 @@ class SupportController extends GetxController {
   final Rx<FAQModel?> paymentPolicyData = Rx<FAQModel?>(null);
   final Rx<FAQModel?> aboutUsData = Rx<FAQModel?>(null);
   final Rx<FAQModel?> customerSupportData = Rx<FAQModel?>(null);
-  
+
   final RxBool isLoading = false.obs;
   final RxBool isPrivacyLoading = false.obs;
   final RxBool isPaymentLoading = false.obs;

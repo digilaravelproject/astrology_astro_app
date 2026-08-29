@@ -10,9 +10,7 @@ class MyMembershipScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFF9F9F9),
-      appBar: CustomAppBar(
-        title: 'My Membership',
-      ),
+      appBar: CustomAppBar(title: 'My Membership'),
       body: Center(
         child: AppText(
           'No Data Available'.tr,

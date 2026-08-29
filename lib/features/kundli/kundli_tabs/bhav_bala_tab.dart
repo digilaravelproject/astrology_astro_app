@@ -10,11 +10,14 @@ class BhavBalaTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final HouseCuspsController houseCuspsController = Get.find<HouseCuspsController>();
-    final PlanetPositionsController planetController = Get.find<PlanetPositionsController>();
+    final HouseCuspsController houseCuspsController =
+        Get.find<HouseCuspsController>();
+    final PlanetPositionsController planetController =
+        Get.find<PlanetPositionsController>();
 
     return Obx(() {
-      if (houseCuspsController.isLoading.value || planetController.isLoading.value) {
+      if (houseCuspsController.isLoading.value ||
+          planetController.isLoading.value) {
         return const Center(
           child: Padding(
             padding: EdgeInsets.all(24.0),
@@ -24,7 +27,8 @@ class BhavBalaTab extends StatelessWidget {
       }
 
       final houseCusps = houseCuspsController.houseCuspsModel.value?.data;
-      final planets = planetController.planetPositionsModel.value?.data?.planets;
+      final planets =
+          planetController.planetPositionsModel.value?.data?.planets;
 
       Map<String, int> bhavBalaData = {};
       if (houseCusps != null && houseCusps.isNotEmpty) {
@@ -50,7 +54,11 @@ class BhavBalaTab extends StatelessWidget {
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
             ],
           ),
           child: Column(
@@ -60,18 +68,27 @@ class BhavBalaTab extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: const BoxDecoration(
                   color: AppColors.primaryColor,
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    topRight: Radius.circular(12),
+                  ),
                 ),
                 child: const Center(
-                  child: AppText("Bhav Bala", fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+                  child: AppText(
+                    "Bhav Bala",
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
-                  children: bhavBalaData.entries.map((entry) {
-                    return _buildBarRow(entry.key, entry.value, maxScore);
-                  }).toList(),
+                  children:
+                      bhavBalaData.entries.map((entry) {
+                        return _buildBarRow(entry.key, entry.value, maxScore);
+                      }).toList(),
                 ),
               ),
             ],
@@ -91,7 +108,12 @@ class BhavBalaTab extends StatelessWidget {
         children: [
           SizedBox(
             width: 30,
-            child: AppText("H$label", fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black87),
+            child: AppText(
+              "H$label",
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
           ),
           Expanded(
             child: Stack(
@@ -118,7 +140,12 @@ class BhavBalaTab extends StatelessWidget {
                   top: 0,
                   bottom: 0,
                   child: Center(
-                    child: AppText(score.toString(), fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black87),
+                    child: AppText(
+                      score.toString(),
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
                   ),
                 ),
               ],
@@ -129,4 +156,3 @@ class BhavBalaTab extends StatelessWidget {
     );
   }
 }
-

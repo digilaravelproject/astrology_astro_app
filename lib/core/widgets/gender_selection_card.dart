@@ -26,9 +26,10 @@ class GenderSelectionCard extends StatelessWidget {
           horizontal: Dimensions.width15,
         ),
         decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.primaryColor.withOpacity(0.1)
-              : AppColors.cardColor,
+          color:
+              isSelected
+                  ? AppColors.primaryColor.withOpacity(0.1)
+                  : AppColors.cardColor,
           border: Border.all(
             color: isSelected ? AppColors.primaryColor : AppColors.borderColor,
             width: isSelected ? 2 : 1,
@@ -41,9 +42,10 @@ class GenderSelectionCard extends StatelessWidget {
             Icon(
               icon,
               size: Dimensions.iconSize24 * 2,
-              color: isSelected
-                  ? AppColors.primaryColor
-                  : AppColors.textColorSecondary,
+              color:
+                  isSelected
+                      ? AppColors.primaryColor
+                      : AppColors.textColorSecondary,
             ),
             SizedBox(height: Dimensions.height10),
             Text(
@@ -51,9 +53,10 @@ class GenderSelectionCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: Dimensions.font16,
                 fontWeight: FontWeight.w600,
-                color: isSelected
-                    ? AppColors.primaryColor
-                    : AppColors.textColorPrimary,
+                color:
+                    isSelected
+                        ? AppColors.primaryColor
+                        : AppColors.textColorPrimary,
               ),
             ),
           ],

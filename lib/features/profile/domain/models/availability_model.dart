@@ -13,7 +13,8 @@ class AvailabilityModel {
     return AvailabilityModel(
       day: json['day'] ?? '',
       enabled: json['enabled'] ?? false,
-      slots: (json['slots'] as List?)
+      slots:
+          (json['slots'] as List?)
               ?.map((slot) => TimeSlot.fromJson(slot))
               .toList() ??
           [],
@@ -33,10 +34,7 @@ class TimeSlot {
   final String start;
   final String end;
 
-  TimeSlot({
-    required this.start,
-    required this.end,
-  });
+  TimeSlot({required this.start, required this.end});
 
   factory TimeSlot.fromJson(Map<String, dynamic> json) {
     return TimeSlot(
@@ -46,9 +44,6 @@ class TimeSlot {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'start': start,
-      'end': end,
-    };
+    return {'start': start, 'end': end};
   }
 }

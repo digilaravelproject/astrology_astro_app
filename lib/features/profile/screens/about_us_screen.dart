@@ -10,12 +10,10 @@ class AboutUsScreen extends GetView<SupportController> {
   @override
   Widget build(BuildContext context) {
     controller.fetchAboutUs();
-    
+
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(
-        title: 'About us',
-      ),
+      appBar: const CustomAppBar(title: 'About us'),
       body: Obx(() {
         if (controller.isAboutUsLoading.value) {
           return const Center(child: CircularProgressIndicator());
@@ -27,12 +25,13 @@ class AboutUsScreen extends GetView<SupportController> {
         }
 
         // Simple formatting for HTML content to avoid external dependencies
-        final formattedContent = data.content
-            .replaceAll(RegExp(r'</p>'), '\n\n')
-            .replaceAll(RegExp(r'<br\s*/?>'), '\n')
-            .replaceAll(RegExp(r'<[^>]*>'), '')
-            .replaceAll(RegExp(r'&nbsp;'), ' ')
-            .trim();
+        final formattedContent =
+            data.content
+                .replaceAll(RegExp(r'</p>'), '\n\n')
+                .replaceAll(RegExp(r'<br\s*/?>'), '\n')
+                .replaceAll(RegExp(r'<[^>]*>'), '')
+                .replaceAll(RegExp(r'&nbsp;'), ' ')
+                .trim();
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(24),

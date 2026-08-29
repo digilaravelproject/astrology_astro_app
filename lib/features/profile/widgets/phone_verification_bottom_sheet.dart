@@ -10,13 +10,19 @@ import '../presentation/controllers/phone_number_controller.dart';
 class PhoneVerificationBottomSheet extends StatefulWidget {
   final int phoneId;
   final String phoneNumber;
-  const PhoneVerificationBottomSheet({super.key, required this.phoneId, required this.phoneNumber});
+  const PhoneVerificationBottomSheet({
+    super.key,
+    required this.phoneId,
+    required this.phoneNumber,
+  });
 
   @override
-  State<PhoneVerificationBottomSheet> createState() => _PhoneVerificationBottomSheetState();
+  State<PhoneVerificationBottomSheet> createState() =>
+      _PhoneVerificationBottomSheetState();
 }
 
-class _PhoneVerificationBottomSheetState extends State<PhoneVerificationBottomSheet> {
+class _PhoneVerificationBottomSheetState
+    extends State<PhoneVerificationBottomSheet> {
   final TextEditingController _otpController = TextEditingController();
   final PhoneNumberController _controller = Get.find<PhoneNumberController>();
 
@@ -87,8 +93,8 @@ class _PhoneVerificationBottomSheetState extends State<PhoneVerificationBottomSh
                 onTap: () {
                   // Handle resend logic if needed, usually just calling addPhoneNumber again
                   _controller.addPhoneNumber(
-                    widget.phoneNumber.split(' ')[0], 
-                    widget.phoneNumber.split(' ')[1]
+                    widget.phoneNumber.split(' ')[0],
+                    widget.phoneNumber.split(' ')[1],
                   );
                 },
                 child: const AppText(
@@ -101,17 +107,22 @@ class _PhoneVerificationBottomSheetState extends State<PhoneVerificationBottomSh
             ],
           ),
           const SizedBox(height: 32),
-          Obx(() => CustomButton(
-            text: _controller.isVerifying.value ? 'Verifying...' : 'Verify',
-            onPressed: () {
-              if (_otpController.text.length == 4) {
-                _controller.verifyPhoneNumber(widget.phoneId, _otpController.text);
-              } else {
-                CustomSnackBar.showError('Please enter a 4-digit OTP');
-              }
-            },
-            isLoading: _controller.isVerifying.value,
-          )),
+          Obx(
+            () => CustomButton(
+              text: _controller.isVerifying.value ? 'Verifying...' : 'Verify',
+              onPressed: () {
+                if (_otpController.text.length == 4) {
+                  _controller.verifyPhoneNumber(
+                    widget.phoneId,
+                    _otpController.text,
+                  );
+                } else {
+                  CustomSnackBar.showError('Please enter a 4-digit OTP');
+                }
+              },
+              isLoading: _controller.isVerifying.value,
+            ),
+          ),
           const SizedBox(height: 16),
         ],
       ),

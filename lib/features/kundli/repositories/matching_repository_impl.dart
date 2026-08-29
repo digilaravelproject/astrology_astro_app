@@ -8,21 +8,30 @@ class MatchingRepositoryImpl implements MatchingRepository {
   final AstrologyApiClient _client;
 
   MatchingRepositoryImpl({AstrologyApiClient? client})
-      : _client = client ?? AstrologyApiClient();
+    : _client = client ?? AstrologyApiClient();
 
-  Map<String, dynamic> _buildPersonPayload(PersonDetails details, String prefix) {
+  Map<String, dynamic> _buildPersonPayload(
+    PersonDetails details,
+    String prefix,
+  ) {
     DateTime dt;
     try {
       dt = DateTime.parse(details.datetime);
     } catch (_) {
       dt = DateTime.now();
     }
-    
+
     double tzOffset = 5.5;
     try {
       final sign = details.timezone.startsWith('-') ? -1 : 1;
-      final parts = details.timezone.replaceAll('+', '').replaceAll('-', '').split(':');
-      tzOffset = sign * (double.parse(parts[0]) + (parts.length > 1 ? double.parse(parts[1]) / 60 : 0));
+      final parts = details.timezone
+          .replaceAll('+', '')
+          .replaceAll('-', '')
+          .split(':');
+      tzOffset =
+          sign *
+          (double.parse(parts[0]) +
+              (parts.length > 1 ? double.parse(parts[1]) / 60 : 0));
     } catch (_) {}
 
     return {
@@ -38,7 +47,9 @@ class MatchingRepositoryImpl implements MatchingRepository {
   }
 
   @override
-  Future<MatchingResponseModel> getMatching(MatchingRequestModel request) async {
+  Future<MatchingResponseModel> getMatching(
+    MatchingRequestModel request,
+  ) async {
     try {
       final malePayload = _buildPersonPayload(request.male, 'm_');
       final femalePayload = _buildPersonPayload(request.female, 'f_');
@@ -47,9 +58,10 @@ class MatchingRepositoryImpl implements MatchingRepository {
       final response = await _client.getMatching(payload);
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> dataMap = response.data is String
-            ? jsonDecode(response.data as String) as Map<String, dynamic>
-            : response.data as Map<String, dynamic>;
+        final Map<String, dynamic> dataMap =
+            response.data is String
+                ? jsonDecode(response.data as String) as Map<String, dynamic>
+                : response.data as Map<String, dynamic>;
         return MatchingResponseModel.fromJson(dataMap);
       } else {
         throw Exception('Failed to load matching data: ${response.statusCode}');

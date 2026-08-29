@@ -59,10 +59,7 @@ class _CustomOtpFieldState extends State<CustomOtpField> {
   }
 
   // Border बनाने का function
-  InputBorder _buildBorder({
-    required bool isFocused,
-    required bool isFilled,
-  }) {
+  InputBorder _buildBorder({required bool isFocused, required bool isFilled}) {
     if (!widget.isOutlined) {
       // Filled model rounded background
       return OutlineInputBorder(
@@ -111,13 +108,13 @@ class _CustomOtpFieldState extends State<CustomOtpField> {
     return InputDecoration(
       contentPadding: EdgeInsets.zero,
       filled: !widget.isOutlined, // ✅ Outlined model me false
-      fillColor: !widget.isOutlined ? fillColor : null, // ✅ Sirf filled model me color
+      fillColor:
+          !widget.isOutlined ? fillColor : null, // ✅ Sirf filled model me color
       enabledBorder: _buildBorder(isFocused: false, isFilled: isFilled),
       focusedBorder: _buildBorder(isFocused: true, isFilled: isFilled),
       border: _buildBorder(isFocused: false, isFilled: isFilled),
     );
   }
-
 
   // Main controller text update
   void _updateMainController() {

@@ -1,15 +1,16 @@
 class AppValidators {
   // Regex patterns
   static final _mobileRegex = RegExp(r'^[0-9]{10}$');
-  static final _emailRegex =
-  RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$');
+  static final _emailRegex = RegExp(
+    r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$',
+  );
 
   /// Validate if field is not empty
   static String? validateEmpty(
-      String? value, {
-        String fieldName = "Field",
-        String? customMessage,
-      }) {
+    String? value, {
+    String fieldName = "Field",
+    String? customMessage,
+  }) {
     final trimmed = value?.trim() ?? "";
     if (trimmed.isEmpty) {
       return customMessage ?? "$fieldName is required";
@@ -19,10 +20,10 @@ class AppValidators {
 
   /// Validate mobile number (default 10 digits)
   static String? validateMobile(
-      String? value, {
-        int length = 10,
-        String? customMessage,
-      }) {
+    String? value, {
+    int length = 10,
+    String? customMessage,
+  }) {
     final trimmed = value?.trim() ?? "";
     if (trimmed.isEmpty) {
       return "Mobile number is required";
@@ -35,10 +36,7 @@ class AppValidators {
   }
 
   /// Validate email
-  static String? validateEmail(
-      String? value, {
-        String? customMessage,
-      }) {
+  static String? validateEmail(String? value, {String? customMessage}) {
     final trimmed = value?.trim() ?? "";
     if (trimmed.isEmpty) {
       return "Email is required";

@@ -21,9 +21,12 @@ class TransitData {
   factory TransitData.fromJson(Map<String, dynamic> json) {
     return TransitData(
       calculatedFor: json['calculatedFor'],
-      planets: json['planets'] != null 
-          ? (json['planets'] as List).map((i) => TransitPlanetData.fromJson(i)).toList() 
-          : null,
+      planets:
+          json['planets'] != null
+              ? (json['planets'] as List)
+                  .map((i) => TransitPlanetData.fromJson(i))
+                  .toList()
+              : null,
     );
   }
 }
@@ -36,11 +39,11 @@ class TransitPlanetData {
   final bool? isRetrograde;
 
   TransitPlanetData({
-    this.houseFromLagna, 
-    this.houseFromMoon, 
-    this.signNumber, 
-    this.name, 
-    this.isRetrograde
+    this.houseFromLagna,
+    this.houseFromMoon,
+    this.signNumber,
+    this.name,
+    this.isRetrograde,
   });
 
   factory TransitPlanetData.fromJson(Map<String, dynamic> json) {

@@ -11,7 +11,9 @@ class FounderMessageBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 0), // Adjusting margin to 0 as it will be inside a padding container
+      margin: const EdgeInsets.symmetric(
+        horizontal: 0,
+      ), // Adjusting margin to 0 as it will be inside a padding container
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
@@ -30,10 +32,7 @@ class FounderMessageBanner extends StatelessWidget {
             offset: const Offset(0, 8),
           ),
         ],
-        border: Border.all(
-          color: Colors.white,
-          width: 2,
-        ),
+        border: Border.all(color: Colors.white, width: 2),
       ),
       child: Stack(
         children: [
@@ -41,12 +40,20 @@ class FounderMessageBanner extends StatelessWidget {
           Positioned(
             right: 0,
             top: 0,
-            child: Icon(Icons.auto_awesome, color: AppColors.goldAccent.withOpacity(0.4), size: 40),
+            child: Icon(
+              Icons.auto_awesome,
+              color: AppColors.goldAccent.withOpacity(0.4),
+              size: 40,
+            ),
           ),
           Positioned(
             left: 10,
             bottom: 10,
-            child: Icon(Icons.star_rate_rounded, color: AppColors.accentColor.withOpacity(0.2), size: 30),
+            child: Icon(
+              Icons.star_rate_rounded,
+              color: AppColors.accentColor.withOpacity(0.2),
+              size: 30,
+            ),
           ),
 
           Padding(
@@ -68,16 +75,17 @@ class FounderMessageBanner extends StatelessWidget {
                     ],
                   ),
                   child: CustomImageWidget(
-                    imagePath: 'https://img.freepik.com/free-photo/closeup-young-hispanic-man-casuals-studio_662251-600.jpg', // User-provided founder image
+                    imagePath:
+                        'https://img.freepik.com/free-photo/closeup-young-hispanic-man-casuals-studio_662251-600.jpg', // User-provided founder image
                     height: 50,
                     width: 50,
                     radius: BorderRadius.circular(35),
                     fit: BoxFit.cover,
                   ),
                 ),
-                
+
                 const SizedBox(width: 12),
-                
+
                 // Text Content
                 Expanded(
                   child: Column(

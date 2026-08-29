@@ -21,7 +21,7 @@ class InvoiceScreen extends StatefulWidget {
 class _InvoiceScreenState extends State<InvoiceScreen>
     with TickerProviderStateMixin {
   late InvoiceController _invoiceController;
-  
+
   // Track which tiles are expanded
   final RxList<bool> _expandedStates = <bool>[].obs;
 
@@ -29,14 +29,16 @@ class _InvoiceScreenState extends State<InvoiceScreen>
   void initState() {
     super.initState();
     if (!Get.isRegistered<InvoiceController>()) {
-      Get.put(InvoiceController(
-        GetInvoicesSummaryUseCase(
-          WalletRepositoryImpl(apiClient: Get.find<ApiClient>()),
+      Get.put(
+        InvoiceController(
+          GetInvoicesSummaryUseCase(
+            WalletRepositoryImpl(apiClient: Get.find<ApiClient>()),
+          ),
         ),
-      ));
+      );
     }
     _invoiceController = Get.find<InvoiceController>();
-    
+
     // Automatically set expanded states when data changes
     ever(_invoiceController.summary, (InvoiceSummaryModel? summary) {
       if (summary != null) {
@@ -60,7 +62,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
         if (_invoiceController.error.value.isNotEmpty) {
           return Center(child: Text(_invoiceController.error.value));
         }
-        
+
         final summary = _invoiceController.summary.value;
         if (summary == null) {
           return Center(child: Text('No invoices found.'.tr));
@@ -85,7 +87,6 @@ class _InvoiceScreenState extends State<InvoiceScreen>
   }
 
   Widget _buildSummaryHeader(InvoiceSummaryModel summary) {
-
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       padding: const EdgeInsets.all(20),
@@ -153,8 +154,10 @@ class _InvoiceScreenState extends State<InvoiceScreen>
               ),
               const SizedBox(height: 4),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(20),
@@ -176,7 +179,8 @@ class _InvoiceScreenState extends State<InvoiceScreen>
   }
 
   Widget _buildInvoiceCard(InvoiceItemModel invoice, int index) {
-    final isExpanded = _expandedStates.length > index ? _expandedStates[index] : false;
+    final isExpanded =
+        _expandedStates.length > index ? _expandedStates[index] : false;
     final isFirst = index == 0;
 
     return AnimatedContainer(
@@ -193,9 +197,13 @@ class _InvoiceScreenState extends State<InvoiceScreen>
             offset: const Offset(0, 3),
           ),
         ],
-        border: isFirst
-            ? Border.all(color: AppColors.primaryColor.withOpacity(0.4), width: 1.5)
-            : null,
+        border:
+            isFirst
+                ? Border.all(
+                  color: AppColors.primaryColor.withOpacity(0.4),
+                  width: 1.5,
+                )
+                : null,
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
@@ -203,26 +211,26 @@ class _InvoiceScreenState extends State<InvoiceScreen>
           data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
           child: ExpansionTile(
             initiallyExpanded: isExpanded,
-            onExpansionChanged: (val) =>
-                setState(() => _expandedStates[index] = val),
-            tilePadding:
-                const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
-            childrenPadding:
-                const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            onExpansionChanged:
+                (val) => setState(() => _expandedStates[index] = val),
+            tilePadding: const EdgeInsets.symmetric(
+              horizontal: 18,
+              vertical: 6,
+            ),
+            childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
             leading: Container(
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: isFirst
-                    ? AppColors.primaryColor.withOpacity(0.08)
-                    : const Color(0xFFF5F5F5),
+                color:
+                    isFirst
+                        ? AppColors.primaryColor.withOpacity(0.08)
+                        : const Color(0xFFF5F5F5),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 Iconsax.document_text,
-                color: isFirst
-                    ? AppColors.primaryColor
-                    : Colors.grey.shade500,
+                color: isFirst ? AppColors.primaryColor : Colors.grey.shade500,
                 size: 20,
               ),
             ),
@@ -247,7 +255,9 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                 // Status Badge
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 10, vertical: 4),
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.primaryColor.withOpacity(0.08),
                     borderRadius: BorderRadius.circular(20),
@@ -279,7 +289,8 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                   color: AppColors.primaryColor.withOpacity(0.02),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                      color: AppColors.primaryColor.withOpacity(0.2)),
+                    color: AppColors.primaryColor.withOpacity(0.2),
+                  ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -294,7 +305,8 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                               Expanded(
                                 child: _buildDetailItem(
                                   label: 'Gross Earnings'.tr,
-                                  value: '₹${invoice.grossEarnings.toStringAsFixed(2)}',
+                                  value:
+                                      '₹${invoice.grossEarnings.toStringAsFixed(2)}',
                                   icon: Iconsax.money_recive,
                                 ),
                               ),
@@ -305,10 +317,13 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                               ),
                               Expanded(
                                 child: _buildDetailItem(
-                                  label: invoice.tdsPercent > 0 
-                                      ? 'TDS (${invoice.tdsPercent.toStringAsFixed(0)}%)'.tr 
-                                      : 'TDS Deducted'.tr,
-                                  value: '-₹${invoice.tdsAmount.toStringAsFixed(2)}',
+                                  label:
+                                      invoice.tdsPercent > 0
+                                          ? 'TDS (${invoice.tdsPercent.toStringAsFixed(0)}%)'
+                                              .tr
+                                          : 'TDS Deducted'.tr,
+                                  value:
+                                      '-₹${invoice.tdsAmount.toStringAsFixed(2)}',
                                   icon: Iconsax.receipt_text_copy,
                                   isRight: true,
                                   valueColor: Colors.red.shade700,
@@ -340,24 +355,33 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                               Expanded(
                                 child: _buildDetailItem(
                                   label: 'Net Payable'.tr,
-                                  value: '₹${invoice.netPayable.toStringAsFixed(2)}',
+                                  value:
+                                      '₹${invoice.netPayable.toStringAsFixed(2)}',
                                   icon: Iconsax.wallet_check,
                                   isRight: true,
                                 ),
                               ),
                             ],
                           ),
-                          if (invoice.utrNumber != null && invoice.utrNumber!.isNotEmpty) ...[
+                          if (invoice.utrNumber != null &&
+                              invoice.utrNumber!.isNotEmpty) ...[
                             const SizedBox(height: 12),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.grey.shade100,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Row(
                                 children: [
-                                  Icon(Iconsax.bank, size: 14, color: Colors.grey.shade700),
+                                  Icon(
+                                    Iconsax.bank,
+                                    size: 14,
+                                    color: Colors.grey.shade700,
+                                  ),
                                   const SizedBox(width: 6),
                                   Text(
                                     'UTR: ${invoice.utrNumber}',
@@ -396,7 +420,10 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                         color: Colors.transparent,
                         child: InkWell(
                           onTap: () {
-                            _invoiceController.downloadInvoice(invoice.monthName, invoice.downloadUrl!);
+                            _invoiceController.downloadInvoice(
+                              invoice.monthName,
+                              invoice.downloadUrl!,
+                            );
                           },
                           borderRadius: const BorderRadius.only(
                             bottomLeft: Radius.circular(11),
@@ -404,18 +431,25 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                           ),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 14),
+                              horizontal: 16,
+                              vertical: 14,
+                            ),
                             child: Row(
                               children: [
                                 Obx(() {
-                                  final isDownloading = _invoiceController.isDownloading[invoice.monthName] == true;
-                                  return isDownloading 
-                                    ? const SizedBox(
-                                        width: 18, 
-                                        height: 18, 
-                                        child: CircularProgressIndicator(strokeWidth: 2)
+                                  final isDownloading =
+                                      _invoiceController.isDownloading[invoice
+                                          .monthName] ==
+                                      true;
+                                  return isDownloading
+                                      ? const SizedBox(
+                                        width: 18,
+                                        height: 18,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
                                       )
-                                    : const Icon(
+                                      : const Icon(
                                         Iconsax.import_copy,
                                         color: AppColors.primaryColor,
                                         size: 18,
@@ -423,9 +457,14 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                                 }),
                                 const SizedBox(width: 10),
                                 Obx(() {
-                                  final isDownloading = _invoiceController.isDownloading[invoice.monthName] == true;
+                                  final isDownloading =
+                                      _invoiceController.isDownloading[invoice
+                                          .monthName] ==
+                                      true;
                                   return Text(
-                                    isDownloading ? 'Downloading...'.tr : 'Download Invoice'.tr,
+                                    isDownloading
+                                        ? 'Downloading...'.tr
+                                        : 'Download Invoice'.tr,
                                     style: const TextStyle(
                                       color: AppColors.primaryColor,
                                       fontSize: 14,
@@ -462,8 +501,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
     Color? valueColor,
   }) {
     return Padding(
-      padding: EdgeInsets.only(
-          left: isRight ? 16 : 0, right: isRight ? 0 : 16),
+      padding: EdgeInsets.only(left: isRight ? 16 : 0, right: isRight ? 0 : 16),
       child: Column(
         crossAxisAlignment:
             isRight ? CrossAxisAlignment.end : CrossAxisAlignment.start,

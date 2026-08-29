@@ -24,7 +24,11 @@ class EarningBreakupBottomSheet extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const AppText('Earning Breakup', fontSize: 20, fontWeight: FontWeight.bold),
+              const AppText(
+                'Earning Breakup',
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
               IconButton(
                 onPressed: () => Navigator.pop(context),
                 icon: Container(
@@ -33,7 +37,11 @@ class EarningBreakupBottomSheet extends StatelessWidget {
                     color: Colors.grey.shade100,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.close, size: 20, color: Colors.black87),
+                  child: const Icon(
+                    Icons.close,
+                    size: 20,
+                    color: Colors.black87,
+                  ),
                 ),
               ),
             ],
@@ -42,17 +50,23 @@ class EarningBreakupBottomSheet extends StatelessWidget {
           _buildBreakupRow('Available Balance', '₹129', isTitle: true),
           const SizedBox(height: 8),
           _buildBreakupRow('PG Charge:', '- ₹3', isNegative: true),
-          _buildDescription('2.5% charge deducted by Payment Gateways for accepting online payments'),
+          _buildDescription(
+            '2.5% charge deducted by Payment Gateways for accepting online payments',
+          ),
           const SizedBox(height: 16),
           const Divider(height: 1),
           const SizedBox(height: 16),
           _buildBreakupRow('Sub Total :', '₹126', isTitle: true),
           const SizedBox(height: 8),
           _buildBreakupRow('TDS:', '- ₹13', isNegative: true),
-          _buildDescription('10% of subtotal. Tax deducted as per government regulations'),
+          _buildDescription(
+            '10% of subtotal. Tax deducted as per government regulations',
+          ),
           const SizedBox(height: 12),
           _buildBreakupRow('GST:', '₹0'),
-          _buildDescription('GST certificate mandatory for astrologers who earn more than INR 20 lacs per year'),
+          _buildDescription(
+            'GST certificate mandatory for astrologers who earn more than INR 20 lacs per year',
+          ),
           const SizedBox(height: 24),
           const Divider(height: 1),
           const SizedBox(height: 24),
@@ -70,7 +84,14 @@ class EarningBreakupBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildBreakupRow(String title, String value, {bool isTitle = false, bool isNegative = false, bool isGreen = false, double fontSize = 16}) {
+  Widget _buildBreakupRow(
+    String title,
+    String value, {
+    bool isTitle = false,
+    bool isNegative = false,
+    bool isGreen = false,
+    double fontSize = 16,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -84,7 +105,12 @@ class EarningBreakupBottomSheet extends StatelessWidget {
           value,
           fontSize: fontSize,
           fontWeight: FontWeight.bold,
-          color: isGreen ? AppColors.successColor : (isNegative ? AppColors.errorColor : AppColors.successColor),
+          color:
+              isGreen
+                  ? AppColors.successColor
+                  : (isNegative
+                      ? AppColors.errorColor
+                      : AppColors.successColor),
         ),
       ],
     );

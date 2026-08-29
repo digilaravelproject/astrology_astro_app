@@ -1,5 +1,6 @@
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:flutter/material.dart';
+import 'package:astro_astrologer/core/widgets/custom_image_widget.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -21,7 +22,8 @@ class TrainingVideoDetailScreen extends StatefulWidget {
   });
 
   @override
-  State<TrainingVideoDetailScreen> createState() => _TrainingVideoDetailScreenState();
+  State<TrainingVideoDetailScreen> createState() =>
+      _TrainingVideoDetailScreenState();
 }
 
 class _TrainingVideoDetailScreenState extends State<TrainingVideoDetailScreen>
@@ -119,11 +121,14 @@ class _TrainingVideoDetailScreenState extends State<TrainingVideoDetailScreen>
                   width: double.infinity,
                   decoration: const BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(28),
+                    ),
                   ),
-                  child: isLoading && video == null
-                      ? const Center(child: CircularProgressIndicator())
-                      : _buildInfoSection(video),
+                  child:
+                      isLoading && video == null
+                          ? const Center(child: CircularProgressIndicator())
+                          : _buildInfoSection(video),
                 ),
               ),
             ],
@@ -139,9 +144,10 @@ class _TrainingVideoDetailScreenState extends State<TrainingVideoDetailScreen>
         // Video player or thumbnail
         AspectRatio(
           aspectRatio: 22 / 12,
-          child: _videoInitialized && _chewieController != null
-              ? Chewie(controller: _chewieController!)
-              : _buildThumbnail(video),
+          child:
+              _videoInitialized && _chewieController != null
+                  ? Chewie(controller: _chewieController!)
+                  : _buildThumbnail(video),
         ),
 
         // Back button (always on top)
@@ -156,7 +162,11 @@ class _TrainingVideoDetailScreenState extends State<TrainingVideoDetailScreen>
                 color: Colors.black.withOpacity(0.5),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 18),
+              child: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: Colors.white,
+                size: 18,
+              ),
             ),
           ),
         ),
@@ -165,24 +175,21 @@ class _TrainingVideoDetailScreenState extends State<TrainingVideoDetailScreen>
   }
 
   Widget _buildThumbnail(TrainingVideoModel? video) {
-    final thumbnailUrl = video != null && video.thumbnailUrl.isNotEmpty
-        ? '${AppUrls.baseImageUrl}${video.thumbnailUrl}'
-        : null;
+    final thumbnailUrl =
+        video != null && video.thumbnailUrl.isNotEmpty
+            ? '${AppUrls.baseImageUrl}${video.thumbnailUrl}'
+            : null;
 
     return Stack(
       fit: StackFit.expand,
       children: [
         // Thumbnail Image
         thumbnailUrl != null
-            ? CachedNetworkImage(
-                imageUrl: thumbnailUrl,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Container(
-                  color: const Color(0xFF1A1A2E),
-                  child: const Center(child: CircularProgressIndicator(color: Colors.white54, strokeWidth: 2)),
-                ),
-                errorWidget: (context, url, error) => _buildPlaceholder(),
-              )
+            ? CustomImageWidget(
+              imagePath: thumbnailUrl,
+              fit: BoxFit.cover,
+              fallbackWidget: _buildPlaceholder(),
+            )
             : _buildPlaceholder(),
 
         // Gradient overlay (bottom-heavy for title readability)
@@ -204,8 +211,10 @@ class _TrainingVideoDetailScreenState extends State<TrainingVideoDetailScreen>
           Center(
             child: GestureDetector(
               onTap: () {
-                final url = _controller.video.value?.videoUrl ??
-                    widget.preloadedVideo?.videoUrl ?? '';
+                final url =
+                    _controller.video.value?.videoUrl ??
+                    widget.preloadedVideo?.videoUrl ??
+                    '';
                 if (url.isNotEmpty) {
                   _initializePlayer(AppUrls.baseImageUrl + url);
                 }
@@ -226,15 +235,29 @@ class _TrainingVideoDetailScreenState extends State<TrainingVideoDetailScreen>
                       ),
                     ],
                   ),
-                  child: _videoError
-                      ? const Icon(Icons.refresh_rounded, color: Colors.white, size: 32)
-                      : const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 42),
+                  child:
+                      _videoError
+                          ? const Icon(
+                            Icons.refresh_rounded,
+                            color: Colors.white,
+                            size: 32,
+                          )
+                          : const Icon(
+                            Icons.play_arrow_rounded,
+                            color: Colors.white,
+                            size: 42,
+                          ),
                 ),
               ),
             ),
           )
         else
-          const Center(child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5)),
+          const Center(
+            child: CircularProgressIndicator(
+              color: Colors.white,
+              strokeWidth: 2.5,
+            ),
+          ),
 
         if (_videoError)
           Positioned(
@@ -243,12 +266,19 @@ class _TrainingVideoDetailScreenState extends State<TrainingVideoDetailScreen>
             right: 0,
             child: Center(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.red.withOpacity(0.8),
                   borderRadius: BorderRadius.circular(100),
                 ),
-                child: const AppText('Video unavailable. Tap to retry.', color: Colors.white, fontSize: 12),
+                child: const AppText(
+                  'Video unavailable. Tap to retry.',
+                  color: Colors.white,
+                  fontSize: 12,
+                ),
               ),
             ),
           ),
@@ -263,9 +293,17 @@ class _TrainingVideoDetailScreenState extends State<TrainingVideoDetailScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.play_circle_outline_rounded, color: Colors.white.withOpacity(0.15), size: 72),
+            Icon(
+              Icons.play_circle_outline_rounded,
+              color: Colors.white.withOpacity(0.15),
+              size: 72,
+            ),
             const SizedBox(height: 12),
-            AppText('Loading thumbnail...', color: Colors.white38, fontSize: 12),
+            AppText(
+              'Loading thumbnail...',
+              color: Colors.white38,
+              fontSize: 12,
+            ),
           ],
         ),
       ),
@@ -274,7 +312,9 @@ class _TrainingVideoDetailScreenState extends State<TrainingVideoDetailScreen>
 
   Widget _buildInfoSection(TrainingVideoModel? video) {
     if (video == null) {
-      return const Center(child: AppText('Video not found', color: Colors.grey));
+      return const Center(
+        child: AppText('Video not found', color: Colors.grey),
+      );
     }
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
@@ -298,7 +338,10 @@ class _TrainingVideoDetailScreenState extends State<TrainingVideoDetailScreen>
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.primaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(100),
@@ -306,15 +349,27 @@ class _TrainingVideoDetailScreenState extends State<TrainingVideoDetailScreen>
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.label_outlined, size: 13, color: AppColors.primaryColor),
+                    const Icon(
+                      Icons.label_outlined,
+                      size: 13,
+                      color: AppColors.primaryColor,
+                    ),
                     const SizedBox(width: 5),
-                    AppText(video.type, fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.primaryColor),
+                    AppText(
+                      video.type,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primaryColor,
+                    ),
                   ],
                 ),
               ),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.grey.shade100,
                   borderRadius: BorderRadius.circular(100),
@@ -322,9 +377,17 @@ class _TrainingVideoDetailScreenState extends State<TrainingVideoDetailScreen>
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.sort_rounded, size: 13, color: Colors.grey.shade500),
+                    Icon(
+                      Icons.sort_rounded,
+                      size: 13,
+                      color: Colors.grey.shade500,
+                    ),
                     const SizedBox(width: 4),
-                    AppText('#${video.sortOrder}', fontSize: 12, color: Colors.grey.shade600),
+                    AppText(
+                      '#${video.sortOrder}',
+                      fontSize: 12,
+                      color: Colors.grey.shade600,
+                    ),
                   ],
                 ),
               ),
@@ -355,10 +418,19 @@ class _TrainingVideoDetailScreenState extends State<TrainingVideoDetailScreen>
                   color: AppColors.primaryColor.withOpacity(0.08),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(Icons.info_outline_rounded, color: AppColors.primaryColor, size: 18),
+                child: const Icon(
+                  Icons.info_outline_rounded,
+                  color: AppColors.primaryColor,
+                  size: 18,
+                ),
               ),
               const SizedBox(width: 10),
-              const AppText('About this video', fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF1A1A2E)),
+              const AppText(
+                'About this video',
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1A1A2E),
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -372,7 +444,7 @@ class _TrainingVideoDetailScreenState extends State<TrainingVideoDetailScreen>
           const SizedBox(height: 24),
 
           // Watch button
-        /*  GestureDetector(
+          /*  GestureDetector(
             onTap: () {
               _initializePlayer('https://www.w3schools.com/html/mov_bbb.mp4');
             },

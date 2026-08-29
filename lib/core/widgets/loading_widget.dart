@@ -46,9 +46,7 @@ class LoadingWidget extends StatelessWidget {
   Widget _buildFullScreen() {
     return Container(
       color: Colors.black.withOpacity(0.5),
-      child: Center(
-        child: _buildIndicator(),
-      ),
+      child: Center(child: _buildIndicator()),
     );
   }
 

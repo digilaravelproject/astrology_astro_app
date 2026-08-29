@@ -21,7 +21,7 @@ class WeeklyRankingController extends GetxController {
     try {
       isLoading.value = true;
       error.value = '';
-      
+
       final data = await _walletRepository.getWeeklyRankings();
       rankingData.value = data;
     } catch (e) {

@@ -6,16 +6,22 @@ class NavamshaRepository {
   final AstrologyApiClient _client;
 
   NavamshaRepository({AstrologyApiClient? client})
-      : _client = client ?? AstrologyApiClient();
+    : _client = client ?? AstrologyApiClient();
 
-  List<Map<String, dynamic>> _transformSignListToPlanets(List<dynamic> rawList) {
+  List<Map<String, dynamic>> _transformSignListToPlanets(
+    List<dynamic> rawList,
+  ) {
     final List<Map<String, dynamic>> planets = [];
     for (int i = 0; i < rawList.length; i++) {
       final item = rawList[i];
       if (item is Map) {
         final house = i + 1;
-        final signNumber = item['sign'] is int ? item['sign'] as int : int.tryParse(item['sign']?.toString() ?? '1') ?? 1;
-        final List<dynamic> pList = item['planet_small'] ?? item['planet'] ?? [];
+        final signNumber =
+            item['sign'] is int
+                ? item['sign'] as int
+                : int.tryParse(item['sign']?.toString() ?? '1') ?? 1;
+        final List<dynamic> pList =
+            item['planet_small'] ?? item['planet'] ?? [];
         for (var p in pList) {
           final pStr = p.toString().trim();
           if (pStr.isNotEmpty) {
@@ -49,13 +55,12 @@ class NavamshaRepository {
       final response = await _client.getDivisionalChart('d9', payload);
 
       if (response.statusCode == 200) {
-        final List<dynamic> rawList = response.data is List ? response.data : [];
+        final List<dynamic> rawList =
+            response.data is List ? response.data : [];
         final planets = _transformSignListToPlanets(rawList);
         final transformedJson = {
           'success': true,
-          'data': {
-            'planets': planets,
-          }
+          'data': {'planets': planets},
         };
         return NavamshaModel.fromJson(transformedJson);
       }
@@ -81,7 +86,11 @@ class NavamshaRepository {
         timezone: timezone,
       );
 
-      final response = await _client.getHoroChartImage(chartId, payload, chartType: chartType);
+      final response = await _client.getHoroChartImage(
+        chartId,
+        payload,
+        chartType: chartType,
+      );
       if (response.statusCode == 200 && response.data != null) {
         if (response.data is Map && response.data['svg'] != null) {
           return response.data['svg'].toString();

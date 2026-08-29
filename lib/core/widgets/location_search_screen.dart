@@ -23,10 +23,7 @@ class LocationResult {
 class LocationSearchScreen extends StatefulWidget {
   final String title;
 
-  const LocationSearchScreen({
-    super.key,
-    this.title = 'Select Birth Place',
-  });
+  const LocationSearchScreen({super.key, this.title = 'Select Birth Place'});
 
   @override
   State<LocationSearchScreen> createState() => _LocationSearchScreenState();
@@ -45,9 +42,7 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
     super.initState();
     _dio.options.connectTimeout = const Duration(seconds: 10);
     _dio.options.receiveTimeout = const Duration(seconds: 10);
-    _dio.options.headers = {
-      'User-Agent': 'AstroUserApp/1.0',
-    };
+    _dio.options.headers = {'User-Agent': 'AstroUserApp/1.0'};
   }
 
   @override
@@ -72,7 +67,12 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
     });
   }
 
-  LocationResult _refineLocationResult(String displayName, String? address, double lat, double lng) {
+  LocationResult _refineLocationResult(
+    String displayName,
+    String? address,
+    double lat,
+    double lng,
+  ) {
     final lowerName = displayName.toLowerCase().trim();
     // Refine South Mumbai (18.9582, 72.8320) default point from Google Maps API to standard Mumbai city center (19.0760, 72.8774)
     if (lowerName == 'mumbai, maharashtra, india' || lowerName == 'mumbai') {
@@ -98,40 +98,58 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
 
     try {
       final apiKey = AppConstants.googleMapApiKey;
-      
+
       // Try Google Places Text Search API first for full location suggestions with lat/lng
-      final textSearchUrl = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=${Uri.encodeComponent(query)}&key=$apiKey';
+      final textSearchUrl =
+          'https://maps.googleapis.com/maps/api/place/textsearch/json?query=${Uri.encodeComponent(query)}&key=$apiKey';
       final response = await _dio.get(textSearchUrl);
 
       final List<LocationResult> results = [];
 
-      if (response.statusCode == 200 && response.data != null && response.data['results'] is List) {
+      if (response.statusCode == 200 &&
+          response.data != null &&
+          response.data['results'] is List) {
         final List resultsList = response.data['results'];
 
         for (var item in resultsList) {
           final String name = item['name'] ?? '';
           final String formattedAddress = item['formatted_address'] ?? '';
-          final double? lat = (item['geometry']?['location']?['lat'] as num?)?.toDouble();
-          final double? lng = (item['geometry']?['location']?['lng'] as num?)?.toDouble();
+          final double? lat =
+              (item['geometry']?['location']?['lat'] as num?)?.toDouble();
+          final double? lng =
+              (item['geometry']?['location']?['lng'] as num?)?.toDouble();
 
           if (lat != null && lng != null) {
-            String displayName = formattedAddress.isNotEmpty ? formattedAddress : name;
-            results.add(_refineLocationResult(displayName, formattedAddress != name ? formattedAddress : null, lat, lng));
+            String displayName =
+                formattedAddress.isNotEmpty ? formattedAddress : name;
+            results.add(
+              _refineLocationResult(
+                displayName,
+                formattedAddress != name ? formattedAddress : null,
+                lat,
+                lng,
+              ),
+            );
           }
         }
       }
 
       // Fallback to Geocoding API if Text Search API returns empty
       if (results.isEmpty) {
-        final geocodeUrl = 'https://maps.googleapis.com/maps/api/geocode/json?address=${Uri.encodeComponent(query)}&key=$apiKey';
+        final geocodeUrl =
+            'https://maps.googleapis.com/maps/api/geocode/json?address=${Uri.encodeComponent(query)}&key=$apiKey';
         final geoResponse = await _dio.get(geocodeUrl);
 
-        if (geoResponse.statusCode == 200 && geoResponse.data != null && geoResponse.data['results'] is List) {
+        if (geoResponse.statusCode == 200 &&
+            geoResponse.data != null &&
+            geoResponse.data['results'] is List) {
           final List geoList = geoResponse.data['results'];
           for (var item in geoList) {
             final String name = item['formatted_address'] ?? '';
-            final double? lat = (item['geometry']?['location']?['lat'] as num?)?.toDouble();
-            final double? lng = (item['geometry']?['location']?['lng'] as num?)?.toDouble();
+            final double? lat =
+                (item['geometry']?['location']?['lat'] as num?)?.toDouble();
+            final double? lng =
+                (item['geometry']?['location']?['lng'] as num?)?.toDouble();
 
             if (name.isNotEmpty && lat != null && lng != null) {
               results.add(_refineLocationResult(name, null, lat, lng));
@@ -162,7 +180,10 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
         backgroundColor: AppColors.white,
         elevation: 0.5,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textColorPrimary),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: AppColors.textColorPrimary,
+          ),
           onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
         ),
         title: Text(
@@ -184,23 +205,41 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
               controller: _searchController,
               onChanged: _onSearchChanged,
               autofocus: true,
-              style: const TextStyle(color: AppColors.textColorPrimary, fontSize: 15),
+              style: const TextStyle(
+                color: AppColors.textColorPrimary,
+                fontSize: 15,
+              ),
               decoration: InputDecoration(
                 hintText: 'Search city or birth place...'.tr,
-                hintStyle: const TextStyle(color: AppColors.textColorHint, fontSize: 14),
-                prefixIcon: const Icon(sax.Iconsax.location_copy, color: AppColors.primaryColor, size: 20),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear, color: AppColors.textColorSecondary, size: 18),
-                        onPressed: () {
-                          _searchController.clear();
-                          _onSearchChanged('');
-                        },
-                      )
-                    : null,
+                hintStyle: const TextStyle(
+                  color: AppColors.textColorHint,
+                  fontSize: 14,
+                ),
+                prefixIcon: const Icon(
+                  sax.Iconsax.location_copy,
+                  color: AppColors.primaryColor,
+                  size: 20,
+                ),
+                suffixIcon:
+                    _searchController.text.isNotEmpty
+                        ? IconButton(
+                          icon: const Icon(
+                            Icons.clear,
+                            color: AppColors.textColorSecondary,
+                            size: 18,
+                          ),
+                          onPressed: () {
+                            _searchController.clear();
+                            _onSearchChanged('');
+                          },
+                        )
+                        : null,
                 filled: true,
                 fillColor: AppColors.fieldBackground,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: const BorderSide(color: AppColors.borderColor),
@@ -211,7 +250,10 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.primaryColor, width: 1.5),
+                  borderSide: const BorderSide(
+                    color: AppColors.primaryColor,
+                    width: 1.5,
+                  ),
                 ),
               ),
             ),
@@ -225,38 +267,54 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
               ),
             ),
 
-            Padding(
-              padding: const EdgeInsets.all(30),
-              child: Text(
-                'No matching location found. Please try another search.'.tr,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.textColorSecondary, fontSize: 14),
+          Padding(
+            padding: const EdgeInsets.all(30),
+            child: Text(
+              'No matching location found. Please try another search.'.tr,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: AppColors.textColorSecondary,
+                fontSize: 14,
               ),
             ),
+          ),
 
-            Padding(
-              padding: const EdgeInsets.all(30),
-              child: Text(
-                'Type city or place name to search location via Google Maps API.'.tr,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.textColorSecondary, fontSize: 14),
+          Padding(
+            padding: const EdgeInsets.all(30),
+            child: Text(
+              'Type city or place name to search location via Google Maps API.'
+                  .tr,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: AppColors.textColorSecondary,
+                fontSize: 14,
               ),
             ),
+          ),
 
           // Results List
           Expanded(
             child: ListView.separated(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               itemCount: _searchResults.length,
-              separatorBuilder: (context, index) => const Divider(height: 1, color: AppColors.borderColor),
+              separatorBuilder:
+                  (context, index) =>
+                      const Divider(height: 1, color: AppColors.borderColor),
               itemBuilder: (context, index) {
                 final loc = _searchResults[index];
                 return ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   leading: const CircleAvatar(
                     radius: 18,
                     backgroundColor: AppColors.lightPink,
-                    child: Icon(sax.Iconsax.location_copy, color: AppColors.primaryColor, size: 18),
+                    child: Icon(
+                      sax.Iconsax.location_copy,
+                      color: AppColors.primaryColor,
+                      size: 18,
+                    ),
                   ),
                   title: Text(
                     loc.displayName,
@@ -277,7 +335,11 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
                       ),
                     ),
                   ),
-                  trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.textColorHint),
+                  trailing: const Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 14,
+                    color: AppColors.textColorHint,
+                  ),
                   onTap: () {
                     Navigator.of(context, rootNavigator: true).pop(loc);
                   },

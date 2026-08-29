@@ -22,7 +22,8 @@ class AddAstromallListingScreen extends StatefulWidget {
   });
 
   @override
-  State<AddAstromallListingScreen> createState() => _AddAstromallListingScreenState();
+  State<AddAstromallListingScreen> createState() =>
+      _AddAstromallListingScreenState();
 }
 
 class _AddAstromallListingScreenState extends State<AddAstromallListingScreen> {
@@ -38,7 +39,7 @@ class _AddAstromallListingScreenState extends State<AddAstromallListingScreen> {
     'Vastu',
     'Rudraksha',
     'Puja Service',
-    'Astrology Service'
+    'Astrology Service',
   ];
 
   @override
@@ -47,7 +48,8 @@ class _AddAstromallListingScreenState extends State<AddAstromallListingScreen> {
     if (widget.isEditing) {
       _titleController.text = widget.initialTitle ?? '';
       _priceController.text = widget.initialPrice ?? '';
-      if (widget.initialCategory != null && _categories.contains(widget.initialCategory)) {
+      if (widget.initialCategory != null &&
+          _categories.contains(widget.initialCategory)) {
         _selectedCategory = widget.initialCategory;
       }
     }
@@ -64,14 +66,21 @@ class _AddAstromallListingScreenState extends State<AddAstromallListingScreen> {
   Future<void> _pickImage() async {
     try {
       final ImagePicker picker = ImagePicker();
-      final XFile? image = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+      final XFile? image = await picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80,
+      );
       if (image != null) {
         setState(() {
           _selectedImage = File(image.path);
         });
       }
     } catch (e) {
-      CustomSnackBar.disabledSnackbar('Error', 'Failed to pick image: $e', snackPosition: SnackPosition.BOTTOM);
+      CustomSnackBar.disabledSnackbar(
+        'Error',
+        'Failed to pick image: $e',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
@@ -100,24 +109,37 @@ class _AddAstromallListingScreenState extends State<AddAstromallListingScreen> {
                     decoration: BoxDecoration(
                       color: Colors.grey.shade100,
                       borderRadius: BorderRadius.circular(15),
-                      border: Border.all(color: Colors.grey.shade300, style: BorderStyle.solid),
-                      image: _selectedImage != null
-                          ? DecorationImage(
-                              image: FileImage(_selectedImage!),
-                              fit: BoxFit.cover,
-                            )
-                          : null,
+                      border: Border.all(
+                        color: Colors.grey.shade300,
+                        style: BorderStyle.solid,
+                      ),
+                      image:
+                          _selectedImage != null
+                              ? DecorationImage(
+                                image: FileImage(_selectedImage!),
+                                fit: BoxFit.cover,
+                              )
+                              : null,
                     ),
-                    child: _selectedImage == null
-                        ? Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.add_a_photo, color: Colors.grey.shade400, size: 30),
-                              const SizedBox(height: 8),
-                              AppText('Add Photo', color: Colors.grey.shade500, fontSize: 12),
-                            ],
-                          )
-                        : null,
+                    child:
+                        _selectedImage == null
+                            ? Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.add_a_photo,
+                                  color: Colors.grey.shade400,
+                                  size: 30,
+                                ),
+                                const SizedBox(height: 8),
+                                AppText(
+                                  'Add Photo',
+                                  color: Colors.grey.shade500,
+                                  fontSize: 12,
+                                ),
+                              ],
+                            )
+                            : null,
                   ),
                 ),
               ),
@@ -144,14 +166,26 @@ class _AddAstromallListingScreenState extends State<AddAstromallListingScreen> {
                   child: DropdownButton<String>(
                     value: _selectedCategory,
                     isExpanded: true,
-                    hint: AppText('Select Category', color: Colors.grey.shade400, fontSize: 14),
-                    icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
-                    items: _categories.map((String category) {
-                      return DropdownMenuItem<String>(
-                        value: category,
-                        child: AppText(category, fontSize: 14, color: Colors.black87),
-                      );
-                    }).toList(),
+                    hint: AppText(
+                      'Select Category',
+                      color: Colors.grey.shade400,
+                      fontSize: 14,
+                    ),
+                    icon: const Icon(
+                      Icons.keyboard_arrow_down,
+                      color: Colors.grey,
+                    ),
+                    items:
+                        _categories.map((String category) {
+                          return DropdownMenuItem<String>(
+                            value: category,
+                            child: AppText(
+                              category,
+                              fontSize: 14,
+                              color: Colors.black87,
+                            ),
+                          );
+                        }).toList(),
                     onChanged: (String? newValue) {
                       setState(() {
                         _selectedCategory = newValue;
@@ -168,7 +202,11 @@ class _AddAstromallListingScreenState extends State<AddAstromallListingScreen> {
                 controller: _priceController,
                 hintText: 'e.g., 500',
                 keyboardType: TextInputType.number,
-                prefixIcon: const Icon(Icons.currency_rupee, size: 16, color: Colors.grey),
+                prefixIcon: const Icon(
+                  Icons.currency_rupee,
+                  size: 16,
+                  color: Colors.grey,
+                ),
               ),
               const SizedBox(height: 20),
 
@@ -190,7 +228,9 @@ class _AddAstromallListingScreenState extends State<AddAstromallListingScreen> {
                     Get.back();
                     CustomSnackBar.disabledSnackbar(
                       'Success',
-                      widget.isEditing ? 'Listing updated successfully' : 'Listing added successfully',
+                      widget.isEditing
+                          ? 'Listing updated successfully'
+                          : 'Listing added successfully',
                       snackPosition: SnackPosition.BOTTOM,
                       backgroundColor: Colors.green.shade600,
                       colorText: Colors.white,
@@ -200,10 +240,17 @@ class _AddAstromallListingScreenState extends State<AddAstromallListingScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryColor,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     elevation: 2,
                   ),
-                  child: AppText(widget.isEditing ? 'Update Item' : 'List Item', color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                  child: AppText(
+                    widget.isEditing ? 'Update Item' : 'List Item',
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -217,7 +264,12 @@ class _AddAstromallListingScreenState extends State<AddAstromallListingScreen> {
   Widget _buildLabel(String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0, left: 4.0),
-      child: AppText(text, fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black87),
+      child: AppText(
+        text,
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        color: Colors.black87,
+      ),
     );
   }
 

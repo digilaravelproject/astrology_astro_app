@@ -6,7 +6,7 @@ class ManglikRepository {
   final AstrologyApiClient _client;
 
   ManglikRepository({AstrologyApiClient? client})
-      : _client = client ?? AstrologyApiClient();
+    : _client = client ?? AstrologyApiClient();
 
   Future<ManglikModel?> getManglikReport({
     required String datetime,
@@ -28,7 +28,9 @@ class ManglikRepository {
         if (response.data is Map<String, dynamic>) {
           return ManglikModel.fromJson(response.data as Map<String, dynamic>);
         } else if (response.data is Map) {
-          return ManglikModel.fromJson(Map<String, dynamic>.from(response.data as Map));
+          return ManglikModel.fromJson(
+            Map<String, dynamic>.from(response.data as Map),
+          );
         }
       }
     } catch (e) {

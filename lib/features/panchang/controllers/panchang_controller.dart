@@ -40,22 +40,26 @@ class PanchangController extends GetxController {
       errorMessage.value = '';
 
       final dateString = DateFormat('yyyy-MM-dd').format(selectedDate.value);
-      print('[PCB_APP] [DEBUG] Fetching panchang for date: $dateString with lat: ${latitude.value}, lon: ${longitude.value}, tz: ${timezone.value}');
-      
+      print(
+        '[PCB_APP] [DEBUG] Fetching panchang for date: $dateString with lat: ${latitude.value}, lon: ${longitude.value}, tz: ${timezone.value}',
+      );
+
       final result = await getPanchangUseCase.call(
         dateString,
         latitude: latitude.value,
         longitude: longitude.value,
         timezone: timezone.value,
       );
-      
+
       print('[PCB_APP] [DEBUG] Panchang data received: ${result.success}');
       print('[PCB_APP] [DEBUG] Panchang location: ${result.data.location}');
       print('[PCB_APP] [DEBUG] Panchang tithi: ${result.data.tithi.name}');
-      
+
       panchangData.value = result;
-      
-      print('[PCB_APP] [DEBUG] Panchang data set in controller: ${panchangData.value != null}');
+
+      print(
+        '[PCB_APP] [DEBUG] Panchang data set in controller: ${panchangData.value != null}',
+      );
     } catch (e) {
       print('[PCB_APP] [ERROR] Failed to load panchang: $e');
       errorMessage.value = 'Failed to load panchang data: $e';

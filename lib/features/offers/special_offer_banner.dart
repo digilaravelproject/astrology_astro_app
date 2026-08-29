@@ -23,11 +23,19 @@ class _SpecialOfferBannerState extends State<SpecialOfferBanner> {
   void initState() {
     super.initState();
     // Use Get.put to make it globally available and keep it alive with HomeScreen
-    _controller = Get.put(OfferController(
-      getOffersUseCase: GetOffersUseCase(OfferRepositoryImpl(apiClient: Get.find<ApiClient>())),
-      toggleOfferUseCase: ToggleOfferUseCase(OfferRepositoryImpl(apiClient: Get.find<ApiClient>())),
-      getOfferHistoryUseCase: GetOfferHistoryUseCase(OfferRepositoryImpl(apiClient: Get.find<ApiClient>())),
-    ));
+    _controller = Get.put(
+      OfferController(
+        getOffersUseCase: GetOffersUseCase(
+          OfferRepositoryImpl(apiClient: Get.find<ApiClient>()),
+        ),
+        toggleOfferUseCase: ToggleOfferUseCase(
+          OfferRepositoryImpl(apiClient: Get.find<ApiClient>()),
+        ),
+        getOfferHistoryUseCase: GetOfferHistoryUseCase(
+          OfferRepositoryImpl(apiClient: Get.find<ApiClient>()),
+        ),
+      ),
+    );
   }
 
   @override
@@ -36,7 +44,9 @@ class _SpecialOfferBannerState extends State<SpecialOfferBanner> {
       if (_controller.isLoadingOffers.value && _controller.offers.isEmpty) {
         return const SizedBox(
           height: 100,
-          child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
+          child: Center(
+            child: CircularProgressIndicator(color: AppColors.primaryColor),
+          ),
         );
       }
 
@@ -46,7 +56,8 @@ class _SpecialOfferBannerState extends State<SpecialOfferBanner> {
 
       // Find the offer with the maximum discount percentage
       final bestOffer = _controller.offers.reduce(
-        (curr, next) => curr.discountPercentage > next.discountPercentage ? curr : next
+        (curr, next) =>
+            curr.discountPercentage > next.discountPercentage ? curr : next,
       );
 
       final isOfferEnabled = bestOffer.isCurrentlyActiveForMe;
@@ -56,7 +67,10 @@ class _SpecialOfferBannerState extends State<SpecialOfferBanner> {
         decoration: BoxDecoration(
           color: const Color(0xFFFEFCE8), // Light yellow background
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFFDE047), width: 1.5), // Yellow border
+          border: Border.all(
+            color: const Color(0xFFFDE047),
+            width: 1.5,
+          ), // Yellow border
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -82,7 +96,7 @@ class _SpecialOfferBannerState extends State<SpecialOfferBanner> {
                 color: const Color(0xFF423D00), // Dark yellow text
               ),
             ),
-            
+
             // Body
             Padding(
               padding: const EdgeInsets.all(16),
@@ -112,58 +126,80 @@ class _SpecialOfferBannerState extends State<SpecialOfferBanner> {
                   const SizedBox(width: 16),
                   // Custom Toggle
                   GestureDetector(
-                    onTap: isToggling ? null : () => _controller.toggleOffer(bestOffer.id),
-                    child: isToggling 
-                      ? const SizedBox(
-                          width: 76,
-                          height: 36,
-                          child: Center(
-                            child: SizedBox(
-                              width: 16, height: 16, 
-                              child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primaryColor)
-                            ),
-                          ),
-                        )
-                      : AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      width: 76,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.white,
-                        border: Border.all(color: const Color(0xFFD1D5DB), width: 1.5),
-                      ),
-                      child: Stack(
-                        children: [
-                          AnimatedPositioned(
-                            duration: const Duration(milliseconds: 200),
-                            curve: Curves.easeInOut,
-                            left: isOfferEnabled ? 42 : 6,
-                            top: 6,
-                            child: Container(
-                              width: 20,
-                              height: 20,
+                    onTap:
+                        isToggling
+                            ? null
+                            : () => _controller.toggleOffer(bestOffer.id),
+                    child:
+                        isToggling
+                            ? const SizedBox(
+                              width: 76,
+                              height: 36,
+                              child: Center(
+                                child: SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: AppColors.primaryColor,
+                                  ),
+                                ),
+                              ),
+                            )
+                            : AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              width: 76,
+                              height: 36,
                               decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: isOfferEnabled ? AppColors.primaryColor : const Color(0xFF64748B),
+                                borderRadius: BorderRadius.circular(20),
+                                color: Colors.white,
+                                border: Border.all(
+                                  color: const Color(0xFFD1D5DB),
+                                  width: 1.5,
+                                ),
+                              ),
+                              child: Stack(
+                                children: [
+                                  AnimatedPositioned(
+                                    duration: const Duration(milliseconds: 200),
+                                    curve: Curves.easeInOut,
+                                    left: isOfferEnabled ? 42 : 6,
+                                    top: 6,
+                                    child: Container(
+                                      width: 20,
+                                      height: 20,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color:
+                                            isOfferEnabled
+                                                ? AppColors.primaryColor
+                                                : const Color(0xFF64748B),
+                                      ),
+                                    ),
+                                  ),
+                                  Align(
+                                    alignment:
+                                        isOfferEnabled
+                                            ? Alignment.centerLeft
+                                            : Alignment.centerRight,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                      ),
+                                      child: AppText(
+                                        isOfferEnabled ? 'On' : 'Off',
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                        color:
+                                            isOfferEnabled
+                                                ? AppColors.primaryColor
+                                                : const Color(0xFF64748B),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
-                          Align(
-                            alignment: isOfferEnabled ? Alignment.centerLeft : Alignment.centerRight,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
-                              child: AppText(
-                                isOfferEnabled ? 'On' : 'Off',
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: isOfferEnabled ? AppColors.primaryColor : const Color(0xFF64748B),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                   ),
                 ],
               ),

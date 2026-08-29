@@ -11,9 +11,7 @@ class ImportantNumbersScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
-      appBar: CustomAppBar(
-        title: 'Important Numbers'.tr,
-      ),
+      appBar: CustomAppBar(title: 'Important Numbers'.tr),
       body: Column(
         children: [
           _buildHeaderBanner(),
@@ -24,19 +22,19 @@ class ImportantNumbersScreen extends StatelessWidget {
                 _buildContactSection(
                   title: 'AstroTalk Call',
                   numbers: [
-                    '+91 11 4117 0131, +91 80 4899 5916, +91 11 4118 9042, +91 22 4896 4160, +91 80 4725 1716, +91 80 3542 5593, +91 80 3542 5594, +1 (254) 455-6027, +91 22 6971 9595, +91 12 0647 8546, +91 73 1459 9536, +1 779 901 1412, +91 86 4566 8574, +1 7866462472, +1 9713464924, +91 2269713740, +91 8041392473, +91 1204627014'
+                    '+91 11 4117 0131, +91 80 4899 5916, +91 11 4118 9042, +91 22 4896 4160, +91 80 4725 1716, +91 80 3542 5593, +91 80 3542 5594, +1 (254) 455-6027, +91 22 6971 9595, +91 12 0647 8546, +91 73 1459 9536, +1 779 901 1412, +91 86 4566 8574, +1 7866462472, +1 9713464924, +91 2269713740, +91 8041392473, +91 1204627014',
                   ],
                 ),
                 _buildContactSection(
                   title: 'AstroTalk Chat Alert',
                   numbers: [
-                    '+911141202781, +911141187144, +918048892507, +918062358395, +912241484568, +1 7754737952'
+                    '+911141202781, +911141187144, +918048892507, +918062358395, +912241484568, +1 7754737952',
                   ],
                 ),
                 _buildContactSection(
                   title: 'AstroTalk Admin Support',
                   numbers: [
-                    '011-411-70134, +919606047081, +918035425595, +912248932703, +12027429462, +918645668560, +912269713774, +917316917263, +918062359119'
+                    '011-411-70134, +919606047081, +918035425595, +912248932703, +12027429462, +918645668560, +912269713774, +917316917263, +918062359119',
                   ],
                 ),
               ],
@@ -53,7 +51,8 @@ class ImportantNumbersScreen extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       color: AppColors.lightPink,
       child: AppText(
-        'You will get call and chat alerts from these numbers. Save these numbers to avoid any confusion'.tr,
+        'You will get call and chat alerts from these numbers. Save these numbers to avoid any confusion'
+            .tr,
         fontSize: 12,
         color: Colors.black87,
         textAlign: TextAlign.center,
@@ -62,7 +61,10 @@ class ImportantNumbersScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContactSection({required String title, required List<String> numbers}) {
+  Widget _buildContactSection({
+    required String title,
+    required List<String> numbers,
+  }) {
     return Column(
       children: [
         Padding(
@@ -70,7 +72,13 @@ class ImportantNumbersScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AppText(title.tr, fontSize: 16, fontWeight: FontWeight.bold, color: const Color(0xFF2E1A47), overflow: TextOverflow.ellipsis),
+              AppText(
+                title.tr,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF2E1A47),
+                overflow: TextOverflow.ellipsis,
+              ),
               const SizedBox(height: 8),
               AppText(
                 numbers.join('\n'),

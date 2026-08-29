@@ -5,10 +5,8 @@ class LoadChatHistoryUseCase {
   final IChatRepository _repository;
   const LoadChatHistoryUseCase(this._repository);
 
-  Future<({List<ChatMessage> messages, String? startedAt, int? peerId})> execute({
-    required int sessionId,
-    required int currentUserId,
-  }) {
+  Future<({List<ChatMessage> messages, String? startedAt, int? peerId})>
+  execute({required int sessionId, required int currentUserId}) {
     return _repository.getChatHistory(
       sessionId: sessionId,
       currentUserId: currentUserId,

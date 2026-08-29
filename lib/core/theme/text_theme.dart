@@ -101,14 +101,13 @@ class AppTextTheme {
   );
 
   // Custom Highlight and Signature styles
-  static TextStyle nameHighlightStyle({double? fontSize, Color? color}) => GoogleFonts.poppins(
-    fontSize: fontSize,
-    fontWeight: FontWeight.w700, // Bold
-    color: color,
-  );
+  static TextStyle nameHighlightStyle({double? fontSize, Color? color}) =>
+      GoogleFonts.poppins(
+        fontSize: fontSize,
+        fontWeight: FontWeight.w700, // Bold
+        color: color,
+      );
 
-  static TextStyle signatureStyle({double? fontSize, Color? color}) => GoogleFonts.greatVibes(
-    fontSize: fontSize,
-    color: color,
-  );
+  static TextStyle signatureStyle({double? fontSize, Color? color}) =>
+      GoogleFonts.greatVibes(fontSize: fontSize, color: color);
 }

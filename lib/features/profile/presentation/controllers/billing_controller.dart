@@ -9,11 +9,14 @@ class BillingController extends GetxController {
   final GetBillingAddressUseCase _getBillingAddressUseCase;
   final UpdateBillingAddressUseCase _updateBillingAddressUseCase;
 
-  BillingController(this._getBillingAddressUseCase, this._updateBillingAddressUseCase);
+  BillingController(
+    this._getBillingAddressUseCase,
+    this._updateBillingAddressUseCase,
+  );
 
   final RxBool isLoading = false.obs;
   final RxBool isInitialLoading = false.obs;
-  
+
   // Controllers
   final addressController = TextEditingController();
   final addressLine2Controller = TextEditingController();
@@ -33,7 +36,7 @@ class BillingController extends GetxController {
     try {
       isInitialLoading.value = true;
       final result = await _getBillingAddressUseCase.call();
-      
+
       if (result.isSuccess && result.body != null) {
         final data = result.body['billing_address'];
         if (data != null) {
@@ -66,10 +69,13 @@ class BillingController extends GetxController {
       }
 
       isLoading.value = true;
-      
+
       final data = {
         'address_line1': addressController.text,
-        'address_line2': addressLine2Controller.text.isEmpty ? 'N/A' : addressLine2Controller.text,
+        'address_line2':
+            addressLine2Controller.text.isEmpty
+                ? 'N/A'
+                : addressLine2Controller.text,
         'city': cityController.text,
         'state': stateController.text,
         'postal_code': pincodeController.text,
@@ -78,7 +84,7 @@ class BillingController extends GetxController {
       };
 
       final result = await _updateBillingAddressUseCase.call(data);
-      
+
       if (result.isSuccess) {
         ApiChecker.handleResponse(result, showSuccess: true);
         Get.back(); // Close bottom sheet

@@ -3,7 +3,8 @@ import 'package:vibration/vibration.dart';
 import 'package:flutter/foundation.dart';
 
 class SoundVibrationService {
-  static final SoundVibrationService _instance = SoundVibrationService._internal();
+  static final SoundVibrationService _instance =
+      SoundVibrationService._internal();
   factory SoundVibrationService() => _instance;
   SoundVibrationService._internal();
 
@@ -15,21 +16,23 @@ class SoundVibrationService {
     try {
       await stopSound();
       _audioPlayer = AudioPlayer();
-      
+
       String assetPath = soundName;
       if (!soundName.contains('/') && !soundName.contains('.')) {
         assetPath = 'audio/$soundName.mp3';
       }
 
       await _audioPlayer?.play(AssetSource(assetPath));
-      
+
       if (loop) {
         await _audioPlayer?.setReleaseMode(ReleaseMode.loop);
       } else {
         await _audioPlayer?.setReleaseMode(ReleaseMode.release);
       }
-      
-      debugPrint('SoundVibrationService: Playing sound $assetPath (loop: $loop)');
+
+      debugPrint(
+        'SoundVibrationService: Playing sound $assetPath (loop: $loop)',
+      );
     } catch (e) {
       debugPrint('SoundVibrationService error playing sound: $e');
     }
@@ -50,7 +53,10 @@ class SoundVibrationService {
   }
 
   /// Start device vibration.
-  Future<void> startVibration({List<int> pattern = const [500, 1000, 500, 1000], int repeat = 0}) async {
+  Future<void> startVibration({
+    List<int> pattern = const [500, 1000, 500, 1000],
+    int repeat = 0,
+  }) async {
     try {
       if (await Vibration.hasVibrator() ?? false) {
         await Vibration.vibrate(pattern: pattern, repeat: repeat);
@@ -72,7 +78,11 @@ class SoundVibrationService {
   }
 
   /// Helper to start both sound and vibration (e.g. for incoming/outgoing ringtones)
-  Future<void> startRingtone(String soundName, {bool loop = true, bool vibrate = true}) async {
+  Future<void> startRingtone(
+    String soundName, {
+    bool loop = true,
+    bool vibrate = true,
+  }) async {
     await playSound(soundName, loop: loop);
     if (vibrate) {
       await startVibration(pattern: const [500, 1000, 500, 1000], repeat: 0);

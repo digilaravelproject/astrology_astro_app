@@ -11,7 +11,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<SupportController>();
-    
+
     // Fetch terms and conditions when screen is built
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.fetchTermsAndConditions();
@@ -19,13 +19,12 @@ class TermsAndConditionsScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(
-        title: "Terms and Conditions",
-        centerTitle: true,
-      ),
+      appBar: CustomAppBar(title: "Terms and Conditions", centerTitle: true),
       body: Obx(() {
         if (controller.isTermsLoading.value) {
-          return const Center(child: CircularProgressIndicator(color: Colors.pink));
+          return const Center(
+            child: CircularProgressIndicator(color: Colors.pink),
+          );
         }
 
         final termsData = controller.termsAndConditionsData.value;
@@ -40,11 +39,12 @@ class TermsAndConditionsScreen extends StatelessWidget {
         }
 
         // Simple formatting for HTML paragraphs
-        final formattedContent = termsData.content
-            .replaceAll(RegExp(r'</p>'), '\n\n')
-            .replaceAll(RegExp(r'<[^>]*>'), '')
-            .replaceAll(RegExp(r'&nbsp;'), ' ')
-            .trim();
+        final formattedContent =
+            termsData.content
+                .replaceAll(RegExp(r'</p>'), '\n\n')
+                .replaceAll(RegExp(r'<[^>]*>'), '')
+                .replaceAll(RegExp(r'&nbsp;'), ' ')
+                .trim();
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(20),

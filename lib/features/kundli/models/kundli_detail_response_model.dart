@@ -1,16 +1,12 @@
 class KundliDetailResponseModel {
   final KundliDetailData data;
 
-  KundliDetailResponseModel({
-    required this.data,
-  });
+  KundliDetailResponseModel({required this.data});
 
   factory KundliDetailResponseModel.fromJson(Map<String, dynamic> json) {
     // The response.body already contains just the data object (ApiClient extracts json['data'])
     // So we parse it directly as KundliDetailData
-    return KundliDetailResponseModel(
-      data: KundliDetailData.fromJson(json),
-    );
+    return KundliDetailResponseModel(data: KundliDetailData.fromJson(json));
   }
 }
 
@@ -59,19 +55,46 @@ class KundliDetailData {
 
   String get formattedDate {
     try {
-      if (datetime.isNotEmpty && RegExp(r'^\d{4}-\d{2}-\d{2}').hasMatch(datetime)) {
+      if (datetime.isNotEmpty &&
+          RegExp(r'^\d{4}-\d{2}-\d{2}').hasMatch(datetime)) {
         final datePart = datetime.split(' ')[0].split('T')[0];
         final parts = datePart.split('-');
         if (parts.length == 3) {
           final year = int.parse(parts[0]);
           final month = int.parse(parts[1]);
           final day = int.parse(parts[2]);
-          final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          final months = [
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'May',
+            'Jun',
+            'Jul',
+            'Aug',
+            'Sep',
+            'Oct',
+            'Nov',
+            'Dec',
+          ];
           return '$day-${months[month - 1]}-$year';
         }
       }
       final date = DateTime.parse(birthDate).toLocal();
-      final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      final months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ];
       return '${date.day}-${months[date.month - 1]}-${date.year}';
     } catch (e) {
       return birthDate;

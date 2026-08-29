@@ -77,10 +77,6 @@ class _FaqItem extends StatelessWidget {
   }
 }
 
-
-
-
-
 class FaqScreen extends StatelessWidget {
   const FaqScreen({super.key});
 
@@ -96,7 +92,9 @@ class FaqScreen extends StatelessWidget {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator(color: Colors.pink));
+          return const Center(
+            child: CircularProgressIndicator(color: Colors.pink),
+          );
         }
 
         final faqData = controller.faqData.value;
@@ -115,10 +113,7 @@ class FaqScreen extends StatelessWidget {
           itemCount: faqData.items.length,
           itemBuilder: (context, index) {
             final item = faqData.items[index];
-            return _FaqItem(
-              question: item.question,
-              answer: item.answer,
-            );
+            return _FaqItem(question: item.question, answer: item.answer);
           },
         );
       }),

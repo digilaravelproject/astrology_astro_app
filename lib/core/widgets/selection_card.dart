@@ -29,23 +29,22 @@ class SelectionCard extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(Dimensions.width15),
         decoration: BoxDecoration(
-          color: isSelected
-              ? (selectedColor ?? AppColors.primaryColor.withOpacity(0.1))
-              : (unselectedColor ?? AppColors.cardColor),
+          color:
+              isSelected
+                  ? (selectedColor ?? AppColors.primaryColor.withOpacity(0.1))
+                  : (unselectedColor ?? AppColors.cardColor),
           border: Border.all(
-            color: isSelected
-                ? (selectedColor ?? AppColors.primaryColor)
-                : AppColors.borderColor,
+            color:
+                isSelected
+                    ? (selectedColor ?? AppColors.primaryColor)
+                    : AppColors.borderColor,
             width: isSelected ? 2 : 1,
           ),
           borderRadius: BorderRadius.circular(Dimensions.radius12),
         ),
         child: Row(
           children: [
-            if (icon != null) ...[
-              icon!,
-              SizedBox(width: Dimensions.width10),
-            ],
+            if (icon != null) ...[icon!, SizedBox(width: Dimensions.width10)],
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,9 +54,10 @@ class SelectionCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: Dimensions.font16,
                       fontWeight: FontWeight.w600,
-                      color: isSelected
-                          ? (selectedColor ?? AppColors.primaryColor)
-                          : AppColors.textColorPrimary,
+                      color:
+                          isSelected
+                              ? (selectedColor ?? AppColors.primaryColor)
+                              : AppColors.textColorPrimary,
                     ),
                   ),
                   if (subtitle != null) ...[

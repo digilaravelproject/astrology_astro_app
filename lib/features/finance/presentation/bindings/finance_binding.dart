@@ -31,7 +31,8 @@ class FinanceBinding extends Bindings {
     );
 
     Get.lazyPut<SetDefaultBankAccountUseCase>(
-      () => SetDefaultBankAccountUseCase(Get.find<FinanceRepositoryInterface>()),
+      () =>
+          SetDefaultBankAccountUseCase(Get.find<FinanceRepositoryInterface>()),
     );
 
     // Controller

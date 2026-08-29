@@ -13,7 +13,11 @@ import '../../widgets/error_screen.dart';
 
 class ApiChecker {
   /// Centralized method to handle ResponseModel and show Snackbars
-  static void handleResponse(ResponseModel response, {bool showSuccess = false, bool showError = true}) {
+  static void handleResponse(
+    ResponseModel response, {
+    bool showSuccess = false,
+    bool showError = true,
+  }) {
     if (response.isSuccess) {
       if (showSuccess) {
         CustomSnackBar.showSuccess(response.message);
@@ -21,7 +25,10 @@ class ApiChecker {
     } else {
       if (showError) {
         if (response.errors != null && response.errors!.isNotEmpty) {
-          CustomSnackBar.showError(response.errors!.first.message ?? response.message, isApiError: true);
+          CustomSnackBar.showError(
+            response.errors!.first.message ?? response.message,
+            isApiError: true,
+          );
         } else {
           CustomSnackBar.showError(response.message, isApiError: true);
         }
@@ -36,14 +43,22 @@ class ApiChecker {
         if (response.data is Map && response.data.containsKey('auth')) {
           return response;
         }
-        final res = (response.data['res'] ?? response.data['status'])?.toString().toLowerCase();
+        final res =
+            (response.data['res'] ?? response.data['status'])
+                ?.toString()
+                .toLowerCase();
         final isSuccessBool = response.data['success'] == true;
-        Logger.d('ApiChecker: checkResponse 200, res/status: $res, success: $isSuccessBool');
+        Logger.d(
+          'ApiChecker: checkResponse 200, res/status: $res, success: $isSuccessBool',
+        );
         if (res == 'success' || isSuccessBool) {
           return response;
         } else {
           Logger.d('ApiChecker: 200 case but not success, throwing exception');
-          final errorMessage = response.data['msg'] ?? response.data['message'] ?? 'Something went wrong';
+          final errorMessage =
+              response.data['msg'] ??
+              response.data['message'] ??
+              'Something went wrong';
           throw DioException(
             requestOptions: response.requestOptions,
             response: response,
@@ -96,18 +111,37 @@ class ApiChecker {
         );
     }
   }
-  static ResponseModel handleError(dynamic error, {bool showErrorScreen = false}) {
-    final responseModel = _processError(error, showErrorScreen: showErrorScreen);
+
+  static ResponseModel handleError(
+    dynamic error, {
+    bool showErrorScreen = false,
+  }) {
+    final responseModel = _processError(
+      error,
+      showErrorScreen: showErrorScreen,
+    );
     if (!showErrorScreen) {
-      final isLimitError = responseModel.message.toLowerCase().contains('limit') || 
-                           (responseModel.errors != null && responseModel.errors!.isNotEmpty && 
-                            responseModel.errors!.first.message.toString().toLowerCase().contains('limit'));
-      handleResponse(responseModel, showSuccess: false, showError: !isLimitError);
+      final isLimitError =
+          responseModel.message.toLowerCase().contains('limit') ||
+          (responseModel.errors != null &&
+              responseModel.errors!.isNotEmpty &&
+              responseModel.errors!.first.message
+                  .toString()
+                  .toLowerCase()
+                  .contains('limit'));
+      handleResponse(
+        responseModel,
+        showSuccess: false,
+        showError: !isLimitError,
+      );
     }
     return responseModel;
   }
 
-  static ResponseModel _processError(dynamic error, {bool showErrorScreen = false}) {
+  static ResponseModel _processError(
+    dynamic error, {
+    bool showErrorScreen = false,
+  }) {
     if (error is DioException) {
       switch (error.type) {
         case DioExceptionType.connectionTimeout:
@@ -153,7 +187,8 @@ class ApiChecker {
           if (showErrorScreen) {
             _showErrorScreen(
               title: 'Security Error',
-              message: 'There was a security certificate error. Please try again.',
+              message:
+                  'There was a security certificate error. Please try again.',
             );
           }
           return const ResponseModel(
@@ -182,9 +217,12 @@ class ApiChecker {
               if (showErrorScreen) {
                 _showErrorScreen(
                   title: 'Error',
-                  message: responseModel.errors != null && responseModel.errors!.isNotEmpty
-                      ? responseModel.errors!.first.message ?? responseModel.message
-                      : responseModel.message,
+                  message:
+                      responseModel.errors != null &&
+                              responseModel.errors!.isNotEmpty
+                          ? responseModel.errors!.first.message ??
+                              responseModel.message
+                          : responseModel.message,
                 );
               }
 
@@ -270,7 +308,10 @@ class ApiChecker {
 
     if (statusCode == 401) {
       if (showToaster) {
-        CustomSnackBar.showError('Session expired. Please login again.', isApiError: true);
+        CustomSnackBar.showError(
+          'Session expired. Please login again.',
+          isApiError: true,
+        );
       }
       _logout();
       return const ResponseModel(
@@ -283,10 +324,14 @@ class ApiChecker {
     if (statusCode != 200) {
       if (response.data != null) {
         try {
-          final responseModel = ResponseModel.fromJson(response.data, statusCode: statusCode);
+          final responseModel = ResponseModel.fromJson(
+            response.data,
+            statusCode: statusCode,
+          );
 
           if (showToaster) {
-            if (responseModel.errors != null && responseModel.errors!.isNotEmpty) {
+            if (responseModel.errors != null &&
+                responseModel.errors!.isNotEmpty) {
               CustomSnackBar.showError(
                 responseModel.errors!.first.message ?? 'Something went wrong',
               );
@@ -318,17 +363,28 @@ class ApiChecker {
       }
     }
 
-    final isSuccessBool = response.data is Map && response.data['success'] == true;
-    final result = response.data is Map && ((response.data['res'] ?? response.data['status'])?.toString().toLowerCase() == 'success' || isSuccessBool || response.data.containsKey('auth'))
-        ? ResponseModel.fromJson(response.data, statusCode: statusCode)
-        : ResponseModel(
-            isSuccess: false,
-            message: response.data is Map
-                ? (response.data['msg']?.toString() ?? response.data['message']?.toString() ?? 'Something went wrong')
-                : 'Something went wrong',
-            body: response.data is Map ? response.data['data'] : null,
-            statusCode: statusCode,
-          );
+    final isSuccessBool =
+        response.data is Map && response.data['success'] == true;
+    final result =
+        response.data is Map &&
+                ((response.data['res'] ?? response.data['status'])
+                            ?.toString()
+                            .toLowerCase() ==
+                        'success' ||
+                    isSuccessBool ||
+                    response.data.containsKey('auth'))
+            ? ResponseModel.fromJson(response.data, statusCode: statusCode)
+            : ResponseModel(
+              isSuccess: false,
+              message:
+                  response.data is Map
+                      ? (response.data['msg']?.toString() ??
+                          response.data['message']?.toString() ??
+                          'Something went wrong')
+                      : 'Something went wrong',
+              body: response.data is Map ? response.data['data'] : null,
+              statusCode: statusCode,
+            );
 
     if (showToaster) {
       handleResponse(result, showSuccess: true, showError: true);
@@ -343,7 +399,7 @@ class ApiChecker {
     VoidCallback? onRetry,
   }) {
     getx.Get.to(
-          () => ErrorScreen(
+      () => ErrorScreen(
         title: title,
         message: message,
         onRetry: onRetry ?? () => getx.Get.back(),

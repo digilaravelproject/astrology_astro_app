@@ -47,9 +47,16 @@ class LiveSessionModel {
       durationMinutes: json['duration_minutes'] ?? 0,
       maxParticipants: json['max_participants'] ?? 0,
       status: json['status'],
-      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
-      startedAt: json['started_at'] != null ? DateTime.parse(json['started_at']) : null,
-      endedAt: json['ended_at'] != null ? DateTime.parse(json['ended_at']) : null,
+      createdAt:
+          json['created_at'] != null
+              ? DateTime.parse(json['created_at'])
+              : null,
+      startedAt:
+          json['started_at'] != null
+              ? DateTime.parse(json['started_at'])
+              : null,
+      endedAt:
+          json['ended_at'] != null ? DateTime.parse(json['ended_at']) : null,
       streamKey: json['stream_key'],
       viewerCount: json['viewer_count'] ?? 0,
       currentParticipants: json['current_participants'] ?? 0,
@@ -79,5 +86,4 @@ class LiveSessionModel {
       'is_audio_on': isAudioOn,
     };
   }
-
 }

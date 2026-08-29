@@ -4,7 +4,7 @@ import '../repositories/shadbala_repository.dart';
 
 class ShadbalaController extends GetxController {
   final ShadbalaRepository _repository = ShadbalaRepository();
-  
+
   var isLoading = false.obs;
   var shadbalaModel = Rxn<ShadbalaModel>();
 

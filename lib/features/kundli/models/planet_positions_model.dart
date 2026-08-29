@@ -7,7 +7,10 @@ class PlanetPositionsModel {
   factory PlanetPositionsModel.fromJson(Map<String, dynamic> json) {
     return PlanetPositionsModel(
       success: json['success'] ?? false,
-      data: json['data'] != null ? PlanetPositionsData.fromJson(json['data']) : null,
+      data:
+          json['data'] != null
+              ? PlanetPositionsData.fromJson(json['data'])
+              : null,
     );
   }
 }
@@ -19,9 +22,12 @@ class PlanetPositionsData {
 
   factory PlanetPositionsData.fromJson(Map<String, dynamic> json) {
     return PlanetPositionsData(
-      planets: json['planets'] != null
-          ? (json['planets'] as List).map((i) => PlanetPosition.fromJson(i)).toList()
-          : null,
+      planets:
+          json['planets'] != null
+              ? (json['planets'] as List)
+                  .map((i) => PlanetPosition.fromJson(i))
+                  .toList()
+              : null,
     );
   }
 }
@@ -49,11 +55,20 @@ class PlanetPosition {
     return PlanetPosition(
       name: json['name'],
       sign: json['sign'],
-      normDegree: json['normDegree'] != null ? (json['normDegree'] as num).toDouble() : null,
-      nakshatra: json['nakshatra'] != null ? Nakshatra.fromJson(json['nakshatra']) : null,
+      normDegree:
+          json['normDegree'] != null
+              ? (json['normDegree'] as num).toDouble()
+              : null,
+      nakshatra:
+          json['nakshatra'] != null
+              ? Nakshatra.fromJson(json['nakshatra'])
+              : null,
       house: json['house'],
       signNumber: json['signNumber'],
-      fullDegree: json['fullDegree'] != null ? (json['fullDegree'] as num).toDouble() : null,
+      fullDegree:
+          json['fullDegree'] != null
+              ? (json['fullDegree'] as num).toDouble()
+              : null,
     );
   }
 }
@@ -64,8 +79,6 @@ class Nakshatra {
   Nakshatra({this.name});
 
   factory Nakshatra.fromJson(Map<String, dynamic> json) {
-    return Nakshatra(
-      name: json['name'],
-    );
+    return Nakshatra(name: json['name']);
   }
 }

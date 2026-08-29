@@ -11,7 +11,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<SupportController>();
-    
+
     // Fetch privacy policy when screen is built
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.fetchPrivacyPolicy();
@@ -19,13 +19,12 @@ class PrivacyPolicyScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(
-        title: "Privacy Policy",
-        centerTitle: true,
-      ),
+      appBar: CustomAppBar(title: "Privacy Policy", centerTitle: true),
       body: Obx(() {
         if (controller.isPrivacyLoading.value) {
-          return const Center(child: CircularProgressIndicator(color: Colors.pink));
+          return const Center(
+            child: CircularProgressIndicator(color: Colors.pink),
+          );
         }
 
         final policyData = controller.privacyPolicyData.value;
@@ -40,11 +39,12 @@ class PrivacyPolicyScreen extends StatelessWidget {
         }
 
         // Simple formatting for HTML paragraphs
-        final formattedContent = policyData.content
-            .replaceAll(RegExp(r'</p>'), '\n\n')
-            .replaceAll(RegExp(r'<[^>]*>'), '')
-            .replaceAll(RegExp(r'&nbsp;'), ' ')
-            .trim();
+        final formattedContent =
+            policyData.content
+                .replaceAll(RegExp(r'</p>'), '\n\n')
+                .replaceAll(RegExp(r'<[^>]*>'), '')
+                .replaceAll(RegExp(r'&nbsp;'), ' ')
+                .trim();
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(20),

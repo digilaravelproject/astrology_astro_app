@@ -6,9 +6,7 @@ class GetWalletWithdrawalsUseCase {
 
   GetWalletWithdrawalsUseCase(this._repository);
 
-  Future<List<WalletTransactionModel>> execute({
-    int? page,
-  }) {
+  Future<List<WalletTransactionModel>> execute({int? page}) {
     return _repository.getWithdrawals(page: page);
   }
 }

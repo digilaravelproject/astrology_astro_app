@@ -41,4 +41,3 @@ class AppTranslations extends Translations {
     return instance;
   }
 }
-

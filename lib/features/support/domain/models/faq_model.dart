@@ -24,10 +24,13 @@ class FAQModel {
     // Handle different response structures: data.page or page or root
     final Map<String, dynamic> data = json['data'] is Map ? json['data'] : json;
     final Map<String, dynamic> page = data['page'] is Map ? data['page'] : data;
-    
+
     final content = page['content']?.toString() ?? '';
     return FAQModel(
-      id: page['id'] is int ? page['id'] : int.tryParse(page['id'].toString()) ?? 0,
+      id:
+          page['id'] is int
+              ? page['id']
+              : int.tryParse(page['id'].toString()) ?? 0,
       type: page['type']?.toString() ?? '',
       title: page['title']?.toString() ?? '',
       content: content,
@@ -45,11 +48,11 @@ class FAQModel {
       if (match.groupCount >= 2) {
         String question = match.group(1)?.trim() ?? "";
         String answer = match.group(2)?.trim() ?? "";
-        
+
         // Clean up any remaining HTML tags if needed
         question = question.replaceAll(RegExp(r'<[^>]*>'), '');
         answer = answer.replaceAll(RegExp(r'<[^>]*>'), '');
-        
+
         if (question.isNotEmpty && answer.isNotEmpty) {
           items.add(FAQItem(question: question, answer: answer));
         }
@@ -59,11 +62,6 @@ class FAQModel {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'type': type,
-      'title': title,
-      'content': content,
-    };
+    return {'id': id, 'type': type, 'title': title, 'content': content};
   }
 }

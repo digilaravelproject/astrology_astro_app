@@ -41,7 +41,8 @@ class SadeSatiTab extends StatelessWidget {
             ],
             if (data.guidance != null) _buildGuidanceSection(data.guidance!),
             const SizedBox(height: 16),
-            if (data.effects != null && data.effects!.isNotEmpty) _buildEffectsSection(data.effects!),
+            if (data.effects != null && data.effects!.isNotEmpty)
+              _buildEffectsSection(data.effects!),
           ],
         ),
       );
@@ -59,7 +60,11 @@ class SadeSatiTab extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Column(
@@ -69,10 +74,18 @@ class SadeSatiTab extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 12),
             decoration: const BoxDecoration(
               color: AppColors.primaryColor,
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
+              ),
             ),
             child: Center(
-              child: AppText(title, fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+              child: AppText(
+                title,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
             ),
           ),
           Padding(
@@ -83,11 +96,21 @@ class SadeSatiTab extends StatelessWidget {
                   width: 50,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: isUndergoing ? const Color(0xFFEA4335) : const Color(0xFF34A853), // Red if Yes, Green if No
+                    color:
+                        isUndergoing
+                            ? const Color(0xFFEA4335)
+                            : const Color(
+                              0xFF34A853,
+                            ), // Red if Yes, Green if No
                     shape: BoxShape.circle,
                   ),
                   child: Center(
-                    child: AppText(isUndergoing ? "Yes" : "No", fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                    child: AppText(
+                      isUndergoing ? "Yes" : "No",
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -95,7 +118,12 @@ class SadeSatiTab extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AppText(phaseName, fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+                      AppText(
+                        phaseName,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
                       const SizedBox(height: 4),
                       AppText(
                         summary,
@@ -119,10 +147,20 @@ class SadeSatiTab extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (guidance.mantra != null && guidance.mantra!.isNotEmpty)
-          _buildInfoCard("Mantra", guidance.mantra!, Icons.self_improvement, Colors.orange),
+          _buildInfoCard(
+            "Mantra",
+            guidance.mantra!,
+            Icons.self_improvement,
+            Colors.orange,
+          ),
         const SizedBox(height: 16),
         if (guidance.doList != null && guidance.doList!.isNotEmpty)
-          _buildListCard("Do's", guidance.doList!, Icons.check_circle, Colors.green),
+          _buildListCard(
+            "Do's",
+            guidance.doList!,
+            Icons.check_circle,
+            Colors.green,
+          ),
         const SizedBox(height: 16),
         if (guidance.avoid != null && guidance.avoid!.isNotEmpty)
           _buildListCard("Avoid", guidance.avoid!, Icons.cancel, Colors.red),
@@ -131,10 +169,20 @@ class SadeSatiTab extends StatelessWidget {
   }
 
   Widget _buildEffectsSection(List<String> effects) {
-    return _buildListCard("Effects & Predictions", effects, Icons.insights, Colors.blue);
+    return _buildListCard(
+      "Effects & Predictions",
+      effects,
+      Icons.insights,
+      Colors.blue,
+    );
   }
 
-  Widget _buildInfoCard(String title, String content, IconData icon, Color iconColor) {
+  Widget _buildInfoCard(
+    String title,
+    String content,
+    IconData icon,
+    Color iconColor,
+  ) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -142,7 +190,11 @@ class SadeSatiTab extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Column(
@@ -162,7 +214,12 @@ class SadeSatiTab extends StatelessWidget {
     );
   }
 
-  Widget _buildListCard(String title, List<String> items, IconData icon, Color iconColor) {
+  Widget _buildListCard(
+    String title,
+    List<String> items,
+    IconData icon,
+    Color iconColor,
+  ) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -170,7 +227,11 @@ class SadeSatiTab extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Column(
@@ -184,20 +245,29 @@ class SadeSatiTab extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          ...items.map((item) => Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(top: 4.0),
-                      child: Icon(Icons.circle, size: 6, color: Colors.black54),
+          ...items.map(
+            (item) => Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(top: 4.0),
+                    child: Icon(Icons.circle, size: 6, color: Colors.black54),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: AppText(
+                      item,
+                      fontSize: 14,
+                      height: 1.4,
+                      color: Colors.black87,
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(child: AppText(item, fontSize: 14, height: 1.4, color: Colors.black87)),
-                  ],
-                ),
-              )),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -209,7 +279,11 @@ class SadeSatiTab extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Column(
@@ -217,15 +291,54 @@ class SadeSatiTab extends StatelessWidget {
           Container(
             decoration: const BoxDecoration(
               color: AppColors.primaryColor,
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
+              ),
             ),
             padding: const EdgeInsets.symmetric(vertical: 12),
             child: const Row(
               children: [
-                Expanded(child: Center(child: AppText("Start", fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87))),
-                Expanded(child: Center(child: AppText("End", fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87))),
-                Expanded(child: Center(child: AppText("Sign Name", fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87))),
-                Expanded(child: Center(child: AppText("Type", fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87))),
+                Expanded(
+                  child: Center(
+                    child: AppText(
+                      "Start",
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Center(
+                    child: AppText(
+                      "End",
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Center(
+                    child: AppText(
+                      "Sign Name",
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Center(
+                    child: AppText(
+                      "Type",
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -247,7 +360,14 @@ class SadeSatiTab extends StatelessWidget {
     );
   }
 
-  Widget _buildTimelineRow(String start, String end, String sign, String type, {required bool isEven, bool isHighlight = false}) {
+  Widget _buildTimelineRow(
+    String start,
+    String end,
+    String sign,
+    String type, {
+    required bool isEven,
+    bool isHighlight = false,
+  }) {
     return Container(
       decoration: BoxDecoration(
         color: isEven ? Colors.transparent : const Color(0xFFF6F8F9),
@@ -256,10 +376,46 @@ class SadeSatiTab extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
         children: [
-          Expanded(child: Center(child: AppText(start, fontSize: 12, fontWeight: isHighlight ? FontWeight.bold : FontWeight.normal, color: isHighlight ? AppColors.primaryColor : Colors.black87))),
-          Expanded(child: Center(child: AppText(end, fontSize: 12, fontWeight: isHighlight ? FontWeight.bold : FontWeight.normal, color: isHighlight ? AppColors.primaryColor : Colors.black87))),
-          Expanded(child: Center(child: AppText(sign, fontSize: 12, fontWeight: isHighlight ? FontWeight.bold : FontWeight.normal, color: isHighlight ? AppColors.primaryColor : Colors.black87))),
-          Expanded(child: Center(child: AppText(type, fontSize: 12, fontWeight: isHighlight ? FontWeight.bold : FontWeight.normal, color: isHighlight ? AppColors.primaryColor : Colors.black87))),
+          Expanded(
+            child: Center(
+              child: AppText(
+                start,
+                fontSize: 12,
+                fontWeight: isHighlight ? FontWeight.bold : FontWeight.normal,
+                color: isHighlight ? AppColors.primaryColor : Colors.black87,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Center(
+              child: AppText(
+                end,
+                fontSize: 12,
+                fontWeight: isHighlight ? FontWeight.bold : FontWeight.normal,
+                color: isHighlight ? AppColors.primaryColor : Colors.black87,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Center(
+              child: AppText(
+                sign,
+                fontSize: 12,
+                fontWeight: isHighlight ? FontWeight.bold : FontWeight.normal,
+                color: isHighlight ? AppColors.primaryColor : Colors.black87,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Center(
+              child: AppText(
+                type,
+                fontSize: 12,
+                fontWeight: isHighlight ? FontWeight.bold : FontWeight.normal,
+                color: isHighlight ? AppColors.primaryColor : Colors.black87,
+              ),
+            ),
+          ),
         ],
       ),
     );

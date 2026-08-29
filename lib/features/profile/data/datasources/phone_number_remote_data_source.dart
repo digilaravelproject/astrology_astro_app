@@ -16,10 +16,7 @@ class PhoneNumberRemoteDataSource {
 
   Future<ResponseModel> addPhoneNumber(String countryCode, String phone) async {
     print('[PHONE_DS] Adding phone number: $countryCode $phone');
-    final data = {
-      'country_code': countryCode,
-      'phone': phone,
-    };
+    final data = {'country_code': countryCode, 'phone': phone};
     final result = await _apiClient.post(AppUrls.phoneNumbers, data: data);
     print('[PHONE_DS] Add phone number response: ${result.toString()}');
     return result;
@@ -28,7 +25,10 @@ class PhoneNumberRemoteDataSource {
   Future<ResponseModel> verifyPhoneNumber(int id, String otp) async {
     print('[PHONE_DS] Verifying phone number: $id with OTP: $otp');
     final data = {'otp': otp};
-    final result = await _apiClient.post(AppUrls.verifyPhoneNumber(id), data: data);
+    final result = await _apiClient.post(
+      AppUrls.verifyPhoneNumber(id),
+      data: data,
+    );
     print('[PHONE_DS] Verify phone number response: ${result.toString()}');
     return result;
   }

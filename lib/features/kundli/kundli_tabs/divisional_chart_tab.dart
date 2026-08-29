@@ -93,29 +93,36 @@ class _DivisionalChartTabState extends State<DivisionalChartTab> {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
-        children: _chartTypesMap.keys.map((type) {
-          bool isSelected = _selectedChartType == type;
-          return GestureDetector(
-            onTap: () => _onChartTypeSelected(type),
-            child: Container(
-              margin: const EdgeInsets.only(right: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: isSelected ? AppColors.primaryColor : Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: isSelected ? AppColors.primaryColor : Colors.grey.shade300,
+        children:
+            _chartTypesMap.keys.map((type) {
+              bool isSelected = _selectedChartType == type;
+              return GestureDetector(
+                onTap: () => _onChartTypeSelected(type),
+                child: Container(
+                  margin: const EdgeInsets.only(right: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isSelected ? AppColors.primaryColor : Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color:
+                          isSelected
+                              ? AppColors.primaryColor
+                              : Colors.grey.shade300,
+                    ),
+                  ),
+                  child: AppText(
+                    type,
+                    color: isSelected ? Colors.white : Colors.black87,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                    fontSize: 13,
+                  ),
                 ),
-              ),
-              child: AppText(
-                type,
-                color: isSelected ? Colors.white : Colors.black87,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                fontSize: 13,
-              ),
-            ),
-          );
-        }).toList(),
+              );
+            }).toList(),
       ),
     );
   }

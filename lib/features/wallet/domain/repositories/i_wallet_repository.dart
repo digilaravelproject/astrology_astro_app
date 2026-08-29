@@ -8,15 +8,9 @@ abstract class IWalletRepository {
   Future<WalletSummaryModel> getWalletSummary();
   Future<InvoiceSummaryModel> getInvoicesSummary();
 
+  Future<List<WalletTransactionModel>> getEarnings({String? filter, int? page});
 
-  Future<List<WalletTransactionModel>> getEarnings({
-    String? filter,
-    int? page,
-  });
-
-  Future<List<WalletTransactionModel>> getWithdrawals({
-    int? page,
-  });
+  Future<List<WalletTransactionModel>> getWithdrawals({int? page});
 
   Future<WalletTransactionModel> requestWithdrawal({
     required double amount,

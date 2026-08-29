@@ -18,14 +18,14 @@ class KPController extends GetxController {
     try {
       isLoading.value = true;
       error.value = '';
-      
+
       final response = await _kpRepository.getKPFullReport(
         datetime: datetime,
         latitude: latitude,
         longitude: longitude,
         timezone: timezone,
       );
-      
+
       kpFullReportModel.value = response;
     } catch (e) {
       error.value = e.toString();

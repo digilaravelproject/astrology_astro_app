@@ -8,11 +8,7 @@ class HomeGreeting extends StatelessWidget {
   final String? name;
   final String? greeting;
 
-  const HomeGreeting({
-    Key? key,
-    this.name,
-    this.greeting,
-  }) : super(key: key);
+  const HomeGreeting({Key? key, this.name, this.greeting}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +31,9 @@ class HomeGreeting extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: 22,
                 fontWeight: FontWeight.w900,
-                color: AppColors.primaryColor, // Using primary pink from astrologer app
+                color:
+                    AppColors
+                        .primaryColor, // Using primary pink from astrologer app
                 height: 1.1,
                 letterSpacing: -0.5,
               ),
@@ -56,7 +54,8 @@ class WavingEmoji extends StatefulWidget {
   State<WavingEmoji> createState() => _WavingEmojiState();
 }
 
-class _WavingEmojiState extends State<WavingEmoji> with SingleTickerProviderStateMixin {
+class _WavingEmojiState extends State<WavingEmoji>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override

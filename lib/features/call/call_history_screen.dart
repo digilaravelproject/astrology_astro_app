@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:astro_astrologer/core/widgets/custom_image_widget.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -28,11 +29,13 @@ class CallHistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Instantiate the HistoryController with its dependencies
-    final HistoryController controller = Get.put(HistoryController(
-      getAstrologerCallSessionsUseCase: GetAstrologerCallSessionsUseCase(
-        HistoryRepositoryImpl(apiClient: Get.find<ApiClient>()),
+    final HistoryController controller = Get.put(
+      HistoryController(
+        getAstrologerCallSessionsUseCase: GetAstrologerCallSessionsUseCase(
+          HistoryRepositoryImpl(apiClient: Get.find<ApiClient>()),
+        ),
       ),
-    ));
+    );
 
     Widget content = Column(
       children: [
@@ -42,13 +45,16 @@ class CallHistoryScreen extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             }
             if (controller.callSessions.isEmpty) {
-              return const Center(child: AppText("No call history available.", fontSize: 16));
+              return const Center(
+                child: AppText("No call history available.", fontSize: 16),
+              );
             }
             return RefreshIndicator(
               onRefresh: () => controller.fetchCallSessions(isRefresh: true),
               child: NotificationListener<ScrollNotification>(
                 onNotification: (ScrollNotification scrollInfo) {
-                  if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                  if (scrollInfo.metrics.pixels ==
+                      scrollInfo.metrics.maxScrollExtent) {
                     controller.fetchCallSessions();
                   }
                   return true;
@@ -58,21 +64,39 @@ class CallHistoryScreen extends StatelessWidget {
                   itemCount: controller.callSessions.length,
                   itemBuilder: (context, index) {
                     final session = controller.callSessions[index];
-                    final durationMinutes = (session.durationSeconds / 60).ceil();
+                    final durationMinutes =
+                        (session.durationSeconds / 60).ceil();
 
                     // Format DOB
                     String dobStr = "N/A";
                     if (session.consumer?.dateOfBirth != null) {
                       try {
-                        final dobDate = DateTime.tryParse(session.consumer!.dateOfBirth!)?.toLocal();
+                        final dobDate =
+                            DateTime.tryParse(
+                              session.consumer!.dateOfBirth!,
+                            )?.toLocal();
                         if (dobDate != null) {
-                          final months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                          final months = [
+                            "January",
+                            "February",
+                            "March",
+                            "April",
+                            "May",
+                            "June",
+                            "July",
+                            "August",
+                            "September",
+                            "October",
+                            "November",
+                            "December",
+                          ];
                           final monthName = months[dobDate.month - 1];
                           final day = dobDate.day.toString().padLeft(2, '0');
                           final year = dobDate.year.toString();
 
                           String timeStr = "";
-                          if (session.consumer?.timeOfBirth != null && session.consumer!.timeOfBirth!.isNotEmpty) {
+                          if (session.consumer?.timeOfBirth != null &&
+                              session.consumer!.timeOfBirth!.isNotEmpty) {
                             timeStr = ",${session.consumer!.timeOfBirth!}";
                           }
                           dobStr = "$day-$monthName-$year$timeStr";
@@ -83,13 +107,19 @@ class CallHistoryScreen extends StatelessWidget {
                     String? rawDatetime;
                     if (session.consumer?.dateOfBirth != null) {
                       try {
-                        final dobDate = DateTime.tryParse(session.consumer!.dateOfBirth!)?.toLocal();
+                        final dobDate =
+                            DateTime.tryParse(
+                              session.consumer!.dateOfBirth!,
+                            )?.toLocal();
                         if (dobDate != null) {
-                          String d = "${dobDate.year}-${dobDate.month.toString().padLeft(2, '0')}-${dobDate.day.toString().padLeft(2, '0')}";
+                          String d =
+                              "${dobDate.year}-${dobDate.month.toString().padLeft(2, '0')}-${dobDate.day.toString().padLeft(2, '0')}";
                           String t = "00:00:00";
-                          if (session.consumer?.timeOfBirth != null && session.consumer!.timeOfBirth!.isNotEmpty) {
+                          if (session.consumer?.timeOfBirth != null &&
+                              session.consumer!.timeOfBirth!.isNotEmpty) {
                             t = session.consumer!.timeOfBirth!;
-                            if (t.length == 5) t += ":00"; // append seconds if HH:mm
+                            if (t.length == 5)
+                              t += ":00"; // append seconds if HH:mm
                           }
                           rawDatetime = "${d}T$t";
                         }
@@ -97,8 +127,12 @@ class CallHistoryScreen extends StatelessWidget {
                     }
 
                     final Map<String, String> details = {
-                      "Name": session.consumer?.name ?? "User (AT-${session.consumerId})",
-                      "Gender": (session.consumer?.gender?.capitalizeFirst ?? "N/A").tr,
+                      "Name":
+                          session.consumer?.name ??
+                          "User (AT-${session.consumerId})",
+                      "Gender":
+                          (session.consumer?.gender?.capitalizeFirst ?? "N/A")
+                              .tr,
                       "DOB": dobStr,
                       "Duration": "$durationMinutes ${"minutes".tr}",
                       "Rate": "₹ ${session.ratePerMinute}/${"min".tr}",
@@ -132,28 +166,26 @@ class CallHistoryScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
-      appBar: CustomAppBar(
-        title: 'Call History'.tr,
-      ),
+      appBar: CustomAppBar(title: 'Call History'.tr),
       body: content,
     );
   }
 
   Widget _buildHistoryCard(
-      BuildContext context, {
-        required String type,
-        required String status,
-        required String id,
-        required String price,
-        required String date,
-        required Map<String, String> details,
-        bool isLoyal = false,
-        bool showRefund = false,
-        bool showSuggestRemedy = false,
-        String? imageUrl,
-        String? rawDatetime,
-        int? chatAssistanceSessionId,
-      }) {
+    BuildContext context, {
+    required String type,
+    required String status,
+    required String id,
+    required String price,
+    required String date,
+    required Map<String, String> details,
+    bool isLoyal = false,
+    bool showRefund = false,
+    bool showSuggestRemedy = false,
+    String? imageUrl,
+    String? rawDatetime,
+    int? chatAssistanceSessionId,
+  }) {
     return Container(
       margin: const EdgeInsets.only(top: 14, bottom: 8),
       child: Stack(
@@ -161,16 +193,20 @@ class CallHistoryScreen extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: () {
-              Get.to(() => CallDetailsScreen(
-                title: 'Call Details',
-                name: details["Name"]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "N/A",
-                dateOfBirth: details["DOB"] ?? "N/A",
-                placeOfBirth: details["POB"] ?? "N/A",
-                gender: details["Gender"] ?? "N/A",
-                schedule: date,
-                duration: details["Duration"] ?? "N/A",
-                rating: details["Rating"] ?? "N/A",
-              ));
+              Get.to(
+                () => CallDetailsScreen(
+                  title: 'Call Details',
+                  name:
+                      details["Name"]?.replaceAll(RegExp(r' \(.*\)'), '') ??
+                      "N/A",
+                  dateOfBirth: details["DOB"] ?? "N/A",
+                  placeOfBirth: details["POB"] ?? "N/A",
+                  gender: details["Gender"] ?? "N/A",
+                  schedule: date,
+                  duration: details["Duration"] ?? "N/A",
+                  rating: details["Rating"] ?? "N/A",
+                ),
+              );
             },
             child: Container(
               padding: const EdgeInsets.all(16),
@@ -194,7 +230,10 @@ class CallHistoryScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.lightBlue.shade50.withOpacity(0.5),
                           borderRadius: BorderRadius.circular(20),
@@ -207,7 +246,10 @@ class CallHistoryScreen extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.green.shade50.withOpacity(0.5),
                           borderRadius: BorderRadius.circular(8),
@@ -223,7 +265,11 @@ class CallHistoryScreen extends StatelessWidget {
                             ),
                             if (status == 'Completed') ...[
                               const SizedBox(width: 4),
-                              Icon(Icons.check_circle, color: Colors.green.shade600, size: 14),
+                              Icon(
+                                Icons.check_circle,
+                                color: Colors.green.shade600,
+                                size: 14,
+                              ),
                             ],
                           ],
                         ),
@@ -240,38 +286,51 @@ class CallHistoryScreen extends StatelessWidget {
                       Container(
                         width: 44,
                         height: 44,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                        ),
+                        decoration: const BoxDecoration(shape: BoxShape.circle),
                         child: ClipOval(
-                          child: imageUrl != null && imageUrl.isNotEmpty
-                              ? CachedNetworkImage(
-                            imageUrl: imageUrl.startsWith('http')
-                                ? imageUrl
-                                : '${AppUrls.baseImageUrl}$imageUrl',
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => const CircularProgressIndicator(strokeWidth: 2),
-                            errorWidget: (context, url, error) => Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [Colors.orange.shade300, Colors.deepOrange.shade400],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                              ),
-                              child: const Icon(Icons.wb_sunny_rounded, color: Colors.white, size: 20),
-                            ),
-                          )
-                              : Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [Colors.orange.shade300, Colors.deepOrange.shade400],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                            ),
-                            child: const Icon(Icons.wb_sunny_rounded, color: Colors.white, size: 20),
-                          ),
+                          child:
+                              imageUrl != null && imageUrl.isNotEmpty
+                                  ? CustomImageWidget(
+                                    imagePath:
+                                        imageUrl.startsWith('http')
+                                            ? imageUrl
+                                            : '${AppUrls.baseImageUrl}$imageUrl',
+                                    fit: BoxFit.cover,
+                                    fallbackWidget: Container(
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            Colors.orange.shade300,
+                                            Colors.deepOrange.shade400,
+                                          ],
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                        ),
+                                      ),
+                                      child: const Icon(
+                                        Icons.wb_sunny_rounded,
+                                        color: Colors.white,
+                                        size: 20,
+                                      ),
+                                    ),
+                                  )
+                                  : Container(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Colors.orange.shade300,
+                                          Colors.deepOrange.shade400,
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ),
+                                    ),
+                                    child: const Icon(
+                                      Icons.wb_sunny_rounded,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                                  ),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -279,7 +338,16 @@ class CallHistoryScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            AppText(details["Name"]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "User".tr, fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+                            AppText(
+                              details["Name"]?.replaceAll(
+                                    RegExp(r' \(.*\)'),
+                                    '',
+                                  ) ??
+                                  "User".tr,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
                             const SizedBox(height: 2),
                             AppText(
                               "${"ID:".tr} $id",
@@ -299,10 +367,11 @@ class CallHistoryScreen extends StatelessWidget {
                                 context: context,
                                 isScrollControlled: true,
                                 backgroundColor: Colors.transparent,
-                                builder: (context) => const Padding(
-                                  padding: EdgeInsets.only(top: 100),
-                                  child: AddNoteBottomSheet(),
-                                ),
+                                builder:
+                                    (context) => const Padding(
+                                      padding: EdgeInsets.only(top: 100),
+                                      child: AddNoteBottomSheet(),
+                                    ),
                               );
                             },
                             child: Container(
@@ -311,7 +380,11 @@ class CallHistoryScreen extends StatelessWidget {
                                 border: Border.all(color: Colors.grey.shade300),
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              child: Icon(Iconsax.document_copy, size: 16, color: Colors.grey.shade600),
+                              child: Icon(
+                                Iconsax.document_copy,
+                                size: 16,
+                                color: Colors.grey.shade600,
+                              ),
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -323,29 +396,41 @@ class CallHistoryScreen extends StatelessWidget {
                               icon: Container(
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey.shade300),
+                                  border: Border.all(
+                                    color: Colors.grey.shade300,
+                                  ),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
-                                child: Icon(Icons.more_vert, size: 16, color: Colors.grey.shade600),
+                                child: Icon(
+                                  Icons.more_vert,
+                                  size: 16,
+                                  color: Colors.grey.shade600,
+                                ),
                               ),
                               color: Colors.white,
                               onSelected: (value) {
                                 if (value == 'block') {
                                   CustomSnackBar.disabledSnackbar(
                                     'Block User'.tr,
-                                    'Block user action triggered for ${details["Name"]}'.tr,
+                                    'Block user action triggered for ${details["Name"]}'
+                                        .tr,
                                     snackPosition: SnackPosition.BOTTOM,
                                     backgroundColor: Colors.black87,
                                     colorText: Colors.white,
                                   );
                                 }
                               },
-                              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                                PopupMenuItem<String>(
-                                  value: 'block',
-                                  child: AppText('Block User'.tr, fontSize: 14),
-                                ),
-                              ],
+                              itemBuilder:
+                                  (BuildContext context) =>
+                                      <PopupMenuEntry<String>>[
+                                        PopupMenuItem<String>(
+                                          value: 'block',
+                                          child: AppText(
+                                            'Block User'.tr,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ],
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -372,9 +457,19 @@ class CallHistoryScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              AppText("Session Date".tr, fontSize: 12, color: Colors.grey.shade500),
+                              AppText(
+                                "Session Date".tr,
+                                fontSize: 12,
+                                color: Colors.grey.shade500,
+                              ),
                               const SizedBox(height: 2),
-                              AppText(date, fontSize: 14, fontWeight: FontWeight.w700, color: Colors.black87, overflow: TextOverflow.ellipsis),
+                              AppText(
+                                date,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.black87,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ],
                           ),
                         ),
@@ -382,17 +477,30 @@ class CallHistoryScreen extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            AppText("Total Amount".tr, fontSize: 12, color: Colors.grey.shade500),
+                            AppText(
+                              "Total Amount".tr,
+                              fontSize: 12,
+                              color: Colors.grey.shade500,
+                            ),
                             const SizedBox(height: 2),
-                            AppText("₹ $price", fontSize: 16, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
+                            AppText(
+                              "₹ $price",
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFF2E1A47),
+                            ),
                           ],
-                        )
+                        ),
                       ],
                     ),
                   ),
 
                   const SizedBox(height: 16),
-                  const Divider(height: 1, thickness: 1, color: Color(0xFFEEEEEE)),
+                  const Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: Color(0xFFEEEEEE),
+                  ),
                   const SizedBox(height: 16),
 
                   // Details Table
@@ -419,14 +527,23 @@ class CallHistoryScreen extends StatelessWidget {
                                   child: AppText(
                                     entry.value.tr,
                                     fontSize: 13,
-                                    color: entry.key == "Rating" ? Colors.amber : Colors.grey.shade700,
+                                    color:
+                                        entry.key == "Rating"
+                                            ? Colors.amber
+                                            : Colors.grey.shade700,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
                                 if (entry.key == "Name" || entry.key == "POB")
                                   Padding(
                                     padding: const EdgeInsets.only(left: 8),
-                                    child: Icon(Icons.copy_rounded, size: 14, color: AppColors.primaryColor.withOpacity(0.5)),
+                                    child: Icon(
+                                      Icons.copy_rounded,
+                                      size: 14,
+                                      color: AppColors.primaryColor.withOpacity(
+                                        0.5,
+                                      ),
+                                    ),
                                   ),
                               ],
                             ),
@@ -450,7 +567,10 @@ class CallHistoryScreen extends StatelessWidget {
                             padding: EdgeInsets.zero,
                             buttonType: ButtonStyleType.outlined,
                             borderRadius: 8,
-                            textStyle: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold),
+                            textStyle: const TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -458,20 +578,26 @@ class CallHistoryScreen extends StatelessWidget {
                       Expanded(
                         child: CustomButton(
                           text: "Open Kundli".tr,
-                          onPressed: () => Get.to(() => KundliScreen(
-                            fullName: details["Name"] ?? "Unknown".tr,
-                            gender: details["Gender"] ?? "Male".tr,
-                            dob: details["DOB"] ?? "",
-                            tob: "",
-                            place: details["POB"] ?? "",
-                            latitude: 0.0,
-                            longitude: 0.0,
-                          )),
+                          onPressed:
+                              () => Get.to(
+                                () => KundliScreen(
+                                  fullName: details["Name"] ?? "Unknown".tr,
+                                  gender: details["Gender"] ?? "Male".tr,
+                                  dob: details["DOB"] ?? "",
+                                  tob: "",
+                                  place: details["POB"] ?? "",
+                                  latitude: 0.0,
+                                  longitude: 0.0,
+                                ),
+                              ),
                           height: 42,
                           padding: EdgeInsets.zero,
                           buttonType: ButtonStyleType.outlined,
                           borderRadius: 8,
-                          textStyle: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold),
+                          textStyle: const TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -480,22 +606,39 @@ class CallHistoryScreen extends StatelessWidget {
                           text: "Chat Assistant".tr,
                           onPressed: () {
                             if (chatAssistanceSessionId != null) {
-                              Get.to(() => AssistanceChatRoomScreen(
-                                sessionId: chatAssistanceSessionId,
-                                userName: details["Name"]?.replaceAll(RegExp(r' \(.*\)'), '') ?? "User".tr,
-                                userImage: imageUrl,
-                              ));
+                              Get.to(
+                                () => AssistanceChatRoomScreen(
+                                  sessionId: chatAssistanceSessionId,
+                                  userName:
+                                      details["Name"]?.replaceAll(
+                                        RegExp(r' \(.*\)'),
+                                        '',
+                                      ) ??
+                                      "User".tr,
+                                  userImage: imageUrl,
+                                ),
+                              );
                             } else {
-                              CustomSnackBar.disabledSnackbar("Error", "No Chat Assistance Session available");
+                              CustomSnackBar.disabledSnackbar(
+                                "Error",
+                                "No Chat Assistance Session available",
+                              );
                             }
                           },
                           height: 42,
                           padding: EdgeInsets.zero,
                           backgroundColor: const Color(0xFF2CB772),
-                          prefixIcon: const Icon(Icons.chat_bubble_rounded, color: Colors.white, size: 12),
+                          prefixIcon: const Icon(
+                            Icons.chat_bubble_rounded,
+                            color: Colors.white,
+                            size: 12,
+                          ),
                           borderRadius: 8,
                           textColor: Colors.white,
-                          textStyle: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold),
+                          textStyle: const TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],

@@ -16,8 +16,10 @@ class FinanceRemoteDataSource {
     required String ifscCode,
     File? passbookDocument,
   }) async {
-    print('[FINANCE_DS] Adding bank account with data: $accountHolderName, $bankName, $accountNumber, $ifscCode');
-    
+    print(
+      '[FINANCE_DS] Adding bank account with data: $accountHolderName, $bankName, $accountNumber, $ifscCode',
+    );
+
     final formData = dio.FormData.fromMap({
       'account_holder_name': accountHolderName,
       'bank_name': bankName,
@@ -27,10 +29,12 @@ class FinanceRemoteDataSource {
 
     if (passbookDocument != null) {
       print('[FINANCE_DS] Adding passbook document: ${passbookDocument.path}');
-      formData.files.add(MapEntry(
-        'passbook_document',
-        await dio.MultipartFile.fromFile(passbookDocument.path),
-      ));
+      formData.files.add(
+        MapEntry(
+          'passbook_document',
+          await dio.MultipartFile.fromFile(passbookDocument.path),
+        ),
+      );
     }
 
     print('[FINANCE_DS] Making API call to: ${AppUrls.bankAccounts}');
@@ -46,7 +50,10 @@ class FinanceRemoteDataSource {
     return result;
   }
 
-  Future<ResponseModel> updateBankAccount(int id, Map<String, dynamic> data) async {
+  Future<ResponseModel> updateBankAccount(
+    int id,
+    Map<String, dynamic> data,
+  ) async {
     return await _apiClient.put('${AppUrls.bankAccounts}/$id', data: data);
   }
 

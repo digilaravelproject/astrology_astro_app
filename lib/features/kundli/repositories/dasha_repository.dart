@@ -6,7 +6,7 @@ class DashaRepository {
   final AstrologyApiClient _client;
 
   DashaRepository({AstrologyApiClient? client})
-      : _client = client ?? AstrologyApiClient();
+    : _client = client ?? AstrologyApiClient();
 
   Future<DashaModel?> getVimshottariDasha({
     required String datetime,
@@ -130,10 +130,19 @@ class DashaRepository {
         longitude: longitude,
         timezone: timezone,
       );
-      final response = await _client.getSubSubSubSubVdasha(payload, md, ad, pd, sd);
+      final response = await _client.getSubSubSubSubVdasha(
+        payload,
+        md,
+        ad,
+        pd,
+        sd,
+      );
       return _parseDashaList(response);
     } catch (e) {
-      Logger.e('Error fetching sub sub sub sub dasha for $md/$ad/$pd/$sd', error: e);
+      Logger.e(
+        'Error fetching sub sub sub sub dasha for $md/$ad/$pd/$sd',
+        error: e,
+      );
     }
     return [];
   }
@@ -143,9 +152,7 @@ class DashaRepository {
       final list = _parseDashaList(response);
       final transformedJson = {
         'success': true,
-        'data': {
-          'maha_dasha': list.map((e) => e.toJson()).toList(),
-        }
+        'data': {'maha_dasha': list.map((e) => e.toJson()).toList()},
       };
       return DashaModel.fromJson(transformedJson);
     }
@@ -161,7 +168,8 @@ class DashaRepository {
         rawData = rawData['sub_sub_dasha'];
       } else if (rawData is Map && rawData.containsKey('sub_sub_sub_dasha')) {
         rawData = rawData['sub_sub_sub_dasha'];
-      } else if (rawData is Map && rawData.containsKey('sub_sub_sub_sub_dasha')) {
+      } else if (rawData is Map &&
+          rawData.containsKey('sub_sub_sub_sub_dasha')) {
         rawData = rawData['sub_sub_sub_sub_dasha'];
       }
 

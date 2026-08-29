@@ -34,10 +34,11 @@ class LiveController extends GetxController {
     this._getCommentsUseCase,
   );
 
-
   final RxList<LiveSessionModel> upcomingSessions = <LiveSessionModel>[].obs;
   final RxList<LiveSessionModel> completedSessions = <LiveSessionModel>[].obs;
-  final Rx<LiveSessionModel?> currentActiveSession = Rx<LiveSessionModel?>(null);
+  final Rx<LiveSessionModel?> currentActiveSession = Rx<LiveSessionModel?>(
+    null,
+  );
   final RxList<Map<String, dynamic>> comments = <Map<String, dynamic>>[].obs;
   final RxBool isLoading = false.obs;
   final RxBool isCreating = false.obs;
@@ -76,7 +77,7 @@ class LiveController extends GetxController {
       if (result.isSuccess && result.body != null) {
         final bodyMap = result.body as Map<String, dynamic>;
         Map<String, dynamic>? sessionData;
-        
+
         if (bodyMap.containsKey('id') && bodyMap['id'] != null) {
           sessionData = bodyMap;
         } else if (bodyMap['data'] is Map<String, dynamic>) {
@@ -90,7 +91,7 @@ class LiveController extends GetxController {
           currentActiveSession.value = session;
           print('[LIVE] Active ongoing session found: ${session.title}');
           showLiveBubbleAndNotification(session);
-          
+
           if (!isRoomOpen) {
             isRoomOpen = true;
             Get.to(() => LiveRoomScreen(session: session))?.then((_) {
@@ -114,45 +115,60 @@ class LiveController extends GetxController {
       isLoading.value = true;
       print('[LIVE] Getting all sessions...');
       final result = await _getSessionsUseCase.call(filter: 'all');
-      
+
       if (result.isSuccess) {
         List<LiveSessionModel> allUpcoming = [];
         List<LiveSessionModel> allCompleted = [];
 
         if (result.body is Map) {
           final bodyMap = result.body as Map<String, dynamic>;
-          
-          if (bodyMap.containsKey('upcoming') || bodyMap.containsKey('completed')) {
-            if (bodyMap['upcoming'] is Map && bodyMap['upcoming']['data'] is List) {
+
+          if (bodyMap.containsKey('upcoming') ||
+              bodyMap.containsKey('completed')) {
+            if (bodyMap['upcoming'] is Map &&
+                bodyMap['upcoming']['data'] is List) {
               final List<dynamic> upcomingData = bodyMap['upcoming']['data'];
-              allUpcoming = upcomingData.map((json) => LiveSessionModel.fromJson(json)).toList();
+              allUpcoming =
+                  upcomingData
+                      .map((json) => LiveSessionModel.fromJson(json))
+                      .toList();
             }
-            if (bodyMap['completed'] is Map && bodyMap['completed']['data'] is List) {
+            if (bodyMap['completed'] is Map &&
+                bodyMap['completed']['data'] is List) {
               final List<dynamic> completedData = bodyMap['completed']['data'];
-              allCompleted = completedData.map((json) => LiveSessionModel.fromJson(json)).toList();
+              allCompleted =
+                  completedData
+                      .map((json) => LiveSessionModel.fromJson(json))
+                      .toList();
             }
           } else if (bodyMap['data'] is List) {
             final List<dynamic> data = bodyMap['data'];
-            final all = data.map((json) => LiveSessionModel.fromJson(json)).toList();
+            final all =
+                data.map((json) => LiveSessionModel.fromJson(json)).toList();
             _splitSessions(all, allUpcoming, allCompleted);
           }
         } else if (result.body is List) {
           final List<dynamic> data = result.body;
-          final all = data.map((json) => LiveSessionModel.fromJson(json)).toList();
+          final all =
+              data.map((json) => LiveSessionModel.fromJson(json)).toList();
           _splitSessions(all, allUpcoming, allCompleted);
         }
 
         upcomingSessions.value = allUpcoming;
         completedSessions.value = allCompleted;
-        
+
         upcomingSessions.sort((a, b) {
           if (a.status == 'ongoing' && b.status != 'ongoing') return -1;
           if (b.status == 'ongoing' && a.status != 'ongoing') return 1;
           return a.scheduledAt.compareTo(b.scheduledAt);
         });
-        completedSessions.sort((a, b) => b.scheduledAt.compareTo(a.scheduledAt));
-        
-        print('[LIVE] Loaded ${upcomingSessions.length} upcoming and ${completedSessions.length} completed sessions');
+        completedSessions.sort(
+          (a, b) => b.scheduledAt.compareTo(a.scheduledAt),
+        );
+
+        print(
+          '[LIVE] Loaded ${upcomingSessions.length} upcoming and ${completedSessions.length} completed sessions',
+        );
       } else {
         ApiChecker.handleResponse(result);
       }
@@ -175,7 +191,7 @@ class LiveController extends GetxController {
   }) async {
     try {
       isCreating.value = true;
-      
+
       final Map<String, dynamic> data = {
         'title': title,
         'description': description,
@@ -187,11 +203,13 @@ class LiveController extends GetxController {
       if (isInstant) {
         data['is_instant'] = true;
       } else if (scheduledAt != null) {
-        data['scheduled_at'] = DateFormat('yyyy-MM-dd HH:mm:ss').format(scheduledAt);
+        data['scheduled_at'] = DateFormat(
+          'yyyy-MM-dd HH:mm:ss',
+        ).format(scheduledAt);
       }
 
       final result = await _createSessionUseCase.call(data);
-      
+
       if (result.isSuccess) {
         ApiChecker.handleResponse(result, showSuccess: true);
         await getSessions();
@@ -199,7 +217,9 @@ class LiveController extends GetxController {
         Get.back();
         if (isInstant && currentActiveSession.value != null) {
           isRoomOpen = true;
-          Get.to(() => LiveRoomScreen(session: currentActiveSession.value!))?.then((_) {
+          Get.to(
+            () => LiveRoomScreen(session: currentActiveSession.value!),
+          )?.then((_) {
             isRoomOpen = false;
           });
         }
@@ -218,7 +238,7 @@ class LiveController extends GetxController {
     try {
       isLoading.value = true;
       final result = await _deleteSessionUseCase.call(id);
-      
+
       if (result.isSuccess) {
         ApiChecker.handleResponse(result, showSuccess: true);
         await getSessions();
@@ -245,7 +265,9 @@ class LiveController extends GetxController {
         if (currentActiveSession.value != null) {
           showLiveBubbleAndNotification(currentActiveSession.value!);
           isRoomOpen = true;
-          Get.to(() => LiveRoomScreen(session: currentActiveSession.value!))?.then((_) {
+          Get.to(
+            () => LiveRoomScreen(session: currentActiveSession.value!),
+          )?.then((_) {
             isRoomOpen = false;
           });
         }
@@ -291,7 +313,9 @@ class LiveController extends GetxController {
   }) async {
     try {
       isCreating.value = true;
-      final formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(scheduledAt);
+      final formattedDate = DateFormat(
+        'yyyy-MM-dd HH:mm:ss',
+      ).format(scheduledAt);
       final data = {
         'title': title,
         'description': description,
@@ -317,7 +341,11 @@ class LiveController extends GetxController {
     }
   }
 
-  void _splitSessions(List<LiveSessionModel> all, List<LiveSessionModel> upcoming, List<LiveSessionModel> completed) {
+  void _splitSessions(
+    List<LiveSessionModel> all,
+    List<LiveSessionModel> upcoming,
+    List<LiveSessionModel> completed,
+  ) {
     for (var session in all) {
       if (session.status == 'completed') {
         completed.add(session);
@@ -390,4 +418,3 @@ class LiveController extends GetxController {
     }
   }
 }
-

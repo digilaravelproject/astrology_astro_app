@@ -27,7 +27,7 @@ class BirthChartController extends GetxController {
       if (result != null) {
         birthChartModel.value = result;
       }
-      
+
       final northSvg = await _repository.getHoroChartSvg(
         chartId: 'd1',
         datetime: datetime,

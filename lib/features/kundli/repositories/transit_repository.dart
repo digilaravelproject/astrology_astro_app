@@ -6,7 +6,7 @@ class TransitRepository {
   final AstrologyApiClient _client;
 
   TransitRepository({AstrologyApiClient? client})
-      : _client = client ?? AstrologyApiClient();
+    : _client = client ?? AstrologyApiClient();
 
   Future<TransitModel?> getTransit({
     required String datetime,
@@ -39,34 +39,49 @@ class TransitRepository {
       final response = await _client.getPlanetPositions(payload);
 
       if (response.statusCode == 200) {
-        final List<dynamic> rawList = response.data is List ? response.data : [response.data];
-        
+        final List<dynamic> rawList =
+            response.data is List ? response.data : [response.data];
+
         final signsList = [
-          'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
-          'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'
+          'Aries',
+          'Taurus',
+          'Gemini',
+          'Cancer',
+          'Leo',
+          'Virgo',
+          'Libra',
+          'Scorpio',
+          'Sagittarius',
+          'Capricorn',
+          'Aquarius',
+          'Pisces',
         ];
 
-        final mappedPlanets = rawList.map((item) {
-          if (item is Map) {
-            final signName = item['sign']?.toString() ?? 'Aries';
-            final signIndex = signsList.indexOf(signName) + 1; // 1-based index
-            final house = item['house'] is int ? item['house'] as int : int.tryParse(item['house']?.toString() ?? '1') ?? 1;
+        final mappedPlanets =
+            rawList.map((item) {
+              if (item is Map) {
+                final signName = item['sign']?.toString() ?? 'Aries';
+                final signIndex =
+                    signsList.indexOf(signName) + 1; // 1-based index
+                final house =
+                    item['house'] is int
+                        ? item['house'] as int
+                        : int.tryParse(item['house']?.toString() ?? '1') ?? 1;
 
-            return {
-              'name': item['name'],
-              'houseFromLagna': house,
-              'signNumber': signIndex,
-              'isRetrograde': item['isRetro']?.toString().toLowerCase() == 'true',
-            };
-          }
-          return item;
-        }).toList();
+                return {
+                  'name': item['name'],
+                  'houseFromLagna': house,
+                  'signNumber': signIndex,
+                  'isRetrograde':
+                      item['isRetro']?.toString().toLowerCase() == 'true',
+                };
+              }
+              return item;
+            }).toList();
 
         final transformedJson = {
           'success': true,
-          'data': {
-            'planets': mappedPlanets
-          }
+          'data': {'planets': mappedPlanets},
         };
 
         return TransitModel.fromJson(transformedJson);
@@ -93,7 +108,11 @@ class TransitRepository {
         timezone: timezone,
       );
 
-      final response = await _client.getHoroChartImage(chartId, payload, chartType: chartType);
+      final response = await _client.getHoroChartImage(
+        chartId,
+        payload,
+        chartType: chartType,
+      );
       if (response.statusCode == 200 && response.data != null) {
         if (response.data is Map && response.data['svg'] != null) {
           return response.data['svg'].toString();

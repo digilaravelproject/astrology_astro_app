@@ -9,10 +9,7 @@ import 'app_text.dart';
 class ImagePickerBottomSheet extends StatelessWidget {
   final Function(File) onImagePicked;
 
-  const ImagePickerBottomSheet({
-    super.key,
-    required this.onImagePicked,
-  });
+  const ImagePickerBottomSheet({super.key, required this.onImagePicked});
 
   Future<void> _pickImage(ImageSource source) async {
     final ImagePicker picker = ImagePicker();
@@ -52,7 +49,12 @@ class ImagePickerBottomSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          AppText('Upload From'.tr, fontSize: 18, fontWeight: FontWeight.w800, color: const Color(0xFF2E1A47)),
+          AppText(
+            'Upload From'.tr,
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: const Color(0xFF2E1A47),
+          ),
           const SizedBox(height: 24),
           Row(
             children: [
@@ -104,7 +106,12 @@ class ImagePickerBottomSheet extends StatelessWidget {
           children: [
             Icon(icon, color: AppColors.primaryColor, size: 32),
             const SizedBox(height: 12),
-            AppText(label.tr, fontSize: 14, fontWeight: FontWeight.w600, color: const Color(0xFF2E1A47)),
+            AppText(
+              label.tr,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: const Color(0xFF2E1A47),
+            ),
           ],
         ),
       ),
@@ -112,7 +119,10 @@ class ImagePickerBottomSheet extends StatelessWidget {
   }
 }
 
-void showImagePickerBottomSheet(BuildContext context, Function(File) onImagePicked) {
+void showImagePickerBottomSheet(
+  BuildContext context,
+  Function(File) onImagePicked,
+) {
   showModalBottomSheet(
     context: context,
     backgroundColor: Colors.transparent,

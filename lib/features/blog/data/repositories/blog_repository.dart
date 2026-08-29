@@ -11,7 +11,8 @@ class BlogRepository implements BlogRepositoryInterface {
   Future<List<BlogModel>> getBlogList() async {
     final response = await remoteDataSource.getBlogList();
     if (response.isSuccess) {
-      final List<dynamic> data = response.body['blogs'] ?? response.body['data'] ?? [];
+      final List<dynamic> data =
+          response.body['blogs'] ?? response.body['data'] ?? [];
       return data.map((e) => BlogModel.fromJson(e)).toList();
     } else {
       return [];

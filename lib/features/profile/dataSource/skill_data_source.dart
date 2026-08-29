@@ -15,10 +15,9 @@ class AstrologerSkillsRemoteDataSource {
     );
   }
 
- // OtherDetailsRemoteDataSource(this._apiClient);
+  // OtherDetailsRemoteDataSource(this._apiClient);
 
   Future<ResponseModel> updateOtherDetails(Map<String, dynamic> data) async {
     return await _apiClient.put(AppUrls.updateOtherDetails, data: data);
   }
-
 }
