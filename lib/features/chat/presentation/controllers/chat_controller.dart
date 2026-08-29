@@ -815,10 +815,6 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     isLoading.value = true;
     try {
       final session = await _endChatSessionUseCase.execute(_sessionId!);
-      status.value = 'ended';
-      _timer?.cancel();
-      LocalNotificationService.cancelOngoingChatNotification(_sessionId!);
-      FloatingChatBubble.dismiss();
       if (session != null) {
         WebSocketService.activeSessionId = null;
       }
@@ -826,6 +822,10 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       debugPrint("Error ending chat session: $e");
     } finally {
       isLoading.value = false;
+      status.value = 'ended';
+      _timer?.cancel();
+      LocalNotificationService.cancelOngoingChatNotification(_sessionId!);
+      FloatingChatBubble.dismiss();
     }
   }
 
