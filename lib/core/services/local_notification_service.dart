@@ -42,7 +42,7 @@ class LocalNotificationService {
                 debugPrint('[LocalNotificationService] Stale call notification tapped, cancelling...');
                 final sessionIdStr = response.payload!.replaceFirst('call_', '');
                 final int? sessionId = int.tryParse(sessionIdStr);
-                cancelOngoingCallNotification(sessionId);
+                
               } else if (currentStatus == 'ongoing') {
                 // Active call — go straight to CallScreen
                 Get.to(() => const CallScreen());
@@ -64,7 +64,7 @@ class LocalNotificationService {
               debugPrint('[LocalNotificationService] Stale call notification tapped (no controller), cancelling...');
               final sessionIdStr = response.payload!.replaceFirst('call_', '');
               final int? sessionId = int.tryParse(sessionIdStr);
-              cancelOngoingCallNotification(sessionId);
+              
             }
           } else if (response.payload!.startsWith('live_')) {
             if (Get.isRegistered<LiveController>()) {
@@ -204,178 +204,12 @@ class LocalNotificationService {
   static const int ACTIVE_CHAT_NOTIFICATION_ID = 777777;
   static const int ACTIVE_CALL_NOTIFICATION_ID = 888888;
 
-  static Future<void> showOngoingChatNotification({
-    required int sessionId,
-    required String title,
-    required String body,
-    int? startedAtMillis,
-  }) async {
-    await _notificationsPlugin.cancel(ACTIVE_CHAT_NOTIFICATION_ID);
-    await _notificationsPlugin.cancel(sessionId);
-    await _notificationsPlugin.cancel(sessionId + 100);
-    await _notificationsPlugin.cancel(sessionId + 50000);
-
-    final bool isAccepted = startedAtMillis != null;
-    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'active_consultation_foreground_channel_v4',
-      'Active Consultation Service',
-      channelDescription: 'Ongoing active call and chat consultation status',
-      icon: '@mipmap/ic_launcher',
-      importance: Importance.high,
-      priority: Priority.high,
-      ongoing: true,
-      autoCancel: false,
-      onlyAlertOnce: true,
-      showWhen: isAccepted,
-      usesChronometer: isAccepted,
-      when: isAccepted ? startedAtMillis : null,
-      subText: isAccepted ? 'Ongoing Session' : 'Ringing...',
-      category: AndroidNotificationCategory.service,
-      visibility: NotificationVisibility.public,
-      audioAttributesUsage: AudioAttributesUsage.notification,
-    );
-
-    final NotificationDetails notificationDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: const DarwinNotificationDetails(
-        presentAlert: true,
-        presentBadge: true,
-        presentSound: false,
-      ),
-    );
-
-    try {
-      await _notificationsPlugin.show(
-        ACTIVE_CHAT_NOTIFICATION_ID,
-        title,
-        body,
-        notificationDetails,
-        payload: sessionId.toString(),
-      );
-    } catch (_) {}
-    try {
-      await ForegroundTaskService.startService(
-        title: title,
-        text: body,
-      );
-    } catch (e) {
-      debugPrint("ForegroundTaskService start ignored due to OS policy: $e");
-    }
-  }
-
-  static Future<void> cancelOngoingChatNotification(int? sessionId) async {
-    try {
-      await _notificationsPlugin.cancel(ACTIVE_CHAT_NOTIFICATION_ID);
-      if (sessionId != null) {
-        await _notificationsPlugin.cancel(sessionId);
-        await _notificationsPlugin.cancel(sessionId + 100);
-        await _notificationsPlugin.cancel(sessionId + 50000);
-      }
-    } catch (e) {
-      debugPrint("LocalNotificationService cancel exception (handled): $e");
-    }
-    try {
-      await ForegroundTaskService.stopService();
-    } catch (_) {}
-  }
-
-  static Future<void> showIncomingCallNotification({
-    required int sessionId,
-    required String title,
-    required String body,
-  }) async {
-    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'incoming_call_channel_v1',
-      'Incoming Calls',
-      channelDescription: 'Alert for incoming calls',
-      icon: '@mipmap/ic_launcher',
-      importance: Importance.max,
-      priority: Priority.high,
-      ongoing: false,
-      autoCancel: true,
-      onlyAlertOnce: false,
-      showWhen: true,
-    );
-
-    final NotificationDetails notificationDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: const DarwinNotificationDetails(
-        presentAlert: true,
-        presentBadge: true,
-        presentSound: false,
-      ),
-    );
-
-    await _notificationsPlugin.show(
-      sessionId + 200000,
-      title,
-      body,
-      notificationDetails,
-      payload: 'call_$sessionId',
-    );
-  }
-
-  static Future<void> cancelIncomingCallNotification(int sessionId) async {
-    await _notificationsPlugin.cancel(sessionId + 200000);
-  }
-
-  static Future<void> showOngoingCallNotification({
-    required int sessionId,
-    required String title,
-    required String body,
-    int? startedAtMillis,
-  }) async {
-    final int startTime = startedAtMillis ?? DateTime.now().millisecondsSinceEpoch;
-    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'active_consultation_foreground_channel_v3',
-      'Active Consultation Service',
-      channelDescription: 'Ongoing active call and chat consultation status',
-      icon: '@mipmap/ic_launcher',
-      importance: Importance.low,
-      priority: Priority.low,
-      ongoing: true,
-      autoCancel: false,
-      onlyAlertOnce: true,
-      showWhen: true,
-      usesChronometer: true,
-      when: startTime,
-      category: AndroidNotificationCategory.call,
-      visibility: NotificationVisibility.public,
-      additionalFlags: Int32List.fromList([2, 64]),
-    );
-
-    final NotificationDetails notificationDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: const DarwinNotificationDetails(
-        presentAlert: false,
-        presentBadge: false,
-        presentSound: false,
-      ),
-    );
-
-    try {
-      await _notificationsPlugin.show(
-        ACTIVE_CALL_NOTIFICATION_ID,
-        title,
-        body,
-        notificationDetails,
-        payload: 'call_$sessionId',
-      );
-    } catch (_) {}
-  }
-
-  static Future<void> cancelOngoingCallNotification(int? sessionId) async {
-    await _notificationsPlugin.cancel(ACTIVE_CALL_NOTIFICATION_ID);
-    if (sessionId != null) {
-      await _notificationsPlugin.cancel(sessionId);
-      await _notificationsPlugin.cancel(sessionId + 100000);
-      await _notificationsPlugin.cancel(sessionId + 200000);
-    }
-    try {
-      await ForegroundTaskService.stopService();
-    } catch (_) {}
-  }
-
+  
+  
+  
+  
+  
+  
   static Future<void> showOngoingLiveNotification({
     required int sessionId,
     required String title,
@@ -419,60 +253,4 @@ class LocalNotificationService {
     await _notificationsPlugin.cancel(sessionId + 300000);
   }
 
-  static Future<void> showNotification({
-    required int id,
-    required String title,
-    required String body,
-    String? payload,
-    String? notificationType,
-  }) async {
-    String channelId = 'session_channel_v2';
-
-    if (notificationType == 'call' || notificationType == 'CALL_ACCEPTED' || notificationType == 'CALL_REQUEST') {
-      channelId = 'calls_channel_v2';
-    } else if (notificationType == 'chat' || notificationType == 'CHAT_REQUEST' || notificationType == 'MessageSent') {
-      channelId = 'chats_channel_v2';
-    }
-
-    bool shouldPlaySound = (notificationType == 'CALL_REQUEST' || 
-                            notificationType == 'CHAT_REQUEST' || 
-                            notificationType == 'initiated');
-
-    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      channelId,
-      channelId == 'calls_channel'
-          ? 'Incoming Calls'
-          : (channelId == 'chats_channel' ? 'Chat Messages & Requests' : 'Consultations & Billing'),
-      channelDescription: 'System and real-time notifications',
-      icon: '@mipmap/ic_launcher',
-      importance: Importance.max,
-      priority: Priority.high,
-      playSound: false,
-      showWhen: true,
-    );
-
-    final NotificationDetails notificationDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: const DarwinNotificationDetails(
-        presentAlert: true,
-        presentBadge: true,
-        presentSound: false,
-      ),
-    );
-
-    String translatedTitle = title;
-    String translatedBody = body;
-    try {
-      translatedTitle = title.tr;
-      translatedBody = body.tr;
-    } catch (_) {}
-
-    await _notificationsPlugin.show(
-      id,
-      translatedTitle,
-      translatedBody,
-      notificationDetails,
-      payload: payload,
-    );
   }
-}

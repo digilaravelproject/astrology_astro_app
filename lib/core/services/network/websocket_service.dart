@@ -671,11 +671,7 @@ class WebSocketService extends GetxService {
         final String name = senderData['name']?.toString() ?? 'User';
 
         // Trigger ongoing notification drawer item during ringing
-        LocalNotificationService.showOngoingChatNotification(
-          sessionId: sessionId,
-          title: 'Incoming Chat Request from $name',
-          body: 'Tap to view incoming request details',
-        );
+        
 
         WidgetsBinding.instance.addPostFrameCallback((_) {
           CallSummaryDialog.dismissIfOpen();
@@ -733,12 +729,7 @@ class WebSocketService extends GetxService {
           }
           startedAtMillis = DateTime.tryParse(isoUtc)?.toLocal().millisecondsSinceEpoch;
         }
-        LocalNotificationService.showOngoingChatNotification(
-          sessionId: sessionId,
-          title: '${FloatingChatBubble.name ?? "User"} • Chat',
-          body: 'Ongoing chat session',
-          startedAtMillis: startedAtMillis,
-        );
+        
       }
 
       // Update ChatController directly if registered
@@ -776,7 +767,7 @@ class WebSocketService extends GetxService {
       Logger.d('WebSocketService: ChatEnded for sessionId=$sessionId, active=$activeSessionId');
 
       // Cancel notification & floating bubble immediately
-      LocalNotificationService.cancelOngoingChatNotification(sessionId);
+      
       FloatingChatBubble.dismiss(stopForegroundService: true);
 
       if (activeSessionId == sessionId) {
@@ -804,7 +795,7 @@ class WebSocketService extends GetxService {
       Logger.d('WebSocketService: ChatDismissed for sessionId=$sessionId');
 
       // Cancel notification & floating bubble immediately
-      LocalNotificationService.cancelOngoingChatNotification(sessionId);
+      
       FloatingChatBubble.dismiss(stopForegroundService: true);
 
       // Propagate the ended/dismissed status so ChatScreen / ChatController can react
@@ -1017,7 +1008,7 @@ class WebSocketService extends GetxService {
           : 0;
 
       // Cancel call notifications & bubbles immediately
-      LocalNotificationService.cancelOngoingCallNotification(sessionId);
+      
       FloatingCallBubble.dismiss(stopForegroundService: true);
 
       if (sessionId != 0) {

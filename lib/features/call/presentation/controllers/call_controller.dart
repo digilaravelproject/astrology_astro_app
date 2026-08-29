@@ -136,11 +136,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
     _startRingingTimeout();
 
     if (sessionId != null) {
-      LocalNotificationService.showIncomingCallNotification(
-        sessionId: sessionId!,
-        title: 'Incoming Call',
-        body: 'Call from $consumerName',
-      );
+      
     }
 
     // Trigger Incoming Call screen/dialog
@@ -182,7 +178,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
 
       Logger.d('CallController: Accept Call API response isSuccess: ${response.isSuccess}');
       if (response.isSuccess) {
-        LocalNotificationService.cancelIncomingCallNotification(sessionId!);
+        
         _startCallTimer();
         _showOngoingNotification();
         return true;
@@ -232,7 +228,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
 
       Logger.d('CallController: acceptCallDirect API response isSuccess: ${response.isSuccess}');
       if (response.isSuccess) {
-        LocalNotificationService.cancelIncomingCallNotification(sessionId!);
+        
         _startCallTimer();
         _showOngoingNotification();
         return true;
@@ -498,12 +494,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
       final title = 'Active Call in Progress';
       final body = 'Talking with $consumerName';
 
-      LocalNotificationService.showOngoingCallNotification(
-        sessionId: sessionId!,
-        title: title,
-        body: body,
-        startedAtMillis: startedAtMillis,
-      );
+      
     }
   }
 
@@ -527,8 +518,8 @@ class CallController extends GetxController with WidgetsBindingObserver {
     _ringingTimer?.cancel();
     _ringingTimer = null;
     if (sessionId != null) {
-      LocalNotificationService.cancelOngoingCallNotification(sessionId!);
-      LocalNotificationService.cancelIncomingCallNotification(sessionId!);
+      
+      
     }
     ForegroundTaskService.stopService();
     FloatingCallBubble.dismiss();
@@ -674,11 +665,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
           _startRingtone(isIncoming: true);
           _startRingingTimeout();
 
-          LocalNotificationService.showIncomingCallNotification(
-            sessionId: sessionId!,
-            title: 'Incoming Call',
-            body: 'Call from $callerName',
-          );
+          
 
           // Show IncomingCallDialog — pass empty string as offerSdp since we may not have it yet
           // The accept flow will fetch the SDP when the astrologer taps Accept
@@ -785,11 +772,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
                 status.value = CallStatus.ringing;
                 _startRingtone(isIncoming: true);
                 _startRingingTimeout();
-                LocalNotificationService.showIncomingCallNotification(
-                  sessionId: sessionId!,
-                  title: 'Incoming Call',
-                  body: 'Call from $consumerName',
-                );
+                
               }
             }
             
@@ -803,22 +786,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
               final minutes = (durationSeconds.value ~/ 60).toString().padLeft(2, '0');
               final seconds = (durationSeconds.value % 60).toString().padLeft(2, '0');
               Logger.d('CallController: Showing ongoing call notification...');
-              LocalNotificationService.showOngoingCallNotification(
-                sessionId: sessionId!,
-                title: '$consumerName • Call',
-                body: 'Tap to return to call session',
-                startedAtMillis: () {
-                  if (session['started_at'] != null) {
-                    String isoUtc = session['started_at'].toString().trim().replaceAll(' ', 'T');
-                    if (!isoUtc.endsWith('Z') && !isoUtc.contains('+') && !isoUtc.contains('-')) {
-                      isoUtc += 'Z';
-                    }
-                    return DateTime.tryParse(isoUtc)?.toLocal().millisecondsSinceEpoch;
-                  }
-                  return null;
-                }(),
-              );
-
+              // Removed Notification call
               // Navigate to CallScreen if not already visible
               if (!isCallScreenVisible) {
                 Logger.d('CallController: Navigating to CallScreen for ongoing call.');

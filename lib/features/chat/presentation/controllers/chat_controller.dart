@@ -127,7 +127,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       status.value = ChatStatus.completed;
       _timer?.cancel();
       if (_sessionId != null) {
-        LocalNotificationService.cancelOngoingChatNotification(_sessionId!);
+        
       }
       FloatingChatBubble.dismiss();
       WebSocketService.activeSessionId = null;
@@ -165,7 +165,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       status.value = ChatStatus.completed;
       _timer?.cancel();
       if (_sessionId != null) {
-        LocalNotificationService.cancelOngoingChatNotification(_sessionId!);
+        
       }
       FloatingChatBubble.dismiss();
       WebSocketService.activeSessionId = null;
@@ -316,12 +316,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       if (status.value == ChatStatus.initiated || status.value == ChatStatus.initiated) {
         _startRingtone();
       }
-      LocalNotificationService.showOngoingChatNotification(
-        sessionId: sessionId,
-        title: status.value == ChatStatus.ongoing ? 'Chat in progress' : 'Waiting for acceptance...',
-        body: 'Active chat with $userName',
-        startedAtMillis: status.value == ChatStatus.ongoing ? startedAtMillis : null,
-      );
+      
     }
 
     ever(status, (val) {
@@ -433,7 +428,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
         _stopRingtone();
         _timer?.cancel();
         if (_sessionId != null) {
-          LocalNotificationService.cancelOngoingChatNotification(_sessionId!);
+          
         }
         if (Get.isRegistered<AuthController>()) {
           Get.find<AuthController>().checkLoginStatus();
@@ -457,7 +452,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
         _stopRingtone();
         _timer?.cancel();
         if (_sessionId != null) {
-          LocalNotificationService.cancelOngoingChatNotification(_sessionId!);
+          
         }
         Get.back();
         // CustomSnackBar.disabledSnackbar("Chat Cancelled", "The chat request was cancelled or timed out.");
@@ -498,12 +493,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
             );
             
             final startedAtMillis = effectiveStart.millisecondsSinceEpoch;
-            LocalNotificationService.showOngoingChatNotification(
-              sessionId: _sessionId!,
-              title: 'Chat in progress',
-              body: 'Active chat with ${_userName ?? 'User'}',
-              startedAtMillis: startedAtMillis,
-            );
+            
           }
         }
       }
@@ -796,7 +786,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     status.value = ChatStatus.completed;
     _timer?.cancel();
     ForegroundTaskService.stopService();
-    LocalNotificationService.cancelOngoingChatNotification(targetId);
+    
     FloatingChatBubble.dismiss();
     
     // Immediately close screen for smooth UX
@@ -809,7 +799,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     } catch (e) {
       debugPrint("Error rejecting/cancelling chat session: $e");
     } finally {
-      LocalNotificationService.cancelOngoingChatNotification(targetId);
+      
       FloatingChatBubble.dismiss();
     }
   }
@@ -828,7 +818,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       isLoading.value = false;
       status.value = ChatStatus.completed;
       _timer?.cancel();
-      LocalNotificationService.cancelOngoingChatNotification(_sessionId!);
+      
       FloatingChatBubble.dismiss();
     }
   }
@@ -849,7 +839,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
 
   Future<void> rejectChat(int incomingSessionId) async {
     try {
-      LocalNotificationService.cancelOngoingChatNotification(incomingSessionId);
+      
       FloatingChatBubble.dismiss(stopForegroundService: true);
       await Get.find<ApiClient>().post(
         AppUrls.rejectChatSession(incomingSessionId),
@@ -1024,9 +1014,9 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     if (status.value == ChatStatus.completed || status.value == ChatStatus.completed || status.value == ChatStatus.cancelled || status.value == ChatStatus.rejected) {
       debugPrint("==== [FLOATING_CHAT_DEBUG] Astrologer Session is TERMINATED (${status.value.name}). Dismissing bubble & cancelling ongoing notification for sessionId=$_sessionId ====");
       if (_sessionId != null) {
-        LocalNotificationService.cancelOngoingChatNotification(_sessionId!);
+        
       } else {
-        LocalNotificationService.cancelOngoingChatNotification(null);
+        
       }
       FloatingChatBubble.dismiss(stopForegroundService: true);
       if (WebSocketService.activeSessionId == _sessionId) {

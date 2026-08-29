@@ -39,18 +39,13 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         type == 'chat_summary' ||
         type == 'CHAT_MISSED' ||
         type == 'CHAT_DISMISSED') {
-      await LocalNotificationService.cancelOngoingChatNotification(parsedSessionId > 0 ? parsedSessionId : null);
-    } else if (title.contains('Call Ended') ||
+      } else if (title.contains('Call Ended') ||
         type == 'call_ended' ||
         type == 'CALL_ENDED' ||
         type == 'session_completed' ||
         type == 'CALL_FAILED' ||
         type == 'CALL_DISMISSED') {
-      await LocalNotificationService.cancelOngoingCallNotification(parsedSessionId > 0 ? parsedSessionId : null);
-    } else if (type == 'PACKAGE_EXHAUSTED') {
-      await LocalNotificationService.cancelOngoingChatNotification(parsedSessionId > 0 ? parsedSessionId : null);
-      await LocalNotificationService.cancelOngoingCallNotification(parsedSessionId > 0 ? parsedSessionId : null);
-    }
+      }
     if (data.containsKey('session')) {
       final sessionData = data['session'] is String 
           ? jsonDecode(data['session']) 
@@ -63,12 +58,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       final consumerName = callerData?['name']?.toString() ?? 'User';
       
       if (sessionId > 0) {
-        await LocalNotificationService.showIncomingCallNotification(
-          sessionId: sessionId,
-          title: 'Incoming Call',
-          body: 'Call from $consumerName',
-        );
-      }
+        }
     }
   } catch (e) {
     debugPrint('Background message handling error: $e');

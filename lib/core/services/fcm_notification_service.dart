@@ -65,7 +65,7 @@ class FCMNotificationService {
             type == 'chat_summary' ||
             type == 'CHAT_MISSED' ||
             type == 'CHAT_DISMISSED') {
-          LocalNotificationService.cancelOngoingChatNotification(parsedSessionId > 0 ? parsedSessionId : null);
+          
           FloatingChatBubble.dismiss(stopForegroundService: true);
           return;
         } else if (title.contains('Call Ended') ||
@@ -74,24 +74,18 @@ class FCMNotificationService {
             type == 'session_completed' ||
             type == 'CALL_FAILED' ||
             type == 'CALL_DISMISSED') {
-          LocalNotificationService.cancelOngoingCallNotification(parsedSessionId > 0 ? parsedSessionId : null);
-          if (parsedSessionId > 0) LocalNotificationService.cancelIncomingCallNotification(parsedSessionId);
+          
+          if (parsedSessionId > 0) 
           return;
         } else if (type == 'PACKAGE_EXHAUSTED') {
-          LocalNotificationService.cancelOngoingChatNotification(parsedSessionId > 0 ? parsedSessionId : null);
-          LocalNotificationService.cancelOngoingCallNotification(parsedSessionId > 0 ? parsedSessionId : null);
-          if (parsedSessionId > 0) LocalNotificationService.cancelIncomingCallNotification(parsedSessionId);
+          
+          
+          if (parsedSessionId > 0) 
           FloatingChatBubble.dismiss(stopForegroundService: true);
           return;
         }
 
-        LocalNotificationService.showNotification(
-          id: message.hashCode,
-          title: message.notification?.title ?? 'Notification',
-          body: message.notification?.body ?? '',
-          payload: message.data.toString(),
-          notificationType: type,
-        );
+        
       }
     });
 

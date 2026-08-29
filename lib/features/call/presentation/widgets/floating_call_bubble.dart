@@ -78,11 +78,7 @@ class FloatingCallBubble {
           ? '$name • Call' 
           : 'Incoming Call / Calling $name ($status)...';
 
-      LocalNotificationService.showOngoingCallNotification(
-        sessionId: sessionId,
-        title: statusText,
-        body: 'Tap to return to call session',
-      );
+      
 
 
 
@@ -111,9 +107,7 @@ class FloatingCallBubble {
     _overlaySub = null;
 
     if (stopForegroundService) {
-      try {
-        await LocalNotificationService.cancelOngoingCallNotification(idToCancel);
-      } catch (_) {}
+      
       try {
         await ForegroundTaskService.stopService();
       } catch (_) {}
