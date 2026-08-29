@@ -145,6 +145,10 @@ class AppUrls {
   static const String eventChatQueueUpdated = 'ChatQueueUpdated';
   static const String eventChatAccepted = 'ChatAccepted';
   static const String eventChatEnded = 'ChatEnded';
+  static const String eventPackageSubSessionStarted = 'PackageSubSessionStarted';
+  static const String eventPackageSubSessionEnded = 'PackageSubSessionEnded';
+  static const String eventPackageSessionTerminated = 'PackageSessionTerminated';
+  static const String eventPackageSessionStateUpdated = 'PackageSessionStateUpdated';
   static const String eventMessageSent = 'MessageSent';
   static const String eventMessageStatusUpdated = 'MessageStatusUpdated';
   static const String eventPresenceUpdated = 'PresenceUpdated';

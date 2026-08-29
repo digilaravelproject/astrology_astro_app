@@ -36,12 +36,19 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         type == 'chat_ended' ||
         type == 'CHAT_ENDED' ||
         type == 'session_ended' ||
-        type == 'chat_summary') {
+        type == 'chat_summary' ||
+        type == 'CHAT_MISSED' ||
+        type == 'CHAT_DISMISSED') {
       await LocalNotificationService.cancelOngoingChatNotification(parsedSessionId > 0 ? parsedSessionId : null);
     } else if (title.contains('Call Ended') ||
         type == 'call_ended' ||
         type == 'CALL_ENDED' ||
-        type == 'session_completed') {
+        type == 'session_completed' ||
+        type == 'CALL_FAILED' ||
+        type == 'CALL_DISMISSED') {
+      await LocalNotificationService.cancelOngoingCallNotification(parsedSessionId > 0 ? parsedSessionId : null);
+    } else if (type == 'PACKAGE_EXHAUSTED') {
+      await LocalNotificationService.cancelOngoingChatNotification(parsedSessionId > 0 ? parsedSessionId : null);
       await LocalNotificationService.cancelOngoingCallNotification(parsedSessionId > 0 ? parsedSessionId : null);
     }
     if (data.containsKey('session')) {
