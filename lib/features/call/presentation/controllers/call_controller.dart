@@ -706,6 +706,12 @@ class CallController extends GetxController with WidgetsBindingObserver {
           final sessionStatus = session['status']?.toString();
           Logger.d('CallController: currentCallSession sessionStatus: $sessionStatus');
           if (sessionStatus == 'ongoing' || sessionStatus == 'ringing' || sessionStatus == 'dialing' || sessionStatus == 'initiated') {
+            
+            // Prevent race condition: if call is already ended locally, ignore stale API response
+            if (status.value == 'completed' || status.value == 'cancelled' || status.value == 'ended' || status.value == 'declined') {
+              return;
+            }
+
             _isSummaryShown = false;
             sessionId = int.tryParse(session['id']?.toString() ?? '');
             webrtcService.activeSessionId = sessionId;
