@@ -65,24 +65,27 @@ class CallkitService {
             final sId = int.tryParse(payload.replaceFirst('chat_', ''));
             if (sId == null) break;
 
+            // Stop ringtone immediately
+            SoundVibrationService().stopRingtone();
+
             // End CallKit telecom session so it doesn't linger
             Future.delayed(const Duration(milliseconds: 500), () {
               FlutterCallkitIncoming.endCall(sessionId);
             });
 
-            if (Get.isRegistered<ChatController>()) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                Get.to(
-                  () => ChatScreen(
-                    sessionId: sId,
-                    initialStatus: 'ongoing',
-                    userName: FloatingChatBubble.name ?? 'User',
-                    userImage: '',
-                  ),
-                  binding: ChatBinding(),
-                );
-              });
-            }
+            // Navigate to ChatScreen — ChatBinding registers ChatController automatically.
+            // Do NOT check isRegistered<ChatController>() here; it may not be registered yet.
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              Get.to(
+                () => ChatScreen(
+                  sessionId: sId,
+                  initialStatus: 'ongoing',
+                  userName: FloatingChatBubble.name ?? 'User',
+                  userImage: '',
+                ),
+                binding: ChatBinding(),
+              );
+            });
           }
           break;
 
