@@ -9,6 +9,9 @@ import 'package:astro_astrologer/features/chat/presentation/controllers/chat_con
 import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
 import 'package:astro_astrologer/features/chat/presentation/bindings/chat_binding.dart';
 import 'package:astro_astrologer/core/constants/app_constants.dart';
+import 'package:astro_astrologer/core/constants/app_urls.dart';
+import 'package:astro_astrologer/core/services/network/api_client.dart';
+import 'package:astro_astrologer/core/services/sound_vibration_service.dart';
 
 class CallkitService {
   static void init() {
@@ -98,9 +101,37 @@ class CallkitService {
               Get.find<CallController>().rejectCall();
             }
           } else if (payload.startsWith('chat_')) {
-            // ── Reject chat request ──
-            if (Get.isRegistered<ChatController>()) {
-              Get.find<ChatController>().rejectChatSession();
+            // ── Reject chat request — use sessionId from payload directly ──
+            final chatSessionId =
+                int.tryParse(payload.replaceFirst('chat_', ''));
+            debugPrint('CallKit: Rejecting chat session $chatSessionId');
+
+            // Stop ringtone immediately
+            SoundVibrationService().stopRingtone();
+            FloatingChatBubble.dismiss();
+
+            if (chatSessionId != null) {
+              // Try via controller first (sets status, cleans up UI)
+              if (Get.isRegistered<ChatController>() &&
+                  Get.find<ChatController>().sessionId != null) {
+                Get.find<ChatController>().rejectChatSession();
+              } else {
+                // Fallback: call reject API directly using payload sessionId
+                try {
+                  if (Get.isRegistered<ApiClient>()) {
+                    await Get.find<ApiClient>().post(
+                      AppUrls.rejectChatSession(chatSessionId),
+                      handleError: false,
+                      showErrorScreen: false,
+                    );
+                    debugPrint(
+                      'CallKit: Chat reject API called for session $chatSessionId',
+                    );
+                  }
+                } catch (e) {
+                  debugPrint('CallKit: Error rejecting chat: $e');
+                }
+              }
             }
           }
           break;
