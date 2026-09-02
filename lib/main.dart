@@ -78,12 +78,12 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       CallkitService.endCall(parsedSessionId.toString());
       LocalNotificationService.cancelOngoingLiveNotification(parsedSessionId);
       return;
-    } else if (type?.toUpperCase() == 'CHAT_REQUEST' || type?.toUpperCase() == 'CALL_REQUEST' || type?.toLowerCase() == 'call' || (type?.toLowerCase() == 'chat' && title.contains('Request') && !title.contains('Cancelled'))) {
-      final String channelType = data['channel_type']?.toString() ?? (type?.toLowerCase() == 'call' ? 'call' : 'chat');
+    } else if (type?.toUpperCase() == 'CHAT_REQUEST' || type?.toUpperCase() == 'CALL_REQUEST' || type?.toLowerCase() == 'call' || type?.toLowerCase() == 'audio_call' || type?.toLowerCase() == 'video_call' || (type?.toLowerCase() == 'chat' && title.contains('Request') && !title.contains('Cancelled'))) {
+      final String channelType = data['channel_type']?.toString() ?? ((type?.toLowerCase() == 'call' || type?.toLowerCase() == 'audio_call' || type?.toLowerCase() == 'video_call') ? 'call' : 'chat');
       final String userName = data['user_name']?.toString() ?? data['caller_name']?.toString() ?? 'User';
       
-      final String notifTitle = type == 'call' ? 'Incoming Call' : 'Chat Request';
-      final String nameCallerParam = type == 'call' ? userName : 'Chat Req: $userName';
+      final String notifTitle = channelType == 'call' ? 'Incoming Call' : 'Chat Request';
+      final String nameCallerParam = channelType == 'call' ? userName : 'Chat Req: $userName';
       final String notifBody = '$userName • Astrologer • Now';
       final String payloadStr = '${channelType}_$parsedSessionId';
       
