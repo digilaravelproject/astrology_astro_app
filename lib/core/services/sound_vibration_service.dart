@@ -38,17 +38,22 @@ class SoundVibrationService {
     }
   }
 
+  bool _isStopping = false;
+
   /// Stop the playing sound.
   Future<void> stopSound() async {
+    if (_isStopping || _audioPlayer == null) return;
+    _isStopping = true;
     try {
-      if (_audioPlayer != null) {
-        await _audioPlayer?.stop();
-        await _audioPlayer?.dispose();
-        _audioPlayer = null;
-        debugPrint('SoundVibrationService: Sound stopped');
-      }
+      final player = _audioPlayer;
+      _audioPlayer = null; // null first to prevent re-entry
+      await player?.stop();
+      await player?.dispose();
+      debugPrint('SoundVibrationService: Sound stopped');
     } catch (e) {
       debugPrint('SoundVibrationService error stopping sound: $e');
+    } finally {
+      _isStopping = false;
     }
   }
 
