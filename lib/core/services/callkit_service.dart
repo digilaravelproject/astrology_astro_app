@@ -73,8 +73,25 @@ class CallkitService {
               FlutterCallkitIncoming.endCall(sessionId);
             });
 
-            // Navigate to ChatScreen — ChatBinding registers ChatController automatically.
-            // Do NOT check isRegistered<ChatController>() here; it may not be registered yet.
+            // 1. Call POST /chat/{id}/accept API — required to change status from initiated → ongoing
+            bool accepted = false;
+            try {
+              if (Get.isRegistered<ApiClient>()) {
+                final resp = await Get.find<ApiClient>().post(
+                  AppUrls.acceptChatSession(sId),
+                  handleError: false,
+                  showErrorScreen: false,
+                );
+                accepted = resp.isSuccess;
+                debugPrint(
+                  'CallKit: Chat accept API for session $sId → isSuccess=$accepted',
+                );
+              }
+            } catch (e) {
+              debugPrint('CallKit: Error calling acceptChatSession API: $e');
+            }
+
+            // 2. Navigate to ChatScreen — ChatBinding registers ChatController automatically.
             WidgetsBinding.instance.addPostFrameCallback((_) {
               Get.to(
                 () => ChatScreen(
