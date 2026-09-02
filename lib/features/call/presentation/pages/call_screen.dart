@@ -29,7 +29,10 @@ class _CallScreenState extends State<CallScreen> {
     super.initState();
     controller = Get.find<CallController>();
     controller.isCallScreenVisible = true;
-    FloatingCallBubble.dismiss();
+    // Use postFrameCallback to avoid setState-during-build error
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FloatingCallBubble.dismiss(stopForegroundService: false);
+    });
   }
 
   @override

@@ -172,6 +172,11 @@ class CallController extends GetxController with WidgetsBindingObserver {
       return false;
     }
     Logger.d('CallController: acceptCall started for sessionId: $sessionId');
+    if (_isAccepting) {
+      Logger.d('CallController: acceptCall already in progress, skipping duplicate.');
+      return false;
+    }
+    _isAccepting = true;
     try {
       _isSummaryShown = false;
       _stopRingtone();
@@ -209,18 +214,29 @@ class CallController extends GetxController with WidgetsBindingObserver {
       if (response.isSuccess) {
         _startCallTimer();
         _showOngoingNotification();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (Get.currentRoute != '/CallScreen') {
+            Get.to(() => const CallScreen());
+          }
+        });
         return true;
       } else {
+        Logger.e(
+          'CallController: Accept Call API failed: ${response.message}',
+        );
         cleanUp();
-        CustomSnackBar.showError('Failed to accept call.');
+        CustomSnackBar.showError('Failed to accept call: ${response.message}');
         return false;
       }
     } catch (e) {
-      Logger.e('CallController: Error accepting call -> $e');
+      Logger.e('CallController: Error in acceptCall -> $e');
       cleanUp();
       return false;
+    } finally {
+      _isAccepting = false;
     }
   }
+
 
   /// Accept a call directly WITHOUT a consumer SDP offer.
   /// Used when the call is in 'initiated' status and consumer_sdp is null
@@ -416,6 +432,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
   // ──────────────────────────────────────────────────────────────────────────
 
   bool _isEndingCall = false;
+  bool _isAccepting = false; // Guard to prevent checkPendingCall from re-ringing during acceptCall
 
   Future<void> endCall() async {
     if (sessionId == null) return;
@@ -704,6 +721,11 @@ class CallController extends GetxController with WidgetsBindingObserver {
   /// Checks /call/pending for any pending (initiated) calls and shows IncomingCallDialog.
   /// Returns true if a pending call was found and handled.
   Future<bool> checkPendingCall() async {
+    // Skip if we are in the middle of accepting a call to avoid re-ringing
+    if (_isAccepting || status.value == CallStatus.ongoing) {
+      Logger.d('CallController: checkPendingCall skipped — currently accepting or ongoing.');
+      return false;
+    }
     Logger.d('CallController: checkPendingCall started');
     try {
       final response = await _apiClient.get(
