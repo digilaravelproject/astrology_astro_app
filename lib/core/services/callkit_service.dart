@@ -46,8 +46,15 @@ class CallkitService {
               } else {
                 success = await ctrl.acceptCallDirect();
               }
-              if (success && !ctrl.isCallScreenVisible) {
-                Get.to(() => const CallScreen());
+              if (success) {
+                // End CallKit telecom session so "Hang Up" notification disappears.
+                // The actual call continues over our WebRTC implementation.
+                Future.delayed(const Duration(milliseconds: 500), () {
+                  FlutterCallkitIncoming.endCall(sessionId);
+                });
+                if (!ctrl.isCallScreenVisible) {
+                  Get.to(() => const CallScreen());
+                }
               }
             });
           } else if (payload.startsWith('chat_')) {
