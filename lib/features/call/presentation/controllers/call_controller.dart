@@ -30,6 +30,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
           .idle
           .obs; // idle, ringing, ongoing, completed, rejected, cancelled, missed
   final RxInt durationSeconds = 0.obs;
+  DateTime? callStartedAt; // Canonical start time for all 3 timer sources
   final RxBool isMuted = false.obs;
   final RxBool isSpeakerOn = false.obs;
   bool isCallScreenVisible = false;
@@ -212,6 +213,8 @@ class CallController extends GetxController with WidgetsBindingObserver {
         'CallController: Accept Call API response isSuccess: ${response.isSuccess}',
       );
       if (response.isSuccess) {
+        callStartedAt = DateTime.now();
+        durationSeconds.value = 0;
         _startCallTimer();
         _showOngoingNotification();
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -559,10 +562,15 @@ class CallController extends GetxController with WidgetsBindingObserver {
     });
   }
 
-  void _showOngoingNotification({int? startedAtMillis}) {
+  void _showOngoingNotification() {
     if (sessionId != null) {
-      final title = 'Active Call in Progress';
-      final body = 'Talking with $consumerName';
+      // Pass callStartedAt so the foreground notification timer stays in sync
+      // with controller.durationSeconds (both count from the same moment).
+      ForegroundTaskService.startActiveSessionNotification(
+        title: 'Active Call',
+        type: 'Call',
+        startedAt: callStartedAt ?? DateTime.now(),
+      );
     }
   }
 
@@ -605,6 +613,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
     if (isCallScreenVisible) {
       isCallScreenVisible = false;
     }
+    callStartedAt = null;
   }
 
   @override
@@ -645,7 +654,9 @@ class CallController extends GetxController with WidgetsBindingObserver {
             status.value != CallStatus.ringing &&
             status.value != CallStatus.dialing))
       return;
+    // Use callStartedAt as canonical start — keeps bubble timer in sync with CallScreen
     final startStr =
+        callStartedAt?.toIso8601String() ??
         WebSocketService.sessionStartTimes[sessionId!] ??
         DateTime.now()
             .subtract(Duration(seconds: durationSeconds.value))

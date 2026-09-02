@@ -356,12 +356,15 @@ class _FloatingCallBubbleWidgetState extends State<FloatingCallBubbleWidget> {
                       Obx(() {
                         final status = FloatingCallBubble.callStatus.value;
                         if (status == 'ongoing') {
+                          // Always use controller.durationSeconds to stay in sync
+                          // with CallScreen and the foreground notification.
                           int durationSec = _elapsedSeconds.value;
                           if (Get.isRegistered<CallController>()) {
                             final callCtrl = Get.find<CallController>();
-                            if (callCtrl.durationSeconds.value > 0) {
-                              durationSec = callCtrl.durationSeconds.value;
-                            }
+                            // Prefer controller timer — it is the source of truth
+                            durationSec = callCtrl.durationSeconds.value > 0
+                                ? callCtrl.durationSeconds.value
+                                : _elapsedSeconds.value;
                           }
                           return Text(
                             'Active Call • ${_formatDuration(durationSec)}',
