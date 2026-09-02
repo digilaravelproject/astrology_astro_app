@@ -75,6 +75,8 @@ class CallkitService {
 
             // 1. Call POST /chat/{id}/accept API — required to change status from initiated → ongoing
             bool accepted = false;
+            // Record accept time as canonical start — passed to ChatScreen and ForegroundTask
+            final acceptedAt = DateTime.now();
             try {
               if (Get.isRegistered<ApiClient>()) {
                 final resp = await Get.find<ApiClient>().post(
@@ -91,7 +93,7 @@ class CallkitService {
               debugPrint('CallKit: Error calling acceptChatSession API: $e');
             }
 
-            // 2. Navigate to ChatScreen — ChatBinding registers ChatController automatically.
+            // 2. Navigate to ChatScreen — pass acceptedAt so all 3 timers start from same moment
             WidgetsBinding.instance.addPostFrameCallback((_) {
               Get.to(
                 () => ChatScreen(
@@ -99,6 +101,7 @@ class CallkitService {
                   initialStatus: 'ongoing',
                   userName: FloatingChatBubble.name ?? 'User',
                   userImage: '',
+                  startedAtString: acceptedAt.toUtc().toIso8601String(),
                 ),
                 binding: ChatBinding(),
               );
