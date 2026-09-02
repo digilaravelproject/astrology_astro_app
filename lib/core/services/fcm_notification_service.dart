@@ -1,4 +1,5 @@
 import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
+import 'dart:convert';
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -8,6 +9,9 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:astro_astrologer/core/services/callkit_service.dart';
+import 'package:flutter_callkit_incoming/entities/entities.dart';
+import 'package:astro_astrologer/core/constants/app_constants.dart';
 import 'local_notification_service.dart';
 
 class FCMNotificationService {
@@ -48,7 +52,16 @@ class FCMNotificationService {
 
     // 4. Foreground Message Handler
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      debugPrint('Foreground Message Received: ${message.notification?.title}');
+      debugPrint('=======================================');
+      debugPrint('[FCM_JSON_DATA] Foreground Message Received!');
+      debugPrint('[FCM_JSON_DATA] Notification Title: ${message.notification?.title}');
+      debugPrint('[FCM_JSON_DATA] Notification Body: ${message.notification?.body}');
+      try {
+        debugPrint('[FCM_JSON_DATA] Message JSON: ${jsonEncode(message.data)}');
+      } catch (e) {
+        debugPrint('[FCM_JSON_DATA] Message Data: ${message.data}');
+      }
+      debugPrint('=======================================');
       if (message.notification != null || message.data.isNotEmpty) {
         final type = message.data['type']?.toString();
         final title =
@@ -80,6 +93,9 @@ class FCMNotificationService {
               rawSessionId.isNotEmpty
                   ? 'call_$rawSessionId'
                   : message.data.toString();
+        } else if (type == 'gift' || type == 'payout_settlement' || type == 'wallet') {
+          final refId = message.data['reference_id']?.toString() ?? message.data['entity_id']?.toString() ?? '';
+          structuredPayload = refId.isNotEmpty ? 'wallet_$refId' : message.data.toString();
         } else {
           structuredPayload =
               rawSessionId.isNotEmpty ? rawSessionId : message.data.toString();
@@ -101,7 +117,9 @@ class FCMNotificationService {
             upperType == 'LIVE' ||
             upperType == 'LIVE_SESSION') {
           channelId = 'live_stream';
-        } else if (upperType == 'WALLET' || upperType == 'ORDER') {
+        } else if (upperType == 'GIFT' || upperType == 'PAYOUT_SETTLEMENT' || upperType == 'WALLET') {
+          channelId = 'wallet';
+        } else if (upperType == 'ORDER') {
           channelId = 'wallet';
         } else if (upperType == 'CHAT_ACCEPTED') {
           channelId = 'chat_request';
@@ -152,25 +170,21 @@ class FCMNotificationService {
         else if (importanceRaw == 'none')
           importance = Importance.none;
 
-        // Show the foreground notification (with dynamic params)
-        LocalNotificationService.showNotification(
-          title: title,
-          body: body,
-          payload: structuredPayload,
-          channelId: channelId,
-          playSound: playSound,
-          priority: priority,
-          importance: importance,
-        );
-
-        // Existing end‑handling logic follows
+        final String? reason = message.data['reason']?.toString()?.toLowerCase();
+        
+        // 1. Check for Cancellations / Ended events FIRST
         if (title.contains('Chat Ended') ||
+            title.contains('Cancelled') ||
+            reason == 'cancelled' ||
+            reason == 'rejected' ||
             type == 'chat_ended' ||
             type == 'CHAT_ENDED' ||
             type == 'session_ended' ||
             type == 'chat_summary' ||
             type == 'CHAT_MISSED' ||
             type == 'CHAT_DISMISSED') {
+          LocalNotificationService.markSessionCancelled(parsedSessionId.toString());
+          CallkitService.endCall(parsedSessionId.toString());
           FloatingChatBubble.dismiss(stopForegroundService: true);
           return;
         } else if (title.contains('Call Ended') ||
@@ -179,11 +193,39 @@ class FCMNotificationService {
             type == 'session_completed' ||
             type == 'CALL_FAILED' ||
             type == 'CALL_DISMISSED') {
+          LocalNotificationService.markSessionCancelled(parsedSessionId.toString());
+          CallkitService.endCall(parsedSessionId.toString());
           if (parsedSessionId > 0) return;
         } else if (type == 'PACKAGE_EXHAUSTED' || type == 'package') {
           if (parsedSessionId > 0)
             FloatingChatBubble.dismiss(stopForegroundService: true);
           return;
+        }
+
+        // 2. Process Incoming Requests
+        if (type == 'CHAT_REQUEST' || type == 'CALL_REQUEST' || type == 'call' || (type == 'chat' && title.contains('Request') && !title.contains('Cancelled'))) {
+          final String channelType = message.data['channel_type']?.toString() ?? (type == 'call' ? 'call' : 'chat');
+          final String userName = message.data['user_name']?.toString() ?? message.data['caller_name']?.toString() ?? 'User';
+          final String userAvatarRaw = message.data['user_avatar']?.toString() ?? message.data['caller_image']?.toString() ?? '';
+          final String userAvatar = userAvatarRaw.isNotEmpty ? userAvatarRaw : 'assets/images/app_logo.png';
+          CallkitService.showCallkitNotification(
+            sessionId: parsedSessionId.toString(),
+            callerName: userName,
+            avatar: userAvatar,
+            type: channelType, // 'call' or 'chat'
+          );
+        } else {
+          // Show the foreground notification (with dynamic params) for other types (wallet, etc)
+          LocalNotificationService.showNotification(
+            notificationId: parsedSessionId > 0 ? parsedSessionId : null,
+            title: title,
+            body: body,
+            payload: structuredPayload,
+            channelId: channelId,
+            playSound: playSound,
+            priority: priority,
+            importance: importance,
+          );
         }
 
         // No further processing needed in foreground for astrologer        final int parsedSessionId = int.tryParse(rawSessionId) ?? 0;
@@ -214,7 +256,16 @@ class FCMNotificationService {
 
     // 5. Notification Opened Handler
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      debugPrint('Notification Opened App: ${message.data}');
+      debugPrint('=======================================');
+      debugPrint('[FCM_JSON_DATA] Notification Opened App!');
+      debugPrint('[FCM_JSON_DATA] Notification Title: ${message.notification?.title}');
+      debugPrint('[FCM_JSON_DATA] Notification Body: ${message.notification?.body}');
+      try {
+        debugPrint('[FCM_JSON_DATA] Message JSON: ${jsonEncode(message.data)}');
+      } catch (e) {
+        debugPrint('[FCM_JSON_DATA] Message Data: ${message.data}');
+      }
+      debugPrint('=======================================');
     });
   }
 

@@ -19,7 +19,7 @@ import 'package:astro_astrologer/features/kundli/create_kundli_screen.dart';
 import 'package:astro_astrologer/features/kundli/kundli_list_screen.dart';
 import 'package:astro_astrologer/features/chat/presentation/bindings/chat_binding.dart';
 import 'package:swipe_to/swipe_to.dart';
-import 'package:astro_astrologer/features/chat/presentation/widgets/incoming_chat_dialog.dart';
+import 'package:astro_astrologer/core/services/callkit_service.dart';
 import 'package:astro_astrologer/core/widgets/custom_image_widget.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -34,6 +34,9 @@ class ChatScreen extends StatefulWidget {
   final String? place;
   final double? latitude;
   final double? longitude;
+  // ✅ Added optional fields with default values:
+  final bool isPackageChat;
+  final int? subSessionId;
 
   const ChatScreen({
     super.key,
@@ -48,6 +51,8 @@ class ChatScreen extends StatefulWidget {
     this.place,
     this.latitude,
     this.longitude,
+    this.isPackageChat = false,
+    this.subSessionId,
   });
 
   @override
@@ -77,22 +82,16 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         Get.back(); // Close this ChatScreen
         Future.delayed(const Duration(milliseconds: 100), () {
           if (Get.isBottomSheetOpen == true) return;
-          Get.bottomSheet(
-            IncomingChatDialog(
-              sessionData: {'id': widget.sessionId, 'status': 'initiated'},
-              senderData: {
-                'name': widget.userName,
-                'profile_photo': widget.userImage,
-                'gender': widget.gender ?? '',
-                'date_of_birth': widget.dob ?? '',
-                'time_of_birth': widget.tob ?? '',
-                'place_of_birth': widget.place ?? '',
-              },
-            ),
-            isDismissible: false,
-            enableDrag: false,
-            isScrollControlled: true,
-            backgroundColor: Colors.transparent,
+          
+          final String userName = widget.userName ?? 'User';
+          final String userAvatarRaw = widget.userImage ?? '';
+          final String userAvatar = userAvatarRaw.isNotEmpty && userAvatarRaw != 'null' ? userAvatarRaw : 'assets/images/app_logo.png';
+
+          CallkitService.showCallkitNotification(
+            sessionId: widget.sessionId.toString(),
+            callerName: userName,
+            avatar: userAvatar,
+            type: 'chat',
           );
         });
         return;
@@ -104,6 +103,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         initialStatus: widget.initialStatus,
         userName: widget.userName,
         startedAtString: widget.startedAtString,
+        // ✅ Pass these parameters so ChatController knows it's a prepaid package:
+        isPackage: widget.isPackageChat,
+        activeSubSessionId: widget.subSessionId,
       );
     });
 
@@ -288,7 +290,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   color: AppColors.deepPink.withOpacity(0.1),
                 ),
                 child: CustomImageWidget(
-                  imagePath: widget.userImage.isNotEmpty 
+                  imagePath: (widget.userImage.isNotEmpty && widget.userImage != 'null')
                       ? (widget.userImage.startsWith('http') 
                           ? widget.userImage 
                           : '${AppUrls.baseImageUrl}${widget.userImage}') 

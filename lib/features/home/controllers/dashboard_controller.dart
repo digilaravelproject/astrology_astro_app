@@ -103,7 +103,6 @@ class DashboardController extends GetxController {
 
             if (!isCall) {
               FloatingChatBubble.show(
-                context: Get.context!,
                 sessionId: sessionId,
                 name: name,
                 imageUrl: imageUrl,

@@ -1,3 +1,6 @@
+import 'package:flutter_callkit_incoming/entities/entities.dart';
+import 'package:astro_astrologer/core/services/callkit_service.dart';
+
 import 'dart:async';
 import 'package:get/get.dart';
 import 'package:astro_astrologer/core/constants/app_constants.dart';
@@ -8,8 +11,6 @@ import 'package:astro_astrologer/core/services/webrtc/webrtc_service.dart';
 import 'package:astro_astrologer/core/services/local_notification_service.dart';
 import 'package:astro_astrologer/core/services/sound_vibration_service.dart';
 import 'package:astro_astrologer/core/utils/logger.dart';
-import 'package:astro_astrologer/features/call/presentation/widgets/incoming_call_dialog.dart';
-import 'package:astro_astrologer/features/call/presentation/widgets/call_summary_dialog.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 import 'package:astro_astrologer/core/services/foreground_task_service.dart';
 import 'package:astro_astrologer/core/services/storage/token_manger.dart';
@@ -149,11 +150,19 @@ class CallController extends GetxController with WidgetsBindingObserver {
 
     if (sessionId != null) {}
 
-    // Trigger Incoming Call screen/dialog
-    CallSummaryDialog.dismissIfOpen();
-    Get.dialog(
-      IncomingCallDialog(offerSdp: offerSdp),
-      barrierDismissible: false,
+    // Get.dialog(
+    //   IncomingCallDialog(offerSdp: offerSdp),
+    //   barrierDismissible: false,
+    // );
+
+    final String name = (consumerName != null && consumerName!.isNotEmpty) ? consumerName! : 'User';
+    final String userAvatar = (consumerImage != null && consumerImage!.isNotEmpty && consumerImage != 'null') ? consumerImage! : 'assets/images/app_logo.png';
+
+    CallkitService.showCallkitNotification(
+      sessionId: sessionId.toString(),
+      callerName: name,
+      avatar: userAvatar,
+      type: 'call',
     );
   }
 
@@ -172,9 +181,16 @@ class CallController extends GetxController with WidgetsBindingObserver {
 
       // 1. Create SDP Answer
       Logger.d('CallController: Creating SDP Answer...');
+      final sdpToUse = (offerSdp.isNotEmpty) ? offerSdp : (incomingOfferSdp ?? '');
+      
+      if (sdpToUse.isEmpty) {
+        // If still empty, use direct accept
+        return await acceptCallDirect();
+      }
+
       final answerDescription = await webrtcService.acceptOffer(
         sessionId!,
-        offerSdp,
+        sdpToUse,
       );
       Logger.d('CallController: SDP Answer created.');
 
@@ -635,10 +651,12 @@ class CallController extends GetxController with WidgetsBindingObserver {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (Get.isDialogOpen == true) return;
             final sdp = incomingOfferSdp ?? '';
+            /*
             Get.dialog(
               IncomingCallDialog(offerSdp: sdp),
               barrierDismissible: false,
             );
+            */
           });
         } else {
           // Ongoing call — go back to CallScreen
@@ -736,12 +754,14 @@ class CallController extends GetxController with WidgetsBindingObserver {
           // Show IncomingCallDialog — pass empty string as offerSdp since we may not have it yet
           // The accept flow will fetch the SDP when the astrologer taps Accept
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            CallSummaryDialog.dismissIfOpen();
+            // CallSummaryDialog.dismissIfOpen();
             if (Get.isDialogOpen != true) {
+              /*
               Get.dialog(
                 IncomingCallDialog(offerSdp: ''),
                 barrierDismissible: false,
               );
+              */
             }
           });
           return true;

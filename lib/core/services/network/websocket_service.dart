@@ -1,3 +1,6 @@
+import 'package:flutter_callkit_incoming/entities/entities.dart';
+import 'package:astro_astrologer/core/services/callkit_service.dart';
+
 import 'package:astro_astrologer/core/services/local_notification_service.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -12,12 +15,9 @@ import '../storage/shared_prefs.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../features/auth/domain/models/user_model.dart';
 import 'api_client.dart';
-import '../../../features/chat/presentation/widgets/incoming_chat_dialog.dart';
-import '../../../features/call/presentation/widgets/call_summary_dialog.dart';
 import '../../../core/constants/app_urls.dart';
 import '../../utils/logger.dart';
 import 'package:flutter/material.dart';
-import 'package:astro_astrologer/features/chat/presentation/widgets/chat_summary_dialog.dart';
 import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
 import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
 import 'package:astro_astrologer/features/call/presentation/widgets/floating_call_bubble.dart';
@@ -757,7 +757,8 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
         // Trigger ongoing notification drawer item during ringing
 
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          CallSummaryDialog.dismissIfOpen();
+          // CallSummaryDialog.dismissIfOpen();
+          /*
           Get.bottomSheet(
             IncomingChatDialog(
               sessionData: Map<String, dynamic>.from(session),
@@ -767,6 +768,17 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
             enableDrag: false,
             isScrollControlled: true,
             backgroundColor: Colors.transparent,
+          );
+          */
+          
+          final String userAvatarRaw = senderData['profile_photo_url']?.toString() ?? senderData['profile_photo']?.toString() ?? '';
+          final String userAvatar = userAvatarRaw.isNotEmpty && userAvatarRaw != 'null' ? userAvatarRaw : 'assets/images/app_logo.png';
+
+          CallkitService.showCallkitNotification(
+            sessionId: sessionId.toString(),
+            callerName: name,
+            avatar: userAvatar,
+            type: 'chat',
           );
         });
       } else {

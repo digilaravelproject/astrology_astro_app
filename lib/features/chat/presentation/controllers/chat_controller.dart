@@ -1,3 +1,6 @@
+import 'package:flutter_callkit_incoming/entities/entities.dart';
+import 'package:astro_astrologer/core/services/callkit_service.dart';
+
 import 'package:astro_astrologer/core/services/local_notification_service.dart';
 import 'dart:async';
 import 'dart:io';
@@ -21,7 +24,6 @@ import 'package:astro_astrologer/core/constants/app_constants.dart';
 import 'package:astro_astrologer/features/auth/domain/models/user_model.dart';
 import 'package:astro_astrologer/core/services/sound_vibration_service.dart';
 
-import 'package:astro_astrologer/features/chat/presentation/widgets/chat_summary_dialog.dart';
 import 'package:astro_astrologer/features/chat/presentation/bindings/chat_binding.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
@@ -29,7 +31,6 @@ import 'package:astro_astrologer/features/auth/controllers/auth_controller.dart'
 import 'package:astro_astrologer/core/services/foreground_task_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
-import 'package:astro_astrologer/features/chat/presentation/widgets/incoming_chat_dialog.dart';
 import 'package:astro_astrologer/core/utils/logger.dart';
 
 class ChatController extends GetxController with WidgetsBindingObserver {
@@ -247,21 +248,32 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       final senderData = sessionData['consumer'] ?? sessionData['user'] ?? {};
 
       // Show IncomingChatDialog
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (Get.isBottomSheetOpen == true) return; // Already showing
-        // Close any open dialogs before showing incoming chat
-        if (Get.isDialogOpen == true) Get.back();
-        Get.bottomSheet(
-          IncomingChatDialog(
-            sessionData: Map<String, dynamic>.from(sessionData),
-            senderData: Map<String, dynamic>.from(senderData),
-          ),
-          isDismissible: false,
-          enableDrag: false,
-          isScrollControlled: true,
-          backgroundColor: Colors.transparent,
-        );
-      });
+      // WidgetsBinding.instance.addPostFrameCallback((_) {
+      //   if (Get.isBottomSheetOpen == true) return; // Already showing
+      //   // Close any open dialogs before showing incoming chat
+      //   if (Get.isDialogOpen == true) Get.back();
+      //   Get.bottomSheet(
+      //     IncomingChatDialog(
+      //       sessionData: Map<String, dynamic>.from(sessionData),
+      //       senderData: Map<String, dynamic>.from(senderData),
+      //     ),
+      //     isDismissible: false,
+      //     enableDrag: false,
+      //     isScrollControlled: true,
+      //     backgroundColor: Colors.transparent,
+      //   );
+      // });
+      
+      final String userName = senderData['name']?.toString() ?? 'User';
+      final String userAvatarRaw = senderData['profile_photo_url']?.toString() ?? senderData['profile_photo']?.toString() ?? '';
+      final String userAvatar = userAvatarRaw.isNotEmpty && userAvatarRaw != 'null' ? userAvatarRaw : 'assets/images/app_logo.png';
+
+      CallkitService.showCallkitNotification(
+        sessionId: incomingId.toString(),
+        callerName: userName,
+        avatar: userAvatar,
+        type: 'chat',
+      );
     } catch (e) {
       // Silently fail — not critical
     }
@@ -960,7 +972,6 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     WebSocketService.sessionStartTimes[_sessionId!] = startStr;
 
     FloatingChatBubble.show(
-      context: context,
       sessionId: _sessionId!,
       name: name,
       imageUrl: image,
@@ -1001,7 +1012,6 @@ class ChatController extends GetxController with WidgetsBindingObserver {
         if (liveStatus == 'initiated') {
           // Chat is still ringing — show IncomingChatDialog
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (Get.isBottomSheetOpen == true) return;
             if (liveSession.isEmpty && _sessionId != null) {
               liveSession = {'id': _sessionId, 'status': 'initiated'};
             }
@@ -1010,6 +1020,8 @@ class ChatController extends GetxController with WidgetsBindingObserver {
                   WebSocketService.lastChatSenderData ??
                   {'name': name, 'profile_photo': image};
             }
+            /*
+            if (Get.isBottomSheetOpen == true) return;
             Get.bottomSheet(
               IncomingChatDialog(
                 sessionData: liveSession,
@@ -1019,6 +1031,19 @@ class ChatController extends GetxController with WidgetsBindingObserver {
               enableDrag: false,
               isScrollControlled: true,
               backgroundColor: Colors.transparent,
+            );
+            */
+            
+            final String userName = liveSender['name']?.toString() ?? 'User';
+            final String userAvatarRaw = liveSender['profile_photo_url']?.toString() ?? liveSender['profile_photo']?.toString() ?? '';
+            final String userAvatar = userAvatarRaw.isNotEmpty && userAvatarRaw != 'null' ? userAvatarRaw : 'assets/images/app_logo.png';
+            final incomingId = _sessionId ?? (liveSession['id'] != null ? int.tryParse(liveSession['id'].toString()) : 0);
+
+            CallkitService.showCallkitNotification(
+              sessionId: incomingId.toString(),
+              callerName: userName,
+              avatar: userAvatar,
+              type: 'chat',
             );
           });
         } else {
@@ -1081,12 +1106,26 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       }
 
       if (sessionData.isNotEmpty) {
+        /*
         Get.bottomSheet(
           IncomingChatDialog(sessionData: sessionData, senderData: senderData),
           isDismissible: false,
           enableDrag: false,
           isScrollControlled: true,
           backgroundColor: Colors.transparent,
+        );
+        */
+        
+        final String userName = senderData['name']?.toString() ?? 'User';
+        final String userAvatarRaw = senderData['profile_photo_url']?.toString() ?? senderData['profile_photo']?.toString() ?? '';
+        final String userAvatar = userAvatarRaw.isNotEmpty && userAvatarRaw != 'null' ? userAvatarRaw : 'assets/images/app_logo.png';
+        final incomingId = _sessionId ?? (sessionData['id'] != null ? int.tryParse(sessionData['id'].toString()) : 0);
+
+        CallkitService.showCallkitNotification(
+          sessionId: incomingId.toString(),
+          callerName: userName,
+          avatar: userAvatar,
+          type: 'chat',
         );
       }
     } catch (e) {

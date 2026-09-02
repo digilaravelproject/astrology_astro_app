@@ -2,10 +2,10 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
+import 'package:astro_astrologer/core/services/callkit_service.dart';
 import 'package:astro_astrologer/core/services/foreground_task_service.dart';
 import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
 import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
-import 'package:astro_astrologer/features/call/presentation/widgets/incoming_call_dialog.dart';
 import 'package:astro_astrologer/features/call/presentation/pages/call_screen.dart';
 import 'package:astro_astrologer/features/live/presentation/widgets/floating_live_bubble.dart';
 import 'package:astro_astrologer/features/live/presentation/controllers/live_controller.dart';
@@ -14,12 +14,29 @@ import 'package:astro_astrologer/core/constants/app_constants.dart';
 import 'package:astro_astrologer/features/live/presentation/pages/live_room_screen.dart';
 import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
 import 'package:astro_astrologer/features/chat/presentation/bindings/chat_binding.dart';
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
+import 'package:flutter_callkit_incoming/entities/entities.dart';
+import 'package:astro_astrologer/core/services/network/api_client.dart';
+import 'package:astro_astrologer/core/constants/app_urls.dart';
+import 'package:astro_astrologer/core/services/network/websocket_service.dart';
+
+@pragma('vm:entry-point')
+void notificationTapBackground(NotificationResponse notificationResponse) {
+  debugPrint('notificationTapBackground: actionId=${notificationResponse.actionId}, payload=${notificationResponse.payload}');
+  // Background action handler logic will go here
+  if (notificationResponse.actionId == 'decline') {
+    debugPrint('User declined from background!');
+    // Ideally call API to decline, or just dismiss
+  } else if (notificationResponse.actionId == 'answer') {
+    debugPrint('User answered from background!');
+  }
+}
 
 class LocalNotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
-  static Future<void> initialize() async {
+  static Future<void> initialize({bool requestPermission = true}) async {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
@@ -32,97 +49,17 @@ class LocalNotificationService {
     await _notificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
-        // Tap handler (navigates back or restores app state)
         if (response.payload != null) {
-          if (response.payload!.startsWith('call_')) {
-            if (Get.isRegistered<CallController>()) {
-              final callController = Get.find<CallController>();
-              final currentStatus = callController.status.value;
-
-              if (currentStatus == 'completed' ||
-                  currentStatus == 'ended' ||
-                  currentStatus == 'cancelled' ||
-                  currentStatus == 'idle') {
-                debugPrint(
-                  '[LocalNotificationService] Stale call notification tapped, cancelling...',
-                );
-                final sessionIdStr = response.payload!.replaceFirst(
-                  'call_',
-                  '',
-                );
-                final int? sessionId = int.tryParse(sessionIdStr);
-              } else if (currentStatus == 'ongoing') {
-                // Active call — go straight to CallScreen
-                Get.to(() => const CallScreen());
-              } else if (currentStatus == 'ringing') {
-                // Incoming call ringing — show IncomingCallDialog
-                if (Get.isDialogOpen != true) {
-                  final sdp = callController.incomingOfferSdp ?? '';
-                  Get.dialog(
-                    IncomingCallDialog(offerSdp: sdp),
-                    barrierDismissible: false,
-                  );
-                }
-              } else {
-                // App was killed/restarted — check pending or current session
-                callController.checkPendingCall();
-              }
-            } else {
-              // CallController not registered, likely stale or cold start
-              debugPrint(
-                '[LocalNotificationService] Stale call notification tapped (no controller), cancelling...',
-              );
-              final sessionIdStr = response.payload!.replaceFirst('call_', '');
-              final int? sessionId = int.tryParse(sessionIdStr);
-            }
-          } else if (response.payload!.startsWith('live_')) {
-            if (Get.isRegistered<LiveController>()) {
-              final liveController = Get.find<LiveController>();
-              if (liveController.isRoomOpen) {
-                return;
-              }
-              final ongoingSession = liveController.currentActiveSession.value;
-              if (ongoingSession != null) {
-                liveController.isRoomOpen = true;
-                Get.to(() => LiveRoomScreen(session: ongoingSession))?.then((
-                  _,
-                ) {
-                  liveController.isRoomOpen = false;
-                });
-              } else {
-                Get.to(() => const LiveScheduleScreen());
-              }
-            } else {
-              Get.to(() => const LiveScheduleScreen());
-            }
-          } else if (FloatingChatBubble.onTapCallback != null) {
-            FloatingChatBubble.onTapCallback?.call();
-          } else {
-            final int? sId = int.tryParse(response.payload!);
-            if (sId != null) {
-              String uName =
-                  FloatingChatBubble.name?.isNotEmpty == true
-                      ? FloatingChatBubble.name!
-                      : 'User';
-              String uStatus =
-                  FloatingChatBubble.chatStatus.value.isNotEmpty
-                      ? FloatingChatBubble.chatStatus.value
-                      : 'ongoing';
-
-              Get.to(
-                () => ChatScreen(
-                  userName: uName,
-                  userImage: '',
-                  sessionId: sId,
-                  initialStatus: uStatus,
-                ),
-                binding: ChatBinding(),
-              );
-            }
-          }
+          final isAnswer = response.actionId == 'answer';
+          final isDecline = response.actionId == 'decline';
+          handleNotificationRouting(response.payload!, isAnswer, isDecline);
         }
       },
+      onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
     );
+
+    // Initialize CallKit service
+    CallkitService.init();
 
     // Pre-create notification channels explicitly
 
@@ -198,7 +135,9 @@ class LocalNotificationService {
         ),
       );
 
-      await androidPlugin.requestNotificationsPermission();
+      if (requestPermission) {
+        await androidPlugin.requestNotificationsPermission();
+      }
     }
 
     final iosPlugin =
@@ -206,7 +145,7 @@ class LocalNotificationService {
             .resolvePlatformSpecificImplementation<
               IOSFlutterLocalNotificationsPlugin
             >();
-    if (iosPlugin != null) {
+    if (iosPlugin != null && requestPermission) {
       await iosPlugin.requestPermissions(
         alert: true,
         badge: true,
@@ -227,6 +166,8 @@ class LocalNotificationService {
     bool playSound = false,
     Importance importance = Importance.high,
     Priority priority = Priority.high,
+    List<AndroidNotificationAction>? actions,
+    bool fullScreenIntent = false,
   }) async {
     final androidDetails = AndroidNotificationDetails(
       channelId,
@@ -236,6 +177,8 @@ class LocalNotificationService {
       priority: priority,
       playSound: playSound,
       icon: '@mipmap/ic_launcher',
+      actions: actions,
+      fullScreenIntent: fullScreenIntent,
     );
 
     final notificationDetails = NotificationDetails(
@@ -301,5 +244,179 @@ class LocalNotificationService {
 
   static Future<void> cancelOngoingLiveNotification(int sessionId) async {
     await _notificationsPlugin.cancel(sessionId + 300000);
+  }
+
+  static final Set<String> _cancelledSessions = {};
+
+  static void markSessionCancelled(String sessionId) {
+    _cancelledSessions.add(sessionId);
+  }
+
+  static bool isSessionCancelled(String sessionId) {
+    return _cancelledSessions.contains(sessionId);
+  }
+
+  static void handleNotificationRouting(String payload, bool isAnswer, bool isDecline, {String? callerName}) async {
+    debugPrint('Routing payload: $payload, isAnswer: $isAnswer, isDecline: $isDecline');
+    final bool isChat = payload.startsWith('chat_');
+    final int? sessionId = isChat ? int.tryParse(payload.replaceFirst('chat_', '')) : null;
+
+    if (isDecline) {
+      debugPrint('Routing: User declined the request.');
+      if (isChat && sessionId != null) {
+        try {
+          await Get.find<ApiClient>().post(AppUrls.rejectChatSession(sessionId));
+        } catch (e) {
+          debugPrint('Reject error from CallKit: $e');
+        }
+        FloatingChatBubble.dismiss();
+      }
+      return;
+    }
+
+    if (isAnswer && isChat && sessionId != null) {
+      _acceptChatAndNavigate(sessionId, overrideName: callerName);
+      return;
+    }
+
+    if (payload.startsWith('call_')) {
+      if (Get.isRegistered<CallController>()) {
+        final callController = Get.find<CallController>();
+        final currentStatus = callController.status.value;
+
+        if (currentStatus == 'completed' ||
+            currentStatus == 'ended' ||
+            currentStatus == 'cancelled' ||
+            currentStatus == 'idle') {
+          debugPrint('[LocalNotificationService] Stale call tapped, cancelling...');
+        } else if (currentStatus == 'ongoing') {
+          Get.to(() => const CallScreen());
+        } else if (currentStatus == 'ringing') {
+          // If they tap a notification while ringing, trigger CallKit
+          final String name = (callController.consumerName != null && callController.consumerName!.isNotEmpty) ? callController.consumerName! : 'User';
+          final String userAvatar = (callController.consumerImage != null && callController.consumerImage!.isNotEmpty && callController.consumerImage != 'null') ? callController.consumerImage! : 'assets/images/app_logo.png';
+          
+          CallkitService.showCallkitNotification(
+            sessionId: callController.sessionId.toString(),
+            callerName: name,
+            avatar: userAvatar,
+            type: 'call',
+          );
+        } else {
+          callController.checkPendingCall();
+        }
+      } else {
+        debugPrint('[LocalNotificationService] Cold start init CallController...');
+        final sessionIdStr = payload.replaceFirst('call_', '');
+        final int? sessionId = int.tryParse(sessionIdStr);
+        
+        if (isAnswer && sessionId != null) {
+          Get.to(() => const CallScreen());
+        } else {
+          final callController = Get.put(CallController());
+          callController.checkPendingCall();
+        }
+      }
+    } else if (payload.startsWith('live_')) {
+      if (Get.isRegistered<LiveController>()) {
+        final liveController = Get.find<LiveController>();
+        if (liveController.isRoomOpen) return;
+        final ongoingSession = liveController.currentActiveSession.value;
+        if (ongoingSession != null) {
+          liveController.isRoomOpen = true;
+          Get.to(() => LiveRoomScreen(session: ongoingSession))?.then((_) {
+            liveController.isRoomOpen = false;
+          });
+        } else {
+          Get.to(() => const LiveScheduleScreen());
+        }
+      } else {
+        Get.to(() => const LiveScheduleScreen());
+      }
+    } else if (payload.startsWith('wallet_')) {
+      debugPrint('[LocalNotificationService] Wallet notification tapped. Payload: $payload');
+      // TODO: Navigate to Wallet screen when route is available
+      // Get.toNamed('/wallet');
+    } else {
+      final rawPayloadStr = payload.replaceFirst('chat_', '').replaceFirst('CHAT_REQUEST_', '');
+      final int? sId = int.tryParse(rawPayloadStr);
+      if (sId != null) {
+        if (isDecline) {
+          try {
+            Get.find<ApiClient>().post(AppUrls.rejectChatSession(sId));
+          } catch (e) {
+            debugPrint('Reject error: $e');
+          }
+          FloatingChatBubble.dismiss();
+          return;
+        }
+        
+        // Auto-accept and navigate if they tap the notification (unless they explicitly declined)
+        _acceptChatAndNavigate(sId);
+        return;
+      }
+    }
+  }
+
+  static Future<void> _acceptChatAndNavigate(int sId, {String? overrideName}) async {
+    try {
+      final response = await Get.find<ApiClient>().post(AppUrls.acceptChatSession(sId));
+      if (response.isSuccess) {
+        FlutterCallkitIncoming.endCall(sId.toString());
+        FloatingChatBubble.dismiss();
+        
+        final startedAt = response.body?['data']?['session']?['started_at']?.toString() ?? DateTime.now().toUtc().toIso8601String();
+        
+        String uName = 'User';
+        if (overrideName != null && overrideName.isNotEmpty) {
+          uName = overrideName;
+        } else if (WebSocketService.lastChatSenderData != null && WebSocketService.lastChatSenderData!['name'] != null) {
+          uName = WebSocketService.lastChatSenderData!['name'].toString();
+        } else if (FloatingChatBubble.name?.isNotEmpty == true) {
+          uName = FloatingChatBubble.name!;
+        }
+
+        if (Get.context != null) {
+          // Initialize the floating bubble manually so the UI knows the correct name
+          FloatingChatBubble.show(
+            sessionId: sId,
+            name: uName,
+            imageUrl: '',
+            status: 'ongoing',
+            startedAt: startedAt,
+            onTap: () {
+              // Usually the bubble handles its own tap now, or we can just navigate if needed.
+              // But Get.to inside onTap might be redundant if the bubble already does it.
+              // Let's just pass an empty callback or a navigation callback.
+              Get.to(
+                () => ChatScreen(
+                  userName: uName,
+                  userImage: '',
+                  sessionId: sId,
+                  initialStatus: 'ongoing',
+                  startedAtString: startedAt,
+                ),
+                binding: ChatBinding(),
+              );
+            },
+          );
+          
+          Get.to(
+            () => ChatScreen(
+              userName: uName, 
+              userImage: '', 
+              sessionId: sId, 
+              initialStatus: 'ongoing',
+              startedAtString: startedAt,
+            ),
+            binding: ChatBinding(),
+          );
+        } else {
+          debugPrint('Cannot route to ChatScreen or show bubble: Get.context is null (background isolate?)');
+        }
+      }
+    } catch (e) {
+      debugPrint('Accept error: $e');
+    }
   }
 }

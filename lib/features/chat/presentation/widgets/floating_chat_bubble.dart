@@ -54,7 +54,7 @@ class FloatingChatBubble {
   }
 
   static Future<void> show({
-    required BuildContext context,
+    BuildContext? context,
     required int sessionId,
     required String name,
     required String imageUrl,
@@ -305,12 +305,13 @@ class _FloatingChatBubbleWidgetState extends State<FloatingChatBubbleWidget> {
                       shape: BoxShape.circle,
                     ),
                     child:
-                        widget.imageUrl.trim().isNotEmpty
+                        (widget.imageUrl.trim().isNotEmpty && widget.imageUrl != 'null')
                             ? CustomImageWidget(
                               imagePath: widget.imageUrl,
                               width: 36,
                               height: 36,
                               fit: BoxFit.cover,
+                              fallbackWidget: _buildInitialAvatar(widget.name),
                               errorBuilder:
                                   (_, __, ___) =>
                                       _buildInitialAvatar(widget.name),

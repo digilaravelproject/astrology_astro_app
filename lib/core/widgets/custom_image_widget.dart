@@ -258,6 +258,7 @@ class CustomImageWidget extends StatelessWidget {
             );
           }
         case ImageType.unknown:
+          if (fallbackWidget != null) return fallbackWidget!;
           return Image.asset(
             placeHolder,
             height: height,
@@ -266,6 +267,7 @@ class CustomImageWidget extends StatelessWidget {
           );
       }
     }
+    if (fallbackWidget != null) return fallbackWidget!;
     return const SizedBox();
   }
 }

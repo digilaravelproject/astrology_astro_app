@@ -12,17 +12,36 @@ import 'routes/route_helper.dart';
 import 'core/bindings/initial_bindings.dart';
 import 'core/utils/custom_snackbar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'dart:convert';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:astro_astrologer/firebase_options.dart';
 import 'package:astro_astrologer/core/services/local_notification_service.dart';
+import 'package:astro_astrologer/core/services/config/env_config.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:astro_astrologer/core/services/callkit_service.dart';
+import 'package:astro_astrologer/core/services/network/websocket_service.dart';
+import 'package:flutter_callkit_incoming/entities/entities.dart';
+import 'dart:convert';
 
 import 'features/chat/presentation/widgets/overlay_main.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   try {
-    await LocalNotificationService.initialize();
+    await EnvConfig.load();
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    await LocalNotificationService.initialize(requestPermission: false);
+    
+    // Initialize WebSocket in background so it can listen to dismissal events immediately
+    try {
+      Get.put(WebSocketService());
+      await Get.find<WebSocketService>().init();
+    } catch (e) {
+      debugPrint('Background WebSocket initialization failed: $e');
+    }
+
     final data = message.data;
-    final title = message.notification?.title ?? '';
+    final title = message.notification?.title ?? data['title']?.toString() ?? '';
+    final body = message.notification?.body ?? data['body']?.toString() ?? '';
     final type = data['type']?.toString();
 
     final String rawSessionId =
@@ -31,22 +50,94 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         data['chat_assistance_session_id']?.toString() ??
         data['live_session_id']?.toString() ??
         data['id']?.toString() ??
-        '';
+        'unknown_session';
     final int parsedSessionId = int.tryParse(rawSessionId) ?? 0;
 
+    final String? reason = data['reason']?.toString()?.toLowerCase();
+    
     if (title.contains('Chat Ended') ||
+        title.contains('Cancelled') ||
+        reason == 'cancelled' ||
+        reason == 'rejected' ||
         type == 'chat_ended' ||
         type == 'CHAT_ENDED' ||
         type == 'session_ended' ||
         type == 'chat_summary' ||
         type == 'CHAT_MISSED' ||
-        type == 'CHAT_DISMISSED') {
+        type?.toLowerCase() == 'chat_dismissed') {
+      LocalNotificationService.markSessionCancelled(parsedSessionId.toString());
+      CallkitService.endCall(parsedSessionId.toString());
+      LocalNotificationService.cancelOngoingLiveNotification(parsedSessionId);
+      return;
     } else if (title.contains('Call Ended') ||
-        type == 'call_ended' ||
-        type == 'CALL_ENDED' ||
-        type == 'session_completed' ||
-        type == 'CALL_FAILED' ||
-        type == 'CALL_DISMISSED') {}
+        type?.toLowerCase() == 'call_ended' ||
+        type?.toLowerCase() == 'session_completed' ||
+        type?.toLowerCase() == 'call_failed' ||
+        type?.toLowerCase() == 'call_dismissed') {
+      LocalNotificationService.markSessionCancelled(parsedSessionId.toString());
+      CallkitService.endCall(parsedSessionId.toString());
+      LocalNotificationService.cancelOngoingLiveNotification(parsedSessionId);
+      return;
+    } else if (type?.toUpperCase() == 'CHAT_REQUEST' || type?.toUpperCase() == 'CALL_REQUEST' || type?.toLowerCase() == 'call' || (type?.toLowerCase() == 'chat' && title.contains('Request') && !title.contains('Cancelled'))) {
+      final String channelType = data['channel_type']?.toString() ?? (type?.toLowerCase() == 'call' ? 'call' : 'chat');
+      final String userName = data['user_name']?.toString() ?? data['caller_name']?.toString() ?? 'User';
+      
+      final String notifTitle = type == 'call' ? 'Incoming Call' : 'Chat Request';
+      final String nameCallerParam = type == 'call' ? userName : 'Chat Req: $userName';
+      final String notifBody = '$userName • Astrologer • Now';
+      final String payloadStr = '${channelType}_$parsedSessionId';
+      
+      final String userAvatarRaw = data['user_avatar']?.toString() ?? data['caller_image']?.toString() ?? '';
+      final String userAvatar = userAvatarRaw.isNotEmpty ? userAvatarRaw : 'assets/images/app_logo.png';
+
+      CallKitParams callKitParams = CallKitParams(
+        id: parsedSessionId.toString(),
+        nameCaller: nameCallerParam,
+        appName: AppConstants.appName,
+        avatar: userAvatar,
+        handle: notifTitle,
+        type: 0,
+        duration: 30000,
+        extra: <String, dynamic>{'payload': payloadStr, 'sessionId': parsedSessionId},
+        headers: <String, dynamic>{'apiKey': 'Abc@123!', 'platform': 'flutter'},
+        android: const AndroidParams(
+          isCustomNotification: true,
+          isShowLogo: false,
+          ringtonePath: 'system_ringtone_default',
+          backgroundColor: '#FFFFFF',
+          backgroundUrl: 'assets/images/background.png',
+          actionColor: '#4CAF50',
+          textColor: '#000000',
+          textAccept: 'Accept',
+          textDecline: 'Decline',
+        ),
+      );
+      
+      await CallkitService.showIncomingCall(callKitParams);
+    } else {
+      String payloadStr = '';
+      if (type?.toLowerCase() == 'gift' || type?.toLowerCase() == 'payout_settlement' || type?.toLowerCase() == 'wallet') {
+        final ref = data['reference_id']?.toString() ?? data['entity_id']?.toString() ?? '';
+        payloadStr = ref.isNotEmpty ? 'wallet_$ref' : data.toString();
+      } else {
+        payloadStr = rawSessionId.isNotEmpty ? rawSessionId : data.toString();
+      }
+
+      String channelId = 'general';
+      if (payloadStr.startsWith('wallet_')) channelId = 'wallet';
+
+      LocalNotificationService.showNotification(
+        notificationId: parsedSessionId > 0 ? parsedSessionId : null,
+        title: title,
+        body: body,
+        payload: payloadStr,
+        channelId: channelId,
+        playSound: true,
+        priority: Priority.high,
+        importance: Importance.max,
+      );
+    }
+
     if (data.containsKey('session')) {
       final sessionData =
           data['session'] is String
