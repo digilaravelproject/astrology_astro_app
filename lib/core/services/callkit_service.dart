@@ -144,6 +144,7 @@ class CallkitService {
       android: const AndroidParams(
         isCustomNotification: true,
         isShowLogo: false,
+        isShowFullLockedScreen: false, // Disable full-screen call activity — notification banner only
         ringtonePath: 'system_ringtone_default',
         backgroundColor: '#0A0A0A',
         backgroundUrl: 'assets/images/background.png',
