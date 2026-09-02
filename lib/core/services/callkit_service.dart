@@ -86,9 +86,9 @@ class CallkitService {
           if (payload == null) break;
 
           if (payload.startsWith('call_')) {
-            // ── Reject incoming call ──
+            // ── Reject incoming call — calls POST /call/{id}/reject ──
             if (Get.isRegistered<CallController>()) {
-              Get.find<CallController>().cleanUp();
+              Get.find<CallController>().rejectCall();
             }
           } else if (payload.startsWith('chat_')) {
             // ── Reject chat request ──
