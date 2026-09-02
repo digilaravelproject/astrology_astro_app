@@ -284,29 +284,27 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           titleWidget: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // Avatar circle with first letter
               Container(
+                width: 36,
+                height: 36,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.deepPink.withOpacity(0.1),
+                  color: AppColors.deepPink.withOpacity(0.15),
+                  border: Border.all(
+                    color: AppColors.deepPink.withOpacity(0.4),
+                    width: 1.5,
+                  ),
                 ),
-                child: CustomImageWidget(
-                  imagePath: (widget.userImage.isNotEmpty && widget.userImage != 'null')
-                      ? (widget.userImage.startsWith('http') 
-                          ? widget.userImage 
-                          : '${AppUrls.baseImageUrl}${widget.userImage}') 
-                      : '',
-                  height: 32,
-                  width: 32,
-                  radius: BorderRadius.circular(16),
-                  fallbackWidget: Center(
-                    child: AppText(
-                      widget.userName.isNotEmpty
-                          ? widget.userName.substring(0, 1).toUpperCase()
-                          : 'U',
-                      color: AppColors.deepPink,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
+                clipBehavior: Clip.antiAlias,
+                child: Center(
+                  child: AppText(
+                    widget.userName.isNotEmpty
+                        ? widget.userName.substring(0, 1).toUpperCase()
+                        : 'U',
+                    color: AppColors.deepPink,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   ),
                 ),
               ),
