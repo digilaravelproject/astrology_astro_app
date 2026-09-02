@@ -9,6 +9,7 @@ import 'package:astro_astrologer/core/services/network/websocket_service.dart';
 import 'package:astro_astrologer/core/services/local_notification_service.dart';
 import 'package:astro_astrologer/core/services/foreground_task_service.dart';
 import 'package:astro_astrologer/core/widgets/custom_image_widget.dart';
+import 'package:astro_astrologer/features/chat/presentation/controllers/chat_controller.dart';
 
 class FloatingChatBubble {
   static final RxInt unreadCount = 0.obs;
@@ -382,7 +383,13 @@ class _FloatingChatBubbleWidgetState extends State<FloatingChatBubbleWidget> {
                           );
                         }
                         return Text(
-                          'Active Chat • ${_formatDuration(_elapsedSeconds.value)}',
+                          // Use ChatController.elapsedSeconds as source of truth
+                          // so bubble, chat screen, and notification all stay in sync.
+                          'Active Chat • ${_formatDuration(
+                            Get.isRegistered<ChatController>()
+                                ? Get.find<ChatController>().elapsedSeconds.value
+                                : _elapsedSeconds.value,
+                          )}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,
