@@ -888,7 +888,10 @@ class CallController extends GetxController with WidgetsBindingObserver {
                   session['offer_sdp']?.toString() ??
                   session['consumer_sdp']?.toString();
               incomingOfferSdp = offerSdp ?? '';
-              _handleIncomingCall(incomingOfferSdp!);
+              // CallKit notification is already shown by the WebSocket event.
+              // Do NOT call _handleIncomingCall here — it would re-show the
+              // full-screen CallKit activity every time the app resumes.
+              // _handleIncomingCall(incomingOfferSdp!);
             }
 
             // Show Notification if the call is ongoing
@@ -913,9 +916,11 @@ class CallController extends GetxController with WidgetsBindingObserver {
               Logger.d('CallController: Showing ongoing call notification...');
               // Removed Notification call
               // Navigate to CallScreen if not already visible
-              if (!isCallScreenVisible) {
+              // CallkitService handles navigation to CallScreen on Accept.
+              // Only navigate here if already registered via Accept button.
+              if (!isCallScreenVisible && status.value == CallStatus.ongoing) {
                 Logger.d(
-                  'CallController: Navigating to CallScreen for ongoing call.',
+                  'CallController: Navigating to CallScreen for resumed ongoing call.',
                 );
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   if (Get.currentRoute != '/CallScreen') {
