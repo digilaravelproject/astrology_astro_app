@@ -188,17 +188,6 @@ class CallkitService {
               
               debugPrint('CallKit: Current route before navigating to ChatScreen: ${Get.currentRoute}');
 
-              if (!Get.isRegistered<ChatController>()) {
-                debugPrint('CallKit: ChatController not registered, putting it now');
-                Get.put(ChatController(
-                  loadChatHistoryUseCase: Get.find(),
-                  sendTextMessageUseCase: Get.find(),
-                  sendAttachmentUseCase: Get.find(),
-                  markMessagesReadUseCase: Get.find(),
-                  endChatSessionUseCase: Get.find(),
-                ));
-              }
-
               Get.to(
                 () => ChatScreen(
                   sessionId: sId,
