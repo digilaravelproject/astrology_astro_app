@@ -253,10 +253,10 @@ class CallkitService {
       extra: <String, dynamic>{'payload': payloadStr, 'sessionId': sessionId},
       headers: <String, dynamic>{'apiKey': 'Abc@123!', 'platform': 'flutter'},
       android: const AndroidParams(
-        isCustomNotification: true,
+        isCustomNotification: false,
         isShowLogo: false,
-        isShowFullLockedScreen:
-            false, // Disable full-screen call activity — notification banner only
+        isShowFullLockedScreen: true,
+
         ringtonePath: 'system_ringtone_default',
         backgroundColor: '#0A0A0A',
         backgroundUrl: 'assets/images/background.png',
