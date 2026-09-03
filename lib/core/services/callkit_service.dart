@@ -177,8 +177,8 @@ class CallkitService {
             lastAcceptedSessionId = sId.toString();
 
             // 2. Navigate to ChatScreen — pass acceptedAt so all 3 timers start from same moment
-            WidgetsBinding.instance.addPostFrameCallback((_) async {
-              debugPrint('CallKit: PostFrameCallback for ChatScreen navigation triggered');
+            Future.microtask(() async {
+              debugPrint('CallKit: Navigation task for ChatScreen started');
               // Wait until splash screen is gone to avoid Get.offAllNamed clearing this route
               int waitRetries = 0;
               while ((Get.currentRoute == RouteHelper.getSplashRoute() || Get.currentRoute.isEmpty) && waitRetries < 50) {
