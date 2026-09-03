@@ -30,8 +30,14 @@ class AppUrls {
   static const String removeDeviceToken = "/astrologer/remove-token";
   static String getNotificationCount(int userId) =>
       "/user/notifications/count?user_id=$userId";
-  static String getNotifications(int userId) =>
-      "/user/notifications?user_id=$userId";
+  static String getNotifications(int userId, {int page = 1}) =>
+      "/user/notifications?user_id=$userId&page=$page";
+  static String markAllNotificationsRead(int userId) =>
+      "/user/notifications/mark-all-read?user_id=$userId";
+  static String deleteNotification(int id, int userId) =>
+      "/user/notifications/$id?user_id=$userId";
+  static String deleteAllNotifications(int userId) =>
+      "/user/notifications/delete-all?user_id=$userId";
   static const String bankAccounts = "/astrologer/bank-accounts";
   static String setDefaultBankAccount(int id) =>
       "/astrologer/bank-accounts/$id/set-default";

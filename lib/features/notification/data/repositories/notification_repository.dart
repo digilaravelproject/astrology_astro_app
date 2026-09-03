@@ -16,11 +16,11 @@ class NotificationRepository implements NotificationRepositoryInterface {
   }
 
   @override
-  Future<ResponseModel> getNotifications(int userId) async {
+  Future<ResponseModel> getNotifications(int userId, {int page = 1}) async {
     Logger.d(
-      'NotificationRepository: Fetching notifications for userId: $userId',
+      'NotificationRepository: Fetching notifications for userId: $userId, page: $page',
     );
-    return await _apiClient.get(AppUrls.getNotifications(userId));
+    return await _apiClient.get(AppUrls.getNotifications(userId, page: page));
   }
 
   @override
@@ -37,5 +37,25 @@ class NotificationRepository implements NotificationRepositoryInterface {
       'NotificationRepository: Marking as read notificationId: $id, userId: $userId',
     );
     return await _apiClient.put(AppUrls.markNotificationRead(id, userId));
+  }
+
+  @override
+  Future<ResponseModel> markAllNotificationsRead(int userId) async {
+    Logger.d('NotificationRepository: Marking all as read for userId: $userId');
+    return await _apiClient.post(AppUrls.markAllNotificationsRead(userId));
+  }
+
+  @override
+  Future<ResponseModel> deleteNotification(int id, int userId) async {
+    Logger.d(
+      'NotificationRepository: Deleting notificationId: $id, userId: $userId',
+    );
+    return await _apiClient.delete(AppUrls.deleteNotification(id, userId));
+  }
+
+  @override
+  Future<ResponseModel> deleteAllNotifications(int userId) async {
+    Logger.d('NotificationRepository: Deleting all notifications for userId: $userId');
+    return await _apiClient.post(AppUrls.deleteAllNotifications(userId));
   }
 }

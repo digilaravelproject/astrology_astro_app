@@ -40,6 +40,9 @@ import '../../features/notification/domain/usecases/get_notification_count_useca
 import '../../features/notification/domain/usecases/get_notifications_usecase.dart';
 import '../../features/notification/domain/usecases/get_notification_detail_usecase.dart';
 import '../../features/notification/domain/usecases/mark_notification_read_usecase.dart';
+import '../../features/notification/domain/usecases/mark_all_notifications_read_usecase.dart';
+import '../../features/notification/domain/usecases/delete_notification_usecase.dart';
+import '../../features/notification/domain/usecases/delete_all_notifications_usecase.dart';
 import '../../features/notification/controllers/notification_controller.dart';
 import '../../features/schedule/data/datasources/schedule_remote_data_source.dart';
 import '../../features/schedule/data/repositories/schedule_repository.dart';
@@ -279,12 +282,27 @@ class InitialBindings extends Bindings {
       () => MarkNotificationReadUseCase(Get.find<NotificationRepository>()),
       fenix: true,
     );
+    Get.lazyPut(
+      () => MarkAllNotificationsReadUseCase(Get.find<NotificationRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => DeleteNotificationUseCase(Get.find<NotificationRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => DeleteAllNotificationsUseCase(Get.find<NotificationRepository>()),
+      fenix: true,
+    );
     Get.put(
       NotificationController(
         Get.find<GetNotificationCountUseCase>(),
         Get.find<GetNotificationsUseCase>(),
         Get.find<GetNotificationDetailUseCase>(),
         Get.find<MarkNotificationReadUseCase>(),
+        Get.find<MarkAllNotificationsReadUseCase>(),
+        Get.find<DeleteNotificationUseCase>(),
+        Get.find<DeleteAllNotificationsUseCase>(),
       ),
       permanent: true,
     );

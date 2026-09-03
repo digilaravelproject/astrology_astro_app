@@ -313,8 +313,20 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
 
       // 4. Create local audio track
       if (micStatus.isGranted) {
-        final audioTrack = await LocalAudioTrack.create();
-        await room.localParticipant?.publishAudioTrack(audioTrack);
+        final audioTrack = await LocalAudioTrack.create(
+          const AudioCaptureOptions(
+            autoGainControl: true,
+            echoCancellation: true,
+            noiseSuppression: false,
+          ),
+        );
+        await room.localParticipant?.publishAudioTrack(
+          audioTrack,
+          publishOptions: const AudioPublishOptions(
+            encoding: AudioEncoding.presetMusicHighQuality,
+            dtx: true,
+          ),
+        );
         _localAudioTrack = audioTrack;
       }
 

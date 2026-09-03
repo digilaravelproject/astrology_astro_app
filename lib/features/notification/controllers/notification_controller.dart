@@ -3,6 +3,9 @@ import '../domain/usecases/get_notification_count_usecase.dart';
 import '../domain/usecases/get_notifications_usecase.dart';
 import '../domain/usecases/get_notification_detail_usecase.dart';
 import '../domain/usecases/mark_notification_read_usecase.dart';
+import '../domain/usecases/mark_all_notifications_read_usecase.dart';
+import '../domain/usecases/delete_notification_usecase.dart';
+import '../domain/usecases/delete_all_notifications_usecase.dart';
 import '../domain/models/notification_count_model.dart';
 import '../domain/models/notification_item_model.dart';
 import '../../auth/controllers/auth_controller.dart';
@@ -13,12 +16,18 @@ class NotificationController extends GetxController {
   final GetNotificationsUseCase _getNotificationsUseCase;
   final GetNotificationDetailUseCase _getNotificationDetailUseCase;
   final MarkNotificationReadUseCase _markNotificationReadUseCase;
+  final MarkAllNotificationsReadUseCase _markAllNotificationsReadUseCase;
+  final DeleteNotificationUseCase _deleteNotificationUseCase;
+  final DeleteAllNotificationsUseCase _deleteAllNotificationsUseCase;
 
   NotificationController(
     this._getNotificationCountUseCase,
     this._getNotificationsUseCase,
     this._getNotificationDetailUseCase,
     this._markNotificationReadUseCase,
+    this._markAllNotificationsReadUseCase,
+    this._deleteNotificationUseCase,
+    this._deleteAllNotificationsUseCase,
   );
 
   final unreadCount = 0.obs;
@@ -96,7 +105,12 @@ class NotificationController extends GetxController {
     }
   }
 
-  Future<void> getNotifications() async {
+  // Pagination state
+  int _currentPage = 1;
+  bool _hasMore = true;
+  final isFetchingMore = false.obs;
+
+  Future<void> getNotifications({bool refresh = false}) async {
     try {
       if (!Get.isRegistered<AuthController>()) return;
 
@@ -110,8 +124,19 @@ class NotificationController extends GetxController {
         return;
       }
 
-      isNotificationsLoading.value = true;
-      final response = await _getNotificationsUseCase.execute(userId);
+      if (refresh) {
+        _currentPage = 1;
+        _hasMore = true;
+        isNotificationsLoading.value = true;
+      } else {
+        if (!_hasMore || isFetchingMore.value) return;
+        isFetchingMore.value = true;
+      }
+
+      final response = await _getNotificationsUseCase.execute(
+        userId,
+        page: _currentPage,
+      );
 
       Logger.d(
         'NotificationController: getNotifications response: ${response.isSuccess}',
@@ -120,14 +145,28 @@ class NotificationController extends GetxController {
       if (response.isSuccess && response.body != null) {
         final rawList = response.body['notifications'] as List?;
         if (rawList != null) {
-          notifications.assignAll(
-            rawList
-                .map((item) => NotificationItemModel.fromJson(item))
-                .toList(),
-          );
+          final newItems =
+              rawList
+                  .map((item) => NotificationItemModel.fromJson(item))
+                  .toList();
+          if (refresh) {
+            notifications.assignAll(newItems);
+          } else {
+            notifications.addAll(newItems);
+          }
           Logger.d(
             'NotificationController: Loaded ${notifications.length} notifications',
           );
+        }
+
+        final pagination = response.body['pagination'];
+        if (pagination != null) {
+          _hasMore = pagination['has_more'] ?? false;
+          if (_hasMore) {
+            _currentPage++;
+          }
+        } else {
+          _hasMore = false;
         }
       } else {
         Logger.e(
@@ -138,6 +177,7 @@ class NotificationController extends GetxController {
       Logger.e('NotificationController: getNotifications error: $e');
     } finally {
       isNotificationsLoading.value = false;
+      isFetchingMore.value = false;
     }
   }
 
@@ -217,6 +257,76 @@ class NotificationController extends GetxController {
       }
     } catch (e) {
       Logger.e('NotificationController: markAsRead error: $e');
+    }
+  }
+
+  Future<void> markAllAsRead() async {
+    try {
+      if (!Get.isRegistered<AuthController>()) return;
+      final authController = Get.find<AuthController>();
+      final userId = authController.currentUser.value?.id;
+      if (userId == null) return;
+
+      final response = await _markAllNotificationsReadUseCase.execute(userId);
+
+      if (response.isSuccess) {
+        Logger.d('NotificationController: All notifications marked as read');
+        // Update local list
+        for (var i = 0; i < notifications.length; i++) {
+          if (!notifications[i].isRead) {
+            notifications[i] = notifications[i].copyWith(isRead: true);
+          }
+        }
+        unreadCount.value = 0;
+      }
+    } catch (e) {
+      Logger.e('NotificationController: markAllAsRead error: $e');
+    }
+  }
+
+  Future<void> deleteNotification(int id) async {
+    try {
+      if (!Get.isRegistered<AuthController>()) return;
+      final authController = Get.find<AuthController>();
+      final userId = authController.currentUser.value?.id;
+      if (userId == null) return;
+
+      final response = await _deleteNotificationUseCase.execute(id, userId);
+
+      if (response.isSuccess) {
+        Logger.d('NotificationController: Notification $id deleted');
+
+        // Remove locally
+        final index = notifications.indexWhere((n) => n.id == id);
+        if (index != -1) {
+          final n = notifications[index];
+          notifications.removeAt(index);
+          if (!n.isRead && unreadCount.value > 0) {
+            unreadCount.value--;
+          }
+        }
+      }
+    } catch (e) {
+      Logger.e('NotificationController: deleteNotification error: $e');
+    }
+  }
+
+  Future<void> deleteAllNotifications() async {
+    try {
+      if (!Get.isRegistered<AuthController>()) return;
+      final authController = Get.find<AuthController>();
+      final userId = authController.currentUser.value?.id;
+      if (userId == null) return;
+
+      final response = await _deleteAllNotificationsUseCase.execute(userId);
+
+      if (response.isSuccess) {
+        Logger.d('NotificationController: All notifications deleted');
+        notifications.clear();
+        unreadCount.value = 0;
+      }
+    } catch (e) {
+      Logger.e('NotificationController: deleteAllNotifications error: $e');
     }
   }
 }

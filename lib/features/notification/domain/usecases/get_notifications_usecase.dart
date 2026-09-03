@@ -6,7 +6,7 @@ class GetNotificationsUseCase {
 
   GetNotificationsUseCase(this._repository);
 
-  Future<ResponseModel> execute(int userId) async {
-    return await _repository.getNotifications(userId);
+  Future<ResponseModel> execute(int userId, {int page = 1}) async {
+    return await _repository.getNotifications(userId, page: page);
   }
 }
