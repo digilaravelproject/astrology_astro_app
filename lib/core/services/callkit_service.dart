@@ -184,7 +184,13 @@ class CallkitService {
 
               if (!Get.isRegistered<ChatController>()) {
                 debugPrint('CallKit: ChatController not registered, putting it now');
-                Get.put(ChatController(Get.find(), Get.find()));
+                Get.put(ChatController(
+                  loadChatHistoryUseCase: Get.find(),
+                  sendTextMessageUseCase: Get.find(),
+                  sendAttachmentUseCase: Get.find(),
+                  markMessagesReadUseCase: Get.find(),
+                  endChatSessionUseCase: Get.find(),
+                ));
               }
 
               Get.to(
