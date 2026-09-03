@@ -179,11 +179,16 @@ class CallkitService {
             // 2. Navigate to ChatScreen — pass acceptedAt so all 3 timers start from same moment
             Future.microtask(() async {
               debugPrint('CallKit: Navigation task for ChatScreen started');
-              // Wait until splash screen is gone to avoid Get.offAllNamed clearing this route
+              // Wait until splash screen is gone and navigator is ready
               int waitRetries = 0;
-              while ((Get.currentRoute == RouteHelper.getSplashRoute() || Get.currentRoute.isEmpty) && waitRetries < 50) {
+              while ((Get.key.currentState == null || Get.currentRoute == RouteHelper.getSplashRoute() || Get.currentRoute.isEmpty || Get.currentRoute == '/') && waitRetries < 150) {
                 await Future.delayed(const Duration(milliseconds: 100));
                 waitRetries++;
+              }
+              
+              if (Get.key.currentState == null || Get.currentRoute == RouteHelper.getSplashRoute() || Get.currentRoute.isEmpty || Get.currentRoute == '/') {
+                debugPrint('CallKit: Navigation failed, UI not ready after 15 seconds. Current route: ${Get.currentRoute}');
+                return;
               }
               
               debugPrint('CallKit: Current route before navigating to ChatScreen: ${Get.currentRoute}');
