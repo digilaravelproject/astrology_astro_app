@@ -271,13 +271,15 @@ class ChatController extends GetxController with WidgetsBindingObserver {
 
         SoundVibrationService().stopRingtone();
 
-        // Restart the foreground notification with correct start time
+        // Start or update the foreground notification with correct start time
         final startTime = sessionData['updated_at']?.toString() != null
             ? _parseSmartDate(sessionData['updated_at']?.toString() ?? '')
             : DateTime.now();
-        await ForegroundTaskService.stopService();
+            
+        final consumerName = sessionData['callerData']?['name']?.toString() ?? 'User';
+        
         await ForegroundTaskService.startActiveSessionNotification(
-          title: 'Active Chat',
+          title: 'Active Chat with $consumerName',
           type: 'Chat',
           startedAt: startTime,
         );

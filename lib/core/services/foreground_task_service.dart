@@ -11,6 +11,8 @@ class CallForegroundTaskHandler extends TaskHandler {
   int? _startedAtMillis;
   String _sessionType = 'Chat';
 
+  String _title = 'Active Session';
+
   @override
   Future<void> onStart(DateTime timestamp, TaskStarter starter) async {
     Logger.d('Foreground Task Started');
@@ -21,10 +23,37 @@ class CallForegroundTaskHandler extends TaskHandler {
       key: 'sessionType',
     );
     if (type != null) _sessionType = type;
+    final title = await FlutterForegroundTask.getData<String>(
+      key: 'title',
+    );
+    if (title != null) _title = title;
   }
 
   @override
-  void onRepeatEvent(DateTime timestamp) {
+  void onReceiveData(Object data) {
+    if (data is Map) {
+      if (data['startedAt'] != null) {
+        _startedAtMillis = data['startedAt'] as int;
+      }
+      if (data['sessionType'] != null) {
+        _sessionType = data['sessionType'] as String;
+      }
+      if (data['title'] != null) {
+        _title = data['title'] as String;
+      }
+    }
+  }
+
+  @override
+  void onRepeatEvent(DateTime timestamp) async {
+    if (_startedAtMillis == null) {
+      _startedAtMillis = await FlutterForegroundTask.getData<int>(key: 'startedAt');
+    }
+    if (_title == 'Active Session') {
+      final savedTitle = await FlutterForegroundTask.getData<String>(key: 'title');
+      if (savedTitle != null) _title = savedTitle;
+    }
+
     if (_startedAtMillis != null) {
       final startedAt = DateTime.fromMillisecondsSinceEpoch(_startedAtMillis!);
       final diff = DateTime.now().difference(startedAt).inSeconds;
@@ -32,7 +61,7 @@ class CallForegroundTaskHandler extends TaskHandler {
 
       final String timeString = _formatDuration(elapsed);
       FlutterForegroundTask.updateService(
-        notificationTitle: 'Active $_sessionType',
+        notificationTitle: _title,
         notificationText: 'Ongoing session • $timeString',
       );
     }
@@ -120,9 +149,15 @@ class ForegroundTaskService {
       value: startTimeMillis,
     );
     await FlutterForegroundTask.saveData(key: 'sessionType', value: type);
+    await FlutterForegroundTask.saveData(key: 'title', value: title);
 
     try {
       if (await FlutterForegroundTask.isRunningService) {
+        FlutterForegroundTask.sendDataToTask({
+          'startedAt': startTimeMillis,
+          'sessionType': type,
+          'title': title,
+        });
         FlutterForegroundTask.updateService(
           notificationTitle: title,
           notificationText: 'Ongoing session • 00:00',
@@ -137,6 +172,7 @@ class ForegroundTaskService {
     } catch (e) {
       Logger.d("ForegroundTaskService startService failed: $e");
     }
+
   }
 
   static void listenTaskData(Function(dynamic) callback) {
