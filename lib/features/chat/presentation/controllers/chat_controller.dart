@@ -184,11 +184,14 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  // ──────────────────────────────────────────────────────────────────────────
+  Timer? _timer;
+
+  bool isChatScreenVisible = false;
 
   @override
   void onInit() {
     super.onInit();
+    isChatScreenVisible = true;
     WidgetsBinding.instance.addObserver(this);
     ForegroundTaskService.listenTaskData((data) {
       if (data is Map && data['action'] == 'hangup') {
@@ -908,7 +911,11 @@ class ChatController extends GetxController with WidgetsBindingObserver {
 
     // Immediately close screen for smooth UX
     if (Get.isRegistered<ChatController>()) {
-      Get.back();
+      final wasVisible = isChatScreenVisible;
+      isChatScreenVisible = false;
+      if (wasVisible) {
+        Get.back();
+      }
     }
 
     try {
@@ -934,8 +941,18 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       isLoading.value = false;
       status.value = ChatStatus.completed;
       _timer?.cancel();
+      _timer = null;
+      try {
+        ForegroundTaskService.stopService();
+      } catch (_) {}
 
       FloatingChatBubble.dismiss();
+
+      final wasVisible = isChatScreenVisible;
+      isChatScreenVisible = false;
+      if (wasVisible) {
+        Get.back();
+      }
     }
   }
 
@@ -981,6 +998,8 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       );
       return;
     }
+
+    isChatScreenVisible = false;
     WebSocketService.activeSessionId = null;
     final startStr =
         _startedAt ??

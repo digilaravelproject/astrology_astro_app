@@ -156,8 +156,16 @@ class CallController extends GetxController with WidgetsBindingObserver {
     //   barrierDismissible: false,
     // );
 
-    final String name = (consumerName != null && consumerName!.isNotEmpty) ? consumerName! : 'User';
-    final String userAvatar = (consumerImage != null && consumerImage!.isNotEmpty && consumerImage != 'null') ? consumerImage! : 'assets/images/app_logo.png';
+    final String name =
+        (consumerName != null && consumerName!.isNotEmpty)
+            ? consumerName!
+            : 'User';
+    final String userAvatar =
+        (consumerImage != null &&
+                consumerImage!.isNotEmpty &&
+                consumerImage != 'null')
+            ? consumerImage!
+            : 'assets/images/app_logo.png';
 
     CallkitService.showCallkitNotification(
       sessionId: sessionId.toString(),
@@ -174,7 +182,9 @@ class CallController extends GetxController with WidgetsBindingObserver {
     }
     Logger.d('CallController: acceptCall started for sessionId: $sessionId');
     if (_isAccepting) {
-      Logger.d('CallController: acceptCall already in progress, skipping duplicate.');
+      Logger.d(
+        'CallController: acceptCall already in progress, skipping duplicate.',
+      );
       return false;
     }
     _isAccepting = true;
@@ -187,8 +197,9 @@ class CallController extends GetxController with WidgetsBindingObserver {
 
       // 1. Create SDP Answer
       Logger.d('CallController: Creating SDP Answer...');
-      final sdpToUse = (offerSdp.isNotEmpty) ? offerSdp : (incomingOfferSdp ?? '');
-      
+      final sdpToUse =
+          (offerSdp.isNotEmpty) ? offerSdp : (incomingOfferSdp ?? '');
+
       if (sdpToUse.isEmpty) {
         // If still empty, use direct accept
         return await acceptCallDirect();
@@ -224,9 +235,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
         });
         return true;
       } else {
-        Logger.e(
-          'CallController: Accept Call API failed: ${response.message}',
-        );
+        Logger.e('CallController: Accept Call API failed: ${response.message}');
         cleanUp();
         CustomSnackBar.showError('Failed to accept call: ${response.message}');
         return false;
@@ -239,7 +248,6 @@ class CallController extends GetxController with WidgetsBindingObserver {
       _isAccepting = false;
     }
   }
-
 
   /// Accept a call directly WITHOUT a consumer SDP offer.
   /// Used when the call is in 'initiated' status and consumer_sdp is null
@@ -435,7 +443,8 @@ class CallController extends GetxController with WidgetsBindingObserver {
   // ──────────────────────────────────────────────────────────────────────────
 
   bool _isEndingCall = false;
-  bool _isAccepting = false; // Guard to prevent checkPendingCall from re-ringing during acceptCall
+  bool _isAccepting =
+      false; // Guard to prevent checkPendingCall from re-ringing during acceptCall
 
   Future<void> endCall() async {
     if (sessionId == null) return;
@@ -734,7 +743,9 @@ class CallController extends GetxController with WidgetsBindingObserver {
   Future<bool> checkPendingCall() async {
     // Skip if we are in the middle of accepting a call to avoid re-ringing
     if (_isAccepting || status.value == CallStatus.ongoing) {
-      Logger.d('CallController: checkPendingCall skipped — currently accepting or ongoing.');
+      Logger.d(
+        'CallController: checkPendingCall skipped — currently accepting or ongoing.',
+      );
       return false;
     }
     Logger.d('CallController: checkPendingCall started');
