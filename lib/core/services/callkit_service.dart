@@ -53,9 +53,10 @@ class CallkitService {
           }
 
           if (payload == null) {
-            debugPrint('CallKit: ERROR - Payload is still null, cannot process accept!');
+            debugPrint('CallKit: ERROR - Payload is still null after reconstruction attempt!');
             break;
           }
+          debugPrint('CallKit: Processing payload: $payload');
 
           if (payload.startsWith('call_')) {
             // ── Incoming CALL accepted ──
@@ -110,14 +111,22 @@ class CallkitService {
             });
           } else if (payload.startsWith('chat_')) {
             // ── Incoming CHAT accepted ──
-            final sId = int.tryParse(payload.replaceFirst('chat_', ''));
-            if (sId == null) break;
+            debugPrint('CallKit: Entered chat_ block');
+            final sIdStr = payload.replaceFirst('chat_', '');
+            debugPrint('CallKit: Parsed sIdStr: $sIdStr');
+            final sId = int.tryParse(sIdStr);
+            if (sId == null) {
+               debugPrint('CallKit: ERROR - Failed to parse sId from $sIdStr');
+               break;
+            }
+            debugPrint('CallKit: Valid sId: $sId');
 
             // Stop ringtone immediately
             SoundVibrationService().stopRingtone();
 
             // End CallKit telecom session so it doesn't linger
             Future.delayed(const Duration(milliseconds: 500), () {
+              debugPrint('CallKit: Ending CallKit session for $sessionId');
               FlutterCallkitIncoming.endCall(sessionId);
             });
 
@@ -127,11 +136,15 @@ class CallkitService {
             final acceptedAt = DateTime.now();
             try {
               int retries = 0;
+              debugPrint('CallKit: Waiting for ApiClient...');
               while (!Get.isRegistered<ApiClient>() && retries < 40) {
                 await Future.delayed(const Duration(milliseconds: 100));
                 retries++;
               }
+              debugPrint('CallKit: ApiClient registered? ${Get.isRegistered<ApiClient>()} (retries: $retries)');
+              
               if (Get.isRegistered<ApiClient>()) {
+                debugPrint('CallKit: Calling accept API for session $sId...');
                 final resp = await Get.find<ApiClient>().post(
                   AppUrls.acceptChatSession(sId),
                   handleError: false,
@@ -139,7 +152,7 @@ class CallkitService {
                 );
                 accepted = resp.isSuccess;
                 debugPrint(
-                  'CallKit: Chat accept API for session $sId → isSuccess=$accepted',
+                  'CallKit: Chat accept API for session $sId → isSuccess=$accepted, resp message=${resp.message}',
                 );
 
                 if (accepted) {
@@ -159,11 +172,19 @@ class CallkitService {
 
             // 2. Navigate to ChatScreen — pass acceptedAt so all 3 timers start from same moment
             WidgetsBinding.instance.addPostFrameCallback((_) async {
+              debugPrint('CallKit: PostFrameCallback for ChatScreen navigation triggered');
               // Wait until splash screen is gone to avoid Get.offAllNamed clearing this route
               int waitRetries = 0;
               while ((Get.currentRoute == RouteHelper.getSplashRoute() || Get.currentRoute.isEmpty) && waitRetries < 50) {
                 await Future.delayed(const Duration(milliseconds: 100));
                 waitRetries++;
+              }
+              
+              debugPrint('CallKit: Current route before navigating to ChatScreen: ${Get.currentRoute}');
+
+              if (!Get.isRegistered<ChatController>()) {
+                debugPrint('CallKit: ChatController not registered, putting it now');
+                Get.put(ChatController(Get.find(), Get.find()));
               }
 
               Get.to(
