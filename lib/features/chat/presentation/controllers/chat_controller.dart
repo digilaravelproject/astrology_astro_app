@@ -919,6 +919,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     ForegroundTaskService.stopService();
 
     FloatingChatBubble.dismiss();
+    CallkitService.endAllCalls();
 
     // Immediately close screen for smooth UX
     if (Get.isRegistered<ChatController>()) {
@@ -950,6 +951,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       _timer?.cancel();
 
       FloatingChatBubble.dismiss();
+      CallkitService.endAllCalls();
     }
   }
 
@@ -960,6 +962,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
         AppUrls.acceptChatSession(incomingSessionId),
       );
       if (response.isSuccess) {
+        CallkitService.endAllCalls();
         // Find user data to open screen or let WebSocket handle it
       }
     } catch (e) {
@@ -970,6 +973,7 @@ class ChatController extends GetxController with WidgetsBindingObserver {
   Future<void> rejectChat(int incomingSessionId) async {
     try {
       FloatingChatBubble.dismiss(stopForegroundService: true);
+      CallkitService.endAllCalls();
       await Get.find<ApiClient>().post(
         AppUrls.rejectChatSession(incomingSessionId),
       );

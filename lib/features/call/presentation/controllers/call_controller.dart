@@ -224,6 +224,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
         'CallController: Accept Call API response isSuccess: ${response.isSuccess}',
       );
       if (response.isSuccess) {
+        CallkitService.endAllCalls();
         callStartedAt = DateTime.now();
         durationSeconds.value = 0;
         _startCallTimer();
@@ -289,6 +290,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
         'CallController: acceptCallDirect API response isSuccess: ${response.isSuccess}',
       );
       if (response.isSuccess) {
+        CallkitService.endAllCalls();
         _startCallTimer();
         _showOngoingNotification();
         return true;
@@ -598,6 +600,7 @@ class CallController extends GetxController with WidgetsBindingObserver {
   void cleanUp() {
     if (status.value == CallStatus.idle && sessionId == null) return;
     _stopRingtone();
+    CallkitService.endAllCalls();
     _callTimer?.cancel();
     _callTimer = null;
     _ringingTimer?.cancel();
