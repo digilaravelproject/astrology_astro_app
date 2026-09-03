@@ -184,8 +184,6 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  Timer? _timer;
-
   bool isChatScreenVisible = false;
 
   @override
