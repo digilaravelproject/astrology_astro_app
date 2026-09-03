@@ -169,11 +169,26 @@ class ForegroundTaskService {
           notificationText: 'Ongoing session • 00:00',
         );
       } else {
-        await FlutterForegroundTask.startService(
-          notificationTitle: title,
-          notificationText: 'Ongoing session • 00:00',
-          callback: startCallback,
-        );
+        // Add a 1.5s delay to avoid OOM crash on low-RAM devices during WebRTC init
+        await Future.delayed(const Duration(milliseconds: 1500));
+        
+        if (await FlutterForegroundTask.isRunningService) {
+          FlutterForegroundTask.sendDataToTask({
+            'startedAt': startTimeMillis,
+            'sessionType': type,
+            'title': title,
+          });
+          FlutterForegroundTask.updateService(
+            notificationTitle: title,
+            notificationText: 'Ongoing session • 00:00',
+          );
+        } else {
+          await FlutterForegroundTask.startService(
+            notificationTitle: title,
+            notificationText: 'Ongoing session • 00:00',
+            callback: startCallback,
+          );
+        }
       }
     } catch (e) {
       Logger.d("ForegroundTaskService startService failed: $e");
