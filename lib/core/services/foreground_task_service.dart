@@ -10,8 +10,8 @@ void startCallback() {
 class CallForegroundTaskHandler extends TaskHandler {
   int? _startedAtMillis;
   String _sessionType = 'Chat';
-
   String _title = 'Active Session';
+  int _elapsedCounter = 0;
 
   @override
   Future<void> onStart(DateTime timestamp, TaskStarter starter) async {
@@ -34,6 +34,7 @@ class CallForegroundTaskHandler extends TaskHandler {
     if (data is Map) {
       if (data['startedAt'] != null) {
         _startedAtMillis = data['startedAt'] as int;
+        _elapsedCounter = 0; // Reset counter on new session data
       }
       if (data['sessionType'] != null) {
         _sessionType = data['sessionType'] as String;
@@ -57,9 +58,14 @@ class CallForegroundTaskHandler extends TaskHandler {
     if (_startedAtMillis != null) {
       final startedAt = DateTime.fromMillisecondsSinceEpoch(_startedAtMillis!);
       final diff = DateTime.now().difference(startedAt).inSeconds;
-      final int elapsed = diff >= 0 ? diff : 0;
+      
+      if (diff >= 0) {
+        _elapsedCounter = diff;
+      } else {
+        _elapsedCounter++;
+      }
 
-      final String timeString = _formatDuration(elapsed);
+      final String timeString = _formatDuration(_elapsedCounter);
       FlutterForegroundTask.updateService(
         notificationTitle: _title,
         notificationText: 'Ongoing session • $timeString',
