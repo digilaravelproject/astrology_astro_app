@@ -203,7 +203,7 @@ class FCMNotificationService {
         }
 
         // 2. Process Incoming Requests
-        if (type == 'CHAT_REQUEST' || type == 'CALL_REQUEST' || type == 'call' || type == 'audio_call' || type == 'video_call' || (type == 'chat' && title.contains('Request') && !title.contains('Cancelled'))) {
+        if (type == 'CHAT_REQUEST' || type == 'CALL_REQUEST' || type == 'call' || type == 'audio_call' || type == 'video_call' || type == 'chat') {
           final String channelType = message.data['channel_type']?.toString() ?? ((type == 'call' || type == 'audio_call' || type == 'video_call') ? 'call' : 'chat');
           final String userName = message.data['user_name']?.toString() ?? message.data['caller_name']?.toString() ?? 'User';
           final String userAvatarRaw = message.data['user_avatar']?.toString() ?? message.data['caller_image']?.toString() ?? '';

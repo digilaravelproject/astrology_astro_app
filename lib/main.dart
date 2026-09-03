@@ -81,7 +81,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       LocalNotificationService.cancelOngoingLiveNotification(parsedSessionId);
       ForegroundTaskService.stopService();
       return;
-    } else if (type?.toUpperCase() == 'CHAT_REQUEST' || type?.toUpperCase() == 'CALL_REQUEST' || type?.toLowerCase() == 'call' || type?.toLowerCase() == 'audio_call' || type?.toLowerCase() == 'video_call' || (type?.toLowerCase() == 'chat' && title.contains('Request') && !title.contains('Cancelled'))) {
+    } else if (type?.toUpperCase() == 'CHAT_REQUEST' || type?.toUpperCase() == 'CALL_REQUEST' || type?.toLowerCase() == 'call' || type?.toLowerCase() == 'audio_call' || type?.toLowerCase() == 'video_call' || type?.toLowerCase() == 'chat') {
       final String channelType = data['channel_type']?.toString() ?? ((type?.toLowerCase() == 'call' || type?.toLowerCase() == 'audio_call' || type?.toLowerCase() == 'video_call') ? 'call' : 'chat');
       final String userName = data['user_name']?.toString() ?? data['caller_name']?.toString() ?? 'User';
       
