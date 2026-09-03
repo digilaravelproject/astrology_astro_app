@@ -144,8 +144,10 @@ class ForegroundTaskService {
   }
 
   static Future<void> stopService() async {
-    if (await FlutterForegroundTask.isRunningService) {
+    try {
       await FlutterForegroundTask.stopService();
+    } catch (e) {
+      Logger.d("ForegroundTaskService stopService failed: $e");
     }
   }
 }

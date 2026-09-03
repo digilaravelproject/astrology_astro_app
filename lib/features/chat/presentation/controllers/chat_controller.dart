@@ -235,45 +235,56 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       if (sessionData == null) return;
 
       final String sessionStatus = sessionData['status']?.toString() ?? '';
-      if (sessionStatus != 'initiated') return;
+      if (sessionStatus != 'initiated' && sessionStatus != 'ongoing') return;
 
-      // Already handling this session
       final int incomingId =
           int.tryParse(sessionData['id']?.toString() ?? '') ?? 0;
       if (incomingId == 0) return;
-      if (status.value == ChatStatus.initiated && _sessionId == incomingId)
-        return;
 
       // Extract sender data
       final senderData = sessionData['consumer'] ?? sessionData['user'] ?? {};
-
-      // Show IncomingChatDialog
-      // WidgetsBinding.instance.addPostFrameCallback((_) {
-      //   if (Get.isBottomSheetOpen == true) return; // Already showing
-      //   // Close any open dialogs before showing incoming chat
-      //   if (Get.isDialogOpen == true) Get.back();
-      //   Get.bottomSheet(
-      //     IncomingChatDialog(
-      //       sessionData: Map<String, dynamic>.from(sessionData),
-      //       senderData: Map<String, dynamic>.from(senderData),
-      //     ),
-      //     isDismissible: false,
-      //     enableDrag: false,
-      //     isScrollControlled: true,
-      //     backgroundColor: Colors.transparent,
-      //   );
-      // });
-      
       final String userName = senderData['name']?.toString() ?? 'User';
-      final String userAvatarRaw = senderData['profile_photo_url']?.toString() ?? senderData['profile_photo']?.toString() ?? '';
-      final String userAvatar = userAvatarRaw.isNotEmpty && userAvatarRaw != 'null' ? userAvatarRaw : 'assets/images/app_logo.png';
+      final String userAvatarRaw =
+          senderData['profile_photo_url']?.toString() ??
+          senderData['profile_photo']?.toString() ??
+          '';
+      final String userAvatar =
+          userAvatarRaw.isNotEmpty && userAvatarRaw != 'null'
+              ? userAvatarRaw
+              : 'assets/images/app_logo.png';
 
-      CallkitService.showCallkitNotification(
-        sessionId: incomingId.toString(),
-        callerName: userName,
-        avatar: userAvatar,
-        type: 'chat',
-      );
+      if (sessionStatus == 'initiated') {
+        if (status.value == ChatStatus.initiated && _sessionId == incomingId)
+          return;
+
+        CallkitService.showCallkitNotification(
+          sessionId: incomingId.toString(),
+          callerName: userName,
+          avatar: userAvatar,
+          type: 'chat',
+        );
+      } else if (sessionStatus == 'ongoing') {
+        // If we missed the CallKit accept navigation because the app was in the background,
+        // navigate to ChatScreen now that the app has resumed.
+        if (_sessionId == incomingId) return;
+
+        SoundVibrationService().stopRingtone();
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Get.to(
+            () => ChatScreen(
+              sessionId: incomingId,
+              initialStatus: 'ongoing',
+              userName: userName,
+              userImage: userAvatar,
+              startedAtString:
+                  sessionData['updated_at']?.toString() ??
+                  DateTime.now().toUtc().toIso8601String(),
+            ),
+            binding: ChatBinding(),
+          );
+        });
+      }
     } catch (e) {
       // Silently fail — not critical
     }
@@ -528,6 +539,11 @@ class ChatController extends GetxController with WidgetsBindingObserver {
       if (_sessionId != null && updates.containsKey(_sessionId)) {
         final newStatus = updates[_sessionId!];
         if (newStatus != null && status.value.name != newStatus) {
+          if (status.value == ChatStatus.completed ||
+              status.value == ChatStatus.cancelled ||
+              status.value == ChatStatus.rejected) {
+            return;
+          }
           status.value = ChatStatus.ongoing;
           if (newStatus == 'ongoing' || newStatus == 'accepted') {
             _stopRingtone();
@@ -658,7 +674,8 @@ class ChatController extends GetxController with WidgetsBindingObserver {
           elapsedSeconds.value++;
           if (_sessionId != null) {
             final genStart =
-                DateTime.now().toUtc()
+                DateTime.now()
+                    .toUtc()
                     .subtract(Duration(seconds: elapsedSeconds.value))
                     .toIso8601String();
             _startedAt = genStart;
@@ -968,7 +985,8 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     final startStr =
         _startedAt ??
         WebSocketService.sessionStartTimes[_sessionId!] ??
-        DateTime.now().toUtc()
+        DateTime.now()
+            .toUtc()
             .subtract(Duration(seconds: elapsedSeconds.value))
             .toIso8601String();
     WebSocketService.sessionStartTimes[_sessionId!] = startStr;
@@ -1035,11 +1053,21 @@ class ChatController extends GetxController with WidgetsBindingObserver {
               backgroundColor: Colors.transparent,
             );
             */
-            
+
             final String userName = liveSender['name']?.toString() ?? 'User';
-            final String userAvatarRaw = liveSender['profile_photo_url']?.toString() ?? liveSender['profile_photo']?.toString() ?? '';
-            final String userAvatar = userAvatarRaw.isNotEmpty && userAvatarRaw != 'null' ? userAvatarRaw : 'assets/images/app_logo.png';
-            final incomingId = _sessionId ?? (liveSession['id'] != null ? int.tryParse(liveSession['id'].toString()) : 0);
+            final String userAvatarRaw =
+                liveSender['profile_photo_url']?.toString() ??
+                liveSender['profile_photo']?.toString() ??
+                '';
+            final String userAvatar =
+                userAvatarRaw.isNotEmpty && userAvatarRaw != 'null'
+                    ? userAvatarRaw
+                    : 'assets/images/app_logo.png';
+            final incomingId =
+                _sessionId ??
+                (liveSession['id'] != null
+                    ? int.tryParse(liveSession['id'].toString())
+                    : 0);
 
             CallkitService.showCallkitNotification(
               sessionId: incomingId.toString(),
@@ -1117,11 +1145,21 @@ class ChatController extends GetxController with WidgetsBindingObserver {
           backgroundColor: Colors.transparent,
         );
         */
-        
+
         final String userName = senderData['name']?.toString() ?? 'User';
-        final String userAvatarRaw = senderData['profile_photo_url']?.toString() ?? senderData['profile_photo']?.toString() ?? '';
-        final String userAvatar = userAvatarRaw.isNotEmpty && userAvatarRaw != 'null' ? userAvatarRaw : 'assets/images/app_logo.png';
-        final incomingId = _sessionId ?? (sessionData['id'] != null ? int.tryParse(sessionData['id'].toString()) : 0);
+        final String userAvatarRaw =
+            senderData['profile_photo_url']?.toString() ??
+            senderData['profile_photo']?.toString() ??
+            '';
+        final String userAvatar =
+            userAvatarRaw.isNotEmpty && userAvatarRaw != 'null'
+                ? userAvatarRaw
+                : 'assets/images/app_logo.png';
+        final incomingId =
+            _sessionId ??
+            (sessionData['id'] != null
+                ? int.tryParse(sessionData['id'].toString())
+                : 0);
 
         CallkitService.showCallkitNotification(
           sessionId: incomingId.toString(),

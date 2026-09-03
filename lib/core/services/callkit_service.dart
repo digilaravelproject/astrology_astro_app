@@ -1,3 +1,5 @@
+import 'package:astro_astrologer/core/services/foreground_task_service.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_callkit_incoming/entities/entities.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
@@ -28,10 +30,11 @@ class CallkitService {
 
           // Store clean caller name for floating bubble
           if (callerName != null) {
-            FloatingChatBubble.name = callerName
-                .replaceAll('Chat Req: ', '')
-                .replaceAll('Call Req: ', '')
-                .trim();
+            FloatingChatBubble.name =
+                callerName
+                    .replaceAll('Chat Req: ', '')
+                    .replaceAll('Call Req: ', '')
+                    .trim();
           }
 
           if (payload == null) break;
@@ -88,6 +91,14 @@ class CallkitService {
                 debugPrint(
                   'CallKit: Chat accept API for session $sId → isSuccess=$accepted',
                 );
+
+                if (accepted) {
+                  ForegroundTaskService.startActiveSessionNotification(
+                    title: 'Active Chat',
+                    type: 'Chat',
+                    startedAt: acceptedAt,
+                  );
+                }
               }
             } catch (e) {
               debugPrint('CallKit: Error calling acceptChatSession API: $e');
@@ -125,8 +136,9 @@ class CallkitService {
             }
           } else if (payload.startsWith('chat_')) {
             // ── Reject chat request — use sessionId from payload directly ──
-            final chatSessionId =
-                int.tryParse(payload.replaceFirst('chat_', ''));
+            final chatSessionId = int.tryParse(
+              payload.replaceFirst('chat_', ''),
+            );
             debugPrint('CallKit: Rejecting chat session $chatSessionId');
 
             // Stop ringtone immediately
@@ -182,8 +194,7 @@ class CallkitService {
     required String avatar,
     required String type, // 'call' or 'chat'
   }) async {
-    final String notifTitle =
-        type == 'call' ? 'Incoming Call' : 'Chat Request';
+    final String notifTitle = type == 'call' ? 'Incoming Call' : 'Chat Request';
     final String nameCallerParam =
         type == 'call' ? callerName : 'Chat Req: $callerName';
     final String payloadStr = '${type}_$sessionId';
@@ -205,7 +216,8 @@ class CallkitService {
       android: const AndroidParams(
         isCustomNotification: true,
         isShowLogo: false,
-        isShowFullLockedScreen: false, // Disable full-screen call activity — notification banner only
+        isShowFullLockedScreen:
+            false, // Disable full-screen call activity — notification banner only
         ringtonePath: 'system_ringtone_default',
         backgroundColor: '#0A0A0A',
         backgroundUrl: 'assets/images/background.png',
