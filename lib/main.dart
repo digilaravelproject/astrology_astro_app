@@ -23,6 +23,7 @@ import 'package:flutter_callkit_incoming/entities/entities.dart';
 import 'dart:convert';
 
 import 'features/chat/presentation/widgets/overlay_main.dart';
+import 'package:astro_astrologer/core/services/foreground_task_service.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -68,6 +69,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       LocalNotificationService.markSessionCancelled(parsedSessionId.toString());
       CallkitService.endCall(parsedSessionId.toString());
       LocalNotificationService.cancelOngoingLiveNotification(parsedSessionId);
+      ForegroundTaskService.stopService();
       return;
     } else if (title.contains('Call Ended') ||
         type?.toLowerCase() == 'call_ended' ||
@@ -77,6 +79,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       LocalNotificationService.markSessionCancelled(parsedSessionId.toString());
       CallkitService.endCall(parsedSessionId.toString());
       LocalNotificationService.cancelOngoingLiveNotification(parsedSessionId);
+      ForegroundTaskService.stopService();
       return;
     } else if (type?.toUpperCase() == 'CHAT_REQUEST' || type?.toUpperCase() == 'CALL_REQUEST' || type?.toLowerCase() == 'call' || type?.toLowerCase() == 'audio_call' || type?.toLowerCase() == 'video_call' || (type?.toLowerCase() == 'chat' && title.contains('Request') && !title.contains('Cancelled'))) {
       final String channelType = data['channel_type']?.toString() ?? ((type?.toLowerCase() == 'call' || type?.toLowerCase() == 'audio_call' || type?.toLowerCase() == 'video_call') ? 'call' : 'chat');
