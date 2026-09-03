@@ -265,10 +265,20 @@ class ChatController extends GetxController with WidgetsBindingObserver {
         );
       } else if (sessionStatus == 'ongoing') {
         // If we missed the CallKit accept navigation because the app was in the background,
-        // navigate to ChatScreen now that the app has resumed.
+        // ensure the persistent foreground notification runs.
         if (_sessionId == incomingId) return;
 
         SoundVibrationService().stopRingtone();
+
+        // Start (or update) the foreground notification timer using the accepted timestamp.
+        final startTime = sessionData['updated_at']?.toString() != null
+            ? _parseSmartDate(sessionData['updated_at']?.toString() ?? '')
+            : DateTime.now();
+        ForegroundTaskService.startActiveSessionNotification(
+          title: 'Active Chat',
+          type: 'Chat',
+          startedAt: startTime,
+        );
 
         WidgetsBinding.instance.addPostFrameCallback((_) {
           Get.to(
