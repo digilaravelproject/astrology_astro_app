@@ -48,6 +48,19 @@ class CallkitService {
             }
             if (!Get.isRegistered<CallController>()) break;
             final ctrl = Get.find<CallController>();
+            
+            final sIdStr = payload.replaceFirst('call_', '');
+            final sId = int.tryParse(sIdStr);
+            if (sId != null) {
+              ctrl.sessionId = sId;
+            }
+            if (callerName != null) {
+              ctrl.consumerName = callerName
+                  .replaceAll('Chat Req: ', '')
+                  .replaceAll('Call Req: ', '')
+                  .trim();
+            }
+
             final offerSdp = ctrl.incomingOfferSdp ?? '';
 
             WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -147,7 +160,13 @@ class CallkitService {
               retries++;
             }
             if (Get.isRegistered<CallController>()) {
-              Get.find<CallController>().rejectCall();
+              final ctrl = Get.find<CallController>();
+              final sIdStr = payload.replaceFirst('call_', '');
+              final sId = int.tryParse(sIdStr);
+              if (sId != null) {
+                ctrl.sessionId = sId;
+              }
+              ctrl.rejectCall();
             }
           } else if (payload.startsWith('chat_')) {
             // ── Reject chat request — use sessionId from payload directly ──
