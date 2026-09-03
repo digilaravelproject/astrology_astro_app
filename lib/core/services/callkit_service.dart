@@ -27,9 +27,21 @@ class CallkitService {
         // ──────────────────────────────────────────────────────────────
         case CallEventActionCallAccept():
           debugPrint('CallKit: ACCEPTED');
-          final payload = event.callKitParams.extra?['payload'] as String?;
+          String? payload = event.callKitParams.extra?['payload'] as String?;
           final callerName = event.callKitParams.nameCaller;
           final sessionId = event.callKitParams.id;
+          final handleStr = event.callKitParams.handle;
+
+          // Reconstruct payload if lost during cold boot (Android CallKit issue)
+          if (payload == null && sessionId != null) {
+            if (handleStr == 'Chat Request' ||
+                (callerName != null && callerName.contains('Chat Req'))) {
+              payload = 'chat_$sessionId';
+            } else {
+              payload = 'call_$sessionId';
+            }
+            debugPrint('CallKit: Reconstructed payload -> $payload');
+          }
 
           // Store clean caller name for floating bubble
           if (callerName != null) {
@@ -40,7 +52,10 @@ class CallkitService {
                     .trim();
           }
 
-          if (payload == null) break;
+          if (payload == null) {
+            debugPrint('CallKit: ERROR - Payload is still null, cannot process accept!');
+            break;
+          }
 
           if (payload.startsWith('call_')) {
             // ── Incoming CALL accepted ──

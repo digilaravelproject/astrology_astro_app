@@ -290,6 +290,12 @@ class _FloatingChatBubbleWidgetState extends State<FloatingChatBubbleWidget> {
         bottom: false,
         child: GestureDetector(
           onTap: () {
+            // If this is the session we just accepted, force the status to ongoing
+            // so that ChatScreen doesn't show the incoming popup again.
+            if (CallkitService.lastAcceptedSessionId ==
+                FloatingChatBubble.sessionId?.toString()) {
+              FloatingChatBubble.chatStatus.value = 'ongoing';
+            }
             FloatingChatBubble.onTapCallback?.call();
           },
           child: Container(
