@@ -13,6 +13,7 @@ import 'package:astro_astrologer/features/chat/presentation/bindings/chat_bindin
 import 'package:astro_astrologer/core/constants/app_constants.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
+import 'package:astro_astrologer/core/bindings/initial_bindings.dart';
 import 'package:astro_astrologer/core/services/sound_vibration_service.dart';
 import 'package:astro_astrologer/routes/route_helper.dart';
 
@@ -137,12 +138,17 @@ class CallkitService {
             try {
               int retries = 0;
               debugPrint('CallKit: Waiting for ApiClient...');
-              while (!Get.isRegistered<ApiClient>() && retries < 40) {
+              while (!Get.isRegistered<ApiClient>() && retries < 10) {
                 await Future.delayed(const Duration(milliseconds: 100));
                 retries++;
               }
               debugPrint('CallKit: ApiClient registered? ${Get.isRegistered<ApiClient>()} (retries: $retries)');
               
+              if (!Get.isRegistered<ApiClient>()) {
+                debugPrint('CallKit: Forcing InitialBindings registration for cold boot...');
+                InitialBindings().dependencies();
+              }
+
               if (Get.isRegistered<ApiClient>()) {
                 debugPrint('CallKit: Calling accept API for session $sId...');
                 final resp = await Get.find<ApiClient>().post(
