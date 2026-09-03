@@ -14,8 +14,11 @@ import 'package:astro_astrologer/core/constants/app_constants.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/services/sound_vibration_service.dart';
+import 'package:astro_astrologer/routes/route_helper.dart';
 
 class CallkitService {
+  static String? lastAcceptedSessionId;
+
   static void init() {
     FlutterCallkitIncoming.onEvent.listen((CallEvent? event) async {
       switch (event) {
@@ -53,6 +56,7 @@ class CallkitService {
             final sId = int.tryParse(sIdStr);
             if (sId != null) {
               ctrl.sessionId = sId;
+              lastAcceptedSessionId = sId.toString();
             }
             if (callerName != null) {
               ctrl.consumerName = callerName
@@ -76,6 +80,14 @@ class CallkitService {
                 Future.delayed(const Duration(milliseconds: 500), () {
                   FlutterCallkitIncoming.endCall(sessionId);
                 });
+                
+                // Wait until splash screen is gone to avoid Get.offAllNamed clearing this route
+                int waitRetries = 0;
+                while ((Get.currentRoute == RouteHelper.getSplashRoute() || Get.currentRoute.isEmpty) && waitRetries < 50) {
+                  await Future.delayed(const Duration(milliseconds: 100));
+                  waitRetries++;
+                }
+
                 if (!ctrl.isCallScreenVisible) {
                   Get.to(() => const CallScreen());
                 }
@@ -127,8 +139,18 @@ class CallkitService {
               debugPrint('CallKit: Error calling acceptChatSession API: $e');
             }
 
+            // Set last accepted session to avoid duplicate notifications
+            lastAcceptedSessionId = sId.toString();
+
             // 2. Navigate to ChatScreen — pass acceptedAt so all 3 timers start from same moment
-            WidgetsBinding.instance.addPostFrameCallback((_) {
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
+              // Wait until splash screen is gone to avoid Get.offAllNamed clearing this route
+              int waitRetries = 0;
+              while ((Get.currentRoute == RouteHelper.getSplashRoute() || Get.currentRoute.isEmpty) && waitRetries < 50) {
+                await Future.delayed(const Duration(milliseconds: 100));
+                waitRetries++;
+              }
+
               Get.to(
                 () => ChatScreen(
                   sessionId: sId,

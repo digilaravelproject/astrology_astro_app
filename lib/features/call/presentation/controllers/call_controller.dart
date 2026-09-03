@@ -167,6 +167,12 @@ class CallController extends GetxController with WidgetsBindingObserver {
             ? consumerImage!
             : 'assets/images/app_logo.png';
 
+    // Check if this session was just accepted via background notification
+    if (CallkitService.lastAcceptedSessionId == sessionId?.toString()) {
+      Logger.d('Skipping CallKit notification for call $sessionId (already accepted)');
+      return;
+    }
+
     CallkitService.showCallkitNotification(
       sessionId: sessionId.toString(),
       callerName: name,

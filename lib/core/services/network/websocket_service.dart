@@ -754,6 +754,12 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
                 : (int.tryParse(session['id']?.toString() ?? '') ?? 0);
         final String name = senderData['name']?.toString() ?? 'User';
 
+        // Check if this session was just accepted via background notification
+        if (CallkitService.lastAcceptedSessionId == sessionId.toString()) {
+          Logger.d('Skipping CallKit notification for chat $sessionId (already accepted)');
+          return;
+        }
+
         // Trigger ongoing notification drawer item during ringing
 
         WidgetsBinding.instance.addPostFrameCallback((_) {
