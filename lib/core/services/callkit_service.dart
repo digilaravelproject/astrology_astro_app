@@ -41,6 +41,11 @@ class CallkitService {
 
           if (payload.startsWith('call_')) {
             // ── Incoming CALL accepted ──
+            int retries = 0;
+            while (!Get.isRegistered<CallController>() && retries < 40) {
+              await Future.delayed(const Duration(milliseconds: 100));
+              retries++;
+            }
             if (!Get.isRegistered<CallController>()) break;
             final ctrl = Get.find<CallController>();
             final offerSdp = ctrl.incomingOfferSdp ?? '';
@@ -81,6 +86,11 @@ class CallkitService {
             // Record accept time as canonical start — passed to ChatScreen and ForegroundTask
             final acceptedAt = DateTime.now();
             try {
+              int retries = 0;
+              while (!Get.isRegistered<ApiClient>() && retries < 40) {
+                await Future.delayed(const Duration(milliseconds: 100));
+                retries++;
+              }
               if (Get.isRegistered<ApiClient>()) {
                 final resp = await Get.find<ApiClient>().post(
                   AppUrls.acceptChatSession(sId),
@@ -131,6 +141,11 @@ class CallkitService {
 
           if (payload.startsWith('call_')) {
             // ── Reject incoming call — calls POST /call/{id}/reject ──
+            int retries = 0;
+            while (!Get.isRegistered<CallController>() && retries < 40) {
+              await Future.delayed(const Duration(milliseconds: 100));
+              retries++;
+            }
             if (Get.isRegistered<CallController>()) {
               Get.find<CallController>().rejectCall();
             }
@@ -146,6 +161,11 @@ class CallkitService {
             FloatingChatBubble.dismiss();
 
             if (chatSessionId != null) {
+              int retries = 0;
+              while (!Get.isRegistered<ApiClient>() && retries < 40) {
+                await Future.delayed(const Duration(milliseconds: 100));
+                retries++;
+              }
               // Try via controller first (sets status, cleans up UI)
               if (Get.isRegistered<ChatController>() &&
                   Get.find<ChatController>().sessionId != null) {
