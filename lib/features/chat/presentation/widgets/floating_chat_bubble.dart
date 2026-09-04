@@ -101,12 +101,24 @@ class FloatingChatBubble {
       DateTime? startedAtDate;
       if (startedAt != null && startedAt.isNotEmpty) {
         String isoUtc = startedAt.trim().replaceAll(' ', 'T');
-        if (!isoUtc.endsWith('Z') &&
-            !isoUtc.contains('+') &&
-            !isoUtc.contains('-')) {
+        bool hasTimezone = isoUtc.endsWith('Z') || isoUtc.contains(RegExp(r'[+-]\d{2}(:?\d{2})?$'));
+        
+        if (!hasTimezone) {
           isoUtc += 'Z';
         }
-        startedAtDate = DateTime.tryParse(isoUtc)?.toLocal();
+        
+        DateTime? parsed = DateTime.tryParse(isoUtc)?.toLocal();
+        if (parsed != null) {
+          final now = DateTime.now();
+          if (!parsed.isAfter(now)) {
+            startedAtDate = parsed;
+          }
+        }
+        
+        if (startedAtDate == null) {
+           DateTime? fallbackParsed = DateTime.tryParse(startedAt.trim().replaceAll(' ', 'T')) ?? DateTime.tryParse(startedAt.trim());
+           startedAtDate = fallbackParsed?.toLocal();
+        }
       }
 
       final normalizedStatus = status.toLowerCase();
@@ -150,6 +162,10 @@ class FloatingChatBubble {
   static void updateStatus(String status) {
     chatStatus.value = status;
   }
+
+  // Allow ChatController to sync its timer if the bubble was already running
+  static int get currentElapsedSeconds => _currentElapsedSeconds;
+  static int _currentElapsedSeconds = 0;
 }
 
 class FloatingChatBubbleWidget extends StatefulWidget {
@@ -178,6 +194,14 @@ class _FloatingChatBubbleWidgetState extends State<FloatingChatBubbleWidget> {
   @override
   void initState() {
     super.initState();
+    // Sync initially if the bubble already had a value (though usually it starts at 0 or syncs from _setupTimer)
+    _elapsedSeconds.value = FloatingChatBubble._currentElapsedSeconds;
+    
+    // Listen to changes and update the static variable
+    ever(_elapsedSeconds, (val) {
+      FloatingChatBubble._currentElapsedSeconds = val;
+    });
+    
     _startTimer();
   }
 
@@ -194,28 +218,26 @@ class _FloatingChatBubbleWidgetState extends State<FloatingChatBubbleWidget> {
     if (dateStr.isEmpty) return null;
 
     String isoUtc = dateStr.replaceAll(' ', 'T');
-    if (!isoUtc.endsWith('Z') &&
-        !isoUtc.contains('+') &&
-        !isoUtc.contains('-')) {
+    
+    // Check if the string already has a timezone indicator like Z or +05:30
+    bool hasTimezone = isoUtc.endsWith('Z') || isoUtc.contains(RegExp(r'[+-]\d{2}(:?\d{2})?$'));
+    
+    if (!hasTimezone) {
       isoUtc += 'Z';
     }
 
     DateTime? parsed = DateTime.tryParse(isoUtc)?.toLocal();
-    if (parsed == null) {
-      parsed = DateTime.tryParse(dateStr)?.toLocal();
-    }
-
-    if (parsed == null) return null;
-
-    final now = DateTime.now();
-    if (parsed.isAfter(now)) {
-      final offsetDate = parsed.subtract(now.timeZoneOffset);
-      if (!offsetDate.isAfter(now)) {
-        return offsetDate;
+    if (parsed != null) {
+      final now = DateTime.now();
+      // If adding Z made it in the future, it means the original string was likely already Local Time.
+      if (!parsed.isAfter(now)) {
+        return parsed;
       }
     }
 
-    return parsed;
+    // Fallback: Parse without Z
+    parsed = DateTime.tryParse(dateStr.replaceAll(' ', 'T')) ?? DateTime.tryParse(dateStr);
+    return parsed?.toLocal();
   }
 
   void _startTimer() {
@@ -389,14 +411,16 @@ class _FloatingChatBubbleWidgetState extends State<FloatingChatBubbleWidget> {
                             ),
                           );
                         }
-                        return Text(
-                          // Use ChatController.elapsedSeconds as source of truth
-                          // so bubble, chat screen, and notification all stay in sync.
-                          'Active Chat • ${_formatDuration(
-                            Get.isRegistered<ChatController>()
-                                ? Get.find<ChatController>().elapsedSeconds.value
-                                : _elapsedSeconds.value,
-                          )}',
+                          // Evaluate both to ensure Obx registers listeners for both
+                          // Otherwise if ChatController is deleted, Obx gets stuck because
+                          // it was only listening to ChatController's elapsedSeconds.
+                          final fallbackTime = _elapsedSeconds.value;
+                          final timeToDisplay = Get.isRegistered<ChatController>()
+                              ? Get.find<ChatController>().elapsedSeconds.value
+                              : fallbackTime;
+
+                          return Text(
+                            'Active Chat • ${_formatDuration(timeToDisplay)}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,

@@ -602,24 +602,26 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     if (dateStr.isEmpty) return null;
 
     String isoUtc = dateStr.replaceAll(' ', 'T');
-    if (!isoUtc.endsWith('Z') &&
-        !isoUtc.contains('+') &&
-        !isoUtc.contains('-')) {
+    
+    // Check if the string already has a timezone indicator like Z or +05:30
+    bool hasTimezone = isoUtc.endsWith('Z') || isoUtc.contains(RegExp(r'[+-]\d{2}(:?\d{2})?$'));
+    
+    if (!hasTimezone) {
       isoUtc += 'Z';
     }
-    final utcDate = DateTime.tryParse(isoUtc)?.toLocal();
-    if (utcDate != null) {
+
+    DateTime? parsed = DateTime.tryParse(isoUtc)?.toLocal();
+    if (parsed != null) {
       final now = DateTime.now();
-      if (!utcDate.isAfter(now)) {
-        return utcDate;
+      // If adding Z made it in the future, it means the original string was likely already Local Time.
+      if (!parsed.isAfter(now)) {
+        return parsed;
       }
     }
 
-    DateTime? parsed =
-        DateTime.tryParse(dateStr.replaceAll(' ', 'T')) ??
-        DateTime.tryParse(dateStr);
-    if (parsed == null) return null;
-    return parsed.toLocal();
+    // Fallback: Parse without Z
+    parsed = DateTime.tryParse(dateStr.replaceAll(' ', 'T')) ?? DateTime.tryParse(dateStr);
+    return parsed?.toLocal();
   }
 
   String _formatDuration(int totalSeconds) {
@@ -651,8 +653,17 @@ class ChatController extends GetxController with WidgetsBindingObserver {
     final startedAt = _parseSmartDate(startedAtStr);
 
     if (startedAt != null) {
-      final diff = DateTime.now().difference(startedAt).inSeconds;
-      elapsedSeconds.value = diff >= 0 ? diff : 0;
+      // Execute immediately once before the timer ticks
+      final st = status.value.name.toLowerCase();
+      if (st == 'ongoing' || st == 'accepted') {
+        final nowDiff = DateTime.now().difference(startedAt).inSeconds;
+        
+        if (FloatingChatBubble.isActive && FloatingChatBubble.sessionId == _sessionId) {
+          elapsedSeconds.value = FloatingChatBubble.currentElapsedSeconds;
+        } else if (nowDiff >= 0) {
+          elapsedSeconds.value = nowDiff;
+        }
+      }
 
       _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         final st = status.value.name.toLowerCase();
@@ -665,14 +676,18 @@ class ChatController extends GetxController with WidgetsBindingObserver {
         }
         if (st == 'ongoing' || st == 'accepted') {
           final nowDiff = DateTime.now().difference(startedAt).inSeconds;
-          if (nowDiff >= 0) {
+          
+          if (FloatingChatBubble.isActive && FloatingChatBubble.sessionId == _sessionId) {
+            elapsedSeconds.value++;
+            FloatingChatBubble.updateStatus(status.value.name);
+          } else if (nowDiff >= 0) {
             elapsedSeconds.value = nowDiff;
           } else {
+            // Keep current value if date is slightly in future due to clock sync
             elapsedSeconds.value++;
           }
-        } else {
-          elapsedSeconds.value = 0;
         }
+        // Do not reset to 0, just pause updating if not ongoing
       });
     } else {
       _timer = Timer.periodic(const Duration(seconds: 1), (timer) {

@@ -77,13 +77,25 @@ class DashboardController extends GetxController {
 
           DateTime? parsedStart;
           if (startedAt != null) {
-            String isoUtc = startedAt.toString().replaceAll(' ', 'T');
-            if (!isoUtc.endsWith('Z') &&
-                !isoUtc.contains('+') &&
-                !isoUtc.contains('-')) {
+            String isoUtc = startedAt.toString().trim().replaceAll(' ', 'T');
+            bool hasTimezone = isoUtc.endsWith('Z') || isoUtc.contains(RegExp(r'[+-]\d{2}(:?\d{2})?$'));
+            
+            if (!hasTimezone) {
               isoUtc += 'Z';
             }
-            parsedStart = DateTime.tryParse(isoUtc)?.toLocal();
+            
+            DateTime? parsed = DateTime.tryParse(isoUtc)?.toLocal();
+            if (parsed != null) {
+              final now = DateTime.now();
+              if (!parsed.isAfter(now)) {
+                parsedStart = parsed;
+              }
+            }
+            
+            if (parsedStart == null) {
+               DateTime? fallbackParsed = DateTime.tryParse(startedAt.toString().trim().replaceAll(' ', 'T')) ?? DateTime.tryParse(startedAt.toString().trim());
+               parsedStart = fallbackParsed?.toLocal();
+            }
           }
           final int? startedAtMillis = parsedStart?.millisecondsSinceEpoch;
 
@@ -107,7 +119,7 @@ class DashboardController extends GetxController {
                 name: name,
                 imageUrl: imageUrl,
                 status: status,
-                startedAt: startedAt,
+                startedAt: startedAt?.toString(),
                 onTap: () {
                   final currentStatus = FloatingChatBubble.chatStatus.value;
                   Get.to(
@@ -116,7 +128,7 @@ class DashboardController extends GetxController {
                       userImage: imageUrl,
                       sessionId: sessionId,
                       initialStatus: currentStatus,
-                      startedAtString: startedAt,
+                      startedAtString: startedAt?.toString(),
                     ),
                     binding: ChatBinding(),
                   );
