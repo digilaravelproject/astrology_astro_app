@@ -227,6 +227,8 @@ class AppUrls {
   static const String eventAstrologerMediaStatusChanged =
       'AstrologerMediaStatusChanged';
   static const String eventLiveSessionStarted = 'LiveSessionStarted';
+  static const String eventAstrologerAvailabilityUpdated = 'AstrologerAvailabilityUpdated';
+  static const String eventUserForceLoggedOut = 'UserForceLoggedOut';
   static const String eventViewerCountUpdated = 'ViewerCountUpdated';
   static const String eventActiveLiveSessionsUpdated = 'ActiveLiveSessionsUpdated';
 

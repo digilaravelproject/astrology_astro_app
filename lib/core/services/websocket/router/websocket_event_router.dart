@@ -11,42 +11,42 @@ class WebSocketEventRouter {
     } else if (event == AppUrls.eventChatEnded) {
       ChatWsHandler.handleChatEnded(data);
     } else if (event == AppUrls.eventChatDismissed ||
-        event == 'App\\Events\\ChatDismissed' ||
-        event == '.ChatDismissed') {
+        event == 'App\\Events\\${AppUrls.eventChatDismissed}' ||
+        event == '.${AppUrls.eventChatDismissed}') {
       ChatWsHandler.handleChatDismissed(data);
     } else if (event == AppUrls.eventMessageSent ||
-        event == 'App\\Events\\MessageSent') {
+        event == 'App\\Events\\${AppUrls.eventMessageSent}') {
       ChatWsHandler.handleMessageSent(data);
     } else if (event == AppUrls.eventChatInitiated ||
-        event == 'App\\Events\\ChatInitiated') {
+        event == 'App\\Events\\${AppUrls.eventChatInitiated}') {
       ChatWsHandler.handleChatInitiated(data);
     } else if (event == AppUrls.eventMessageStatusUpdated ||
-        event == 'App\\Events\\MessageStatusUpdated') {
+        event == 'App\\Events\\${AppUrls.eventMessageStatusUpdated}') {
       ChatWsHandler.handleMessageStatusUpdated(data);
     } else if (event == AppUrls.eventChatQueueUpdated ||
-        event == 'App\\Events\\ChatQueueUpdated') {
+        event == 'App\\Events\\${AppUrls.eventChatQueueUpdated}') {
       ChatWsHandler.handleChatQueueUpdated(data);
     } else if (event == AppUrls.eventPresenceUpdated ||
-        event == 'App\\Events\\PresenceUpdated') {
+        event == 'App\\Events\\${AppUrls.eventPresenceUpdated}') {
       ChatWsHandler.handlePresenceUpdated(data);
     } else if (event == AppUrls.eventCallInitiated ||
-        event == 'App\\Events\\CallInitiated' ||
-        event == '.CallInitiated') {
+        event == 'App\\Events\\${AppUrls.eventCallInitiated}' ||
+        event == '.${AppUrls.eventCallInitiated}') {
       CallWsHandler.handleCallInitiated(data);
     } else if (event == AppUrls.eventCallAccepted ||
-        event == 'App\\Events\\CallAccepted') {
+        event == 'App\\Events\\${AppUrls.eventCallAccepted}') {
       CallWsHandler.handleCallAccepted(data);
     } else if (event == AppUrls.eventCallDismissed ||
-        event == 'App\\Events\\CallDismissed') {
+        event == 'App\\Events\\${AppUrls.eventCallDismissed}') {
       CallWsHandler.handleCallDismissed(data);
     } else if (event == AppUrls.eventCallEnded ||
-        event == 'App\\Events\\CallEnded') {
+        event == 'App\\Events\\${AppUrls.eventCallEnded}') {
       CallWsHandler.handleCallEnded(data);
     } else if (event == AppUrls.eventIceCandidateSent ||
-        event == 'App\\Events\\IceCandidateSent') {
+        event == 'App\\Events\\${AppUrls.eventIceCandidateSent}') {
       CallWsHandler.handleIceCandidateSent(data);
     } else if (event == AppUrls.eventWebRtcSdpUpdated ||
-        event == 'App\\Events\\WebRtcSdpUpdated') {
+        event == 'App\\Events\\${AppUrls.eventWebRtcSdpUpdated}') {
       CallWsHandler.handleWebRtcSdpUpdated(data);
     } else if (event == AppUrls.eventViewerCountUpdated ||
         event == 'App\\Events\\${AppUrls.eventViewerCountUpdated}' ||
@@ -72,28 +72,28 @@ class WebSocketEventRouter {
         event == '.${AppUrls.eventUserLeftLiveSession}') {
       LiveWsHandler.handleUserLeftLiveSession(data);
     } else if (event == AppUrls.eventChatAssistanceMessageSent ||
-        event == 'App\\Events\\ChatAssistanceMessageSent') {
+        event == 'App\\Events\\${AppUrls.eventChatAssistanceMessageSent}') {
       ChatWsHandler.handleMessageSent(data);
     } else if (event == AppUrls.eventChatAssistanceMessageStatusUpdated ||
-        event == 'App\\Events\\ChatAssistanceMessageStatusUpdated') {
+        event == 'App\\Events\\${AppUrls.eventChatAssistanceMessageStatusUpdated}') {
       ChatWsHandler.handleMessageStatusUpdated(data);
     } else if (event == AppUrls.eventChatAssistanceInitiated ||
-        event == 'App\\Events\\ChatAssistanceInitiated') {
+        event == 'App\\Events\\${AppUrls.eventChatAssistanceInitiated}') {
       ChatWsHandler.handleChatAssistanceInitiated(data);
     } else if (event == AppUrls.eventChatAssistanceLimitReached ||
-        event == 'App\\Events\\ChatAssistanceLimitReached') {
+        event == 'App\\Events\\${AppUrls.eventChatAssistanceLimitReached}') {
       ChatWsHandler.handleChatAssistanceLimitReached(data);
-    } else if (event == 'PackageSubSessionStarted' ||
-        event == 'App\\Events\\PackageSubSessionStarted') {
+    } else if (event == AppUrls.eventPackageSubSessionStarted ||
+        event == 'App\\Events\\${AppUrls.eventPackageSubSessionStarted}') {
       PackageWsHandler.handlePackageSubSessionStarted(data);
-    } else if (event == 'PackageSubSessionEnded' ||
-        event == 'App\\Events\\PackageSubSessionEnded') {
+    } else if (event == AppUrls.eventPackageSubSessionEnded ||
+        event == 'App\\Events\\${AppUrls.eventPackageSubSessionEnded}') {
       PackageWsHandler.handlePackageSubSessionEnded(data);
     } else if (event == AppUrls.eventPackageSessionStateUpdated ||
         event == 'App\\Events\\${AppUrls.eventPackageSessionStateUpdated}') {
       PackageWsHandler.handlePackageSessionStateUpdated(data);
-    } else if (event == 'PackageSessionTerminated' ||
-        event == 'App\\Events\\PackageSessionTerminated') {
+    } else if (event == AppUrls.eventPackageSessionTerminated ||
+        event == 'App\\Events\\${AppUrls.eventPackageSessionTerminated}') {
       PackageWsHandler.handlePackageSessionTerminated(data);
     }
   }
