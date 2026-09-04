@@ -26,6 +26,7 @@ abstract class IChatRepository {
     required String status,
   });
   Future<ChatSession?> endChatSession(int sessionId);
+  Future<void> acceptChatSession(int sessionId);
   Future<ChatSessionListResponse> getChatSessions({int page = 1});
 
   // Default Messages

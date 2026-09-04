@@ -12,6 +12,7 @@ import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
 import 'package:astro_astrologer/core/services/callkit_service.dart';
 import 'package:astro_astrologer/features/chat/domain/usecases/end_chat_session_usecase.dart';
+import 'package:astro_astrologer/features/chat/domain/usecases/accept_chat_session_usecase.dart';
 import 'package:astro_astrologer/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
 import 'package:astro_astrologer/features/chat/presentation/bindings/chat_binding.dart';
@@ -23,8 +24,13 @@ import 'package:astro_astrologer/routes/app_routes.dart';
 
 class ChatSessionController extends GetxController with WidgetsBindingObserver {
   final EndChatSessionUseCase _endChatSessionUseCase;
-  ChatSessionController({required EndChatSessionUseCase endChatSessionUseCase})
-      : _endChatSessionUseCase = endChatSessionUseCase;
+  final AcceptChatSessionUseCase _acceptChatSessionUseCase;
+
+  ChatSessionController({
+    required EndChatSessionUseCase endChatSessionUseCase,
+    required AcceptChatSessionUseCase acceptChatSessionUseCase,
+  })  : _endChatSessionUseCase = endChatSessionUseCase,
+        _acceptChatSessionUseCase = acceptChatSessionUseCase;
 
   final Rx<ChatStatus> status = ChatStatus.pending.obs;
   final RxInt elapsedSeconds = 0.obs;
@@ -322,8 +328,8 @@ class ChatSessionController extends GetxController with WidgetsBindingObserver {
   Future<void> acceptChat(int incomingSessionId) async {
     stopRingtone();
     try {
-      final response = await Get.find<ApiClient>().post(AppUrls.acceptChatSession(incomingSessionId));
-      if (response.isSuccess) CallkitService.endAllCalls();
+      await _acceptChatSessionUseCase.execute(incomingSessionId);
+      CallkitService.endAllCalls();
     } catch (_) {}
   }
 

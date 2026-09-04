@@ -215,6 +215,14 @@ class ChatRepositoryImpl implements IChatRepository {
   }
 
   @override
+  Future<void> acceptChatSession(int sessionId) async {
+    final response = await _remoteDataSource.acceptChatSession(sessionId);
+    if (!response.isSuccess) {
+      throw Exception(response.message ?? 'Failed to accept chat session');
+    }
+  }
+
+  @override
   Future<history_model.ChatSessionListResponse> getChatSessions({
     int page = 1,
   }) async {

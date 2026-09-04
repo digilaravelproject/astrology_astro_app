@@ -30,6 +30,7 @@ abstract class IChatRemoteDataSource {
     String status,
   );
   Future<ResponseModel> endChatSession(int sessionId);
+  Future<ResponseModel> acceptChatSession(int sessionId);
   Future<ResponseModel> getChatSessions(int page);
 
   // Default Messages
@@ -159,6 +160,16 @@ class ChatRemoteDataSourceImpl implements IChatRemoteDataSource {
   Future<ResponseModel> endChatSession(int sessionId) async {
     return await _apiClient.post(
       AppUrls.endChatSession(sessionId),
+      data: {},
+      handleError: false,
+      showToaster: false,
+    );
+  }
+
+  @override
+  Future<ResponseModel> acceptChatSession(int sessionId) async {
+    return await _apiClient.post(
+      AppUrls.acceptChatSession(sessionId),
       data: {},
       handleError: false,
       showToaster: false,
