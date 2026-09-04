@@ -6,6 +6,7 @@ import 'package:astro_astrologer/features/chat/domain/entities/chat_session.dart
 // import 'package:astro_astrologer/features/chat/data/models/chat_session_model.dart' as history_model;
 import 'package:astro_astrologer/features/chat/data/models/chat_session_model.dart' as history_model;
 import 'package:astro_astrologer/features/chat/domain/repositories/i_chat_repository.dart';
+import 'package:get/get.dart';
 
 class ChatRepositoryImpl implements IChatRepository {
   final IChatRemoteDataSource _remoteDataSource;

@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 class WalletTransactionModel {
   final int id;
   final int walletId;

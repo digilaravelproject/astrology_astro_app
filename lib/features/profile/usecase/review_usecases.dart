@@ -2,6 +2,7 @@ import 'package:astro_astrologer/features/profile/repository/review_repository.d
 import 'package:astro_astrologer/features/profile/model/review_model.dart';
 import 'package:astro_astrologer/core/services/network/response_model.dart';
 import '../../../../core/utils/logger.dart';
+import 'package:get/get.dart';
 
 class GetReviewsUseCase {
   final ReviewRepository repository;

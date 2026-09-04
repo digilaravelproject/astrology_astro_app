@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 class SadeSatiModel {
   final bool? success;
   final SadeSatiData? data;

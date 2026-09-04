@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 class FAQItem {
   final String question;
   final String answer;

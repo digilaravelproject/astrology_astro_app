@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 class AppValidators {
   // Regex patterns
   static final _mobileRegex = RegExp(r'^[0-9]{10}$');

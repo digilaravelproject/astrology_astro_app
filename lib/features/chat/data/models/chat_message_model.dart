@@ -1,5 +1,6 @@
 import 'package:astro_astrologer/features/chat/domain/entities/chat_message.dart';
 import 'package:astro_astrologer/features/chat/domain/entities/chat_session.dart';
+import 'package:get/get.dart';
 
 class ChatMessageModel extends ChatMessage {
   const ChatMessageModel({

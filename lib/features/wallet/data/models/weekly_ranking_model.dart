@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 class WeeklyRankingData {
   final List<WeeklyRankingModel> topAstrologers;
   final int? myRank;

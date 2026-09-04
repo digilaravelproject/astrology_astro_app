@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
+import 'package:get/get.dart';
 
 class DiscountedSessionScreen extends StatelessWidget {
   const DiscountedSessionScreen({super.key});
@@ -10,7 +11,7 @@ class DiscountedSessionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(title: 'Discounted Session'.tr),
+      appBar: CustomAppBar(title: 'Discounted Session'.tr),
       body: Column(
         children: [
           Expanded(
@@ -58,7 +59,7 @@ class DiscountedSessionScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: const AppText('Share Session'.tr,
+                child: AppText('Share Session'.tr,
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

@@ -3,6 +3,7 @@ import 'data/models/notice_model.dart';
 import '../../../core/utils/date_formatter.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_app_bar.dart';
+import 'package:get/get.dart';
 
 class NoticeDetailScreen extends StatelessWidget {
   final NoticeData notice;
@@ -13,7 +14,7 @@ class NoticeDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(title: 'Notice Details'.tr),
+      appBar: CustomAppBar(title: 'Notice Details'.tr),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(

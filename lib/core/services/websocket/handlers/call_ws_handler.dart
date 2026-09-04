@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:astro_astrologer/core/utils/logger.dart';
 import 'package:astro_astrologer/core/services/websocket/websocket_state.dart';
 import 'package:astro_astrologer/features/call/presentation/widgets/floating_call_bubble.dart';
+import 'package:get/get.dart';
 
 class CallWsHandler {
   static void handleCallInitiated(dynamic rawData) {

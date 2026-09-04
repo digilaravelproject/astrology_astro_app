@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:astro_astrologer/core/utils/logger.dart';
 import 'package:astro_astrologer/core/services/websocket/websocket_state.dart';
+import 'package:get/get.dart';
 
 class PackageWsHandler {
   static void handlePackageSubSessionStarted(dynamic rawData) {

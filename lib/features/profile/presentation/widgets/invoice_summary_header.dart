@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import '../../../../core/theme/app_colors.dart';
+import 'package:get/get.dart';
 
 class InvoiceSummaryHeader extends StatelessWidget {
   final String totalEarnings;
@@ -87,7 +88,7 @@ class InvoiceSummaryHeader extends StatelessWidget {
                   color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Text('All Paid'.tr,
+                child: Text('All Paid'.tr,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 12,

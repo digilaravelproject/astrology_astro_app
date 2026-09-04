@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'app_colors.dart';
 import 'text_theme.dart';
 import 'package:astro_astrologer/core/constants/app_constants.dart';
+import 'package:get/get.dart';
 
 ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,

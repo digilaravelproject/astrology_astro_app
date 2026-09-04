@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 class InvoiceSummaryModel {
   final double totalEarnings;
   final double totalWithdrawn;

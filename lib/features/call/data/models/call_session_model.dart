@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 class CallSessionListResponse {
   final int currentPage;
   final List<CallSessionModel> data;

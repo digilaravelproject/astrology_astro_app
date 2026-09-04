@@ -1,4 +1,5 @@
 import 'package:astro_astrologer/core/constants/app_urls.dart';
+import 'package:get/get.dart';
 
 class GalleryImage {
   final int id;

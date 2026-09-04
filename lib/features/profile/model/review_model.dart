@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 class ReviewModel {
   final int id;
   final int astrologerId;

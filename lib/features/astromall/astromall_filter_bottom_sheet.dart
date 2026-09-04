@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text.dart';
+import 'package:get/get.dart';
 
 class AstromallFilterBottomSheet extends StatefulWidget {
   const AstromallFilterBottomSheet({super.key});
@@ -28,7 +29,7 @@ class _AstromallFilterBottomSheetState
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20),
@@ -42,7 +43,7 @@ class _AstromallFilterBottomSheetState
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const AppText('Filter Orders'.tr,
+               AppText('Filter Orders'.tr,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -52,8 +53,8 @@ class _AstromallFilterBottomSheetState
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          const AppText('Order Status'.tr,
+          SizedBox(height: 16),
+           AppText('Order Status'.tr,
             fontSize: 14,
             fontWeight: FontWeight.w600,
             color: Colors.black87,
@@ -130,12 +131,12 @@ class _AstromallFilterBottomSheetState
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryColor,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    padding: EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: const AppText('Apply'.tr,
+                  child:  AppText('Apply'.tr,
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),

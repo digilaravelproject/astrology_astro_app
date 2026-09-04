@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text.dart';
+import 'package:get/get.dart';
 
 class InvoiceCard extends StatelessWidget {
   final Map<String, String> invoice;
@@ -99,7 +100,7 @@ class InvoiceCard extends StatelessWidget {
                     color: AppColors.primaryColor.withOpacity(0.08),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Text('Paid'.tr,
+                  child: Text('Paid'.tr,
                     style: TextStyle(
                       color: AppColors.primaryColor,
                       fontSize: 11,
@@ -186,7 +187,7 @@ class InvoiceCard extends StatelessWidget {
                                 size: 18,
                               ),
                               const SizedBox(width: 10),
-                              const Text('Download Invoice'.tr,
+                              Text('Download Invoice'.tr,
                                 style: TextStyle(
                                   color: AppColors.primaryColor,
                                   fontSize: 14,

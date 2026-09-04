@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:astro_astrologer/core/theme/app_colors.dart';
 import 'app_text.dart';
+import 'package:get/get.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;

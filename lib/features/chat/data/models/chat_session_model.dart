@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 class ChatSessionListResponse {
   final int currentPage;
   final int lastPage;

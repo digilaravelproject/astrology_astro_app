@@ -7,6 +7,7 @@ import 'package:astro_astrologer/core/widgets/app_text.dart';
 import 'package:astro_astrologer/core/widgets/custom_app_bar.dart';
 import 'package:astro_astrologer/core/theme/app_colors.dart';
 import 'package:astro_astrologer/features/support/presentation/controllers/support_controller.dart';
+import 'package:get/get.dart';
 
 /*
 class FaqScreen extends StatelessWidget {
@@ -99,7 +100,7 @@ class FaqScreen extends StatelessWidget {
 
         final faqData = controller.faqData.value;
         if (faqData == null || faqData.items.isEmpty) {
-          return const Center(
+          return Center(
             child: AppText("No FAQs available at the moment.".tr,
               fontSize: 16,
               color: Colors.grey,

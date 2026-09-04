@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_app_bar.dart';
+import 'package:get/get.dart';
 
 class CallDetailsScreen extends StatelessWidget {
   final String title;
@@ -30,11 +31,11 @@ class CallDetailsScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: CustomAppBar(title: title),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const AppText('Client Profile'.tr,
+             AppText('Client Profile'.tr,
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Color(0xFF2E1A47),
@@ -47,8 +48,8 @@ class CallDetailsScreen extends StatelessWidget {
             _buildDetailRow('Place of Birth', placeOfBirth),
             const SizedBox(height: 8),
             _buildDetailRow('Gender', gender),
-            const SizedBox(height: 24),
-            const AppText('Appointment Schedule:'.tr,
+            SizedBox(height: 24),
+             AppText('Appointment Schedule:'.tr,
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Color(0xFF2E1A47),

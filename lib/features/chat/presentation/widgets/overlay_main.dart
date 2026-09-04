@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:astro_astrologer/core/widgets/custom_image_widget.dart';
+import 'package:get/get.dart';
 
 class OverlayChatBubbleApp extends StatelessWidget {
   const OverlayChatBubbleApp({super.key});
@@ -161,13 +162,13 @@ class _OverlayChatBubbleWidgetState extends State<OverlayChatBubbleWidget> {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF2E1A47), // Deep Violet
+                      color: Color(0xFF2E1A47), // Deep Violet
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Builder(
                       builder: (context) {
                         if (_status == 'initiated' || _status == 'ringing') {
-                          return const Text('Waiting'.tr,
+                          return  Text('Waiting'.tr,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 9,
