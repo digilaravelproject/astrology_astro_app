@@ -60,6 +60,9 @@ class WebSocketEventRouter {
         event == 'App\\Events\\${AppUrls.eventSuperChatReceived}' ||
         event == '.${AppUrls.eventSuperChatReceived}') {
       LiveWsHandler.handleSuperChatReceived(data);
+    } else if (event == AppUrls.eventActiveLiveSessionsUpdated ||
+        event == 'App\\Events\\${AppUrls.eventActiveLiveSessionsUpdated}') {
+      LiveWsHandler.handleActiveLiveSessionsUpdated(data);
     } else if (event == AppUrls.eventUserJoinedLiveSession ||
         event == 'App\\Events\\${AppUrls.eventUserJoinedLiveSession}' ||
         event == '.${AppUrls.eventUserJoinedLiveSession}') {

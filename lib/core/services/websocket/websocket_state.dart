@@ -52,6 +52,14 @@ class WebSocketState {
   static final StreamController<Map<String, dynamic>> chatInitiatedEvent =
       StreamController.broadcast();
 
+  /// Broadcast stream: emits when an astrologer's availability updates.
+  static final StreamController<Map<String, dynamic>> astrologerAvailabilityEvent =
+      StreamController.broadcast();
+
+  /// Broadcast stream: emits when active live sessions list updates globally.
+  static final StreamController<Map<String, dynamic>> activeLiveSessionsUpdatedEvent =
+      StreamController.broadcast();
+
   /// Broadcast stream: emits ChatQueueUpdated payload.
   static final StreamController<Map<String, dynamic>> chatQueueUpdatedEvent =
       StreamController.broadcast();

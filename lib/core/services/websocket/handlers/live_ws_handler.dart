@@ -115,4 +115,18 @@ class LiveWsHandler {
       Logger.e('LiveWsHandler: error handling UserLeftLiveSession -> $e');
     }
   }
+
+  static void handleActiveLiveSessionsUpdated(dynamic rawData) {
+    try {
+      Map<String, dynamic> eventData = {};
+      if (rawData is String) {
+        eventData = jsonDecode(rawData);
+      } else if (rawData is Map) {
+        eventData = Map<String, dynamic>.from(rawData);
+      }
+      WebSocketState.activeLiveSessionsUpdatedEvent.add(eventData);
+    } catch (e) {
+      Logger.e('LiveWsHandler: error handling ActiveLiveSessionsUpdated -> $e');
+    }
+  }
 }
