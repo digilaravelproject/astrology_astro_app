@@ -195,18 +195,20 @@ class AppUrls {
   static String privateUserChannel(int userId) => 'private-user.$userId';
   static const String presenceRoomChannel = 'presence-room';
 
-  // Call System Endpoints
+  // Call APIs
   static const String initiateCall = '/call/initiate';
   static String acceptCall(int sessionId) => '/call/$sessionId/accept';
   static String rejectCall(int sessionId) => '/call/$sessionId/reject';
   static String cancelCall(int sessionId) => '/call/$sessionId/cancel';
   static String endCallSession(int sessionId) => '/call/$sessionId/end';
+  static String updateSdp(int sessionId) => '/call/$sessionId/sdp';
   static String sendIceCandidate(int sessionId) =>
       '/call/$sessionId/ice-candidate';
   static const String currentCallSession = '/call/current-session';
   static const String pendingCallSessions = '/call/pending';
   static const String userCallSessions = '/call/sessions/user';
   static const String astrologerCallSessions = '/call/sessions/astrologer';
+  static const String turnCredentials = '/call/turn-credentials';
 
   // Call System Events
   static const String eventCallInitiated = 'CallInitiated';
@@ -214,6 +216,7 @@ class AppUrls {
   static const String eventCallDismissed = 'CallDismissed';
   static const String eventCallEnded = 'CallEnded';
   static const String eventIceCandidateSent = 'IceCandidateSent';
+  static const String eventWebRtcSdpUpdated = 'WebRtcSdpUpdated';
 
   // Live Session System Events
   static const String eventUserJoinedLiveSession = 'UserJoinedLiveSession';

@@ -89,6 +89,10 @@ class WebSocketState {
   static final RxMap<String, dynamic> iceCandidateData =
       <String, dynamic>{}.obs;
 
+  /// WebRTC SDP update payload.
+  static final RxMap<String, dynamic> sdpUpdateData =
+      <String, dynamic>{}.obs;
+
   // ─── Live Session State ────────────────────────────────────────────────────
   /// Broadcast stream: live comments received.
   static final StreamController<Map<String, dynamic>> liveCommentsEvent =

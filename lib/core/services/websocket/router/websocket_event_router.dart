@@ -45,6 +45,9 @@ class WebSocketEventRouter {
     } else if (event == AppUrls.eventIceCandidateSent ||
         event == 'App\\Events\\IceCandidateSent') {
       CallWsHandler.handleIceCandidateSent(data);
+    } else if (event == AppUrls.eventWebRtcSdpUpdated ||
+        event == 'App\\Events\\WebRtcSdpUpdated') {
+      CallWsHandler.handleWebRtcSdpUpdated(data);
     } else if (event == AppUrls.eventViewerCountUpdated ||
         event == 'App\\Events\\${AppUrls.eventViewerCountUpdated}' ||
         event == '.${AppUrls.eventViewerCountUpdated}') {

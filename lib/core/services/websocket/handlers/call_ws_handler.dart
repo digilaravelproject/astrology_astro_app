@@ -124,4 +124,19 @@ class CallWsHandler {
       Logger.e('CallWsHandler: error handling IceCandidateSent -> $e');
     }
   }
+
+  static void handleWebRtcSdpUpdated(dynamic rawData) {
+    try {
+      Map<String, dynamic> eventData = {};
+      if (rawData is String) {
+        eventData = jsonDecode(rawData);
+      } else if (rawData is Map) {
+        eventData = Map<String, dynamic>.from(rawData);
+      }
+      WebSocketState.sdpUpdateData.value = eventData;
+      WebSocketState.sdpUpdateData.refresh();
+    } catch (e) {
+      Logger.e('CallWsHandler: error handling WebRtcSdpUpdated -> $e');
+    }
+  }
 }
