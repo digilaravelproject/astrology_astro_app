@@ -16,6 +16,7 @@ import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/bindings/initial_bindings.dart';
 import 'package:astro_astrologer/core/services/sound_vibration_service.dart';
 import 'package:astro_astrologer/routes/route_helper.dart';
+import 'package:astro_astrologer/routes/app_routes.dart';
 
 class CallkitService {
   static String? lastAcceptedSessionId;
@@ -106,7 +107,7 @@ class CallkitService {
                 }
 
                 if (!ctrl.isCallScreenVisible) {
-                  Get.to(() => const CallScreen());
+                  Get.toNamed(AppRoutes.callScreen);
                 }
               }
             });

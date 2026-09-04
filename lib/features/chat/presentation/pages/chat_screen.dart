@@ -10,7 +10,7 @@ import 'package:astro_astrologer/core/widgets/app_text.dart';
 import 'package:astro_astrologer/core/widgets/custom_app_bar.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
-import 'package:astro_astrologer/core/services/network/websocket_service.dart';
+import 'package:astro_astrologer/core/services/websocket/websocket_service.dart';
 import 'package:astro_astrologer/features/chat/presentation/controllers/chat_controller.dart';
 import 'package:astro_astrologer/features/chat/domain/entities/chat_message.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';

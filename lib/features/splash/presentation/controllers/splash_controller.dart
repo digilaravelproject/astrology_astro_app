@@ -5,7 +5,7 @@ import 'package:astro_astrologer/core/services/storage/shared_prefs.dart';
 import 'package:astro_astrologer/core/constants/app_constants.dart';
 import 'package:astro_astrologer/routes/route_helper.dart';
 import 'package:astro_astrologer/features/splash/data/datasources/splash_service.dart';
-import 'package:astro_astrologer/core/services/network/websocket_service.dart';
+import 'package:astro_astrologer/core/services/websocket/websocket_service.dart';
 import 'package:astro_astrologer/core/services/fcm_notification_service.dart';
 
 class SplashController extends GetxController {
@@ -44,10 +44,8 @@ class SplashController extends GetxController {
         bool cameraGranted = await Permission.camera.isGranted;
         bool micGranted = await Permission.microphone.isGranted;
         bool notifGranted = await Permission.notification.isGranted;
-        
-        bool hasSeenPermission = SharedPrefs.getBool(AppConstants.hasSeenPermission) ?? false;
 
-        if ((cameraGranted && micGranted && notifGranted) || hasSeenPermission) {
+        if (cameraGranted && micGranted && notifGranted) {
           if (isLoggedIn && userData != null && userData.isNotEmpty) {
             Get.find<WebSocketService>().connect();
             FCMNotificationService.registerDeviceToken(null);

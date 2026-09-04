@@ -8,5 +8,5 @@ class DefaultRes {
 
   static const String PROJECT_NAME = 'astro_astrologer';
   static const String PROJECT_VERSION = '1.0.3+4';
-  static const String = '.env';
+  static const String ENV = '.env';
 }

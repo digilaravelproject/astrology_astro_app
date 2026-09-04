@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:astro_astrologer/core/services/network/websocket_service.dart';
+import 'package:astro_astrologer/core/services/websocket/websocket_service.dart';
 import 'package:get/get.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';

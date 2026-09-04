@@ -28,4 +28,7 @@ class AppRoutes {
   static const String myReviews = '/my-reviews';
   static const String liveSchedule = '/live-schedule';
   static const String panchangScreen = '/panchang';
+  static const String chatScreen = '/chat-screen';
+  static const String callScreen = '/call-screen';
+  static const String liveRoomScreen = '/live-room-screen';
 }

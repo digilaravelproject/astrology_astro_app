@@ -228,29 +228,6 @@ class FCMNotificationService {
           );
         }
 
-        // No further processing needed in foreground for astrologer        final int parsedSessionId = int.tryParse(rawSessionId) ?? 0;
-
-        if (title.contains('Chat Ended') ||
-            type == 'chat_ended' ||
-            type == 'CHAT_ENDED' ||
-            type == 'session_ended' ||
-            type == 'chat_summary' ||
-            type == 'CHAT_MISSED' ||
-            type == 'CHAT_DISMISSED') {
-          FloatingChatBubble.dismiss(stopForegroundService: true);
-          return;
-        } else if (title.contains('Call Ended') ||
-            type == 'call_ended' ||
-            type == 'CALL_ENDED' ||
-            type == 'session_completed' ||
-            type == 'CALL_FAILED' ||
-            type == 'CALL_DISMISSED') {
-          if (parsedSessionId > 0) return;
-        } else if (type == 'PACKAGE_EXHAUSTED' || type == 'package') {
-          if (parsedSessionId > 0)
-            FloatingChatBubble.dismiss(stopForegroundService: true);
-          return;
-        }
       }
     });
 

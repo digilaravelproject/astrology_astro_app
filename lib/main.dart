@@ -18,7 +18,7 @@ import 'package:astro_astrologer/core/services/local_notification_service.dart';
 import 'package:astro_astrologer/core/services/config/env_config.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:astro_astrologer/core/services/callkit_service.dart';
-import 'package:astro_astrologer/core/services/network/websocket_service.dart';
+import 'package:astro_astrologer/core/services/websocket/websocket_service.dart';
 import 'package:flutter_callkit_incoming/entities/entities.dart';
 import 'dart:convert';
 

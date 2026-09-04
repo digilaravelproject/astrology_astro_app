@@ -5,6 +5,8 @@ import 'package:astro_astrologer/features/live/data/repositories/live_repository
 import 'package:astro_astrologer/features/live/domain/repositories/live_repository.dart';
 import 'package:astro_astrologer/features/live/domain/usecases/live_usecases.dart';
 import 'package:astro_astrologer/features/live/presentation/controllers/live_controller.dart';
+import 'package:astro_astrologer/features/live/presentation/controllers/live_session_controller.dart';
+import 'package:astro_astrologer/features/live/presentation/controllers/live_broadcast_controller.dart';
 
 class LiveBinding extends Bindings {
   @override
@@ -51,11 +53,17 @@ class LiveBinding extends Bindings {
       () => GetLiveCommentsUseCase(Get.find<LiveRepository>()),
     );
 
-    // Controller
-    Get.lazyPut<LiveController>(
-      () => LiveController(
+    // Sub-Controllers
+    Get.lazyPut<LiveSessionController>(
+      () => LiveSessionController(
         Get.find<GetLiveSessionsUseCase>(),
         Get.find<GetCurrentLiveSessionUseCase>(),
+        Get.find<GetLiveCommentsUseCase>(),
+      ),
+    );
+
+    Get.lazyPut<LiveBroadcastController>(
+      () => LiveBroadcastController(
         Get.find<CreateLiveSessionUseCase>(),
         Get.find<DeleteLiveSessionUseCase>(),
         Get.find<StartLiveSessionUseCase>(),
@@ -63,8 +71,12 @@ class LiveBinding extends Bindings {
         Get.find<UpdateLiveSessionUseCase>(),
         Get.find<StartBroadcastUseCase>(),
         Get.find<StopBroadcastUseCase>(),
-        Get.find<GetLiveCommentsUseCase>(),
       ),
+    );
+
+    // Orchestrator
+    Get.lazyPut<LiveController>(
+      () => LiveController(),
     );
   }
 }

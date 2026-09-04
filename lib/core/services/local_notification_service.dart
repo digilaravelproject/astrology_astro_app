@@ -18,7 +18,8 @@ import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:flutter_callkit_incoming/entities/entities.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
-import 'package:astro_astrologer/core/services/network/websocket_service.dart';
+import 'package:astro_astrologer/core/services/websocket/websocket_service.dart';
+import 'package:astro_astrologer/routes/app_routes.dart';
 
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse notificationResponse) {
@@ -290,7 +291,7 @@ class LocalNotificationService {
             currentStatus == 'idle') {
           debugPrint('[LocalNotificationService] Stale call tapped, cancelling...');
         } else if (currentStatus == 'ongoing') {
-          Get.to(() => const CallScreen());
+          Get.toNamed(AppRoutes.callScreen);
         } else if (currentStatus == 'ringing') {
           // If they tap a notification while ringing, trigger CallKit
           final String name = (callController.consumerName != null && callController.consumerName!.isNotEmpty) ? callController.consumerName! : 'User';
@@ -311,10 +312,14 @@ class LocalNotificationService {
         final int? sessionId = int.tryParse(sessionIdStr);
         
         if (isAnswer && sessionId != null) {
-          Get.to(() => const CallScreen());
+          Get.toNamed(AppRoutes.callScreen);
         } else {
-          final callController = Get.put(CallController());
-          callController.checkPendingCall();
+          try {
+            final callController = Get.find<CallController>();
+            callController.checkPendingCall();
+          } catch (e) {
+            debugPrint('[LocalNotificationService] CallController not registered: $e');
+          }
         }
       }
     } else if (payload.startsWith('live_')) {
@@ -324,7 +329,7 @@ class LocalNotificationService {
         final ongoingSession = liveController.currentActiveSession.value;
         if (ongoingSession != null) {
           liveController.isRoomOpen = true;
-          Get.to(() => LiveRoomScreen(session: ongoingSession))?.then((_) {
+          Get.toNamed(AppRoutes.liveRoomScreen, arguments: ongoingSession)?.then((_) {
             liveController.isRoomOpen = false;
           });
         } else {

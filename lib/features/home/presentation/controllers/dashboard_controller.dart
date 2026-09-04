@@ -10,7 +10,7 @@ import 'package:astro_astrologer/features/chat/presentation/bindings/chat_bindin
 import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 
 import 'package:astro_astrologer/core/services/local_notification_service.dart';
-import 'package:astro_astrologer/core/services/network/websocket_service.dart';
+import 'package:astro_astrologer/core/services/websocket/websocket_service.dart';
 
 class DashboardController extends GetxController {
   var selectedIndex = 0.obs;

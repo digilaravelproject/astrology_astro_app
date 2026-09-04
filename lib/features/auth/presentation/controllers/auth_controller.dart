@@ -11,7 +11,7 @@ import 'package:astro_astrologer/core/utils/logger.dart';
 import 'package:astro_astrologer/features/auth/data/datasources/auth_service.dart';
 import 'package:astro_astrologer/features/profile/model/other_details_model.dart';
 import 'package:astro_astrologer/features/profile/model/skill_model.dart';
-import 'package:astro_astrologer/core/services/network/websocket_service.dart';
+import 'package:astro_astrologer/core/services/websocket/websocket_service.dart';
 import 'package:astro_astrologer/core/services/fcm_notification_service.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 

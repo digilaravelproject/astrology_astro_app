@@ -1,3 +1,8 @@
+import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
+import 'package:astro_astrologer/features/chat/presentation/bindings/chat_binding.dart';
+import 'package:astro_astrologer/features/call/presentation/pages/call_screen.dart';
+import 'package:astro_astrologer/features/live/presentation/pages/live_room_screen.dart';
+
 import 'package:astro_astrologer/features/splash/presentation/screens/permission_screen.dart';
 import 'package:astro_astrologer/features/profile/presentation/screens/skill_details_screen.dart';
 import 'package:astro_astrologer/features/profile/presentation/screens/other_details_screen.dart';
@@ -176,6 +181,32 @@ class RouteHelper {
       page: () => const PanchangScreen(),
       binding: PanchangBinding(),
       transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: AppRoutes.chatScreen,
+      page: () {
+        final args = Get.arguments as Map<String, dynamic>? ?? {};
+        return ChatScreen(
+          userName: args['userName'] ?? 'User',
+          userImage: args['userImage'] ?? '',
+          sessionId: args['sessionId'] ?? 0,
+          initialStatus: args['initialStatus'] ?? 'ongoing',
+          isPackageChat: args['isPackageChat'] ?? false,
+        );
+      },
+      binding: ChatBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.callScreen,
+      page: () => const CallScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.liveRoomScreen,
+      page: () {
+        final session = Get.arguments;
+        return LiveRoomScreen(session: session);
+      },
+      binding: LiveBinding(),
     ),
   ];
 }

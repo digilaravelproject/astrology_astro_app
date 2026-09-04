@@ -11,7 +11,7 @@ import 'package:astro_astrologer/core/widgets/app_text.dart';
 import 'package:astro_astrologer/features/live/data/models/live_session_model.dart';
 import 'package:astro_astrologer/features/live/presentation/controllers/live_controller.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
-import 'package:astro_astrologer/core/services/network/websocket_service.dart';
+import 'package:astro_astrologer/core/services/websocket/websocket_service.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/constants/app_constants.dart';

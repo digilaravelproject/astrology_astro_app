@@ -10,6 +10,7 @@ import 'package:astro_astrologer/core/services/local_notification_service.dart';
 import 'package:astro_astrologer/core/services/foreground_task_service.dart';
 import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 import 'package:astro_astrologer/core/widgets/custom_image_widget.dart';
+import 'package:astro_astrologer/routes/app_routes.dart';
 
 class FloatingCallBubble {
   static int? sessionId;
@@ -52,7 +53,7 @@ class FloatingCallBubble {
             onTapCallback?.call();
           } else {
             FloatingCallBubble.dismiss();
-            Get.to(() => const CallScreen());
+            Get.toNamed(AppRoutes.callScreen);
           }
         });
       }
@@ -305,7 +306,7 @@ class _FloatingCallBubbleWidgetState extends State<FloatingCallBubbleWidget> {
             if (FloatingCallBubble.onTapCallback != null) {
               FloatingCallBubble.onTapCallback?.call();
             } else {
-              Get.to(() => const CallScreen());
+              Get.toNamed(AppRoutes.callScreen);
             }
           },
           child: Container(

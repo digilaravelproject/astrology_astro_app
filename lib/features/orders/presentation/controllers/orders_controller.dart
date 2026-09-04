@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
-import 'package:astro_astrologer/core/services/network/websocket_service.dart';
+import 'package:astro_astrologer/core/services/websocket/websocket_service.dart';
 import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
 import 'package:astro_astrologer/features/chat/presentation/bindings/chat_binding.dart';
 import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
@@ -11,6 +11,7 @@ import 'dart:async';
 import 'package:astro_astrologer/features/orders/data/models/astrologer_order_model.dart';
 import 'package:astro_astrologer/features/orders/domain/usecases/get_astrologer_orders_usecase.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
+import 'package:astro_astrologer/routes/app_routes.dart';
 
 class OrdersController extends GetxController {
   final GetAstrologerOrdersUseCase _getAstrologerOrdersUseCase;
@@ -268,7 +269,7 @@ class OrdersController extends GetxController {
         }
 
         if (success) {
-          Get.to(() => const CallScreen());
+          Get.toNamed(AppRoutes.callScreen);
         } else {
           CustomSnackBar.disabledSnackbar(
             'Error',
@@ -303,7 +304,7 @@ class OrdersController extends GetxController {
         colorText: Colors.green.shade800,
         snackPosition: SnackPosition.TOP,
       );
-      Get.to(() => const CallScreen());
+      Get.toNamed(AppRoutes.callScreen);
     } else {
       CustomSnackBar.disabledSnackbar(
         'Error',

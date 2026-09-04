@@ -6,7 +6,7 @@ import 'package:astro_astrologer/core/widgets/app_text.dart';
 import 'package:astro_astrologer/routes/route_helper.dart';
 import 'package:astro_astrologer/core/services/storage/shared_prefs.dart';
 import 'package:astro_astrologer/core/constants/app_constants.dart';
-import 'package:astro_astrologer/core/services/network/websocket_service.dart';
+import 'package:astro_astrologer/core/services/websocket/websocket_service.dart';
 import 'package:astro_astrologer/core/services/fcm_notification_service.dart';
 
 class PermissionScreen extends StatefulWidget {
@@ -50,6 +50,10 @@ class _PermissionScreenState extends State<PermissionScreen>
     isSystemAlertWindowGranted = await Permission.systemAlertWindow.isGranted;
     if (mounted) {
       setState(() {});
+    }
+    
+    if (_allPermissionsGranted) {
+      _navigateToNext();
     }
   }
 
@@ -211,27 +215,6 @@ class _PermissionScreenState extends State<PermissionScreen>
                     ),
                   ),
                 ),
-              if (!_allPermissionsGranted) const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _navigateToNext,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryColor,
-                    disabledBackgroundColor: Colors.grey.shade300,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: AppText(
-                    'Go to Dashboard',
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
             ],
           ),
         ),

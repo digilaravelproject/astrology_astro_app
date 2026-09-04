@@ -1,10 +1,13 @@
+import 'package:astro_astrologer/features/call/presentation/controllers/call_session_controller.dart';
+import 'package:astro_astrologer/features/call/presentation/controllers/call_webrtc_controller.dart';
+
 import 'package:get/get.dart';
 import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/services/network/network_info.dart';
 import 'package:dio/dio.dart';
-import 'package:astro_astrologer/core/services/network/websocket_service.dart';
+import 'package:astro_astrologer/core/services/websocket/websocket_service.dart';
 import 'package:astro_astrologer/features/chat/data/datasources/chat_remote_data_source.dart';
 import 'package:astro_astrologer/features/chat/data/datasources/chat_local_data_source.dart';
 import 'package:astro_astrologer/features/chat/data/repositories/chat_repository_impl.dart';
@@ -309,8 +312,17 @@ class InitialBindings extends Bindings {
       permanent: true,
     );
 
+
     // Call dependencies
-    Get.put(CallController(), permanent: true);
+    Get.put(CallSessionController(), permanent: true);
+    Get.put(CallWebRTCController(), permanent: true);
+    Get.put(
+      CallController(
+        session: Get.find<CallSessionController>(),
+        webrtc: Get.find<CallWebRTCController>(),
+      ),
+      permanent: true,
+    );
 
     // Live dependencies
     LiveBinding().dependencies();

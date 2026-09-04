@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:astro_astrologer/core/services/network/multipart.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
-import 'package:astro_astrologer/core/services/network/websocket_service.dart';
+import 'package:astro_astrologer/core/services/websocket/websocket_service.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/features/chat/domain/entities/chat_message.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
