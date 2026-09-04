@@ -136,7 +136,10 @@ class ChatWsHandler {
       final session = eventData['session'];
       if (session == null) return;
 
-      final int sessionId = session['id'];
+      final int sessionId =
+          session['id'] is int
+              ? session['id']
+              : (int.tryParse(session['id']?.toString() ?? '') ?? 0);
 
       FloatingChatBubble.dismiss(stopForegroundService: true);
 
@@ -162,7 +165,7 @@ class ChatWsHandler {
         eventData = Map<String, dynamic>.from(rawData);
       }
 
-      final messageData = eventData['messageData'];
+      final messageData = eventData['messageData'] ?? eventData['message'];
       if (messageData != null) {
         final map = Map<String, dynamic>.from(messageData);
         WebSocketState.incomingMessages.add(map);
