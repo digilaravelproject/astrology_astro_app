@@ -368,7 +368,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                         color: AppColors.primaryColor.withOpacity(0.4),
                       ),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
@@ -1127,7 +1127,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   ),
                 ),
                 // Title
-                const Row(
+                Row(
                   children: [
                     Icon(
                       Icons.help_outline_rounded,

@@ -585,7 +585,7 @@ class _CallScreenState extends State<CallScreen> {
                   ),
                 ),
                 // Title
-                const Row(
+                Row(
                   children: [
                     Icon(
                       Icons.help_outline_rounded,
@@ -766,7 +766,7 @@ class _CallScreenState extends State<CallScreen> {
               borderRadius: BorderRadius.circular(20),
             ),
             title: Row(
-              children: const [
+              children: [
                 Icon(
                   Icons.chat_bubble_rounded,
                   color: AppColors.primaryColor,

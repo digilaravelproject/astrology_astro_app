@@ -330,7 +330,7 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
                     ),
                   )
                 else
-                  const Row(
+                  Row(
                     children: [
                       Icon(
                         Icons.check_circle_rounded,

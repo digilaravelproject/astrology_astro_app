@@ -231,7 +231,7 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(color: Colors.green.shade200),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(

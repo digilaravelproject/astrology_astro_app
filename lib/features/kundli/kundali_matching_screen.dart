@@ -68,7 +68,7 @@ class KundliMatchScreen extends GetView<MatchingController> {
         ),
         body: Obx(() {
           if (controller.isLoading.value) {
-            return const Center(
+            return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -451,7 +451,7 @@ class _DetailsTab extends StatelessWidget {
                   3: FlexColumnWidth(1.6),
                 },
                 children: [
-                  const TableRow(
+                  TableRow(
                     decoration: BoxDecoration(color: AppColors.softPink),
                     children: [
                       Padding(
@@ -1141,7 +1141,7 @@ void _showMarriageMuhuratBottomSheet(BuildContext context) {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Row(
+                Row(
                   children: [
                     Icon(
                       Icons.calendar_month,

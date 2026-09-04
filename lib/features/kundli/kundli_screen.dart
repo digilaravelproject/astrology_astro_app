@@ -784,7 +784,7 @@ class _KundliScreenState extends State<KundliScreen>
             ),
             child: Column(
               children: [
-                const Padding(
+                Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
                   child: Row(
                     children: [

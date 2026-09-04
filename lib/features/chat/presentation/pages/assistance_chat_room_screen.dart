@@ -161,7 +161,7 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
                       color: AppColors.primaryColor.withOpacity(0.4),
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
