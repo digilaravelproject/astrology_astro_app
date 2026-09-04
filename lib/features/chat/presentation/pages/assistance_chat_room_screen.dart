@@ -237,7 +237,7 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
                   }
 
                   if (controller.messages.isEmpty) {
-                    return const Center(
+                    return Center(
                       child: AppText('Waiting for messages...'.tr,
                         color: Colors.grey,
                       ),

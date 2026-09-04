@@ -73,7 +73,7 @@ class BhavBalaTab extends StatelessWidget {
                     topRight: Radius.circular(12),
                   ),
                 ),
-                child: const Center(
+                child: Center(
                   child: AppText("Bhav Bala".tr,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,

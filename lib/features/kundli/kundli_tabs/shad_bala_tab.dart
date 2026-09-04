@@ -24,7 +24,7 @@ class ShadBalaTab extends StatelessWidget {
 
       final shadbalaList = controller.shadbalaModel.value?.data?.shadbala;
       if (shadbalaList == null || shadbalaList.isEmpty) {
-        return const Padding(
+        return Padding(
           padding: EdgeInsets.all(20.0),
           child: Center(child: AppText("Failed to load Shad Bala details.".tr)),
         );
@@ -56,7 +56,7 @@ class ShadBalaTab extends StatelessWidget {
                     topRight: Radius.circular(12),
                   ),
                 ),
-                child: const Center(
+                child: Center(
                   child: AppText("Shad Bala".tr,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,

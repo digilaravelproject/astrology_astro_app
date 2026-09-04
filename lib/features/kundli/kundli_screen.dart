@@ -508,7 +508,7 @@ class _KundliScreenState extends State<KundliScreen>
 
         final data = _panchangController.panchangModel.value?.data;
         if (data == null) {
-          return const Padding(
+          return Padding(
             padding: EdgeInsets.all(20.0),
             child: Center(child: AppText("Failed to load Panchang details.".tr)),
           );

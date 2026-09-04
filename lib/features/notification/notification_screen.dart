@@ -59,19 +59,19 @@ class _NotificationScreenState extends State<NotificationScreen> {
             onPressed: () {
               Get.dialog(
                 AlertDialog(
-                  title: const AppText('Clear Notifications'.tr),
-                  content: const AppText('Are you sure you want to delete all notifications?'.tr),
+                  title: AppText('Clear Notifications'.tr),
+                  content: AppText('Are you sure you want to delete all notifications?'.tr),
                   actions: [
                     TextButton(
                       onPressed: () => Get.back(),
-                      child: const AppText('Cancel'.tr, color: Colors.grey),
+                      child: AppText('Cancel'.tr, color: Colors.grey),
                     ),
                     TextButton(
                       onPressed: () {
                         Get.back();
                         _controller.deleteAllNotifications();
                       },
-                      child: const AppText('Delete All'.tr, color: Colors.redAccent),
+                      child: AppText('Delete All'.tr, color: Colors.redAccent),
                     ),
                   ],
                 ),
@@ -198,7 +198,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          const AppText('No Notifications'.tr,
+          AppText('No Notifications'.tr,
             fontSize: 18,
             fontWeight: FontWeight.w600,
             color: Colors.black87,

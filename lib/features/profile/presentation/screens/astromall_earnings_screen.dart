@@ -20,7 +20,7 @@ class _AstromallEarningsScreenState extends State<AstromallEarningsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.fieldBackground,
-      appBar: const CustomAppBar(title: 'Astromall Earnings'.tr),
+      appBar: CustomAppBar(title: 'Astromall Earnings'.tr),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -90,7 +90,7 @@ class _AstromallEarningsScreenState extends State<AstromallEarningsScreen> {
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 AppText('Weekly Earnings'.tr,
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
@@ -107,7 +107,7 @@ class _AstromallEarningsScreenState extends State<AstromallEarningsScreen> {
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
-                  children: const [
+                  children: [
                     AppText('Rank'.tr,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
@@ -181,10 +181,10 @@ class _AstromallEarningsScreenState extends State<AstromallEarningsScreen> {
       },
       itemBuilder:
           (context) => [
-            const PopupMenuItem(value: 'Today', child: AppText('Today'.tr)),
-            const PopupMenuItem(value: 'Weekly', child: AppText('Weekly'.tr)),
-            const PopupMenuItem(value: 'Monthly', child: AppText('Monthly'.tr)),
-            const PopupMenuItem(
+            PopupMenuItem(value: 'Today', child: AppText('Today'.tr)),
+            PopupMenuItem(value: 'Weekly', child: AppText('Weekly'.tr)),
+            PopupMenuItem(value: 'Monthly', child: AppText('Monthly'.tr)),
+            PopupMenuItem(
               value: 'Last 3 Months',
               child: AppText('Last 3 Months'.tr),
             ),

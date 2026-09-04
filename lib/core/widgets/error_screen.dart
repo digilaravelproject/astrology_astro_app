@@ -26,7 +26,7 @@ class ErrorScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar:
           showBackButton
-              ? const CustomAppBar(title: "Error".tr, centerTitle: true)
+              ? CustomAppBar(title: "Error".tr, centerTitle: true)
               : null,
       body: Center(
         child: Padding(
@@ -86,7 +86,7 @@ class ErrorScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text('Retry'.tr,
+                    child: Text('Retry'.tr,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,

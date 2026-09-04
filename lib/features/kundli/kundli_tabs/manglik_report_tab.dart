@@ -23,7 +23,7 @@ class ManglikReportTab extends StatelessWidget {
 
       final manglikData = manglikController.manglikModel.value;
       if (manglikData == null) {
-        return const Center(
+        return Center(
           child: Padding(
             padding: EdgeInsets.all(24.0),
             child: AppText("No Manglik data available.".tr),
@@ -271,7 +271,7 @@ class ManglikReportTab extends StatelessWidget {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const AppText("• ".tr,
+                          AppText("• ".tr,
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                           ),

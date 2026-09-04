@@ -30,7 +30,7 @@ class AddNoteBottomSheet extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const AppText('Add Notes'.tr,
+              AppText('Add Notes'.tr,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF2C2C2C),

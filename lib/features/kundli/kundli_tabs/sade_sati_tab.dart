@@ -25,7 +25,7 @@ class SadeSatiTab extends StatelessWidget {
 
       final data = controller.sadeSatiModel.value?.data;
       if (data == null) {
-        return const Center(child: AppText("No Sade Sati data available".tr));
+        return Center(child: AppText("No Sade Sati data available".tr));
       }
 
       return SingleChildScrollView(
@@ -297,7 +297,7 @@ class SadeSatiTab extends StatelessWidget {
               ),
             ),
             padding: const EdgeInsets.symmetric(vertical: 12),
-            child: const Row(
+            child: Row(
               children: [
                 Expanded(
                   child: Center(

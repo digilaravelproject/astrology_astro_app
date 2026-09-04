@@ -407,7 +407,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(color: Colors.red.withOpacity(0.3)),
                       ),
-                      child: const AppText("End Chat".tr,
+                      child: AppText("End Chat".tr,
                         color: Colors.red,
                         fontWeight: FontWeight.w700,
                         fontSize: 12,
@@ -1075,20 +1075,20 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         context: context,
         builder:
             (context) => AlertDialog(
-              title: const Text("End Chat".tr),
-              content: const Text("Are you sure you want to end this chat session?".tr,
+              title: Text("End Chat".tr),
+              content: Text("Are you sure you want to end this chat session?".tr,
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text("Cancel".tr),
+                  child: Text("Cancel".tr),
                 ),
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                     _controller.terminateEntireSession();
                   },
-                  child: const Text("End Chat".tr,
+                  child: Text("End Chat".tr,
                     style: TextStyle(color: Colors.red),
                   ),
                 ),
@@ -1191,7 +1191,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   width: double.infinity,
                   child: TextButton(
                     onPressed: () => Navigator.of(ctx).pop(),
-                    child: const Text('Cancel'.tr,
+                    child: Text('Cancel'.tr,
                       style: TextStyle(color: Colors.grey, fontSize: 15),
                     ),
                   ),

@@ -21,7 +21,7 @@ class PanchangScreen extends GetView<PanchangController> {
     print('[PCB_APP] [DEBUG] PanchangScreen build called');
     return Scaffold(
       backgroundColor: const Color(0xFFFDF9F5),
-      appBar: const CustomAppBar(title: 'Panchang'.tr),
+      appBar: CustomAppBar(title: 'Panchang'.tr),
       body: Column(
         children: [
           _buildCalendarSection(),
@@ -391,7 +391,7 @@ class PanchangScreen extends GetView<PanchangController> {
                 size: 20,
               ),
               const SizedBox(width: 8),
-              const Expanded(
+              Expanded(
                 child: AppText("Daily Cosmic Guidance".tr,
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
@@ -1087,7 +1087,7 @@ class PanchangScreen extends GetView<PanchangController> {
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: const [
+                    children: [
                       Icon(Icons.calendar_month, size: 14, color: themeColor),
                       SizedBox(width: 6),
                       AppText("MASA (MONTH)".tr,
@@ -1304,7 +1304,7 @@ class PanchangScreen extends GetView<PanchangController> {
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: const [
+                    children: [
                       Icon(Icons.park_outlined, size: 14, color: themeColor),
                       SizedBox(width: 6),
                       AppText("RITU (SEASON)".tr,
@@ -1520,7 +1520,7 @@ class PanchangScreen extends GetView<PanchangController> {
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: const [
+                    children: [
                       Icon(Icons.explore, size: 14, color: themeColor),
                       SizedBox(width: 6),
                       AppText("DISHA SHOOL (TRAVEL ADVISORY)".tr,

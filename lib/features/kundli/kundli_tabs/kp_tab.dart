@@ -35,7 +35,7 @@ class KPTab extends StatelessWidget {
 
       final data = kpController.kpFullReportModel.value?.data;
       if (data == null) {
-        return const Center(
+        return Center(
           child: Padding(
             padding: EdgeInsets.all(24.0),
             child: AppText("No KP data available".tr),
@@ -64,7 +64,7 @@ class KPTab extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const AppText("Ruling Planets".tr,
+        AppText("Ruling Planets".tr,
           fontSize: 16,
           fontWeight: FontWeight.bold,
         ),
@@ -95,7 +95,7 @@ class KPTab extends StatelessWidget {
                   vertical: 12,
                   horizontal: 8,
                 ),
-                child: const Row(
+                child: Row(
                   children: [
                     Expanded(
                       flex: 3,
@@ -167,7 +167,7 @@ class KPTab extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    const Expanded(
+                    Expanded(
                       flex: 3,
                       child: AppText("Day Lord".tr,
                         fontSize: 13,
@@ -234,7 +234,7 @@ class KPTab extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const AppText("KP Planets".tr, fontSize: 16, fontWeight: FontWeight.bold),
+        AppText("KP Planets".tr, fontSize: 16, fontWeight: FontWeight.bold),
         const SizedBox(height: 12),
         Container(
           decoration: BoxDecoration(
@@ -262,7 +262,7 @@ class KPTab extends StatelessWidget {
                   vertical: 12,
                   horizontal: 8,
                 ),
-                child: const Row(
+                child: Row(
                   children: [
                     Expanded(
                       flex: 2,
@@ -366,7 +366,7 @@ class KPTab extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const AppText("KP Cusps (Houses)".tr,
+        AppText("KP Cusps (Houses)".tr,
           fontSize: 16,
           fontWeight: FontWeight.bold,
         ),
@@ -397,7 +397,7 @@ class KPTab extends StatelessWidget {
                   vertical: 12,
                   horizontal: 8,
                 ),
-                child: const Row(
+                child: Row(
                   children: [
                     Expanded(
                       flex: 1,

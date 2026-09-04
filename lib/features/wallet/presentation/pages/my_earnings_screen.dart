@@ -413,7 +413,7 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
         return const Center(child: CircularProgressIndicator());
       }
       if (_walletController.withdrawalsList.isEmpty) {
-        return const Center(
+        return Center(
           child: Padding(
             padding: EdgeInsets.all(20),
             child: AppText('No withdrawals found.'.tr),

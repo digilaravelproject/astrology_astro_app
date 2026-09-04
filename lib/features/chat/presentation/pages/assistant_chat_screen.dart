@@ -138,12 +138,12 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const AppText('Failed to load chat sessions'.tr,
+                      AppText('Failed to load chat sessions'.tr,
                         color: Colors.grey,
                       ),
                       TextButton(
                         onPressed: controller.fetchSessions,
-                        child: const Text('Retry'.tr),
+                        child: Text('Retry'.tr),
                       ),
                     ],
                   ),
@@ -440,7 +440,7 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
                               color: Colors.green,
                               shape: BoxShape.circle,
                             ),
-                            child: const AppText('1'.tr,
+                            child: AppText('1'.tr,
                               fontSize: 10,
                               color: Colors.white,
                               fontWeight: FontWeight.bold,

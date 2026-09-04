@@ -31,7 +31,7 @@ class _RemedyDetailScreenState extends State<RemedyDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(title: 'Remedy Details'.tr),
+      appBar: CustomAppBar(title: 'Remedy Details'.tr),
       body: Obx(() {
         if (_controller.isDetailLoading.value) {
           return const Center(child: CircularProgressIndicator());
@@ -39,7 +39,7 @@ class _RemedyDetailScreenState extends State<RemedyDetailScreen> {
 
         final remedy = _controller.selectedRemedy.value;
         if (remedy == null) {
-          return const Center(
+          return Center(
             child: AppText('Details not found'.tr, color: Colors.grey),
           );
         }
@@ -135,7 +135,7 @@ class _RemedyDetailScreenState extends State<RemedyDetailScreen> {
         color: const Color(0xFF7CB342).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(100),
       ),
-      child: const AppText('Verified Remedy'.tr,
+      child: AppText('Verified Remedy'.tr,
         fontSize: 12,
         fontWeight: FontWeight.w700,
         color: Color(0xFF7CB342),

@@ -40,7 +40,7 @@ class KundliMatchScreen extends GetView<MatchingController> {
             ),
             onPressed: () => Navigator.maybePop(context),
           ),
-          title: const Text('Match Result'.tr,
+          title: Text('Match Result'.tr,
             style: TextStyle(
               color: AppColors.textColorPrimary,
               fontWeight: FontWeight.bold,
@@ -170,7 +170,7 @@ class _ResultsTab extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Ashtakoot Matching Points'.tr,
+                Text('Ashtakoot Matching Points'.tr,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -235,7 +235,7 @@ class _ResultsTab extends StatelessWidget {
                       color: AppColors.white,
                       size: 20,
                     ),
-                    label: const Text('Upcoming Marriage Muhurat'.tr,
+                    label: Text('Upcoming Marriage Muhurat'.tr,
                       style: TextStyle(
                         color: AppColors.white,
                         fontWeight: FontWeight.bold,
@@ -269,7 +269,7 @@ class _ResultsTab extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('* Match Result Conclusion:'.tr,
+                      Text('* Match Result Conclusion:'.tr,
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
@@ -330,7 +330,7 @@ class _ResultsTab extends StatelessWidget {
                       ),
                       elevation: 3,
                     ),
-                    child: const Text('Talk To Astrologers'.tr,
+                    child: Text('Talk To Astrologers'.tr,
                       style: TextStyle(
                         color: AppColors.white,
                         fontWeight: FontWeight.bold,
@@ -426,7 +426,7 @@ class _DetailsTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Guna Milan Result in Detail'.tr,
+          Text('Guna Milan Result in Detail'.tr,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -765,7 +765,7 @@ class _InterpretationTabWidget extends StatelessWidget {
                 ],
                 if (significance.isNotEmpty) ...[
                   const SizedBox(height: 14),
-                  const Text('Astrological Significance:'.tr,
+                  Text('Astrological Significance:'.tr,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
@@ -784,7 +784,7 @@ class _InterpretationTabWidget extends StatelessWidget {
                 ],
                 if (tips.isNotEmpty) ...[
                   const SizedBox(height: 14),
-                  const Text('Key Recommendations & Tips:'.tr,
+                  Text('Key Recommendations & Tips:'.tr,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
@@ -798,7 +798,7 @@ class _InterpretationTabWidget extends StatelessWidget {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('• '.tr,
+                          Text('• '.tr,
                             style: TextStyle(
                               color: AppColors.primaryColor,
                               fontWeight: FontWeight.bold,
@@ -839,7 +839,7 @@ class _DownloadPdfTab extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const SizedBox(height: 20),
-          const Text('Download your detailed Horoscope Matching PDF report for printing, sharing on email, or WhatsApp.'.tr,
+          Text('Download your detailed Horoscope Matching PDF report for printing, sharing on email, or WhatsApp.'.tr,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
@@ -856,7 +856,7 @@ class _DownloadPdfTab extends StatelessWidget {
               Icons.file_download_outlined,
               color: AppColors.white,
             ),
-            label: const Text('Download PDF'.tr,
+            label: Text('Download PDF'.tr,
               style: TextStyle(
                 color: AppColors.white,
                 fontWeight: FontWeight.bold,
@@ -1009,32 +1009,32 @@ class _BirthDetailsTab extends StatelessWidget {
                   height: 1.5,
                 ),
                 children: [
-                  const TextSpan(
+                  TextSpan(
                     text: 'Name: '.tr,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   TextSpan(text: '$name\n'),
-                  const TextSpan(
+                  TextSpan(
                     text: 'Birth Date: '.tr,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   TextSpan(text: '$dob\n'),
-                  const TextSpan(
+                  TextSpan(
                     text: 'Birth Time: '.tr,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   TextSpan(text: '$tob\n'),
-                  const TextSpan(
+                  TextSpan(
                     text: 'Birth Place: '.tr,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   TextSpan(text: '$place\n'),
-                  const TextSpan(
+                  TextSpan(
                     text: 'Moon Sign (Rashi): '.tr,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   TextSpan(text: '$rashi\n'),
-                  const TextSpan(
+                  TextSpan(
                     text: 'Moon Nakshatra: '.tr,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
@@ -1187,7 +1187,7 @@ void _showMarriageMuhuratBottomSheet(BuildContext context) {
                   color: AppColors.white,
                   size: 18,
                 ),
-                label: const Text('VIEW DAILY PANCHANG & SHUBH MUHURAT'.tr,
+                label: Text('VIEW DAILY PANCHANG & SHUBH MUHURAT'.tr,
                   style: TextStyle(
                     color: AppColors.white,
                     fontWeight: FontWeight.bold,
@@ -1258,6 +1258,6 @@ Widget _buildMuhuratTile(String month, String dates) {
 
 Future<void> _generateAndShareKundliPdf(BuildContext context) async {
   ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text('PDF generation is coming soon'.tr)),
+    SnackBar(content: Text('PDF generation is coming soon'.tr)),
   );
 }

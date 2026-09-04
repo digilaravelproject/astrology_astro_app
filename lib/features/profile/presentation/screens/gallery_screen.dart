@@ -334,17 +334,17 @@ class GalleryGridView extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
-            title: const AppText('Confirm Delete'.tr,
+            title: AppText('Confirm Delete'.tr,
               fontSize: 18,
               fontWeight: FontWeight.w700,
             ),
-            content: const AppText('Are you sure you want to delete this image?'.tr,
+            content: AppText('Are you sure you want to delete this image?'.tr,
               fontSize: 15,
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const AppText('No'.tr,
+                child: AppText('No'.tr,
                   color: Colors.grey,
                   fontWeight: FontWeight.w600,
                 ),
@@ -354,7 +354,7 @@ class GalleryGridView extends StatelessWidget {
                   controller.deleteImage(id);
                   Navigator.pop(context);
                 },
-                child: const AppText('Yes'.tr,
+                child: AppText('Yes'.tr,
                   color: Colors.red,
                   fontWeight: FontWeight.w600,
                 ),

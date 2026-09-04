@@ -120,7 +120,7 @@ class _PermissionScreenState extends State<PermissionScreen>
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Some permissions are permanently denied. Please enable them in settings.'.tr,
+              content: Text('Some permissions are permanently denied. Please enable them in settings.'.tr,
               ),
               action: SnackBarAction(
                 label: 'Settings'.tr,

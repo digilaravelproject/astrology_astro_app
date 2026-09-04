@@ -53,7 +53,7 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
-      appBar: const CustomAppBar(title: 'Withdraw Money'.tr),
+      appBar: CustomAppBar(title: 'Withdraw Money'.tr),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -139,7 +139,7 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                       horizontal: 16,
                       vertical: 14,
                     ),
-                    child: const AppText('₹'.tr,
+                    child: AppText('₹'.tr,
                       fontSize: 24,
                       fontWeight: FontWeight.w700,
                       color: Color(0xFF2E1A47),
@@ -291,7 +291,7 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                             'Are you sure you want to withdraw ₹${_amountController.text} to ${defaultBank.bankName}?',
                         cancel: TextButton(
                           onPressed: () => Navigator.of(context).pop(),
-                          child: const Text('Cancel'.tr,
+                          child: Text('Cancel'.tr,
                             style: TextStyle(color: AppColors.primaryColor),
                           ),
                         ),
@@ -349,7 +349,7 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                               );
                             }
                           },
-                          child: const Text('Confirm'.tr,
+                          child: Text('Confirm'.tr,
                             style: TextStyle(color: Colors.white),
                           ),
                         ),

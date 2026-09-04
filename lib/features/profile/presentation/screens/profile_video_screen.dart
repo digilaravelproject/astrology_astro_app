@@ -158,7 +158,7 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(title: 'Profile Video'.tr),
+      appBar: CustomAppBar(title: 'Profile Video'.tr),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(

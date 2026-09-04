@@ -45,7 +45,7 @@ class CallHistoryScreen extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             }
             if (controller.callSessions.isEmpty) {
-              return const Center(
+              return Center(
                 child: AppText("No call history available.".tr, fontSize: 16),
               );
             }
@@ -519,7 +519,7 @@ class CallHistoryScreen extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          const AppText(":  ".tr, fontWeight: FontWeight.bold),
+                          AppText(":  ".tr, fontWeight: FontWeight.bold),
                           Expanded(
                             child: Row(
                               children: [
@@ -646,13 +646,13 @@ class CallHistoryScreen extends StatelessWidget {
 
                   if (showRefund) ...[
                     const SizedBox(height: 12),
-                    const AppText("Refund".tr,
+                    AppText("Refund".tr,
                       fontSize: 14,
                       color: Colors.red,
                       fontWeight: FontWeight.w500,
                     ),
                     const SizedBox(height: 2),
-                    const AppText("PO@Rs5".tr,
+                    AppText("PO@Rs5".tr,
                       fontSize: 13,
                       color: Colors.red,
                       fontWeight: FontWeight.w500,

@@ -307,7 +307,7 @@ class _CallScreenState extends State<CallScreen> {
                               ),
                             ),
                             const SizedBox(height: 12),
-                            const Text('Decline'.tr,
+                            Text('Decline'.tr,
                               style: TextStyle(
                                 color: Colors.white70,
                                 fontSize: 13,
@@ -365,7 +365,7 @@ class _CallScreenState extends State<CallScreen> {
                               ),
                             ),
                             const SizedBox(height: 12),
-                            const Text('Accept'.tr,
+                            Text('Accept'.tr,
                               style: TextStyle(
                                 color: Colors.white70,
                                 fontSize: 13,
@@ -524,7 +524,7 @@ class _CallScreenState extends State<CallScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        const Text('End'.tr,
+        Text('End'.tr,
           style: TextStyle(
             color: Colors.white,
             fontSize: 12,
@@ -649,7 +649,7 @@ class _CallScreenState extends State<CallScreen> {
                   width: double.infinity,
                   child: TextButton(
                     onPressed: () => Navigator.of(ctx).pop(),
-                    child: const Text('Cancel'.tr,
+                    child: Text('Cancel'.tr,
                       style: TextStyle(color: Colors.grey, fontSize: 15),
                     ),
                   ),
@@ -669,15 +669,15 @@ class _CallScreenState extends State<CallScreen> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
-            title: const Text('End Consultation'.tr,
+            title: Text('End Consultation'.tr,
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            content: const Text('Are you sure you want to end this consultation?'.tr,
+            content: Text('Are you sure you want to end this consultation?'.tr,
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text('Cancel'.tr,
+                child: Text('Cancel'.tr,
                   style: TextStyle(color: Colors.grey),
                 ),
               ),
@@ -693,7 +693,7 @@ class _CallScreenState extends State<CallScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text('End Session'.tr),
+                child: Text('End Session'.tr),
               ),
             ],
           ),
@@ -785,7 +785,7 @@ class _CallScreenState extends State<CallScreen> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text('Cancel'.tr,
+                child: Text('Cancel'.tr,
                   style: TextStyle(color: Colors.grey),
                 ),
               ),
@@ -795,7 +795,7 @@ class _CallScreenState extends State<CallScreen> {
                   _switchToChat();
                 },
                 icon: const Icon(Icons.chat_bubble_rounded, size: 16),
-                label: const Text('Switch'.tr),
+                label: Text('Switch'.tr),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryColor,
                   foregroundColor: Colors.white,

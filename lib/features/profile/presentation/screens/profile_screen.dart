@@ -377,7 +377,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        const AppText('Logout'.tr,
+                        AppText('Logout'.tr,
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
                           color: Color(0xFF2E1A47),
@@ -428,7 +428,7 @@ class ProfileScreen extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                 ),
-                                child: const AppText('Logout'.tr,
+                                child: AppText('Logout'.tr,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.white,
@@ -492,7 +492,7 @@ class ProfileScreen extends StatelessWidget {
           ),*/
           TextButton(
             onPressed: () => authController.deleteAccount(),
-            child: const AppText('Delete Account'.tr,
+            child: AppText('Delete Account'.tr,
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: Colors.red,

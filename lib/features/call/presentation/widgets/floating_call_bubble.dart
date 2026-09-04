@@ -396,7 +396,7 @@ class _FloatingCallBubbleWidgetState extends State<FloatingCallBubbleWidget> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: const Text('Return'.tr,
+                  child: Text('Return'.tr,
                     style: TextStyle(
                       color: Color(0xFF6A0C22),
                       fontWeight: FontWeight.bold,

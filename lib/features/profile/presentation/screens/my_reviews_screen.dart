@@ -422,7 +422,7 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              const AppText('Your Response'.tr,
+              AppText('Your Response'.tr,
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: Colors.black87,

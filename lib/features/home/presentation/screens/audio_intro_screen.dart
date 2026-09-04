@@ -123,7 +123,7 @@ class _AudioIntroScreenState extends State<AudioIntroScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(title: 'Audio Introduction'.tr),
+      appBar: CustomAppBar(title: 'Audio Introduction'.tr),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(

@@ -697,7 +697,7 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen>
                                         ),
                                       ),
                                       const SizedBox(width: 4),
-                                      const AppText('LIVE'.tr,
+                                      AppText('LIVE'.tr,
                                         fontSize: 10,
                                         fontWeight: FontWeight.w800,
                                         color: Colors.red,
@@ -877,23 +877,23 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen>
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const AppText('Delete Session?'.tr,
+            title: AppText('Delete Session?'.tr,
               fontWeight: FontWeight.w700,
               fontSize: 18,
             ),
-            content: const AppText('Are you sure you want to delete this live session? This action cannot be undone.'.tr,
+            content: AppText('Are you sure you want to delete this live session? This action cannot be undone.'.tr,
             ),
             actions: [
               TextButton(
                 onPressed: () => Get.back(),
-                child: const AppText('Cancel'.tr, color: Colors.grey),
+                child: AppText('Cancel'.tr, color: Colors.grey),
               ),
               TextButton(
                 onPressed: () {
                   Get.back();
                   _controller.deleteSession(sessionId);
                 },
-                child: const AppText('Delete'.tr,
+                child: AppText('Delete'.tr,
                   color: Colors.red,
                   fontWeight: FontWeight.w700,
                 ),
@@ -911,23 +911,23 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen>
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const AppText('Stop Live Session?'.tr,
+            title: AppText('Stop Live Session?'.tr,
               fontWeight: FontWeight.w700,
               fontSize: 18,
             ),
-            content: const AppText('Are you sure you want to stop this live session? This will complete the session.'.tr,
+            content: AppText('Are you sure you want to stop this live session? This will complete the session.'.tr,
             ),
             actions: [
               TextButton(
                 onPressed: () => Get.back(),
-                child: const AppText('Cancel'.tr, color: Colors.grey),
+                child: AppText('Cancel'.tr, color: Colors.grey),
               ),
               TextButton(
                 onPressed: () {
                   Get.back();
                   _controller.stopSession(sessionId);
                 },
-                child: const AppText('Stop'.tr,
+                child: AppText('Stop'.tr,
                   color: Colors.red,
                   fontWeight: FontWeight.w700,
                 ),

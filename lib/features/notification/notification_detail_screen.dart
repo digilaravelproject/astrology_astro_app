@@ -30,7 +30,7 @@ class _NotificationDetailScreenState extends State<NotificationDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(title: 'Notification Details'.tr),
+      appBar: CustomAppBar(title: 'Notification Details'.tr),
       body: Obx(() {
         if (_controller.isDetailLoading.value) {
           return const Center(
@@ -41,7 +41,7 @@ class _NotificationDetailScreenState extends State<NotificationDetailScreen> {
         final notification = _controller.selectedNotification.value;
 
         if (notification == null) {
-          return const Center(
+          return Center(
             child: AppText('Notification not found.'.tr,
               fontSize: 16,
               color: Colors.black54,

@@ -91,7 +91,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                 const SizedBox(height: 24),
 
                 // 📝 Title
-                const Text('No Internet Connection'.tr,
+                Text('No Internet Connection'.tr,
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -134,7 +134,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                                 ),
                               ),
                             )
-                            : const Text('Retry'.tr,
+                            : Text('Retry'.tr,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,

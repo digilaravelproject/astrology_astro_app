@@ -44,7 +44,7 @@ class _AstromallListingsScreenState extends State<AstromallListingsScreen>
                 ? TextField(
                   controller: _searchController,
                   autofocus: true,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Search listings...'.tr,
                     border: InputBorder.none,
                     hintStyle: TextStyle(color: Colors.black54),
@@ -94,7 +94,7 @@ class _AstromallListingsScreenState extends State<AstromallListingsScreen>
                 fontSize: 13,
                 fontFamily: 'Poppins',
               ),
-              tabs: const [Tab(text: "Requests".tr), Tab(text: "Listed".tr)],
+              tabs: [Tab(text: "Requests".tr), Tab(text: "Listed".tr)],
             ),
           ),
           Expanded(
@@ -320,21 +320,21 @@ class _AstromallListingsScreenState extends State<AstromallListingsScreen>
               },
               itemBuilder:
                   (BuildContext context) => <PopupMenuEntry<String>>[
-                    const PopupMenuItem<String>(
+                    PopupMenuItem<String>(
                       value: 'Edit',
                       child: AppText('Edit'.tr,
                         fontSize: 13,
                         color: Colors.black87,
                       ),
                     ),
-                    const PopupMenuItem<String>(
+                    PopupMenuItem<String>(
                       value: 'Status',
                       child: AppText('Turn On/Off'.tr,
                         fontSize: 13,
                         color: Colors.black87,
                       ),
                     ),
-                    const PopupMenuItem<String>(
+                    PopupMenuItem<String>(
                       value: 'Delete',
                       child: AppText('Delete'.tr, fontSize: 13, color: Colors.red),
                     ),

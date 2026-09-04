@@ -177,7 +177,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                         _boyLat == null ||
                         _boyLng == null) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
+                        SnackBar(
                           content: Text('Please fill all Boy details completely'.tr,
                           ),
                           backgroundColor: Colors.red,
@@ -193,7 +193,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                         _girlLat == null ||
                         _girlLng == null) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
+                        SnackBar(
                           content: Text('Please fill all Girl details completely'.tr,
                           ),
                           backgroundColor: Colors.red,
@@ -380,7 +380,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                   // --- Validate Single Kundli fields ---
                   if (_nameController.text.trim().isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
+                      SnackBar(
                         content: Text('Please enter name'.tr),
                         backgroundColor: Colors.red,
                       ),
@@ -389,7 +389,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                   }
                   if (_genderController.text.trim().isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
+                      SnackBar(
                         content: Text('Please select gender'.tr),
                         backgroundColor: Colors.red,
                       ),
@@ -398,7 +398,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                   }
                   if (_dobController.text.trim().isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
+                      SnackBar(
                         content: Text('Please select birth date'.tr),
                         backgroundColor: Colors.red,
                       ),
@@ -407,7 +407,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                   }
                   if (_tobController.text.trim().isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
+                      SnackBar(
                         content: Text('Please select birth time'.tr),
                         backgroundColor: Colors.red,
                       ),
@@ -418,7 +418,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                       _lat == null ||
                       _lng == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
+                      SnackBar(
                         content: Text('Please select birth place'.tr),
                         backgroundColor: Colors.red,
                       ),
@@ -531,7 +531,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
 
                   if (dobPart == null || tobPart == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
+                      SnackBar(
                         content: Text('Invalid date or time format'.tr),
                         backgroundColor: Colors.red,
                       ),
@@ -757,7 +757,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                   ).push<LocationResult>(
                     MaterialPageRoute(
                       builder:
-                          (_) => const LocationSearchScreen(
+                          (_) => LocationSearchScreen(
                             title: "Select Birth Place".tr,
                           ),
                       fullscreenDialog: true,

@@ -67,7 +67,7 @@ class _AudioRecordScreenState extends State<AudioRecordScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(
+      appBar: CustomAppBar(
         title: 'Record Introduction'.tr,
         centerTitle: true,
       ),

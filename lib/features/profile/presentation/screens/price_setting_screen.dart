@@ -205,7 +205,7 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
-            title: const AppText("Request Pending".tr,
+            title: AppText("Request Pending".tr,
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
@@ -214,7 +214,7 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
               fontSize: 14,
             ),
             actions: [
-              TextButton(onPressed: () => Get.back(), child: const Text("OK".tr)),
+              TextButton(onPressed: () => Get.back(), child: Text("OK".tr)),
             ],
           ),
         );
@@ -224,15 +224,15 @@ class _PriceSettingScreenState extends State<PriceSettingScreen> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
-            title: const AppText("Not Eligible".tr,
+            title: AppText("Not Eligible".tr,
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
-            content: const AppText("You are not eligible for a price increase yet. Please meet the busy time criteria first.".tr,
+            content: AppText("You are not eligible for a price increase yet. Please meet the busy time criteria first.".tr,
               fontSize: 14,
             ),
             actions: [
-              TextButton(onPressed: () => Get.back(), child: const Text("OK".tr)),
+              TextButton(onPressed: () => Get.back(), child: Text("OK".tr)),
             ],
           ),
         );

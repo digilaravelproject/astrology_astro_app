@@ -648,7 +648,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         width: double.infinity,
                         alignment: Alignment.center,
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        child: const Text('Done'.tr,
+                        child: Text('Done'.tr,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,

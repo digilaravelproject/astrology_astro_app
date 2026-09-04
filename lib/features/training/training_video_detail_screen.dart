@@ -274,7 +274,7 @@ class _TrainingVideoDetailScreenState extends State<TrainingVideoDetailScreen>
                   color: Colors.red.withOpacity(0.8),
                   borderRadius: BorderRadius.circular(100),
                 ),
-                child: const AppText('Video unavailable. Tap to retry.'.tr,
+                child: AppText('Video unavailable. Tap to retry.'.tr,
                   color: Colors.white,
                   fontSize: 12,
                 ),
@@ -310,7 +310,7 @@ class _TrainingVideoDetailScreenState extends State<TrainingVideoDetailScreen>
 
   Widget _buildInfoSection(TrainingVideoModel? video) {
     if (video == null) {
-      return const Center(
+      return Center(
         child: AppText('Video not found'.tr, color: Colors.grey),
       );
     }
@@ -423,7 +423,7 @@ class _TrainingVideoDetailScreenState extends State<TrainingVideoDetailScreen>
                 ),
               ),
               const SizedBox(width: 10),
-              const AppText('About this video'.tr,
+              AppText('About this video'.tr,
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
                 color: Color(0xFF1A1A2E),

@@ -43,7 +43,7 @@ class _AssistantChatSortBottomSheetState
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const AppText('Sort'.tr,
+                AppText('Sort'.tr,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
@@ -88,7 +88,7 @@ class _AssistantChatSortBottomSheetState
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: const AppText('Apply Changes'.tr,
+                child: AppText('Apply Changes'.tr,
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

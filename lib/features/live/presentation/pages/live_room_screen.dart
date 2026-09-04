@@ -537,7 +537,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                         color: Colors.red,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
                           Icon(Icons.circle, color: Colors.white, size: 8),
                           SizedBox(width: 4),
@@ -594,16 +594,16 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                       context: context,
                       builder:
                           (context) => AlertDialog(
-                            title: const AppText('End Stream?'.tr,
+                            title: AppText('End Stream?'.tr,
                               fontWeight: FontWeight.w700,
                               fontSize: 18,
                             ),
-                            content: const AppText('Are you sure you want to stop broadcasting?'.tr,
+                            content: AppText('Are you sure you want to stop broadcasting?'.tr,
                             ),
                             actions: [
                               TextButton(
                                 onPressed: () => Get.back(),
-                                child: const AppText('Cancel'.tr,
+                                child: AppText('Cancel'.tr,
                                   color: Colors.grey,
                                 ),
                               ),
@@ -624,7 +624,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                                   }
                                   Get.back();
                                 },
-                                child: const AppText('End Live'.tr,
+                                child: AppText('End Live'.tr,
                                   color: Colors.red,
                                   fontWeight: FontWeight.w700,
                                 ),

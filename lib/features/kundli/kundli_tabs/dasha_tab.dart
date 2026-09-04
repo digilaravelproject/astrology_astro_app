@@ -85,7 +85,7 @@ class DashaTab extends StatelessWidget {
 
                       if (controller.currentDashaItems.isEmpty &&
                           !controller.isLoading.value)
-                        const Padding(
+                        Padding(
                           padding: EdgeInsets.all(20.0),
                           child: Center(
                             child: AppText("No dasha details available.".tr),

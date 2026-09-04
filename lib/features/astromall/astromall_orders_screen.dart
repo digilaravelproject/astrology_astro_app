@@ -46,7 +46,7 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen>
                 ? TextField(
                   controller: _searchController,
                   autofocus: true,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Search orders...'.tr,
                     border: InputBorder.none,
                     hintStyle: TextStyle(color: Colors.black54),
@@ -111,7 +111,7 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen>
                 fontSize: 13,
                 fontFamily: 'Poppins',
               ),
-              tabs: const [Tab(text: "Orders".tr), Tab(text: "Chats".tr)],
+              tabs: [Tab(text: "Orders".tr), Tab(text: "Chats".tr)],
             ),
           ),
           Expanded(
@@ -131,7 +131,7 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen>
         label: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
-          children: const [
+          children: [
             AppText('Astromall'.tr,
               fontSize: 10,
               fontWeight: FontWeight.w700,
@@ -309,7 +309,7 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen>
                             fontSize: 13,
                           ),
                           children: [
-                            const TextSpan(
+                            TextSpan(
                               text: 'Order Id: '.tr,
                               style: TextStyle(fontWeight: FontWeight.w600),
                             ),
@@ -338,7 +338,7 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen>
             Row(
               children: [
                 AppText('Name: '.tr, color: Colors.grey.shade600, fontSize: 13),
-                const AppText('Kartikee (AT-GG4V2W8)'.tr,
+                AppText('Kartikee (AT-GG4V2W8)'.tr,
                   fontWeight: FontWeight.w600,
                   fontSize: 13,
                 ),
@@ -375,7 +375,7 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen>
                   color: Colors.grey.shade600,
                   fontSize: 13,
                 ),
-                const AppText('1'.tr, fontWeight: FontWeight.w600, fontSize: 13),
+                AppText('1'.tr, fontWeight: FontWeight.w600, fontSize: 13),
               ],
             ),
             const SizedBox(height: 16),

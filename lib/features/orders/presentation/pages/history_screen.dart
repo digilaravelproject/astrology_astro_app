@@ -21,7 +21,7 @@ class HistoryScreen extends StatelessWidget {
       length: 2,
       child: Scaffold(
         backgroundColor: const Color(0xFFFDF9F5), // Premium Ivory/Off-white
-        appBar: const CustomAppBar(title: 'History'.tr),
+        appBar: CustomAppBar(title: 'History'.tr),
         body: SafeArea(
           top: false,
           child: Column(

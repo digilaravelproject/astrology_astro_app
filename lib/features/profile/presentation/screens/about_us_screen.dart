@@ -13,7 +13,7 @@ class AboutUsScreen extends GetView<SupportController> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(title: 'About us'.tr),
+      appBar: CustomAppBar(title: 'About us'.tr),
       body: Obx(() {
         if (controller.isAboutUsLoading.value) {
           return const Center(child: CircularProgressIndicator());

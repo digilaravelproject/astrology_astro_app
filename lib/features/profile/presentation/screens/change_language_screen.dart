@@ -57,7 +57,7 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
     final languages = _localizationController.languages;
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(title: 'Change Language'.tr),
+      appBar: CustomAppBar(title: 'Change Language'.tr),
       body: Column(
         children: [
           Expanded(

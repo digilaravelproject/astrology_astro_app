@@ -24,7 +24,7 @@ class EarningBreakupBottomSheet extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const AppText('Earning Breakup'.tr,
+              AppText('Earning Breakup'.tr,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
