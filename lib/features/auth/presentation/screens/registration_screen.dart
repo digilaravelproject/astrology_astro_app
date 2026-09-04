@@ -707,14 +707,12 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                       ],
                     ),
                     const SizedBox(height: 8),
-                    AppText(
-                      'Upload Profile Photo',
+                    AppText('Upload Profile Photo'.tr,
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: AppColors.primaryColor,
                     ),
-                    AppText(
-                      'Optional',
+                    AppText('Optional'.tr,
                       fontSize: 11,
                       color: AppColors.textColorSecondary,
                     ),
@@ -733,7 +731,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
               maxLength: 300,
               style: const TextStyle(fontSize: 14),
               decoration: InputDecoration(
-                hintText: 'Describe your experience and approach...',
+                hintText: 'Describe your experience and approach...'.tr,
                 hintStyle: TextStyle(
                   fontSize: 13,
                   color: AppColors.textColorHint,
@@ -851,8 +849,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: AppText(
-                    'Profile will be reviewed within 24–48 hours.',
+                  child: AppText('Profile will be reviewed within 24–48 hours.'.tr,
                     fontSize: 12,
                     color: Colors.amber.shade900,
                     height: 1.5,
@@ -1023,8 +1020,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                             size: 26,
                           ),
                           const SizedBox(height: 4),
-                          AppText(
-                            'Tap to upload',
+                          AppText('Tap to upload'.tr,
                             fontSize: 10,
                             color: AppColors.textColorHint,
                           ),
@@ -1105,7 +1101,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                       child: TextField(
                         onChanged: (v) => setSheet(() => _searchQuery = v),
                         decoration: InputDecoration(
-                          hintText: 'Search...',
+                          hintText: 'Search...'.tr,
                           prefixIcon: Icon(
                             Icons.search_rounded,
                             color: AppColors.primaryColor,

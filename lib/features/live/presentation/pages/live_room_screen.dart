@@ -120,7 +120,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
             _comments.add(
               LiveComment(
                 user: userName,
-                message: 'joined',
+                message: 'joined'.tr,
                 userAvatar: userAvatar,
                 isSystem: true,
               ),
@@ -140,7 +140,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
             _comments.add(
               LiveComment(
                 user: userName,
-                message: 'left',
+                message: 'left'.tr,
                 userAvatar: userAvatar,
                 isSystem: true,
               ),
@@ -541,8 +541,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                         children: [
                           Icon(Icons.circle, color: Colors.white, size: 8),
                           SizedBox(width: 4),
-                          AppText(
-                            'LIVE',
+                          AppText('LIVE'.tr,
                             color: Colors.white,
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
@@ -595,19 +594,16 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                       context: context,
                       builder:
                           (context) => AlertDialog(
-                            title: const AppText(
-                              'End Stream?',
+                            title: const AppText('End Stream?'.tr,
                               fontWeight: FontWeight.w700,
                               fontSize: 18,
                             ),
-                            content: const AppText(
-                              'Are you sure you want to stop broadcasting?',
+                            content: const AppText('Are you sure you want to stop broadcasting?'.tr,
                             ),
                             actions: [
                               TextButton(
                                 onPressed: () => Get.back(),
-                                child: const AppText(
-                                  'Cancel',
+                                child: const AppText('Cancel'.tr,
                                   color: Colors.grey,
                                 ),
                               ),
@@ -628,8 +624,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                                   }
                                   Get.back();
                                 },
-                                child: const AppText(
-                                  'End Live',
+                                child: const AppText('End Live'.tr,
                                   color: Colors.red,
                                   fontWeight: FontWeight.w700,
                                 ),

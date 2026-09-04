@@ -46,7 +46,7 @@ class CallHistoryScreen extends StatelessWidget {
             }
             if (controller.callSessions.isEmpty) {
               return const Center(
-                child: AppText("No call history available.", fontSize: 16),
+                child: AppText("No call history available.".tr, fontSize: 16),
               );
             }
             return RefreshIndicator(
@@ -195,7 +195,7 @@ class CallHistoryScreen extends StatelessWidget {
             onTap: () {
               Get.to(
                 () => CallDetailsScreen(
-                  title: 'Call Details',
+                  title: 'Call Details'.tr,
                   name:
                       details["Name"]?.replaceAll(RegExp(r' \(.*\)'), '') ??
                       "N/A",
@@ -519,7 +519,7 @@ class CallHistoryScreen extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          const AppText(":  ", fontWeight: FontWeight.bold),
+                          const AppText(":  ".tr, fontWeight: FontWeight.bold),
                           Expanded(
                             child: Row(
                               children: [
@@ -646,15 +646,13 @@ class CallHistoryScreen extends StatelessWidget {
 
                   if (showRefund) ...[
                     const SizedBox(height: 12),
-                    const AppText(
-                      "Refund",
+                    const AppText("Refund".tr,
                       fontSize: 14,
                       color: Colors.red,
                       fontWeight: FontWeight.w500,
                     ),
                     const SizedBox(height: 2),
-                    const AppText(
-                      "PO@Rs5",
+                    const AppText("PO@Rs5".tr,
                       fontSize: 13,
                       color: Colors.red,
                       fontWeight: FontWeight.w500,

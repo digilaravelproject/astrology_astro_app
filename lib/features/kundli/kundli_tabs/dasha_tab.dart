@@ -60,22 +60,19 @@ class DashaTab extends StatelessWidget {
                         child: Row(
                           children: [
                             Expanded(
-                              child: AppText(
-                                "Planet",
+                              child: AppText("Planet".tr,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
                               ),
                             ),
                             Expanded(
-                              child: AppText(
-                                "Start Date",
+                              child: AppText("Start Date".tr,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
                               ),
                             ),
                             Expanded(
-                              child: AppText(
-                                "End Date",
+                              child: AppText("End Date".tr,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
                               ),
@@ -91,7 +88,7 @@ class DashaTab extends StatelessWidget {
                         const Padding(
                           padding: EdgeInsets.all(20.0),
                           child: Center(
-                            child: AppText("No dasha details available."),
+                            child: AppText("No dasha details available.".tr),
                           ),
                         )
                       else

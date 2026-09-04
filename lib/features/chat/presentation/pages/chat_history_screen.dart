@@ -47,7 +47,7 @@ class ChatHistoryScreen extends StatelessWidget {
                 }
                 if (controller.sessions.isEmpty) {
                   return const Center(
-                    child: AppText("No chat history available.", fontSize: 16),
+                    child: AppText("No chat history available.".tr, fontSize: 16),
                   );
                 }
                 return RefreshIndicator(
@@ -463,7 +463,7 @@ class ChatHistoryScreen extends StatelessWidget {
                               color: Colors.black87,
                             ),
                           ),
-                          const AppText(":  ", fontWeight: FontWeight.bold),
+                          const AppText(":  ".tr, fontWeight: FontWeight.bold),
                           Expanded(
                             child: Row(
                               children: [

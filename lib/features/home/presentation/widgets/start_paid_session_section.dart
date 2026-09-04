@@ -17,8 +17,7 @@ class StartPaidSessionSection extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: AppText(
-                  'Start Paid Session with Users',
+                child: AppText('Start Paid Session with Users'.tr,
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                   color: const Color(0xFF2C2C2C),
@@ -29,8 +28,7 @@ class StartPaidSessionSection extends StatelessWidget {
                 onTap: () {
                   // View All Logic
                 },
-                child: AppText(
-                  'View All',
+                child: AppText('View All'.tr,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: const Color(0xFF3B82F6), // Blue color for View All
@@ -101,15 +99,13 @@ class StartPaidSessionSection extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AppText(
-                      'Anisha',
+                    AppText('Anisha'.tr,
                       fontSize: 13, // Smaller font size
                       fontWeight: FontWeight.w700,
                       color: const Color(0xFF2C2C2C),
                     ),
                     const SizedBox(height: 1),
-                    AppText(
-                      'Spent ₹1,000+',
+                    AppText('Spent ₹1,000+'.tr,
                       fontSize: 10, // Smaller font size
                       fontWeight: FontWeight.w500,
                       color: Colors.grey.shade600,
@@ -140,8 +136,7 @@ class StartPaidSessionSection extends StatelessWidget {
                       color: Colors.grey.shade600,
                     ), // Smaller icon
                     const SizedBox(width: 3),
-                    AppText(
-                      '4 min',
+                    AppText('4 min'.tr,
                       fontSize: 10, // Smaller font
 
                       fontWeight: FontWeight.w600,
@@ -178,8 +173,7 @@ class StartPaidSessionSection extends StatelessWidget {
                           color: Colors.white,
                         ), // Smaller icon
                         const SizedBox(width: 4),
-                        AppText(
-                          'Call Now',
+                        AppText('Call Now'.tr,
                           fontSize: 11, // Smaller font
                           fontWeight: FontWeight.w600,
                           color: Colors.white,
@@ -211,8 +205,7 @@ class StartPaidSessionSection extends StatelessWidget {
                           color: AppColors.primaryColor,
                         ), // Smaller icon
                         const SizedBox(width: 4),
-                        AppText(
-                          'Chat Now',
+                        AppText('Chat Now'.tr,
                           fontSize: 11, // Smaller font
                           fontWeight: FontWeight.w600,
                           color: AppColors.primaryColor,

@@ -15,13 +15,13 @@ class FormWebViewScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppBar(
-        title: 'Form Preview',
+        title: 'Form Preview'.tr,
         actions: [
           IconButton(
             onPressed: () {
               CustomSnackBar.showSuccess(
                 'Downloading $formName...',
-                title: 'Started',
+                title: 'Started'.tr,
               );
             },
             icon: const Icon(
@@ -57,8 +57,7 @@ class FormWebViewScreen extends StatelessWidget {
               color: const Color(0xFF2E1A47),
             ),
             const SizedBox(height: 12),
-            AppText(
-              'Document Viewer Placeholder',
+            AppText('Document Viewer Placeholder'.tr,
               fontSize: 14,
               color: Colors.grey.shade500,
               fontWeight: FontWeight.w500,
@@ -66,8 +65,7 @@ class FormWebViewScreen extends StatelessWidget {
             const SizedBox(height: 40),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: AppText(
-                'In a real production environment, this screen would render the actual Form 16A PDF or web content using a WebView.',
+              child: AppText('In a real production environment, this screen would render the actual Form 16A PDF or web content using a WebView.'.tr,
                 textAlign: TextAlign.center,
                 fontSize: 13,
                 color: Colors.grey.shade400,

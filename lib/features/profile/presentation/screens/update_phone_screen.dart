@@ -213,8 +213,7 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(color: Colors.orange.shade100),
                       ),
-                      child: const AppText(
-                        'Verify',
+                      child: const AppText('Verify'.tr,
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
                         color: Colors.orange,
@@ -241,8 +240,7 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
                           size: 14,
                         ),
                         SizedBox(width: 4),
-                        AppText(
-                          'Active',
+                        AppText('Active'.tr,
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
                           color: Colors.green,
@@ -266,8 +264,7 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
                           color: AppColors.primaryColor.withOpacity(0.2),
                         ),
                       ),
-                      child: const AppText(
-                        'Set Default',
+                      child: const AppText('Set Default'.tr,
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
                         color: AppColors.primaryColor,
@@ -315,15 +312,13 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const AppText(
-                    'Set as Default?',
+                  const AppText('Set as Default?'.tr,
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF2E1A47),
                   ),
                   const SizedBox(height: 12),
-                  AppText(
-                    'Are you sure you want to set this as your default phone number?',
+                  AppText('Are you sure you want to set this as your default phone number?'.tr,
                     fontSize: 14,
                     color: Colors.grey.shade600,
                     textAlign: TextAlign.center,
@@ -349,8 +344,7 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
                                 side: BorderSide(color: Colors.grey.shade300),
                               ),
                             ),
-                            child: const AppText(
-                              'Cancel',
+                            child: const AppText('Cancel'.tr,
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
                               color: Color(0xFF2E1A47),
@@ -376,8 +370,7 @@ class _UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            child: const AppText(
-                              'Set Default',
+                            child: const AppText('Set Default'.tr,
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
                               color: Colors.white,

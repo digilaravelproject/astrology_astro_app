@@ -178,8 +178,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                         _boyLng == null) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text(
-                            'Please fill all Boy details completely',
+                          content: Text('Please fill all Boy details completely'.tr,
                           ),
                           backgroundColor: Colors.red,
                         ),
@@ -195,8 +194,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                         _girlLng == null) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text(
-                            'Please fill all Girl details completely',
+                          content: Text('Please fill all Girl details completely'.tr,
                           ),
                           backgroundColor: Colors.red,
                         ),
@@ -383,7 +381,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                   if (_nameController.text.trim().isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Please enter name'),
+                        content: Text('Please enter name'.tr),
                         backgroundColor: Colors.red,
                       ),
                     );
@@ -392,7 +390,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                   if (_genderController.text.trim().isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Please select gender'),
+                        content: Text('Please select gender'.tr),
                         backgroundColor: Colors.red,
                       ),
                     );
@@ -401,7 +399,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                   if (_dobController.text.trim().isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Please select birth date'),
+                        content: Text('Please select birth date'.tr),
                         backgroundColor: Colors.red,
                       ),
                     );
@@ -410,7 +408,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                   if (_tobController.text.trim().isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Please select birth time'),
+                        content: Text('Please select birth time'.tr),
                         backgroundColor: Colors.red,
                       ),
                     );
@@ -421,7 +419,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                       _lng == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Please select birth place'),
+                        content: Text('Please select birth place'.tr),
                         backgroundColor: Colors.red,
                       ),
                     );
@@ -534,7 +532,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                   if (dobPart == null || tobPart == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Invalid date or time format'),
+                        content: Text('Invalid date or time format'.tr),
                         backgroundColor: Colors.red,
                       ),
                     );
@@ -760,7 +758,7 @@ class _CreateKundliScreenState extends State<CreateKundliScreen> {
                     MaterialPageRoute(
                       builder:
                           (_) => const LocationSearchScreen(
-                            title: "Select Birth Place",
+                            title: "Select Birth Place".tr,
                           ),
                       fullscreenDialog: true,
                     ),

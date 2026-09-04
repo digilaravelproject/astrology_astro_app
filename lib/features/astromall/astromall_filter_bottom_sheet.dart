@@ -42,8 +42,7 @@ class _AstromallFilterBottomSheetState
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const AppText(
-                'Filter Orders',
+              const AppText('Filter Orders'.tr,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -54,8 +53,7 @@ class _AstromallFilterBottomSheetState
             ],
           ),
           const SizedBox(height: 16),
-          const AppText(
-            'Order Status',
+          const AppText('Order Status'.tr,
             fontSize: 14,
             fontWeight: FontWeight.w600,
             color: Colors.black87,
@@ -117,8 +115,7 @@ class _AstromallFilterBottomSheetState
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: AppText(
-                    'Reset',
+                  child: AppText('Reset'.tr,
                     color: Colors.grey.shade700,
                     fontWeight: FontWeight.bold,
                   ),
@@ -138,8 +135,7 @@ class _AstromallFilterBottomSheetState
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: const AppText(
-                    'Apply',
+                  child: const AppText('Apply'.tr,
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),

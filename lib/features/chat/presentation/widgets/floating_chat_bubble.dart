@@ -383,8 +383,7 @@ class _FloatingChatBubbleWidgetState extends State<FloatingChatBubbleWidget> {
                                 width: 0.8,
                               ),
                             ),
-                            child: const Text(
-                              'CHAT',
+                            child: const Text('CHAT'.tr,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 10,
@@ -402,8 +401,7 @@ class _FloatingChatBubbleWidgetState extends State<FloatingChatBubbleWidget> {
                         if (currentStatus == 'initiated' ||
                             currentStatus == 'ringing' ||
                             currentStatus == 'waiting') {
-                          return const Text(
-                            'Incoming Chat Request...',
+                          return const Text('Incoming Chat Request...'.tr,
                             style: TextStyle(
                               color: Colors.white70,
                               fontSize: 12,
@@ -440,8 +438,7 @@ class _FloatingChatBubbleWidgetState extends State<FloatingChatBubbleWidget> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: const Text(
-                    'Return',
+                  child: const Text('Return'.tr,
                     style: TextStyle(
                       color: Color(0xFFE65100),
                       fontWeight: FontWeight.bold,

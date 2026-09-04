@@ -697,8 +697,7 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen>
                                         ),
                                       ),
                                       const SizedBox(width: 4),
-                                      const AppText(
-                                        'LIVE',
+                                      const AppText('LIVE'.tr,
                                         fontSize: 10,
                                         fontWeight: FontWeight.w800,
                                         color: Colors.red,
@@ -719,8 +718,7 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen>
                                   color: Colors.amber.shade700,
                                 ),
                                 const SizedBox(width: 4),
-                                AppText(
-                                  'Private Session',
+                                AppText('Private Session'.tr,
                                   fontSize: 10,
                                   fontWeight: FontWeight.w700,
                                   color: Colors.amber.shade700,
@@ -785,7 +783,7 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen>
                 if (session.status == 'ongoing') ...[
                   const SizedBox(height: 16),
                   CustomButton(
-                    text: 'Stop Live Session',
+                    text: 'Stop Live Session'.tr,
                     backgroundColor: Colors.red,
                     onPressed: () => _confirmStop(session.id),
                     borderRadius: 12,
@@ -793,7 +791,7 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen>
                 ] else if (session.status == 'upcoming') ...[
                   const SizedBox(height: 16),
                   CustomButton(
-                    text: 'Start Live Session',
+                    text: 'Start Live Session'.tr,
                     backgroundColor: Colors.green.shade600,
                     onPressed: () => _controller.startSession(session.id),
                     borderRadius: 12,
@@ -879,26 +877,23 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen>
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const AppText(
-              'Delete Session?',
+            title: const AppText('Delete Session?'.tr,
               fontWeight: FontWeight.w700,
               fontSize: 18,
             ),
-            content: const AppText(
-              'Are you sure you want to delete this live session? This action cannot be undone.',
+            content: const AppText('Are you sure you want to delete this live session? This action cannot be undone.'.tr,
             ),
             actions: [
               TextButton(
                 onPressed: () => Get.back(),
-                child: const AppText('Cancel', color: Colors.grey),
+                child: const AppText('Cancel'.tr, color: Colors.grey),
               ),
               TextButton(
                 onPressed: () {
                   Get.back();
                   _controller.deleteSession(sessionId);
                 },
-                child: const AppText(
-                  'Delete',
+                child: const AppText('Delete'.tr,
                   color: Colors.red,
                   fontWeight: FontWeight.w700,
                 ),
@@ -916,26 +911,23 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen>
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const AppText(
-              'Stop Live Session?',
+            title: const AppText('Stop Live Session?'.tr,
               fontWeight: FontWeight.w700,
               fontSize: 18,
             ),
-            content: const AppText(
-              'Are you sure you want to stop this live session? This will complete the session.',
+            content: const AppText('Are you sure you want to stop this live session? This will complete the session.'.tr,
             ),
             actions: [
               TextButton(
                 onPressed: () => Get.back(),
-                child: const AppText('Cancel', color: Colors.grey),
+                child: const AppText('Cancel'.tr, color: Colors.grey),
               ),
               TextButton(
                 onPressed: () {
                   Get.back();
                   _controller.stopSession(sessionId);
                 },
-                child: const AppText(
-                  'Stop',
+                child: const AppText('Stop'.tr,
                   color: Colors.red,
                   fontWeight: FontWeight.w700,
                 ),

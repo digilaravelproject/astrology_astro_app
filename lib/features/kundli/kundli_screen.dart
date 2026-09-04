@@ -262,7 +262,7 @@ class _KundliScreenState extends State<KundliScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFDF9F5),
-      appBar: CustomAppBar(title: 'Kundli'),
+      appBar: CustomAppBar(title: 'Kundli'.tr),
 
       body: Column(
         children: [
@@ -302,7 +302,7 @@ class _KundliScreenState extends State<KundliScreen>
                   }
 
                   return KundliChartWidget(
-                    title: "Lagna / Ascendant / D1 Chart",
+                    title: "Lagna / Ascendant / D1 Chart".tr,
                     northIndianSvg: _birthChartController.northChartSvg.value,
                     southIndianSvg: _birthChartController.southChartSvg.value,
                     northIndianPlanetData: northPlanetData,
@@ -336,7 +336,7 @@ class _KundliScreenState extends State<KundliScreen>
                   }
 
                   return KundliChartWidget(
-                    title: "Navamsa Chart",
+                    title: "Navamsa Chart".tr,
                     northIndianSvg: _navamshaController.northChartSvg.value,
                     southIndianSvg: _navamshaController.southChartSvg.value,
                     northIndianPlanetData: northPlanetData,
@@ -370,7 +370,7 @@ class _KundliScreenState extends State<KundliScreen>
                   }
 
                   return KundliChartWidget(
-                    title: "Transit Chart",
+                    title: "Transit Chart".tr,
                     northIndianSvg: _transitController.northChartSvg.value,
                     southIndianSvg: _transitController.southChartSvg.value,
                     northIndianPlanetData: northPlanetData,
@@ -510,7 +510,7 @@ class _KundliScreenState extends State<KundliScreen>
         if (data == null) {
           return const Padding(
             padding: EdgeInsets.all(20.0),
-            child: Center(child: AppText("Failed to load Panchang details.")),
+            child: Center(child: AppText("Failed to load Panchang details.".tr)),
           );
         }
 
@@ -789,22 +789,19 @@ class _KundliScreenState extends State<KundliScreen>
                   child: Row(
                     children: [
                       Expanded(
-                        child: AppText(
-                          "Planet",
+                        child: AppText("Planet".tr,
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),
                       ),
                       Expanded(
-                        child: AppText(
-                          "Start Date",
+                        child: AppText("Start Date".tr,
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),
                       ),
                       Expanded(
-                        child: AppText(
-                          "End Date",
+                        child: AppText("End Date".tr,
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),

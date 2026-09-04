@@ -30,8 +30,7 @@ class AddNoteBottomSheet extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const AppText(
-                'Add Notes',
+              const AppText('Add Notes'.tr,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF2C2C2C),
@@ -60,7 +59,7 @@ class AddNoteBottomSheet extends StatelessWidget {
             child: TextField(
               maxLines: null,
               decoration: InputDecoration(
-                hintText: 'Add notes here',
+                hintText: 'Add notes here'.tr,
                 hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
                 border: InputBorder.none,
                 focusedBorder: InputBorder.none,
@@ -72,7 +71,7 @@ class AddNoteBottomSheet extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           CustomButton(
-            text: 'Submit',
+            text: 'Submit'.tr,
             onPressed: () {
               // Add submit logic here
               Get.back();

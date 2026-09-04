@@ -55,8 +55,7 @@ class _PhoneVerificationBottomSheetState
             ),
           ),
           const SizedBox(height: 24),
-          const AppText(
-            'Verification',
+          const AppText('Verification'.tr,
             fontSize: 22,
             fontWeight: FontWeight.bold,
             color: Color(0xFF2E1A47),
@@ -84,8 +83,7 @@ class _PhoneVerificationBottomSheetState
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              AppText(
-                'Didn\'t receive the code? ',
+              AppText('Didn\'.trt receive the code? ',
                 fontSize: 14,
                 color: Colors.grey.shade600,
               ),
@@ -97,8 +95,7 @@ class _PhoneVerificationBottomSheetState
                     widget.phoneNumber.split(' ')[1],
                   );
                 },
-                child: const AppText(
-                  'Resend OTP',
+                child: const AppText('Resend OTP'.tr,
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: AppColors.primaryColor,

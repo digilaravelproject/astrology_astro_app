@@ -188,8 +188,7 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
                               if (!isOpen)
                                 Padding(
                                   padding: const EdgeInsets.only(right: 8),
-                                  child: AppText(
-                                    'Closed',
+                                  child: AppText('Closed'.tr,
                                     fontSize: 13,
                                     color: Colors.red.shade300,
                                     fontWeight: FontWeight.w600,
@@ -233,8 +232,7 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
                                           ),
                                         ),
                                         const SizedBox(width: 8),
-                                        AppText(
-                                          'to',
+                                        AppText('to'.tr,
                                           fontSize: 11,
                                           color: Colors.grey.shade400,
                                           fontWeight: FontWeight.w600,
@@ -290,8 +288,7 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
                                             color: AppColors.primaryColor,
                                           ),
                                           const SizedBox(width: 6),
-                                          AppText(
-                                            'Add Slot',
+                                          AppText('Add Slot'.tr,
                                             fontSize: 13,
                                             fontWeight: FontWeight.w600,
                                             color: AppColors.primaryColor,
@@ -362,15 +359,13 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const AppText(
-                  'Save Changes?',
+                const AppText('Save Changes?'.tr,
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
                   color: Color(0xFF2E1A47),
                 ),
                 const SizedBox(height: 12),
-                AppText(
-                  'Are you sure you want to update your availability schedule?',
+                AppText('Are you sure you want to update your availability schedule?'.tr,
                   fontSize: 14,
                   color: Colors.grey.shade600,
                   textAlign: TextAlign.center,
@@ -390,8 +385,7 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
                             side: BorderSide(color: Colors.grey.shade300),
                           ),
                         ),
-                        child: const AppText(
-                          'Cancel',
+                        child: const AppText('Cancel'.tr,
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: Color(0xFF2E1A47),
@@ -412,8 +406,7 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: const AppText(
-                          'Yes, Save',
+                        child: const AppText('Yes, Save'.tr,
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: Colors.white,

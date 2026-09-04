@@ -91,8 +91,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                 const SizedBox(height: 24),
 
                 // 📝 Title
-                const Text(
-                  'No Internet Connection',
+                const Text('No Internet Connection'.tr,
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -104,8 +103,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                 const SizedBox(height: 12),
 
                 // 💬 Description
-                Text(
-                  'Please check your internet connection and try again.',
+                Text('Please check your internet connection and try again.'.tr,
                   style: TextStyle(fontSize: 15, color: Colors.grey[600]),
                   textAlign: TextAlign.center,
                 ),
@@ -136,8 +134,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                                 ),
                               ),
                             )
-                            : const Text(
-                              'Retry',
+                            : const Text('Retry'.tr,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -161,8 +158,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                         side: BorderSide(color: theme.primaryColor),
                       ),
                     ),
-                    child: Text(
-                      'Open Settings',
+                    child: Text('Open Settings'.tr,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,

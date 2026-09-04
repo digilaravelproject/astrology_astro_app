@@ -46,32 +46,32 @@ class _NotificationScreenState extends State<NotificationScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppBar(
-        title: 'Notifications',
+        title: 'Notifications'.tr,
         actions: [
           IconButton(
             icon: const Icon(Iconsax.tick_circle, color: AppColors.deepPink),
-            tooltip: "Mark all as read",
+            tooltip: "Mark all as read".tr,
             onPressed: () => _controller.markAllAsRead(),
           ),
           IconButton(
             icon: const Icon(Iconsax.trash, color: Colors.redAccent),
-            tooltip: "Delete all",
+            tooltip: "Delete all".tr,
             onPressed: () {
               Get.dialog(
                 AlertDialog(
-                  title: const AppText('Clear Notifications'),
-                  content: const AppText('Are you sure you want to delete all notifications?'),
+                  title: const AppText('Clear Notifications'.tr),
+                  content: const AppText('Are you sure you want to delete all notifications?'.tr),
                   actions: [
                     TextButton(
                       onPressed: () => Get.back(),
-                      child: const AppText('Cancel', color: Colors.grey),
+                      child: const AppText('Cancel'.tr, color: Colors.grey),
                     ),
                     TextButton(
                       onPressed: () {
                         Get.back();
                         _controller.deleteAllNotifications();
                       },
-                      child: const AppText('Delete All', color: Colors.redAccent),
+                      child: const AppText('Delete All'.tr, color: Colors.redAccent),
                     ),
                   ],
                 ),
@@ -198,8 +198,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          const AppText(
-            'No Notifications',
+          const AppText('No Notifications'.tr,
             fontSize: 18,
             fontWeight: FontWeight.w600,
             color: Colors.black87,
@@ -207,8 +206,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           const SizedBox(height: 8),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 40),
-            child: AppText(
-              'You don\'t have any notifications yet. When you get one, it will appear here.',
+            child: AppText('You don\'.trt have any notifications yet. When you get one, it will appear here.',
               fontSize: 14,
               color: Colors.black54,
               textAlign: TextAlign.center,

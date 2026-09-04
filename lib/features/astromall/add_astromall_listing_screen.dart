@@ -132,8 +132,7 @@ class _AddAstromallListingScreenState extends State<AddAstromallListingScreen> {
                                   size: 30,
                                 ),
                                 const SizedBox(height: 8),
-                                AppText(
-                                  'Add Photo',
+                                AppText('Add Photo'.tr,
                                   color: Colors.grey.shade500,
                                   fontSize: 12,
                                 ),
@@ -149,7 +148,7 @@ class _AddAstromallListingScreenState extends State<AddAstromallListingScreen> {
               _buildLabel('Listing Title'),
               _buildTextField(
                 controller: _titleController,
-                hintText: 'e.g., Vastu Consultation for Home',
+                hintText: 'e.g., Vastu Consultation for Home'.tr,
               ),
               const SizedBox(height: 20),
 
@@ -166,8 +165,7 @@ class _AddAstromallListingScreenState extends State<AddAstromallListingScreen> {
                   child: DropdownButton<String>(
                     value: _selectedCategory,
                     isExpanded: true,
-                    hint: AppText(
-                      'Select Category',
+                    hint: AppText('Select Category'.tr,
                       color: Colors.grey.shade400,
                       fontSize: 14,
                     ),
@@ -200,7 +198,7 @@ class _AddAstromallListingScreenState extends State<AddAstromallListingScreen> {
               _buildLabel('Price (₹)'),
               _buildTextField(
                 controller: _priceController,
-                hintText: 'e.g., 500',
+                hintText: 'e.g., 500'.tr,
                 keyboardType: TextInputType.number,
                 prefixIcon: const Icon(
                   Icons.currency_rupee,
@@ -214,7 +212,7 @@ class _AddAstromallListingScreenState extends State<AddAstromallListingScreen> {
               _buildLabel('Description'),
               _buildTextField(
                 controller: _descriptionController,
-                hintText: 'Describe your listing...',
+                hintText: 'Describe your listing...'.tr,
                 maxLines: 4,
               ),
               const SizedBox(height: 40),

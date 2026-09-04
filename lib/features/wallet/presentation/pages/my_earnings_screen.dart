@@ -162,7 +162,7 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
             //   children: [
             //     Expanded(
             //       child: CustomButton(
-            //         text: 'Withdraw Money',
+            //         text: 'Withdraw Money'.tr,
             //         onPressed: () => Get.to(() => const WithdrawalScreen()),
             //         backgroundColor: AppColors.primaryColor,
             //         borderRadius: 12,
@@ -416,7 +416,7 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
         return const Center(
           child: Padding(
             padding: EdgeInsets.all(20),
-            child: AppText('No withdrawals found.'),
+            child: AppText('No withdrawals found.'.tr),
           ),
         );
       }
@@ -462,8 +462,7 @@ class _MyEarningsScreenState extends State<MyEarningsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AppText(
-                        'Withdrawal',
+                      AppText('Withdrawal'.tr,
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: const Color(0xFF2E1A47),

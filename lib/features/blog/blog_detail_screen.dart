@@ -131,8 +131,7 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                                 color: Colors.white70,
                               ),
                               const SizedBox(width: 6),
-                              AppText(
-                                '8 min read',
+                              AppText('8 min read'.tr,
                                 fontSize: 13,
                                 color: Colors.white70,
                                 fontWeight: FontWeight.w500,

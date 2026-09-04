@@ -284,8 +284,7 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
                       color: AppColors.primaryColor.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(100),
                     ),
-                    child: const AppText(
-                      'Default',
+                    child: const AppText('Default'.tr,
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
                       color: AppColors.primaryColor,
@@ -302,8 +301,7 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AppText(
-                      'Account Holder',
+                    AppText('Account Holder'.tr,
                       fontSize: 11,
                       color: Colors.grey.shade400,
                       fontWeight: FontWeight.w500,
@@ -325,8 +323,7 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const AppText(
-                      'Set as Default',
+                    child: const AppText('Set as Default'.tr,
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: AppColors.primaryColor,
@@ -341,8 +338,7 @@ class _BankAccountsScreenState extends State<BankAccountsScreen> {
                         size: 16,
                       ),
                       SizedBox(width: 4),
-                      AppText(
-                        'Active',
+                      AppText('Active'.tr,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: Colors.green,

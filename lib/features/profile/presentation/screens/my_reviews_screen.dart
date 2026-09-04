@@ -422,8 +422,7 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              const AppText(
-                'Your Response',
+              const AppText('Your Response'.tr,
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: Colors.black87,
@@ -434,7 +433,7 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                 maxLines: 5,
                 style: const TextStyle(fontSize: 14, color: Colors.black87),
                 decoration: InputDecoration(
-                  hintText: 'Type your message here...',
+                  hintText: 'Type your message here...'.tr,
                   hintStyle: TextStyle(
                     color: Colors.grey.shade400,
                     fontSize: 14,

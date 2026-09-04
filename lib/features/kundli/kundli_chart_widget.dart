@@ -188,7 +188,7 @@ class _KundliChartWidgetState extends State<KundliChartWidget> {
     }
 
     return const Center(
-      child: AppText("No chart available", color: Colors.grey),
+      child: AppText("No chart available".tr, color: Colors.grey),
     );
   }
 
@@ -297,7 +297,7 @@ class FullScreenChartScreen extends StatelessWidget {
     }
 
     return const Center(
-      child: AppText("No chart available", color: Colors.grey),
+      child: AppText("No chart available".tr, color: Colors.grey),
     );
   }
 }

@@ -109,8 +109,7 @@ class _SplashScreenState extends State<SplashScreen>
                             scale: 0.8 + (0.2 * value),
                             child: Column(
                               children: [
-                                AppText(
-                                  'Astrologer',
+                                AppText('Astrologer'.tr,
                                   style: TextStyle(
                                     fontSize: 36,
                                     color: AppColors.deepPink,
@@ -119,8 +118,7 @@ class _SplashScreenState extends State<SplashScreen>
                                   ),
                                 ),
                                 const SizedBox(height: 8),
-                                AppText(
-                                  'Partner Portal',
+                                AppText('Partner Portal'.tr,
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600,
                                   color: AppColors.primaryColor,
@@ -165,8 +163,7 @@ class _SplashScreenState extends State<SplashScreen>
                                 ),
                               ),
                               const SizedBox(height: 20),
-                              AppText(
-                                'Loading...',
+                              AppText('Loading...'.tr,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
                                 color: AppColors.textColorSecondary,

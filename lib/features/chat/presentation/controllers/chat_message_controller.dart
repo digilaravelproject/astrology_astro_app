@@ -201,7 +201,7 @@ class ChatMessageController extends GetxController {
   Future<void> sendImageAttachment(XFile xFile) async {
     if (_orchestrator.sessionId == null) return;
     final tempId = DateTime.now().millisecondsSinceEpoch;
-    final localMsg = ChatMessage(id: tempId, text: '📷 Sending Image...', isMe: true, time: DateTime.now(), status: 'sending...', image: xFile.path, type: 'image');
+    final localMsg = ChatMessage(id: tempId, text: '📷 Sending Image...'.tr, isMe: true, time: DateTime.now(), status: 'sending...', image: xFile.path, type: 'image');
     messages.add(localMsg);
     scrollToBottom();
 

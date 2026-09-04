@@ -15,7 +15,7 @@ class ReferralScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(title: 'Refer & Earn'),
+      appBar: const CustomAppBar(title: 'Refer & Earn'.tr),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -35,16 +35,14 @@ class ReferralScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 32),
-            const AppText(
-              "Refer a Friend & Earn ₹100",
+            const AppText("Refer a Friend & Earn ₹100".tr,
               fontSize: 22,
               fontWeight: FontWeight.w800,
               color: Color(0xFF2E1A47),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
-            AppText(
-              "Share your referral code with your friends and get ₹100 in your wallet when they sign up and complete their first session.",
+            AppText("Share your referral code with your friends and get ₹100 in your wallet when they sign up and complete their first session.".tr,
               fontSize: 14,
               color: Colors.grey.shade600,
               textAlign: TextAlign.center,
@@ -64,15 +62,13 @@ class ReferralScreen extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AppText(
-                        "Your Referral Code",
+                      AppText("Your Referral Code".tr,
                         fontSize: 12,
                         color: Colors.grey.shade500,
                         fontWeight: FontWeight.w600,
                       ),
                       const SizedBox(height: 6),
-                      const AppText(
-                        "ASTRO2024",
+                      const AppText("ASTRO2024".tr,
                         fontSize: 24,
                         fontWeight: FontWeight.w800,
                         color: AppColors.primaryColor,
@@ -82,7 +78,7 @@ class ReferralScreen extends StatelessWidget {
                   ),
                   InkWell(
                     onTap: () {
-                      Clipboard.setData(const ClipboardData(text: "ASTRO2024"));
+                      Clipboard.setData(const ClipboardData(text: "ASTRO2024".tr));
                       CustomSnackBar.disabledSnackbar(
                         "Copied",
                         "Referral code copied to clipboard",
@@ -116,7 +112,7 @@ class ReferralScreen extends StatelessWidget {
             ),
             const SizedBox(height: 48),
             CustomButton(
-              text: "Share Now",
+              text: "Share Now".tr,
               onPressed: () {
                 // Share logic could be implemented here using share_plus
               },

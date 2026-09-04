@@ -10,7 +10,7 @@ class DiscountedSessionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(title: 'Discounted Session'),
+      appBar: const CustomAppBar(title: 'Discounted Session'.tr),
       body: Column(
         children: [
           Expanded(
@@ -58,8 +58,7 @@ class DiscountedSessionScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: const AppText(
-                  'Share Session',
+                child: const AppText('Share Session'.tr,
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

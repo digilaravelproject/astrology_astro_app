@@ -47,7 +47,7 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen>
                   controller: _searchController,
                   autofocus: true,
                   decoration: const InputDecoration(
-                    hintText: 'Search orders...',
+                    hintText: 'Search orders...'.tr,
                     border: InputBorder.none,
                     hintStyle: TextStyle(color: Colors.black54),
                   ),
@@ -111,7 +111,7 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen>
                 fontSize: 13,
                 fontFamily: 'Poppins',
               ),
-              tabs: const [Tab(text: "Orders"), Tab(text: "Chats")],
+              tabs: const [Tab(text: "Orders".tr), Tab(text: "Chats".tr)],
             ),
           ),
           Expanded(
@@ -132,15 +132,13 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: const [
-            AppText(
-              'Astromall',
+            AppText('Astromall'.tr,
               fontSize: 10,
               fontWeight: FontWeight.w700,
               color: Colors.white,
               height: 1.0,
             ),
-            AppText(
-              'Listings',
+            AppText('Listings'.tr,
               fontSize: 10,
               fontWeight: FontWeight.w700,
               color: Colors.white,
@@ -216,8 +214,7 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen>
 
   Widget _buildChatsTab() {
     return Center(
-      child: AppText(
-        "No chats found :(",
+      child: AppText("No chats found :(".tr,
         color: Colors.grey.shade500,
         fontSize: 16,
       ),
@@ -251,15 +248,13 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen>
             // Top Row (Status & Actions)
             Row(
               children: [
-                AppText(
-                  'Indian',
+                AppText('Indian'.tr,
                   color: Colors.blue.shade700,
                   fontWeight: FontWeight.w600,
                   fontSize: 13,
                 ),
                 const SizedBox(width: 8),
-                AppText(
-                  'CLOSED',
+                AppText('CLOSED'.tr,
                   color: Colors.green.shade600,
                   fontWeight: FontWeight.w600,
                   fontSize: 13,
@@ -315,7 +310,7 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen>
                           ),
                           children: [
                             const TextSpan(
-                              text: 'Order Id: ',
+                              text: 'Order Id: '.tr,
                               style: TextStyle(fontWeight: FontWeight.w600),
                             ),
                             TextSpan(text: orderId),
@@ -331,8 +326,7 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen>
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     AppText(price, fontWeight: FontWeight.bold, fontSize: 16),
-                    AppText(
-                      'Your Earnings',
+                    AppText('Your Earnings'.tr,
                       color: Colors.grey.shade600,
                       fontSize: 10,
                     ),
@@ -343,9 +337,8 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen>
             const SizedBox(height: 8),
             Row(
               children: [
-                AppText('Name: ', color: Colors.grey.shade600, fontSize: 13),
-                const AppText(
-                  'Kartikee (AT-GG4V2W8)',
+                AppText('Name: '.tr, color: Colors.grey.shade600, fontSize: 13),
+                const AppText('Kartikee (AT-GG4V2W8)'.tr,
                   fontWeight: FontWeight.w600,
                   fontSize: 13,
                 ),
@@ -361,8 +354,7 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen>
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AppText(
-                  'Product Name: ',
+                AppText('Product Name: '.tr,
                   color: Colors.grey.shade600,
                   fontSize: 13,
                 ),
@@ -379,12 +371,11 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen>
             const SizedBox(height: 4),
             Row(
               children: [
-                AppText(
-                  'Quantity: ',
+                AppText('Quantity: '.tr,
                   color: Colors.grey.shade600,
                   fontSize: 13,
                 ),
-                const AppText('1', fontWeight: FontWeight.w600, fontSize: 13),
+                const AppText('1'.tr, fontWeight: FontWeight.w600, fontSize: 13),
               ],
             ),
             const SizedBox(height: 16),
@@ -404,8 +395,7 @@ class _AstromallOrdersScreenState extends State<AstromallOrdersScreen>
                 ),
                 minimumSize: const Size(0, 36),
               ),
-              child: AppText(
-                'Call with User',
+              child: AppText('Call with User'.tr,
                 color: Colors.grey.shade800,
                 fontSize: 12,
                 fontWeight: FontWeight.w500,

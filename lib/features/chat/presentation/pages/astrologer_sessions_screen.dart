@@ -35,7 +35,7 @@ class AstrologerSessionsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
-      appBar: const CustomAppBar(title: 'Chat History', centerTitle: true),
+      appBar: const CustomAppBar(title: 'Chat History'.tr, centerTitle: true),
       body: Column(
         children: [
           Expanded(
@@ -71,7 +71,7 @@ class AstrologerSessionsScreen extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primaryColor,
                         ),
-                        child: const AppText('Retry', color: Colors.white),
+                        child: const AppText('Retry'.tr, color: Colors.white),
                       ),
                     ],
                   ),
@@ -94,8 +94,7 @@ class AstrologerSessionsScreen extends StatelessWidget {
                         color: Colors.grey,
                       ),
                       const SizedBox(height: 16),
-                      const AppText(
-                        'No chat sessions found',
+                      const AppText('No chat sessions found'.tr,
                         textAlign: TextAlign.center,
                         color: Colors.grey,
                         fontSize: 16,
@@ -432,7 +431,7 @@ class AstrologerSessionsScreen extends StatelessWidget {
                               color: Colors.black87,
                             ),
                           ),
-                          const AppText(':  ', fontWeight: FontWeight.bold),
+                          const AppText(':  '.tr, fontWeight: FontWeight.bold),
                           Expanded(
                             child: Row(
                               children: [

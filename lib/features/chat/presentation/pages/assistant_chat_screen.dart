@@ -138,13 +138,12 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const AppText(
-                        'Failed to load chat sessions',
+                      const AppText('Failed to load chat sessions'.tr,
                         color: Colors.grey,
                       ),
                       TextButton(
                         onPressed: controller.fetchSessions,
-                        child: const Text('Retry'),
+                        child: const Text('Retry'.tr),
                       ),
                     ],
                   ),
@@ -281,8 +280,7 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
           Icon(Icons.photo, size: 16, color: Colors.grey.shade500),
           const SizedBox(width: 4),
           Expanded(
-            child: AppText(
-              'Photo',
+            child: AppText('Photo'.tr,
               fontSize: 13,
               color: Colors.grey.shade500,
               overflow: TextOverflow.ellipsis,
@@ -297,8 +295,7 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
           Icon(Icons.insert_drive_file, size: 16, color: Colors.grey.shade500),
           const SizedBox(width: 4),
           Expanded(
-            child: AppText(
-              'Document',
+            child: AppText('Document'.tr,
               fontSize: 13,
               color: Colors.grey.shade500,
               overflow: TextOverflow.ellipsis,
@@ -443,8 +440,7 @@ class _AssistantChatScreenState extends State<AssistantChatScreen> {
                               color: Colors.green,
                               shape: BoxShape.circle,
                             ),
-                            child: const AppText(
-                              '1',
+                            child: const AppText('1'.tr,
                               fontSize: 10,
                               color: Colors.white,
                               fontWeight: FontWeight.bold,

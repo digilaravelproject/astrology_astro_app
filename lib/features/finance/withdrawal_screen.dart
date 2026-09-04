@@ -53,7 +53,7 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
-      appBar: const CustomAppBar(title: 'Withdraw Money'),
+      appBar: const CustomAppBar(title: 'Withdraw Money'.tr),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -139,14 +139,13 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                       horizontal: 16,
                       vertical: 14,
                     ),
-                    child: const AppText(
-                      '₹',
+                    child: const AppText('₹'.tr,
                       fontSize: 24,
                       fontWeight: FontWeight.w700,
                       color: Color(0xFF2E1A47),
                     ),
                   ),
-                  hintText: '0.00',
+                  hintText: '0.00'.tr,
                   hintStyle: TextStyle(color: Colors.grey.shade300),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(vertical: 18),
@@ -265,7 +264,7 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                   const SizedBox(height: 48),
 
                   CustomButton(
-                    text: 'Confirm Withdrawal',
+                    text: 'Confirm Withdrawal'.tr,
                     onPressed: () {
                       if (_amountController.text.isEmpty) {
                         CustomSnackBar.disabledSnackbar(
@@ -287,13 +286,12 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                       }
 
                       Get.defaultDialog(
-                        title: 'Confirm',
+                        title: 'Confirm'.tr,
                         middleText:
                             'Are you sure you want to withdraw ₹${_amountController.text} to ${defaultBank.bankName}?',
                         cancel: TextButton(
                           onPressed: () => Navigator.of(context).pop(),
-                          child: const Text(
-                            'Cancel',
+                          child: const Text('Cancel'.tr,
                             style: TextStyle(color: AppColors.primaryColor),
                           ),
                         ),
@@ -351,8 +349,7 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
                               );
                             }
                           },
-                          child: const Text(
-                            'Confirm',
+                          child: const Text('Confirm'.tr,
                             style: TextStyle(color: Colors.white),
                           ),
                         ),
@@ -367,8 +364,7 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
 
             const SizedBox(height: 20),
             Center(
-              child: AppText(
-                'Funds will be credited within 24-48 hours',
+              child: AppText('Funds will be credited within 24-48 hours'.tr,
                 fontSize: 12,
                 color: Colors.grey.shade400,
                 fontWeight: FontWeight.w500,

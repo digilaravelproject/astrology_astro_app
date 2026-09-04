@@ -54,7 +54,7 @@ class _PaySlipScreenState extends State<PaySlipScreen> {
                 }
                 CustomSnackBar.showSuccess(
                   'Pay slip sent to your registered email',
-                  title: 'Success',
+                  title: 'Success'.tr,
                 );
               },
               backgroundColor: AppColors.primaryColor,

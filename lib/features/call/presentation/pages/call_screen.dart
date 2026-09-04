@@ -307,8 +307,7 @@ class _CallScreenState extends State<CallScreen> {
                               ),
                             ),
                             const SizedBox(height: 12),
-                            const Text(
-                              'Decline',
+                            const Text('Decline'.tr,
                               style: TextStyle(
                                 color: Colors.white70,
                                 fontSize: 13,
@@ -366,8 +365,7 @@ class _CallScreenState extends State<CallScreen> {
                               ),
                             ),
                             const SizedBox(height: 12),
-                            const Text(
-                              'Accept',
+                            const Text('Accept'.tr,
                               style: TextStyle(
                                 color: Colors.white70,
                                 fontSize: 13,
@@ -410,7 +408,7 @@ class _CallScreenState extends State<CallScreen> {
                               controller.isMuted.value
                                   ? Icons.mic_off
                                   : Icons.mic,
-                          label: 'Mute',
+                          label: 'Mute'.tr,
                           isActive: controller.isMuted.value,
                           onPressed: () => controller.toggleMute(),
                         ),
@@ -419,7 +417,7 @@ class _CallScreenState extends State<CallScreen> {
                         if (controller.isPackageCall)
                           _buildControlButton(
                             icon: Icons.swap_calls_rounded,
-                            label: 'Chat',
+                            label: 'Chat'.tr,
                             isActive: false,
                             onPressed: () => _showSwitchToChatDialog(context),
                           ),
@@ -432,7 +430,7 @@ class _CallScreenState extends State<CallScreen> {
                               controller.isSpeakerOn.value
                                   ? Icons.volume_up
                                   : Icons.volume_down,
-                          label: 'Speaker',
+                          label: 'Speaker'.tr,
                           isActive: controller.isSpeakerOn.value,
                           onPressed: () => controller.toggleSpeaker(),
                         ),
@@ -526,8 +524,7 @@ class _CallScreenState extends State<CallScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        const Text(
-          'End',
+        const Text('End'.tr,
           style: TextStyle(
             color: Colors.white,
             fontSize: 12,
@@ -596,8 +593,7 @@ class _CallScreenState extends State<CallScreen> {
                       size: 22,
                     ),
                     SizedBox(width: 8),
-                    Text(
-                      'End Consultation Options',
+                    Text('End Consultation Options'.tr,
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.bold,
@@ -625,9 +621,8 @@ class _CallScreenState extends State<CallScreen> {
                   icon: Icons.call_end_rounded,
                   iconColor: Colors.blue.shade700,
                   bgColor: Colors.blue.shade50,
-                  title: 'End Call Only (Continue Chatting)',
-                  subtitle:
-                      'Hangs up audio and returns you to the active chat thread.',
+                  title: 'End Call Only (Continue Chatting)'.tr,
+                  subtitle: 'Hangs up audio and returns you to the active chat thread.'.tr,
                   onTap: () {
                     Navigator.of(ctx).pop();
                     controller.terminateChannelOnly();
@@ -640,9 +635,8 @@ class _CallScreenState extends State<CallScreen> {
                   icon: Icons.cancel_rounded,
                   iconColor: Colors.red,
                   bgColor: Colors.red.shade50,
-                  title: 'End Entire Session',
-                  subtitle:
-                      'Completes consultation and finalises package time.',
+                  title: 'End Entire Session'.tr,
+                  subtitle: 'Completes consultation and finalises package time.'.tr,
                   onTap: () {
                     Navigator.of(ctx).pop();
                     controller.terminateEntireSession();
@@ -655,8 +649,7 @@ class _CallScreenState extends State<CallScreen> {
                   width: double.infinity,
                   child: TextButton(
                     onPressed: () => Navigator.of(ctx).pop(),
-                    child: const Text(
-                      'Cancel',
+                    child: const Text('Cancel'.tr,
                       style: TextStyle(color: Colors.grey, fontSize: 15),
                     ),
                   ),
@@ -676,18 +669,15 @@ class _CallScreenState extends State<CallScreen> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
-            title: const Text(
-              'End Consultation',
+            title: const Text('End Consultation'.tr,
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            content: const Text(
-              'Are you sure you want to end this consultation?',
+            content: const Text('Are you sure you want to end this consultation?'.tr,
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text(
-                  'Cancel',
+                child: const Text('Cancel'.tr,
                   style: TextStyle(color: Colors.grey),
                 ),
               ),
@@ -703,7 +693,7 @@ class _CallScreenState extends State<CallScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text('End Session'),
+                child: const Text('End Session'.tr),
               ),
             ],
           ),
@@ -783,8 +773,7 @@ class _CallScreenState extends State<CallScreen> {
                   size: 22,
                 ),
                 SizedBox(width: 10),
-                Text(
-                  'Switch to Chat',
+                Text('Switch to Chat'.tr,
                   style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                 ),
               ],
@@ -796,8 +785,7 @@ class _CallScreenState extends State<CallScreen> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text(
-                  'Cancel',
+                child: const Text('Cancel'.tr,
                   style: TextStyle(color: Colors.grey),
                 ),
               ),
@@ -807,7 +795,7 @@ class _CallScreenState extends State<CallScreen> {
                   _switchToChat();
                 },
                 icon: const Icon(Icons.chat_bubble_rounded, size: 16),
-                label: const Text('Switch'),
+                label: const Text('Switch'.tr),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryColor,
                   foregroundColor: Colors.white,

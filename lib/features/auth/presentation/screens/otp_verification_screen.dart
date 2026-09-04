@@ -52,8 +52,7 @@ class OtpVerificationScreen extends StatelessWidget {
                   children: [
                     SizedBox(height: size.height * 0.06),
 
-                    AppText(
-                      'Verification',
+                    AppText('Verification'.tr,
                       fontSize: 25,
                       fontWeight: FontWeight.w600,
                       color: AppColors.black,
@@ -102,7 +101,7 @@ class OtpVerificationScreen extends StatelessWidget {
 
                     Obx(
                       () => CustomButton(
-                        text: 'Verify',
+                        text: 'Verify'.tr,
                         borderRadius: 100,
                         onPressed: () {
                           // Validate OTP before proceeding
@@ -232,8 +231,7 @@ class OtpVerificationScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        AppText(
-          'Didn\'t receive code? ',
+        AppText('Didn\'.trt receive code? ',
           color: AppColors.textColorSecondary,
           fontSize: 14,
         ),
@@ -241,8 +239,7 @@ class OtpVerificationScreen extends StatelessWidget {
           onTap: () {
             authController.resendOtp();
           },
-          child: AppText(
-            'Resend',
+          child: AppText('Resend'.tr,
             color: AppColors.deepPink,
             fontWeight: FontWeight.bold,
             fontSize: 14,

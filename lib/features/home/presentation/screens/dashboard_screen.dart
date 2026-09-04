@@ -50,7 +50,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final List<Widget> _screens = [
     const HomeScreen(),
     const OrdersScreen(),
-    const Center(child: Text('Go Live Screen')),
+    const Center(child: Text('Go Live Screen'.tr)),
     const NoticeScreen(),
     const ProfileScreen(),
   ];
@@ -156,14 +156,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
-                title: const AppText(
-                  'Exit App',
+                title: const AppText('Exit App'.tr,
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
                 ),
-                content: const AppText(
-                  'Are you sure you want to exit?',
+                content: const AppText('Are you sure you want to exit?'.tr,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   color: Colors.grey,
@@ -171,8 +169,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(false),
-                    child: AppText(
-                      'Cancel',
+                    child: AppText('Cancel'.tr,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: Colors.grey[600],
@@ -180,8 +177,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(true),
-                    child: const AppText(
-                      'Exit',
+                    child: const AppText('Exit'.tr,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: AppColors.primaryColor,
@@ -218,15 +214,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                   ),
                   const SizedBox(height: 25),
-                  const AppText(
-                    'Go Live',
+                  const AppText('Go Live'.tr,
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF2E1A47),
                   ),
                   const SizedBox(height: 12),
-                  AppText(
-                    'Would you like to go live instantly or schedule it for later?',
+                  AppText('Would you like to go live instantly or schedule it for later?'.tr,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                     color: Colors.grey[600],
@@ -247,7 +241,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 ? null
                                 : () {
                                   liveController.createSession(
-                                    title: "Instant Live Session",
+                                    title: "Instant Live Session".tr,
                                     description: "Broadcasting Live",
                                     sessionType: "public",
                                     duration: 60,
@@ -277,8 +271,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     ),
                                   ),
                                 )
-                                : const AppText(
-                                  'Go Live Instantly',
+                                : const AppText('Go Live Instantly'.tr,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
                                   color: Colors.white,
@@ -307,8 +300,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                       ),
-                      child: const AppText(
-                        'Schedule for Later',
+                      child: const AppText('Schedule for Later'.tr,
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF2196F3),

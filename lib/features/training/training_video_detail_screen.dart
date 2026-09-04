@@ -274,8 +274,7 @@ class _TrainingVideoDetailScreenState extends State<TrainingVideoDetailScreen>
                   color: Colors.red.withOpacity(0.8),
                   borderRadius: BorderRadius.circular(100),
                 ),
-                child: const AppText(
-                  'Video unavailable. Tap to retry.',
+                child: const AppText('Video unavailable. Tap to retry.'.tr,
                   color: Colors.white,
                   fontSize: 12,
                 ),
@@ -299,8 +298,7 @@ class _TrainingVideoDetailScreenState extends State<TrainingVideoDetailScreen>
               size: 72,
             ),
             const SizedBox(height: 12),
-            AppText(
-              'Loading thumbnail...',
+            AppText('Loading thumbnail...'.tr,
               color: Colors.white38,
               fontSize: 12,
             ),
@@ -313,7 +311,7 @@ class _TrainingVideoDetailScreenState extends State<TrainingVideoDetailScreen>
   Widget _buildInfoSection(TrainingVideoModel? video) {
     if (video == null) {
       return const Center(
-        child: AppText('Video not found', color: Colors.grey),
+        child: AppText('Video not found'.tr, color: Colors.grey),
       );
     }
     return SingleChildScrollView(
@@ -425,8 +423,7 @@ class _TrainingVideoDetailScreenState extends State<TrainingVideoDetailScreen>
                 ),
               ),
               const SizedBox(width: 10),
-              const AppText(
-                'About this video',
+              const AppText('About this video'.tr,
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
                 color: Color(0xFF1A1A2E),
@@ -472,7 +469,7 @@ class _TrainingVideoDetailScreenState extends State<TrainingVideoDetailScreen>
                 children: [
                   Icon(Icons.play_arrow_rounded, color: Colors.white, size: 22),
                   SizedBox(width: 8),
-                  AppText('Watch Video', color: Colors.white, fontWeight: FontWeight.w700, fontSize: 15),
+                  AppText('Watch Video'.tr, color: Colors.white, fontWeight: FontWeight.w700, fontSize: 15),
                 ],
               ),
             ),

@@ -74,8 +74,7 @@ class BhavBalaTab extends StatelessWidget {
                   ),
                 ),
                 child: const Center(
-                  child: AppText(
-                    "Bhav Bala",
+                  child: AppText("Bhav Bala".tr,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,

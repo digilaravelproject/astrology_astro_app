@@ -21,7 +21,7 @@ class PanchangScreen extends GetView<PanchangController> {
     print('[PCB_APP] [DEBUG] PanchangScreen build called');
     return Scaffold(
       backgroundColor: const Color(0xFFFDF9F5),
-      appBar: const CustomAppBar(title: 'Panchang'),
+      appBar: const CustomAppBar(title: 'Panchang'.tr),
       body: Column(
         children: [
           _buildCalendarSection(),
@@ -254,7 +254,7 @@ class PanchangScreen extends GetView<PanchangController> {
         if (data.sunrise.isNotEmpty || data.sunset.isNotEmpty)
           Expanded(
             child: _buildTimingCard(
-              title: "Sun Timings",
+              title: "Sun Timings".tr,
               items: [
                 if (data.sunrise.isNotEmpty)
                   {
@@ -279,7 +279,7 @@ class PanchangScreen extends GetView<PanchangController> {
         if (data.moonrise.isNotEmpty || data.moonset.isNotEmpty)
           Expanded(
             child: _buildTimingCard(
-              title: "Moon Timings",
+              title: "Moon Timings".tr,
               items: [
                 if (data.moonrise.isNotEmpty)
                   {
@@ -392,8 +392,7 @@ class PanchangScreen extends GetView<PanchangController> {
               ),
               const SizedBox(width: 8),
               const Expanded(
-                child: AppText(
-                  "Daily Cosmic Guidance",
+                child: AppText("Daily Cosmic Guidance".tr,
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                   maxLines: 1,
@@ -550,7 +549,7 @@ class PanchangScreen extends GetView<PanchangController> {
 
         // Tithi Card
         _buildPanchangCard(
-          title: "TITHI",
+          title: "TITHI".tr,
           subtitle:
               data.tithi.endTime.isNotEmpty
                   ? "Upto ${controller.formatTime(data.tithi.endTime)}"
@@ -569,7 +568,7 @@ class PanchangScreen extends GetView<PanchangController> {
 
         // Nakshatra Card
         _buildPanchangCard(
-          title: "NAKSHATRA",
+          title: "NAKSHATRA".tr,
           subtitle:
               data.nakshatra.endTime.isNotEmpty
                   ? "Upto ${controller.formatTime(data.nakshatra.endTime)}"
@@ -590,7 +589,7 @@ class PanchangScreen extends GetView<PanchangController> {
 
         // Yoga Card
         _buildPanchangCard(
-          title: "YOGA",
+          title: "YOGA".tr,
           subtitle:
               data.yoga.endTime.isNotEmpty
                   ? "Upto ${controller.formatTime(data.yoga.endTime)}"
@@ -605,7 +604,7 @@ class PanchangScreen extends GetView<PanchangController> {
 
         // Karana Card
         _buildPanchangCard(
-          title: "KARANA",
+          title: "KARANA".tr,
           subtitle:
               data.karana.endTime.isNotEmpty
                   ? "Upto ${controller.formatTime(data.karana.endTime)}"
@@ -625,7 +624,7 @@ class PanchangScreen extends GetView<PanchangController> {
 
         // Vara Card
         _buildPanchangCard(
-          title: "VARA",
+          title: "VARA".tr,
           subtitle: data.vara.englishName,
           name: data.vara.name,
           deity: data.vara.lord,
@@ -907,8 +906,7 @@ class PanchangScreen extends GetView<PanchangController> {
 
                 if (bestFor != null && bestFor.isNotEmpty) ...[
                   const SizedBox(height: 8),
-                  AppText(
-                    "Best For:",
+                  AppText("Best For:".tr,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                     color: const Color(0xFF1E8449),
@@ -960,8 +958,7 @@ class PanchangScreen extends GetView<PanchangController> {
 
                 if (avoid != null && avoid.isNotEmpty) ...[
                   const SizedBox(height: 8),
-                  AppText(
-                    "Avoid:",
+                  AppText("Avoid:".tr,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                     color: const Color(0xFFCB4335),
@@ -1093,8 +1090,7 @@ class PanchangScreen extends GetView<PanchangController> {
                     children: const [
                       Icon(Icons.calendar_month, size: 14, color: themeColor),
                       SizedBox(width: 6),
-                      AppText(
-                        "MASA (MONTH)",
+                      AppText("MASA (MONTH)".tr,
                         fontSize: 11,
                         color: themeColor,
                         fontWeight: FontWeight.bold,
@@ -1161,7 +1157,7 @@ class PanchangScreen extends GetView<PanchangController> {
                       Expanded(
                         child: _buildPropertyTile(
                           icon: Icons.brightness_5_outlined,
-                          label: "Sun Sign",
+                          label: "Sun Sign".tr,
                           value:
                               masa.sunSign +
                               (masa.sunSignHindi.isNotEmpty
@@ -1175,7 +1171,7 @@ class PanchangScreen extends GetView<PanchangController> {
                       Expanded(
                         child: _buildPropertyTile(
                           icon: Icons.bookmark_outline,
-                          label: "Deity",
+                          label: "Deity".tr,
                           value: masa.deityAssociation,
                           iconColor: Colors.deepPurple.shade600,
                         ),
@@ -1192,8 +1188,7 @@ class PanchangScreen extends GetView<PanchangController> {
 
                 if (masa.interpretation.significance.isNotEmpty) ...[
                   const SizedBox(height: 4),
-                  AppText(
-                    "Significance",
+                  AppText("Significance".tr,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                     color: Colors.grey.shade700,
@@ -1218,8 +1213,7 @@ class PanchangScreen extends GetView<PanchangController> {
 
                 if (masa.interpretation.festivals.isNotEmpty) ...[
                   const SizedBox(height: 4),
-                  AppText(
-                    "Festivals in this month:",
+                  AppText("Festivals in this month:".tr,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                     color: Colors.grey.shade700,
@@ -1313,8 +1307,7 @@ class PanchangScreen extends GetView<PanchangController> {
                     children: const [
                       Icon(Icons.park_outlined, size: 14, color: themeColor),
                       SizedBox(width: 6),
-                      AppText(
-                        "RITU (SEASON)",
+                      AppText("RITU (SEASON)".tr,
                         fontSize: 11,
                         color: themeColor,
                         fontWeight: FontWeight.bold,
@@ -1392,7 +1385,7 @@ class PanchangScreen extends GetView<PanchangController> {
                           ),
                           children: [
                             TextSpan(
-                              text: "Corresponding Months: ",
+                              text: "Corresponding Months: ".tr,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey.shade700,
@@ -1436,8 +1429,7 @@ class PanchangScreen extends GetView<PanchangController> {
                     height: 16,
                     thickness: 1,
                   ),
-                  AppText(
-                    "Seasonal Characteristics",
+                  AppText("Seasonal Characteristics".tr,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                     color: Colors.grey.shade700,
@@ -1531,8 +1523,7 @@ class PanchangScreen extends GetView<PanchangController> {
                     children: const [
                       Icon(Icons.explore, size: 14, color: themeColor),
                       SizedBox(width: 6),
-                      AppText(
-                        "DISHA SHOOL (TRAVEL ADVISORY)",
+                      AppText("DISHA SHOOL (TRAVEL ADVISORY)".tr,
                         fontSize: 11,
                         color: themeColor,
                         fontWeight: FontWeight.bold,
@@ -1587,8 +1578,7 @@ class PanchangScreen extends GetView<PanchangController> {
                     height: 16,
                     thickness: 1,
                   ),
-                  AppText(
-                    "Safe Directions to Travel Today",
+                  AppText("Safe Directions to Travel Today".tr,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                     color: Colors.grey.shade700,
@@ -1638,8 +1628,7 @@ class PanchangScreen extends GetView<PanchangController> {
 
                 if (dishaShool.remedies.isNotEmpty) ...[
                   const SizedBox(height: 4),
-                  AppText(
-                    "Remedy / Parihara (If travel is unavoidable)",
+                  AppText("Remedy / Parihara (If travel is unavoidable)".tr,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                     color: Colors.grey.shade700,

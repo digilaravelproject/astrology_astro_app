@@ -66,15 +66,13 @@ class _AudioIntroScreenState extends State<AudioIntroScreen> {
                   size: 60,
                 ),
                 const SizedBox(height: 20),
-                AppText(
-                  'Confirm Audio Upload',
+                AppText('Confirm Audio Upload'.tr,
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFF2E1A47),
                 ),
                 const SizedBox(height: 10),
-                AppText(
-                  'Your audio introduction will help users trust you more. Make sure it is clear and professional.',
+                AppText('Your audio introduction will help users trust you more. Make sure it is clear and professional.'.tr,
                   fontSize: 14,
                   color: Colors.grey.shade600,
                   textAlign: TextAlign.center,
@@ -85,7 +83,7 @@ class _AudioIntroScreenState extends State<AudioIntroScreen> {
                   children: [
                     Expanded(
                       child: CustomButton(
-                        text: 'Cancel',
+                        text: 'Cancel'.tr,
                         onPressed: () => Get.back(),
                         buttonType: ButtonStyleType.outlined,
                         borderColor: Colors.grey.shade300,
@@ -96,7 +94,7 @@ class _AudioIntroScreenState extends State<AudioIntroScreen> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: CustomButton(
-                        text: 'Submit Audio',
+                        text: 'Submit Audio'.tr,
                         onPressed: () {
                           Get.back(); // Close bottom sheet
                           Get.back(); // Close screen
@@ -125,21 +123,19 @@ class _AudioIntroScreenState extends State<AudioIntroScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(title: 'Audio Introduction'),
+      appBar: const CustomAppBar(title: 'Audio Introduction'.tr),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AppText(
-              'Record or upload your voice',
+            AppText('Record or upload your voice'.tr,
               fontSize: 22,
               fontWeight: FontWeight.w800,
               color: const Color(0xFF2E1A47),
             ),
             const SizedBox(height: 8),
-            AppText(
-              'Vocal introductions increase consultation rates by up to 50%. Speak clearly about your expertise.',
+            AppText('Vocal introductions increase consultation rates by up to 50%. Speak clearly about your expertise.'.tr,
               fontSize: 14,
               color: Colors.grey.shade600,
               height: 1.5,
@@ -173,15 +169,13 @@ class _AudioIntroScreenState extends State<AudioIntroScreen> {
                               ),
                             ),
                             const SizedBox(height: 20),
-                            AppText(
-                              'No audio selected',
+                            AppText('No audio selected'.tr,
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                               color: Colors.grey.shade700,
                             ),
                             const SizedBox(height: 8),
-                            AppText(
-                              'Audio should be clear and under 60 seconds',
+                            AppText('Audio should be clear and under 60 seconds'.tr,
                               fontSize: 12,
                               color: Colors.grey.shade500,
                             ),
@@ -245,7 +239,7 @@ class _AudioIntroScreenState extends State<AudioIntroScreen> {
 
             if (_audioFile == null)
               CustomButton(
-                text: 'Select Audio',
+                text: 'Select Audio'.tr,
                 onPressed: _pickAudio,
                 backgroundColor: AppColors.primaryColor,
                 borderRadius: 100,
@@ -259,7 +253,7 @@ class _AudioIntroScreenState extends State<AudioIntroScreen> {
               Column(
                 children: [
                   CustomButton(
-                    text: 'Change Audio',
+                    text: 'Change Audio'.tr,
                     onPressed: _pickAudio,
                     buttonType: ButtonStyleType.outlined,
                     borderColor: AppColors.primaryColor,
@@ -268,7 +262,7 @@ class _AudioIntroScreenState extends State<AudioIntroScreen> {
                   ),
                   const SizedBox(height: 16),
                   CustomButton(
-                    text: 'Submit & Continue',
+                    text: 'Submit & Continue'.tr,
                     onPressed: _showSubmitBottomSheet,
                     backgroundColor: AppColors.primaryColor,
                     borderRadius: 100,

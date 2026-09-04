@@ -38,7 +38,7 @@ class KPTab extends StatelessWidget {
         return const Center(
           child: Padding(
             padding: EdgeInsets.all(24.0),
-            child: AppText("No KP data available"),
+            child: AppText("No KP data available".tr),
           ),
         );
       }
@@ -64,8 +64,7 @@ class KPTab extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const AppText(
-          "Ruling Planets",
+        const AppText("Ruling Planets".tr,
           fontSize: 16,
           fontWeight: FontWeight.bold,
         ),
@@ -100,8 +99,7 @@ class KPTab extends StatelessWidget {
                   children: [
                     Expanded(
                       flex: 3,
-                      child: AppText(
-                        "Factor",
+                      child: AppText("Factor".tr,
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
@@ -110,8 +108,7 @@ class KPTab extends StatelessWidget {
                     Expanded(
                       flex: 2,
                       child: Center(
-                        child: AppText(
-                          "Sign Lord",
+                        child: AppText("Sign Lord".tr,
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
@@ -121,8 +118,7 @@ class KPTab extends StatelessWidget {
                     Expanded(
                       flex: 2,
                       child: Center(
-                        child: AppText(
-                          "Star Lord",
+                        child: AppText("Star Lord".tr,
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
@@ -132,8 +128,7 @@ class KPTab extends StatelessWidget {
                     Expanded(
                       flex: 2,
                       child: Center(
-                        child: AppText(
-                          "Sub Lord",
+                        child: AppText("Sub Lord".tr,
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
@@ -174,8 +169,7 @@ class KPTab extends StatelessWidget {
                   children: [
                     const Expanded(
                       flex: 3,
-                      child: AppText(
-                        "Day Lord",
+                      child: AppText("Day Lord".tr,
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
                       ),
@@ -240,7 +234,7 @@ class KPTab extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const AppText("KP Planets", fontSize: 16, fontWeight: FontWeight.bold),
+        const AppText("KP Planets".tr, fontSize: 16, fontWeight: FontWeight.bold),
         const SizedBox(height: 12),
         Container(
           decoration: BoxDecoration(
@@ -272,8 +266,7 @@ class KPTab extends StatelessWidget {
                   children: [
                     Expanded(
                       flex: 2,
-                      child: AppText(
-                        "Planet",
+                      child: AppText("Planet".tr,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
@@ -282,8 +275,7 @@ class KPTab extends StatelessWidget {
                     Expanded(
                       flex: 2,
                       child: Center(
-                        child: AppText(
-                          "Degree",
+                        child: AppText("Degree".tr,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
@@ -293,8 +285,7 @@ class KPTab extends StatelessWidget {
                     Expanded(
                       flex: 2,
                       child: Center(
-                        child: AppText(
-                          "Sign",
+                        child: AppText("Sign".tr,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
@@ -304,8 +295,7 @@ class KPTab extends StatelessWidget {
                     Expanded(
                       flex: 1,
                       child: Center(
-                        child: AppText(
-                          "SGL",
+                        child: AppText("SGL".tr,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
@@ -315,8 +305,7 @@ class KPTab extends StatelessWidget {
                     Expanded(
                       flex: 1,
                       child: Center(
-                        child: AppText(
-                          "STL",
+                        child: AppText("STL".tr,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
@@ -326,8 +315,7 @@ class KPTab extends StatelessWidget {
                     Expanded(
                       flex: 1,
                       child: Center(
-                        child: AppText(
-                          "SBL",
+                        child: AppText("SBL".tr,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
@@ -378,8 +366,7 @@ class KPTab extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const AppText(
-          "KP Cusps (Houses)",
+        const AppText("KP Cusps (Houses)".tr,
           fontSize: 16,
           fontWeight: FontWeight.bold,
         ),
@@ -414,8 +401,7 @@ class KPTab extends StatelessWidget {
                   children: [
                     Expanded(
                       flex: 1,
-                      child: AppText(
-                        "House",
+                      child: AppText("House".tr,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
@@ -424,8 +410,7 @@ class KPTab extends StatelessWidget {
                     Expanded(
                       flex: 2,
                       child: Center(
-                        child: AppText(
-                          "Degree",
+                        child: AppText("Degree".tr,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
@@ -435,8 +420,7 @@ class KPTab extends StatelessWidget {
                     Expanded(
                       flex: 2,
                       child: Center(
-                        child: AppText(
-                          "Sign",
+                        child: AppText("Sign".tr,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
@@ -446,8 +430,7 @@ class KPTab extends StatelessWidget {
                     Expanded(
                       flex: 1,
                       child: Center(
-                        child: AppText(
-                          "SGL",
+                        child: AppText("SGL".tr,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
@@ -457,8 +440,7 @@ class KPTab extends StatelessWidget {
                     Expanded(
                       flex: 1,
                       child: Center(
-                        child: AppText(
-                          "STL",
+                        child: AppText("STL".tr,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
@@ -468,8 +450,7 @@ class KPTab extends StatelessWidget {
                     Expanded(
                       flex: 1,
                       child: Center(
-                        child: AppText(
-                          "SBL",
+                        child: AppText("SBL".tr,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,

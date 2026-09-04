@@ -25,7 +25,7 @@ class SadeSatiTab extends StatelessWidget {
 
       final data = controller.sadeSatiModel.value?.data;
       if (data == null) {
-        return const Center(child: AppText("No Sade Sati data available"));
+        return const Center(child: AppText("No Sade Sati data available".tr));
       }
 
       return SingleChildScrollView(
@@ -301,8 +301,7 @@ class SadeSatiTab extends StatelessWidget {
               children: [
                 Expanded(
                   child: Center(
-                    child: AppText(
-                      "Start",
+                    child: AppText("Start".tr,
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
@@ -311,8 +310,7 @@ class SadeSatiTab extends StatelessWidget {
                 ),
                 Expanded(
                   child: Center(
-                    child: AppText(
-                      "End",
+                    child: AppText("End".tr,
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
@@ -321,8 +319,7 @@ class SadeSatiTab extends StatelessWidget {
                 ),
                 Expanded(
                   child: Center(
-                    child: AppText(
-                      "Sign Name",
+                    child: AppText("Sign Name".tr,
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
@@ -331,8 +328,7 @@ class SadeSatiTab extends StatelessWidget {
                 ),
                 Expanded(
                   child: Center(
-                    child: AppText(
-                      "Type",
+                    child: AppText("Type".tr,
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,

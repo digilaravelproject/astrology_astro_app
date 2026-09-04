@@ -42,7 +42,7 @@ class LiveSessionController extends GetxController {
     if (Get.context != null) {
       LocalNotificationService.showOngoingLiveNotification(
         sessionId: session.id,
-        title: 'Live Session in Progress',
+        title: 'Live Session in Progress'.tr,
         body: 'Ongoing session: ${session.title}',
         startedAtMillis: session.startedAt?.millisecondsSinceEpoch,
       );

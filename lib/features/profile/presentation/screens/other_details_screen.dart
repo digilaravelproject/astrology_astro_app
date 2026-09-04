@@ -271,7 +271,7 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
             Obx(
               () => _buildDetailCard(
                 icon: Iconsax.calendar_1_copy,
-                label: 'Date of Birth',
+                label: 'Date of Birth'.tr,
                 value: controller.dateOfBirth.value,
                 iconColor: const Color(0xFF2196F3),
                 backgroundColor: const Color(0xFFE3F2FD),
@@ -386,13 +386,13 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
             Obx(
               () => _buildDetailCard(
                 icon: Iconsax.user_copy,
-                label: 'Gender',
+                label: 'Gender'.tr,
                 value: controller.gender.value,
                 iconColor: AppColors.primaryColor,
                 backgroundColor: AppColors.primaryColor.withOpacity(0.1),
                 onTap:
                     () => _showEditBottomSheet(
-                      title: 'Gender',
+                      title: 'Gender'.tr,
                       currentValue: controller.gender,
                       options: ['Male', 'Female', 'Other'],
                     ),
@@ -401,13 +401,13 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
             Obx(
               () => _buildDetailCard(
                 icon: Iconsax.location_copy,
-                label: 'Current Address',
+                label: 'Current Address'.tr,
                 value: controller.currentAddress.value,
                 iconColor: const Color(0xFF4CAF50),
                 backgroundColor: const Color(0xFFE8F5E9),
                 onTap:
                     () => _showTextInputBottomSheet(
-                      title: 'Address',
+                      title: 'Address'.tr,
                       currentValue: controller.currentAddress,
                       hint: 'Enter your current address',
                       keyboardType: TextInputType.streetAddress,
@@ -421,13 +421,13 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
             Obx(
               () => _buildDetailCard(
                 icon: Iconsax.document_text_copy,
-                label: 'Biography',
+                label: 'Biography'.tr,
                 value: controller.bio.value,
                 iconColor: const Color(0xFF9C27B0),
                 backgroundColor: const Color(0xFFF3E5F5),
                 onTap:
                     () => _showTextInputBottomSheet(
-                      title: 'Bio',
+                      title: 'Bio'.tr,
                       currentValue: controller.bio,
                       hint: 'Write a brief biography...',
                       keyboardType: TextInputType.multiline,
@@ -442,13 +442,13 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
             Obx(
               () => _buildDetailCard(
                 icon: Iconsax.global_copy,
-                label: 'Website Link',
+                label: 'Website Link'.tr,
                 value: controller.websiteLink.value,
                 iconColor: const Color(0xFFFF9800),
                 backgroundColor: const Color(0xFFFFF3E0),
                 onTap:
                     () => _showTextInputBottomSheet(
-                      title: 'Website',
+                      title: 'Website'.tr,
                       currentValue: controller.websiteLink,
                       hint: 'Enter website URL',
                       keyboardType: TextInputType.url,
@@ -458,13 +458,13 @@ class _OtherDetailsScreenState extends State<OtherDetailsScreen> {
             Obx(
               () => _buildDetailCard(
                 icon: Iconsax.instagram_copy,
-                label: 'Instagram Username',
+                label: 'Instagram Username'.tr,
                 value: controller.instagramUsername.value,
                 iconColor: const Color(0xFF673AB7),
                 backgroundColor: const Color(0xFFEDE7F6),
                 onTap:
                     () => _showTextInputBottomSheet(
-                      title: 'Instagram',
+                      title: 'Instagram'.tr,
                       currentValue: controller.instagramUsername,
                       hint: 'Enter Instagram handle',
                       keyboardType: TextInputType.text,

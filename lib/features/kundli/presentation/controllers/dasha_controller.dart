@@ -66,7 +66,7 @@ class DashaController extends GetxController {
     isLoading.value = true;
     breadcrumbs.clear();
     breadcrumbs.add(
-      DashaBreadcrumb(level: DashaLevel.mahadasha, title: "Mahadasha"),
+      DashaBreadcrumb(level: DashaLevel.mahadasha, title: "Mahadasha".tr),
     );
 
     try {

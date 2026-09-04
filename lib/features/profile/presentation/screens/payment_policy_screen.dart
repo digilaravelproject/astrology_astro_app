@@ -19,7 +19,7 @@ class PaymentPolicyScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(title: "Payment Policy", centerTitle: true),
+      appBar: CustomAppBar(title: "Payment Policy".tr, centerTitle: true),
       body: Obx(() {
         if (controller.isPaymentLoading.value) {
           return const Center(
@@ -30,8 +30,7 @@ class PaymentPolicyScreen extends StatelessWidget {
         final policyData = controller.paymentPolicyData.value;
         if (policyData == null || policyData.content.isEmpty) {
           return const Center(
-            child: AppText(
-              "Payment Policy is not available at the moment.",
+            child: AppText("Payment Policy is not available at the moment.".tr,
               fontSize: 16,
               color: Colors.grey,
             ),

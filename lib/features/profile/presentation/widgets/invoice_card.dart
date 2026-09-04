@@ -99,8 +99,7 @@ class InvoiceCard extends StatelessWidget {
                     color: AppColors.primaryColor.withOpacity(0.08),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Text(
-                    'Paid',
+                  child: const Text('Paid'.tr,
                     style: TextStyle(
                       color: AppColors.primaryColor,
                       fontSize: 11,
@@ -139,7 +138,7 @@ class InvoiceCard extends StatelessWidget {
                         children: [
                           Expanded(
                             child: _buildDetailItem(
-                              label: 'Gross Earnings',
+                              label: 'Gross Earnings'.tr,
                               value: invoice['earnings']!,
                               icon: Iconsax.money_recive,
                             ),
@@ -151,7 +150,7 @@ class InvoiceCard extends StatelessWidget {
                           ),
                           Expanded(
                             child: _buildDetailItem(
-                              label: 'Net Payable',
+                              label: 'Net Payable'.tr,
                               value: invoice['earnings']!,
                               icon: Iconsax.wallet_check,
                               isRight: true,
@@ -187,8 +186,7 @@ class InvoiceCard extends StatelessWidget {
                                 size: 18,
                               ),
                               const SizedBox(width: 10),
-                              const Text(
-                                'Download Invoice',
+                              const Text('Download Invoice'.tr,
                                 style: TextStyle(
                                   color: AppColors.primaryColor,
                                   fontSize: 14,

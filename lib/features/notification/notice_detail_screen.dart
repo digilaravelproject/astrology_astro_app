@@ -13,7 +13,7 @@ class NoticeDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(title: 'Notice Details'),
+      appBar: const CustomAppBar(title: 'Notice Details'.tr),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(

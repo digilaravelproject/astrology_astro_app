@@ -46,8 +46,7 @@ class InvoiceSummaryHeader extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Total Earnings',
+              Text('Total Earnings'.tr,
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.8),
                   fontSize: 13,
@@ -88,8 +87,7 @@ class InvoiceSummaryHeader extends StatelessWidget {
                   color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Text(
-                  'All Paid',
+                child: const Text('All Paid'.tr,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 12,

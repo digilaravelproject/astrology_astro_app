@@ -61,16 +61,14 @@ class LoginScreen extends StatelessWidget {
 
                       Column(
                         children: [
-                          AppText(
-                            'Astrologer',
+                          AppText('Astrologer'.tr,
                             fontSize: 22,
                             fontWeight: FontWeight.w700,
                             color: AppColors.deepPink,
                             height: 1.2,
                             textAlign: TextAlign.center,
                           ),
-                          AppText(
-                            'Partner Portal',
+                          AppText('Partner Portal'.tr,
                             fontSize: 22,
                             fontWeight: FontWeight.w700,
                             color: AppColors.deepPink,
@@ -83,8 +81,7 @@ class LoginScreen extends StatelessWidget {
                       const SizedBox(height: 20),
 
                       // Login using OTP text
-                      AppText(
-                        'Login using OTP',
+                      AppText('Login using OTP'.tr,
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                         color: AppColors.errorColor,
@@ -119,7 +116,7 @@ class LoginScreen extends StatelessWidget {
                       // Send OTP Button
                       Obx(
                         () => CustomButton(
-                          text: 'Send OTP',
+                          text: 'Send OTP'.tr,
                           isLoading: authController.isSendingOtp.value,
                           borderRadius: 100,
                           onPressed: () {
@@ -150,8 +147,7 @@ class LoginScreen extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          AppText(
-                            'New astrologer? ',
+                          AppText('New astrologer? '.tr,
                             fontSize: 13,
                             color: Colors.black54,
                           ),
@@ -161,8 +157,7 @@ class LoginScreen extends StatelessWidget {
                                   () => const RegistrationScreen(),
                                   transition: Transition.rightToLeft,
                                 ),
-                            child: AppText(
-                              'Sign Up',
+                            child: AppText('Sign Up'.tr,
                               fontSize: 13,
                               fontWeight: FontWeight.w800,
                               color: AppColors.primaryColor,
@@ -202,8 +197,7 @@ class LoginScreen extends StatelessWidget {
         children: [
           Row(
             children: [
-              AppText(
-                '+91',
+              AppText('+91'.tr,
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: Colors.black87,
@@ -226,7 +220,7 @@ class LoginScreen extends StatelessWidget {
                     color: Colors.black87,
                   ),
                   decoration: InputDecoration(
-                    hintText: 'Enter Mobile Number',
+                    hintText: 'Enter Mobile Number'.tr,
                     hintStyle: TextStyle(
                       color: Colors.black26,
                       fontSize: 17,
@@ -279,8 +273,8 @@ class LoginScreen extends StatelessWidget {
               Expanded(
                 child: _buildFeatureItem(
                   icon: Icons.person_outline,
-                  title: 'Expert',
-                  subtitle: 'Astrologers',
+                  title: 'Expert'.tr,
+                  subtitle: 'Astrologers'.tr,
                   color: AppColors.deepPink,
                 ),
               ),
@@ -290,8 +284,8 @@ class LoginScreen extends StatelessWidget {
               Expanded(
                 child: _buildFeatureItem(
                   icon: Icons.lock_outline,
-                  title: '100%',
-                  subtitle: 'Private & Confidential',
+                  title: '100%'.tr,
+                  subtitle: 'Private & Confidential'.tr,
                   color: AppColors.deepPink,
                 ),
               ),
@@ -301,8 +295,8 @@ class LoginScreen extends StatelessWidget {
               Expanded(
                 child: _buildFeatureItem(
                   icon: Icons.verified_user_outlined,
-                  title: 'Verified',
-                  subtitle: 'Platform',
+                  title: 'Verified'.tr,
+                  subtitle: 'Platform'.tr,
                   color: AppColors.deepPink,
                 ),
               ),

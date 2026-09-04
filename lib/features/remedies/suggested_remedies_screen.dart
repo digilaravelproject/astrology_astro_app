@@ -33,7 +33,7 @@ class _SuggestedRemediesScreenState extends State<SuggestedRemediesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
-      appBar: const CustomAppBar(title: 'Suggested Remedies'),
+      appBar: const CustomAppBar(title: 'Suggested Remedies'.tr),
       body: SafeArea(
         top: false,
         child: Obx(() {
@@ -52,8 +52,7 @@ class _SuggestedRemediesScreenState extends State<SuggestedRemediesScreen> {
                     color: Colors.grey.shade400,
                   ),
                   const SizedBox(height: 16),
-                  AppText(
-                    'No remedies available',
+                  AppText('No remedies available'.tr,
                     fontSize: 16,
                     color: Colors.grey.shade600,
                   ),

@@ -17,7 +17,7 @@ class AddPhoneBottomSheet extends StatefulWidget {
 
 class _AddPhoneBottomSheetState extends State<AddPhoneBottomSheet> {
   final TextEditingController _countryCodeController = TextEditingController(
-    text: '+91',
+    text: '+91'.tr,
   );
   final TextEditingController _phoneController = TextEditingController();
   late PhoneNumberController _controller;

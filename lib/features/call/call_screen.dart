@@ -53,14 +53,13 @@ class _CallScreenState extends State<CallScreen> {
                   color: Colors.white,
                 ),
                 const SizedBox(height: 8),
-                AppText(
-                  "05:30",
+                AppText("05:30".tr,
                   fontSize: 16,
                   color: Colors.white70,
                   fontWeight: FontWeight.w500,
                 ),
                 const SizedBox(height: 8),
-                AppText("Connected", fontSize: 14, color: Colors.greenAccent),
+                AppText("Connected".tr, fontSize: 14, color: Colors.greenAccent),
               ],
             ),
 
@@ -99,7 +98,7 @@ class _CallScreenState extends State<CallScreen> {
                   ),
                   _buildCallControl(
                     icon: Iconsax.volume_high_copy,
-                    label: "Speaker",
+                    label: "Speaker".tr,
                     isActive: _isSpeakerOn,
                     onTap: () => setState(() => _isSpeakerOn = !_isSpeakerOn),
                   ),

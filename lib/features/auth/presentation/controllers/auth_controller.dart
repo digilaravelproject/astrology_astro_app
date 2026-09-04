@@ -477,15 +477,13 @@ class AuthController extends GetxController {
                 ),
               ),
               const SizedBox(height: 20),
-              const AppText(
-                'Delete Account',
+              const AppText('Delete Account'.tr,
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
                 color: Color(0xFF2E1A47),
               ),
               const SizedBox(height: 12),
-              AppText(
-                'Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently removed.',
+              AppText('Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently removed.'.tr,
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
                 color: Colors.grey[600],
@@ -504,8 +502,7 @@ class AuthController extends GetxController {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: AppText(
-                        'Cancel',
+                      child: AppText('Cancel'.tr,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: Colors.grey[600],
@@ -561,8 +558,7 @@ class AuthController extends GetxController {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const AppText(
-                        'Delete',
+                      child: const AppText('Delete'.tr,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: Colors.white,

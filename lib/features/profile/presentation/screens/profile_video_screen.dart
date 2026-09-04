@@ -101,15 +101,13 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
                   size: 60,
                 ),
                 const SizedBox(height: 20),
-                AppText(
-                  'Confirm Video Upload',
+                AppText('Confirm Video Upload'.tr,
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFF2E1A47),
                 ),
                 const SizedBox(height: 10),
-                AppText(
-                  'Your profile video will be visible to all users. Make sure it represents you professionally.',
+                AppText('Your profile video will be visible to all users. Make sure it represents you professionally.'.tr,
                   fontSize: 14,
                   color: Colors.grey.shade600,
                   textAlign: TextAlign.center,
@@ -120,7 +118,7 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
                   children: [
                     Expanded(
                       child: CustomButton(
-                        text: 'Cancel',
+                        text: 'Cancel'.tr,
                         onPressed: () => Get.back(),
                         buttonType: ButtonStyleType.outlined,
                         borderColor: Colors.grey.shade300,
@@ -131,7 +129,7 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: CustomButton(
-                        text: 'Submit Video',
+                        text: 'Submit Video'.tr,
                         onPressed: () {
                           Get.back(); // Close bottom sheet
                           Get.back(); // Close screen
@@ -160,21 +158,19 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(title: 'Profile Video'),
+      appBar: const CustomAppBar(title: 'Profile Video'.tr),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AppText(
-              'Upload an introductory video',
+            AppText('Upload an introductory video'.tr,
               fontSize: 22,
               fontWeight: FontWeight.w800,
               color: const Color(0xFF2E1A47),
             ),
             const SizedBox(height: 8),
-            AppText(
-              'Share your skills, experience, and how you help clients. A video helps build trust.',
+            AppText('Share your skills, experience, and how you help clients. A video helps build trust.'.tr,
               fontSize: 14,
               color: Colors.grey.shade600,
               height: 1.5,
@@ -208,15 +204,13 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
                               ),
                             ),
                             const SizedBox(height: 20),
-                            AppText(
-                              'No video selected',
+                            AppText('No video selected'.tr,
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                               color: Colors.grey.shade700,
                             ),
                             const SizedBox(height: 8),
-                            AppText(
-                              'Videos should be under 2 minutes',
+                            AppText('Videos should be under 2 minutes'.tr,
                               fontSize: 12,
                               color: Colors.grey.shade500,
                             ),
@@ -244,7 +238,7 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
 
             if (_videoFile == null)
               CustomButton(
-                text: 'Select Video',
+                text: 'Select Video'.tr,
                 onPressed: _pickVideo,
                 backgroundColor: AppColors.primaryColor,
                 borderRadius: 100,
@@ -258,7 +252,7 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
               Column(
                 children: [
                   CustomButton(
-                    text: 'Change Video',
+                    text: 'Change Video'.tr,
                     onPressed: _pickVideo,
                     buttonType: ButtonStyleType.outlined,
                     borderColor: AppColors.primaryColor,
@@ -267,7 +261,7 @@ class _ProfileVideoScreenState extends State<ProfileVideoScreen> {
                   ),
                   const SizedBox(height: 16),
                   CustomButton(
-                    text: 'Submit & Continue',
+                    text: 'Submit & Continue'.tr,
                     onPressed: _showSubmitBottomSheet,
                     backgroundColor: AppColors.primaryColor,
                     borderRadius: 100,

@@ -34,8 +34,7 @@ class CallDetailsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const AppText(
-              'Client Profile',
+            const AppText('Client Profile'.tr,
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Color(0xFF2E1A47),
@@ -49,8 +48,7 @@ class CallDetailsScreen extends StatelessWidget {
             const SizedBox(height: 8),
             _buildDetailRow('Gender', gender),
             const SizedBox(height: 24),
-            const AppText(
-              'Appointment Schedule:',
+            const AppText('Appointment Schedule:'.tr,
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Color(0xFF2E1A47),

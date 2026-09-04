@@ -239,8 +239,7 @@ class _BlogScreenState extends State<BlogScreen> {
                             color: AppColors.primaryColor,
                           ),
                           const SizedBox(width: 4),
-                          AppText(
-                            '8m',
+                          AppText('8m'.tr,
                             fontSize: 11,
                             color: Colors.grey.shade500,
                             fontWeight: FontWeight.w500,

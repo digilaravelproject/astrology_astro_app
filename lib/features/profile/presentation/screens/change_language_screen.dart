@@ -57,7 +57,7 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
     final languages = _localizationController.languages;
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(title: 'Change Language'),
+      appBar: const CustomAppBar(title: 'Change Language'.tr),
       body: Column(
         children: [
           Expanded(
@@ -148,7 +148,7 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
           Padding(
             padding: const EdgeInsets.all(24),
             child: CustomButton(
-              text: 'Save Changes',
+              text: 'Save Changes'.tr,
               onPressed: () {
                 _localizationController.setLanguage(languages[_selectedIndex]);
 

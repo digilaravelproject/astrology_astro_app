@@ -19,7 +19,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(title: "Terms and Conditions", centerTitle: true),
+      appBar: CustomAppBar(title: "Terms and Conditions".tr, centerTitle: true),
       body: Obx(() {
         if (controller.isTermsLoading.value) {
           return const Center(
@@ -30,8 +30,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
         final termsData = controller.termsAndConditionsData.value;
         if (termsData == null || termsData.content.isEmpty) {
           return const Center(
-            child: AppText(
-              "Terms and Conditions are not available at the moment.",
+            child: AppText("Terms and Conditions are not available at the moment.".tr,
               fontSize: 16,
               color: Colors.grey,
             ),

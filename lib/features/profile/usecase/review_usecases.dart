@@ -35,7 +35,7 @@ class PostReplyUseCase {
       return await repository.postReply(reviewId, reply);
     } catch (e) {
       Logger.e('Error in PostReplyUseCase: $e');
-      return ResponseModel(isSuccess: false, message: 'Something went wrong');
+      return ResponseModel(isSuccess: false, message: 'Something went wrong'.tr);
     }
   }
 }

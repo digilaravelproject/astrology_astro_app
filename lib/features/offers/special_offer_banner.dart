@@ -89,8 +89,7 @@ class _SpecialOfferBannerState extends State<SpecialOfferBanner> {
                 ),
               ),
               alignment: Alignment.center,
-              child: AppText(
-                'Special offer to attract new users!',
+              child: AppText('Special offer to attract new users!'.tr,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: const Color(0xFF423D00), // Dark yellow text

@@ -45,7 +45,7 @@ class _AstromallListingsScreenState extends State<AstromallListingsScreen>
                   controller: _searchController,
                   autofocus: true,
                   decoration: const InputDecoration(
-                    hintText: 'Search listings...',
+                    hintText: 'Search listings...'.tr,
                     border: InputBorder.none,
                     hintStyle: TextStyle(color: Colors.black54),
                   ),
@@ -94,7 +94,7 @@ class _AstromallListingsScreenState extends State<AstromallListingsScreen>
                 fontSize: 13,
                 fontFamily: 'Poppins',
               ),
-              tabs: const [Tab(text: "Requests"), Tab(text: "Listed")],
+              tabs: const [Tab(text: "Requests".tr), Tab(text: "Listed".tr)],
             ),
           ),
           Expanded(
@@ -279,7 +279,7 @@ class _AstromallListingsScreenState extends State<AstromallListingsScreen>
                   );
                 } else if (value == 'Delete') {
                   Get.defaultDialog(
-                    title: 'Confirm Delete',
+                    title: 'Confirm Delete'.tr,
                     titleStyle: const TextStyle(
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.bold,
@@ -322,23 +322,21 @@ class _AstromallListingsScreenState extends State<AstromallListingsScreen>
                   (BuildContext context) => <PopupMenuEntry<String>>[
                     const PopupMenuItem<String>(
                       value: 'Edit',
-                      child: AppText(
-                        'Edit',
+                      child: AppText('Edit'.tr,
                         fontSize: 13,
                         color: Colors.black87,
                       ),
                     ),
                     const PopupMenuItem<String>(
                       value: 'Status',
-                      child: AppText(
-                        'Turn On/Off',
+                      child: AppText('Turn On/Off'.tr,
                         fontSize: 13,
                         color: Colors.black87,
                       ),
                     ),
                     const PopupMenuItem<String>(
                       value: 'Delete',
-                      child: AppText('Delete', fontSize: 13, color: Colors.red),
+                      child: AppText('Delete'.tr, fontSize: 13, color: Colors.red),
                     ),
                   ],
             ),

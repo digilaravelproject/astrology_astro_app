@@ -234,14 +234,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               _buildSectionHeader('BASIC DETAILS'),
               _buildInputField(
                 controller: _nameController,
-                label: 'Full Name',
+                label: 'Full Name'.tr,
                 hint: 'Enter your name',
                 icon: Iconsax.user_copy,
               ),
               const SizedBox(height: 16),
               _buildInputField(
                 controller: _mobileController,
-                label: 'Mobile Number',
+                label: 'Mobile Number'.tr,
                 hint: 'Enter mobile number',
                 icon: Iconsax.call_copy,
                 readOnly: true,
@@ -249,7 +249,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               const SizedBox(height: 16),
               _buildInputField(
                 controller: _emailController,
-                label: 'Email ID',
+                label: 'Email ID'.tr,
                 hint: 'Enter email address',
                 icon: Iconsax.sms_copy,
               ),
@@ -277,7 +277,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   Expanded(
                     child: _buildInputField(
                       controller: _cityController,
-                      label: 'City',
+                      label: 'City'.tr,
                       hint: 'Enter city',
                       icon: Iconsax.location_copy,
                     ),
@@ -286,7 +286,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   Expanded(
                     child: _buildInputField(
                       controller: _countryController,
-                      label: 'Country',
+                      label: 'Country'.tr,
                       hint: 'Enter country',
                       icon: Iconsax.global_copy,
                     ),
@@ -298,7 +298,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               _buildSectionHeader('VERIFICATION DOCUMENTS'),
               _buildInputField(
                 controller: _docNumberController,
-                label: 'ID Proof Number',
+                label: 'ID Proof Number'.tr,
                 hint: 'ID number',
                 icon: Iconsax.card_pos_copy,
               ),
@@ -485,8 +485,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         fontWeight: FontWeight.w600,
                       ),
                       const SizedBox(height: 4),
-                      AppText(
-                        'Not Uploaded',
+                      AppText('Not Uploaded'.tr,
                         fontSize: 10,
                         color: Colors.grey.shade400,
                         fontWeight: FontWeight.w700,
@@ -649,8 +648,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         width: double.infinity,
                         alignment: Alignment.center,
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        child: const Text(
-                          'Done',
+                        child: const Text('Done'.tr,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,

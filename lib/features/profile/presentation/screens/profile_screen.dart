@@ -201,50 +201,50 @@ class ProfileScreen extends StatelessWidget {
         _buildSectionHeader('PROFESSIONAL PROFILE'),
         /*_buildMenuItem(
           icon: Iconsax.video_play_copy,
-          title: 'Profile Video',
+          title: 'Profile Video'.tr,
           onTap: () => Get.to(() => const ProfileVideoScreen()),
         ),
         _buildMenuItem(
           icon: Iconsax.microphone_2_copy,
-          title: 'Audio Introduction',
+          title: 'Audio Introduction'.tr,
           onTap: () => Get.to(() => const AudioIntroScreen()),
         ),*/
         _buildMenuItem(
           icon: Iconsax.teacher_copy,
-          title: 'Skill Details',
+          title: 'Skill Details'.tr,
           // onTap: () => Get.to(() => const SkillDetailsScreen()),
           onTap: () => Get.toNamed(AppRoutes.skillDetailScreen),
         ),
         _buildMenuItem(
           icon: Iconsax.note_2_copy,
-          title: 'Other Details',
+          title: 'Other Details'.tr,
           onTap: () => Get.toNamed(AppRoutes.otherDetailsScreen),
         ),
         _buildMenuItem(
           icon: Iconsax.gallery_copy,
-          title: 'Gallery',
+          title: 'Gallery'.tr,
           onTap: () => Get.toNamed(AppRoutes.gallery),
         ),
         _buildMenuItem(
           icon: Iconsax.people_copy,
-          title: 'My Community',
+          title: 'My Community'.tr,
           onTap: () => Get.to(() => const MyFollowersScreen()),
         ),
         const SizedBox(height: 10),
         _buildSectionHeader('PERFORMANCE & EARNINGS'),
         _buildMenuItem(
           icon: Iconsax.money_2_copy,
-          title: 'My Earnings',
+          title: 'My Earnings'.tr,
           onTap: () => Get.to(() => const MyEarningsScreen()),
         ),
         _buildMenuItem(
           icon: Iconsax.star_copy,
-          title: 'My Reviews',
+          title: 'My Reviews'.tr,
           onTap: () => Get.toNamed(AppRoutes.myReviews),
         ),
         _buildMenuItem(
           icon: Iconsax.chart_copy,
-          title: 'Performance',
+          title: 'Performance'.tr,
           onTap: () => Get.to(() => const PerformanceScreen()),
         ),
 
@@ -252,17 +252,17 @@ class ProfileScreen extends StatelessWidget {
         _buildSectionHeader('ACCOUNT MANAGEMENT'),
         _buildMenuItem(
           icon: Iconsax.user_copy,
-          title: 'My Account',
+          title: 'My Account'.tr,
           onTap: () => Get.to(() => const EditProfileScreen()),
         ),
         _buildMenuItem(
           icon: Iconsax.setting_2_copy,
-          title: 'Settings',
+          title: 'Settings'.tr,
           onTap: () => Get.to(() => const SettingsScreen()),
         ),
         _buildMenuItem(
           icon: Icons.translate_rounded,
-          title: 'Change Language',
+          title: 'Change Language'.tr,
           onTap: () => Get.to(() => const ChangeLanguageScreen()),
         ),
 
@@ -270,22 +270,22 @@ class ProfileScreen extends StatelessWidget {
         _buildSectionHeader('APP INFO'),
         _buildMenuItem(
           icon: Iconsax.message_copy,
-          title: 'Feedback',
+          title: 'Feedback'.tr,
           onTap: () => Get.toNamed(AppRoutes.feedback),
         ),
         _buildMenuItem(
           icon: Iconsax.info_circle_copy,
-          title: 'About us',
+          title: 'About us'.tr,
           onTap: () => Get.toNamed(AppRoutes.aboutUs),
         ),
         _buildMenuItem(
           icon: Iconsax.like_1_copy,
-          title: 'Rate Us',
+          title: 'Rate Us'.tr,
           onTap: () => _openStoreRating(),
         ),
         _buildMenuItem(
           icon: Iconsax.share_copy,
-          title: 'Share App',
+          title: 'Share App'.tr,
           onTap: () => _shareApp(),
         ),
       ],
@@ -377,15 +377,13 @@ class ProfileScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        const AppText(
-                          'Logout',
+                        const AppText('Logout'.tr,
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
                           color: Color(0xFF2E1A47),
                         ),
                         const SizedBox(height: 12),
-                        AppText(
-                          'Are you sure you want to logout from your account?',
+                        AppText('Are you sure you want to logout from your account?'.tr,
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                           color: Colors.grey[600],
@@ -406,8 +404,7 @@ class ProfileScreen extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                 ),
-                                child: AppText(
-                                  'Cancel',
+                                child: AppText('Cancel'.tr,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.grey[600]!,
@@ -431,8 +428,7 @@ class ProfileScreen extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                 ),
-                                child: const AppText(
-                                  'Logout',
+                                child: const AppText('Logout'.tr,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.white,
@@ -460,8 +456,7 @@ class ProfileScreen extends StatelessWidget {
               children: [
                 const Icon(Icons.logout_rounded, color: Colors.red, size: 20),
                 const SizedBox(width: 8),
-                AppText(
-                  'Log Out',
+                AppText('Log Out'.tr,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Colors.red,
@@ -476,7 +471,7 @@ class ProfileScreen extends StatelessWidget {
           /*TextButton(
             onPressed: () {
               Get.defaultDialog(
-                title: 'Delete Account',
+                title: 'Delete Account'.tr,
                 middleText: 'Are you sure you want to delete your account? This action cannot be undone.',
                 textConfirm: 'Delete',
                 textCancel: 'Cancel',
@@ -489,8 +484,7 @@ class ProfileScreen extends StatelessWidget {
                 }
               );
             },
-            child: const AppText(
-              'Delete Account',
+            child: const AppText('Delete Account'.tr,
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: Colors.red,
@@ -498,8 +492,7 @@ class ProfileScreen extends StatelessWidget {
           ),*/
           TextButton(
             onPressed: () => authController.deleteAccount(),
-            child: const AppText(
-              'Delete Account',
+            child: const AppText('Delete Account'.tr,
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: Colors.red,

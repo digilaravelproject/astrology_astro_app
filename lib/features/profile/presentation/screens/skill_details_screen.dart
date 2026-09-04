@@ -51,65 +51,65 @@ class _SkillDetailsScreenState extends State<SkillDetailsScreen> {
                 const SizedBox(height: 16),
                 _buildSkillCard(
                   icon: Iconsax.category_copy,
-                  label: 'Astrologer category',
+                  label: 'Astrologer category'.tr,
                   value: controller.selectedCategories.join(', '),
                   iconColor: const Color(0xFF9C27B0),
                   backgroundColor: const Color(0xFFF3E5F5),
                   onTap:
                       () => controller.showMultiSelectBottomSheet(
-                        title: 'Category',
+                        title: 'Category'.tr,
                         currentValues: controller.selectedCategories,
                         options: controller.categories,
                       ),
                 ),
                 _buildSkillCard(
                   icon: Iconsax.star_copy,
-                  label: 'Primary Skills',
+                  label: 'Primary Skills'.tr,
                   value: controller.selectedPrimarySkills.join(', '),
                   iconColor: const Color(0xFFFFC107),
                   backgroundColor: const Color(0xFFFFF8E1),
                   onTap:
                       () => controller.showMultiSelectBottomSheet(
-                        title: 'Primary Skills',
+                        title: 'Primary Skills'.tr,
                         currentValues: controller.selectedPrimarySkills,
                         options: controller.primarySkillsOptions,
                       ),
                 ),
                 _buildSkillCard(
                   icon: Iconsax.cpu_copy,
-                  label: 'All Skills',
+                  label: 'All Skills'.tr,
                   value: controller.selectedAllSkills.join(', '),
                   iconColor: const Color(0xFF4CAF50),
                   backgroundColor: const Color(0xFFE8F5E9),
                   onTap:
                       () => controller.showMultiSelectBottomSheet(
-                        title: 'Skill',
+                        title: 'Skill'.tr,
                         currentValues: controller.selectedAllSkills,
                         options: controller.allSkillsOptions,
                       ),
                 ),
                 _buildSkillCard(
                   icon: Iconsax.global_copy,
-                  label: 'Language',
+                  label: 'Language'.tr,
                   value: controller.selectedLanguages.join(', '),
                   iconColor: const Color(0xFF2196F3),
                   backgroundColor: const Color(0xFFE3F2FD),
                   onTap:
                       () => controller.showMultiSelectBottomSheet(
-                        title: 'Language',
+                        title: 'Language'.tr,
                         currentValues: controller.selectedLanguages,
                         options: controller.languagesOptions,
                       ),
                 ),
                 _buildSkillCard(
                   icon: Iconsax.briefcase_copy,
-                  label: 'Experience In Years',
+                  label: 'Experience In Years'.tr,
                   value: controller.experienceYears.value,
                   iconColor: const Color(0xFFFF9800),
                   backgroundColor: const Color(0xFFFFF3E0),
                   onTap:
                       () => controller.showTextInputBottomSheet(
-                        title: 'Experience',
+                        title: 'Experience'.tr,
                         currentValue: controller.experienceYears,
                         keyboardType: TextInputType.number,
                       ),
@@ -120,33 +120,33 @@ class _SkillDetailsScreenState extends State<SkillDetailsScreen> {
                 const SizedBox(height: 16),
                 _buildSkillCard(
                   icon: Iconsax.clock_copy,
-                  label: 'Daily Contribution Hours',
+                  label: 'Daily Contribution Hours'.tr,
                   value: controller.dailyContributionHours.value,
                   iconColor: const Color(0xFF009688),
                   backgroundColor: const Color(0xFFE0F2F1),
                   onTap:
                       () => controller.showTextInputBottomSheet(
-                        title: 'Contribution Hours',
+                        title: 'Contribution Hours'.tr,
                         currentValue: controller.dailyContributionHours,
                         keyboardType: TextInputType.number,
                       ),
                 ),
                 _buildSkillCard(
                   icon: Iconsax.info_circle_copy,
-                  label: 'How did you hear about us?',
+                  label: 'How did you hear about us?'.tr,
                   value: controller.heardAbout.value,
                   iconColor: const Color(0xFF3F51B5),
                   backgroundColor: const Color(0xFFE8EAF6),
                   onTap:
                       () => controller.showEditBottomSheet(
-                        title: 'Source',
+                        title: 'Source'.tr,
                         currentValue: controller.heardAbout,
                         options: controller.heardAboutOptions,
                       ),
                 ),
                 const SizedBox(height: 40),
                 // Obx(() => CustomButton(
-                //   text: 'Save Details',
+                //   text: 'Save Details'.tr,
                 //   onPressed: () => controller.updateSkills(),
                 //   isLoading: controller.isLoading.value,
                 //   backgroundColor: AppColors.primaryColor,

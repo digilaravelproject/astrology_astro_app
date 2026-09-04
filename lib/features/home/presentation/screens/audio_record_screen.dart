@@ -68,7 +68,7 @@ class _AudioRecordScreenState extends State<AudioRecordScreen>
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: const CustomAppBar(
-        title: 'Record Introduction',
+        title: 'Record Introduction'.tr,
         centerTitle: true,
       ),
       body: Column(
@@ -81,8 +81,7 @@ class _AudioRecordScreenState extends State<AudioRecordScreen>
             color: Colors.black87,
           ),
           const SizedBox(height: 10),
-          AppText(
-            'Keep your voice clear and professional',
+          AppText('Keep your voice clear and professional'.tr,
             fontSize: 14,
             color: Colors.grey.shade600,
           ),
@@ -167,7 +166,7 @@ class _AudioRecordScreenState extends State<AudioRecordScreen>
           Padding(
             padding: const EdgeInsets.all(20),
             child: CustomButton(
-              text: 'Submit Recording',
+              text: 'Submit Recording'.tr,
               onPressed: () {
                 if (duration.inSeconds > 0 && !isRecording) {
                   Get.back();

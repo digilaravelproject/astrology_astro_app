@@ -144,8 +144,7 @@ class _OrdersScreenState extends State<OrdersScreen>
 
       if (_ordersController.chatOrders.isEmpty) {
         return Center(
-          child: AppText(
-            "No chat history available.",
+          child: AppText("No chat history available.".tr,
             color: Colors.grey.shade500,
           ),
         );
@@ -183,8 +182,7 @@ class _OrdersScreenState extends State<OrdersScreen>
 
       if (_ordersController.callOrders.isEmpty) {
         return Center(
-          child: AppText(
-            "No call history available.",
+          child: AppText("No call history available.".tr,
             color: Colors.grey.shade500,
           ),
         );
@@ -245,8 +243,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: const AppText(
-                  'Reject',
+                child: const AppText('Reject'.tr,
                   color: Colors.red,
                   fontWeight: FontWeight.bold,
                 ),
@@ -268,8 +265,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                   ),
                   elevation: 0,
                 ),
-                child: const AppText(
-                  'Accept',
+                child: const AppText('Accept'.tr,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
@@ -410,7 +406,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFF2E1A47),
                     ),
-                    const AppText('Earnings', fontSize: 10, color: Colors.grey),
+                    const AppText('Earnings'.tr, fontSize: 10, color: Colors.grey),
                   ],
                 ),
             ],
@@ -456,7 +452,7 @@ class _OrdersScreenState extends State<OrdersScreen>
               color: Colors.black87,
             ),
           ),
-          const AppText(':  ', fontWeight: FontWeight.bold),
+          const AppText(':  '.tr, fontWeight: FontWeight.bold),
           Expanded(
             child: AppText(value, fontSize: 13, color: Colors.grey.shade700),
           ),

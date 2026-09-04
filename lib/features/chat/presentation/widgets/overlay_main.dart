@@ -167,8 +167,7 @@ class _OverlayChatBubbleWidgetState extends State<OverlayChatBubbleWidget> {
                     child: Builder(
                       builder: (context) {
                         if (_status == 'initiated' || _status == 'ringing') {
-                          return const Text(
-                            'Waiting',
+                          return const Text('Waiting'.tr,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 9,

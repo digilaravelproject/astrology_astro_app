@@ -890,15 +890,13 @@ Widget _buildEarningsCard() {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AppText(
-                    'Invoice Acknowledged',
+                  AppText('Invoice Acknowledged'.tr,
                     fontSize: 11,
                     color: Colors.grey.shade700,
                     fontWeight: FontWeight.w500,
                   ),
                   const SizedBox(height: 8),
-                  AppText(
-                    'You can check your invoice in settings.',
+                  AppText('You can check your invoice in settings.'.tr,
                     fontSize: 10,
                     color: Colors.grey.shade500,
                   ),
@@ -921,8 +919,7 @@ Widget _buildEarningsCard() {
                   vertical: 12,
                 ),
               ),
-              child: AppText(
-                'Details',
+              child: AppText('Details'.tr,
                 color: Colors.white,
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
@@ -1019,8 +1016,7 @@ Widget _buildTodayProgressCard() {
                       vertical: 12,
                     ),
                   ),
-                  child: AppText(
-                    'Performance',
+                  child: AppText('Performance'.tr,
                     color: Colors.white,
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
@@ -1077,7 +1073,7 @@ Widget _buildMenuGrid() {
   final List<_MenuData> menuItems = [
     // Live & Communication (most important – top)
     _MenuData(
-      title: 'Go Live',
+      title: 'Go Live'.tr,
       icon: Iconsax.video_play_copy,
       bgColor: AppColors.primaryColor.withOpacity(0.08),
       iconBgColor: AppColors.primaryColor.withOpacity(0.18),
@@ -1085,7 +1081,7 @@ Widget _buildMenuGrid() {
       onTap: () => _showGoLiveBottomSheet(Get.context!),
     ),
     _MenuData(
-      title: 'Chat',
+      title: 'Chat'.tr,
       icon: Iconsax.messages_2_copy,
       bgColor: const Color(0xFFEAF8F1),
       iconBgColor: const Color(0xFFD0F0E0),
@@ -1093,7 +1089,7 @@ Widget _buildMenuGrid() {
       onTap: () => Get.to(() => AstrologerSessionsScreen()),
     ),
     _MenuData(
-      title: 'Call',
+      title: 'Call'.tr,
       icon: Iconsax.call_copy,
       bgColor: const Color(0xFFFFF4E5),
       iconBgColor: const Color(0xFFFFE4B5),
@@ -1102,7 +1098,7 @@ Widget _buildMenuGrid() {
     ),
     // Consultation tools
     _MenuData(
-      title: 'Assistant Chat',
+      title: 'Assistant Chat'.tr,
       icon: Iconsax.cpu_setting_copy,
       bgColor: const Color(0xFFF3EEFF),
       iconBgColor: const Color(0xFFE5D7FF),
@@ -1110,7 +1106,7 @@ Widget _buildMenuGrid() {
       onTap: () => Get.to(() => const AssistantChatScreen()),
     ),
     _MenuData(
-      title: 'Suggested Remedies',
+      title: 'Suggested Remedies'.tr,
       icon: Iconsax.clipboard_text_copy,
       bgColor: AppColors.primaryColor.withOpacity(0.08),
       iconBgColor: AppColors.primaryColor.withOpacity(0.15),
@@ -1119,7 +1115,7 @@ Widget _buildMenuGrid() {
     ),
     // Reviews & Community
     _MenuData(
-      title: 'My Reviews',
+      title: 'My Reviews'.tr,
       icon: Iconsax.star_copy,
       bgColor: const Color(0xFFFFF8E1),
       iconBgColor: const Color(0xFFFFECB3),
@@ -1127,7 +1123,7 @@ Widget _buildMenuGrid() {
       onTap: () => Get.toNamed(AppRoutes.myReviews),
     ),
     _MenuData(
-      title: 'My Community',
+      title: 'My Community'.tr,
       icon: Iconsax.people_copy,
       bgColor: const Color(0xFFE8F5FE),
       iconBgColor: const Color(0xFFBBDEFB),
@@ -1135,7 +1131,7 @@ Widget _buildMenuGrid() {
       onTap: () => Get.to(() => const MyFollowersScreen()),
     ),
     _MenuData(
-      title: 'History',
+      title: 'History'.tr,
       icon: Iconsax.clock_copy,
       bgColor: const Color(0xFFF0F7FF),
       iconBgColor: const Color(0xFFD0E8FF),
@@ -1144,7 +1140,7 @@ Widget _buildMenuGrid() {
     ),
     // Astrology content
     _MenuData(
-      title: 'Kundli',
+      title: 'Kundli'.tr,
       icon: Iconsax.document_text_1_copy,
       bgColor: const Color(0xFFFFF0F5),
       iconBgColor: const Color(0xFFFFD1DC),
@@ -1152,7 +1148,7 @@ Widget _buildMenuGrid() {
       onTap: () => Get.to(() => const KundliListScreen()),
     ),
     _MenuData(
-      title: 'Match Making',
+      title: 'Match Making'.tr,
       icon: Iconsax.heart_copy,
       bgColor: const Color(0xFFFFF0F3),
       iconBgColor: const Color(0xFFFFCCD5),
@@ -1166,7 +1162,7 @@ Widget _buildMenuGrid() {
           ),
     ),
     _MenuData(
-      title: 'Panchang',
+      title: 'Panchang'.tr,
       icon: Iconsax.sun_1_copy,
       bgColor: const Color(0xFFFFF3E0),
       iconBgColor: const Color(0xFFFFE0B2),
@@ -1174,7 +1170,7 @@ Widget _buildMenuGrid() {
       onTap: () => Get.toNamed(AppRoutes.panchangScreen),
     ),
     /*_MenuData(
-        title: 'Astrology Blog',
+        title: 'Astrology Blog'.tr,
         icon: Iconsax.book_1_copy,
         bgColor: const Color(0xFFE8F5E9),
         iconBgColor: const Color(0xFFC8E6C9),
@@ -1183,7 +1179,7 @@ Widget _buildMenuGrid() {
       ),*/
     // Commerce
     /*_MenuData(
-        title: 'Astromall',
+        title: 'Astromall'.tr,
         icon: Iconsax.shop_copy,
         bgColor: const Color(0xFFF9F0FF),
         iconBgColor: const Color(0xFFEDD9FF),
@@ -1191,7 +1187,7 @@ Widget _buildMenuGrid() {
         onTap: () => Get.to(() => const AstromallOrdersScreen()),
       ),*/
     _MenuData(
-      title: 'Offers',
+      title: 'Offers'.tr,
       icon: Iconsax.tag_copy,
       bgColor: const Color(0xFFE3F2FD),
       iconBgColor: const Color(0xFFBBDEFB),
@@ -1200,7 +1196,7 @@ Widget _buildMenuGrid() {
     ),
     // Admin & settings
     _MenuData(
-      title: 'Settings',
+      title: 'Settings'.tr,
       icon: Iconsax.setting_2_copy,
       bgColor: const Color(0xFFF5F5F5),
       iconBgColor: const Color(0xFFEEEEEE),

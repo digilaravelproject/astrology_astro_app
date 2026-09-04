@@ -102,7 +102,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   if (_rating == 0) {
                     CustomSnackBar.showError(
                       "Please select a star rating",
-                      title: "Rating Required",
+                      title: "Rating Required".tr,
                     );
                     return;
                   }

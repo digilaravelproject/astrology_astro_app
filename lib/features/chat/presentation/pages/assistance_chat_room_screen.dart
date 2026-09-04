@@ -113,8 +113,7 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
                     fontWeight: FontWeight.w600,
                     color: Colors.black87,
                   ),
-                  AppText(
-                    'Assistance Chat',
+                  AppText('Assistance Chat'.tr,
                     fontSize: 12,
                     color: Colors.grey.shade600,
                   ),
@@ -171,8 +170,7 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
                         color: AppColors.primaryColor,
                       ),
                       SizedBox(width: 4),
-                      AppText(
-                        'Kundli',
+                      AppText('Kundli'.tr,
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
                         color: AppColors.primaryColor,
@@ -205,8 +203,7 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
                       vertical: 8,
                       horizontal: 16,
                     ),
-                    child: AppText(
-                      'Daily message reply limit reached. You cannot send more replies today.',
+                    child: AppText('Daily message reply limit reached. You cannot send more replies today.'.tr,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                       color: Colors.deepOrange.shade800,
@@ -241,8 +238,7 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
 
                   if (controller.messages.isEmpty) {
                     return const Center(
-                      child: AppText(
-                        'Waiting for messages...',
+                      child: AppText('Waiting for messages...'.tr,
                         color: Colors.grey,
                       ),
                     );
@@ -617,7 +613,7 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
                   child: TextField(
                     controller: controller.messageController,
                     decoration: InputDecoration(
-                      hintText: "Type a message...",
+                      hintText: "Type a message...".tr,
                       filled: true,
                       fillColor: const Color(0xFFF5F5F5),
                       border: OutlineInputBorder(
@@ -718,7 +714,7 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
                     _buildAttachmentOption(
                       icon: Iconsax.camera,
                       color: Colors.blue,
-                      label: "Camera",
+                      label: "Camera".tr,
                       onTap: () {
                         Navigator.of(context).pop();
                         _pickImage(ImageSource.camera);
@@ -727,7 +723,7 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
                     _buildAttachmentOption(
                       icon: Iconsax.gallery,
                       color: Colors.purple,
-                      label: "Gallery",
+                      label: "Gallery".tr,
                       onTap: () {
                         Navigator.of(context).pop();
                         _pickImage(ImageSource.gallery);
@@ -736,7 +732,7 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
                     _buildAttachmentOption(
                       icon: Iconsax.document,
                       color: Colors.orange,
-                      label: "Document",
+                      label: "Document".tr,
                       onTap: () {
                         Navigator.of(context).pop();
                         _pickDocument();

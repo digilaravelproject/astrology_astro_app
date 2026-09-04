@@ -54,7 +54,7 @@ class _OffersScreenState extends State<OffersScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
-      appBar: const CustomAppBar(title: 'Offers'),
+      appBar: const CustomAppBar(title: 'Offers'.tr),
       body: Column(
         children: [
           _buildInfoBanner(),

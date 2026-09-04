@@ -172,7 +172,7 @@ class ChatSessionController extends GetxController with WidgetsBindingObserver {
             final diff = DateTime.now().difference(effectiveStart).inSeconds;
             elapsedSeconds.value = diff >= 0 ? diff : 0;
             setupTimer(startedAt);
-            ForegroundTaskService.startActiveSessionNotification(title: 'Chat in progress', type: 'Chat', startedAt: effectiveStart);
+            ForegroundTaskService.startActiveSessionNotification(title: 'Chat in progress'.tr, type: 'Chat', startedAt: effectiveStart);
           }
         }
       }

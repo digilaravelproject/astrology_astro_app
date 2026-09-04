@@ -80,7 +80,7 @@ class _WavingEmojiState extends State<WavingEmoji>
       builder: (context, child) {
         return Transform.rotate(
           angle: (_controller.value - 0.5) * 0.4,
-          child: AppText("👋", fontSize: 24),
+          child: AppText("👋".tr, fontSize: 24),
         );
       },
     );

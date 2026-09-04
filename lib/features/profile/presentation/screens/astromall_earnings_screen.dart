@@ -20,7 +20,7 @@ class _AstromallEarningsScreenState extends State<AstromallEarningsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.fieldBackground,
-      appBar: const CustomAppBar(title: 'Astromall Earnings'),
+      appBar: const CustomAppBar(title: 'Astromall Earnings'.tr),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -45,8 +45,7 @@ class _AstromallEarningsScreenState extends State<AstromallEarningsScreen> {
               ),
               const SizedBox(height: 100),
               Center(
-                child: AppText(
-                  'Pending Earnings based on last 30 days only',
+                child: AppText('Pending Earnings based on last 30 days only'.tr,
                   fontSize: 12,
                   color: Colors.grey.shade500,
                   textAlign: TextAlign.center,
@@ -92,14 +91,12 @@ class _AstromallEarningsScreenState extends State<AstromallEarningsScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
-                AppText(
-                  'Weekly Earnings',
+                AppText('Weekly Earnings'.tr,
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
                 ),
                 SizedBox(height: 8),
-                AppText(
-                  '₹0',
+                AppText('₹0'.tr,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: AppColors.successColor,
@@ -111,14 +108,13 @@ class _AstromallEarningsScreenState extends State<AstromallEarningsScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: const [
-                    AppText(
-                      'Rank',
+                    AppText('Rank'.tr,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                       color: AppColors.goldAccent,
                     ),
                     SizedBox(height: 4),
-                    AppText('5629', fontSize: 16, fontWeight: FontWeight.bold),
+                    AppText('5629'.tr, fontSize: 16, fontWeight: FontWeight.bold),
                   ],
                 ),
                 const SizedBox(width: 8),
@@ -185,12 +181,12 @@ class _AstromallEarningsScreenState extends State<AstromallEarningsScreen> {
       },
       itemBuilder:
           (context) => [
-            const PopupMenuItem(value: 'Today', child: AppText('Today')),
-            const PopupMenuItem(value: 'Weekly', child: AppText('Weekly')),
-            const PopupMenuItem(value: 'Monthly', child: AppText('Monthly')),
+            const PopupMenuItem(value: 'Today', child: AppText('Today'.tr)),
+            const PopupMenuItem(value: 'Weekly', child: AppText('Weekly'.tr)),
+            const PopupMenuItem(value: 'Monthly', child: AppText('Monthly'.tr)),
             const PopupMenuItem(
               value: 'Last 3 Months',
-              child: AppText('Last 3 Months'),
+              child: AppText('Last 3 Months'.tr),
             ),
           ],
       child: Container(

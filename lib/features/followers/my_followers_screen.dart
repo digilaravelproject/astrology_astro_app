@@ -572,8 +572,7 @@ class _MyFollowersScreenState extends State<MyFollowersScreen>
             children: [
               const Icon(Icons.star, color: Colors.amber, size: 20),
               const SizedBox(width: 8),
-              AppText(
-                'Always Online',
+              AppText('Always Online'.tr,
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
                 color: Colors.grey.shade800,
@@ -581,8 +580,7 @@ class _MyFollowersScreenState extends State<MyFollowersScreen>
             ],
           ),
           const SizedBox(height: 8),
-          AppText(
-            'This feature allows selected users to start a session with you even when you’re not online. Use it to stay connected with your important users. They will be able to reach out to you anytime.',
+          AppText('This feature allows selected users to start a session with you even when you’re not online. Use it to stay connected with your important users. They will be able to reach out to you anytime.'.tr,
             fontSize: 12,
             color: Colors.grey.shade600,
             height: 1.5,
@@ -643,8 +641,7 @@ class _MyFollowersScreenState extends State<MyFollowersScreen>
           children: [
             Icon(Icons.swap_vert, color: AppColors.primaryColor, size: 18),
             const SizedBox(width: 4),
-            AppText(
-              'Sort',
+            AppText('Sort'.tr,
               fontWeight: FontWeight.w600,
               fontSize: 14,
               color: Colors.black87,

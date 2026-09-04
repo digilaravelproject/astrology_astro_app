@@ -17,7 +17,7 @@ class FaqScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: const CustomAppBar(
-        title: 'Frequently Asked Questions',
+        title: 'Frequently Asked Questions'.tr,
       ),
       body: ListView.separated(
         padding: const EdgeInsets.all(24),
@@ -87,7 +87,7 @@ class FaqScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppBar(
-        title: "Frequently Asked Questions",
+        title: "Frequently Asked Questions".tr,
         centerTitle: true,
       ),
       body: Obx(() {
@@ -100,8 +100,7 @@ class FaqScreen extends StatelessWidget {
         final faqData = controller.faqData.value;
         if (faqData == null || faqData.items.isEmpty) {
           return const Center(
-            child: AppText(
-              "No FAQs available at the moment.",
+            child: AppText("No FAQs available at the moment.".tr,
               fontSize: 16,
               color: Colors.grey,
             ),
