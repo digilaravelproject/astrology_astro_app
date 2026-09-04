@@ -4,10 +4,12 @@ class AppUrls {
   // ==========================================
   // Core Configuration
   // ==========================================
-  static String get baseUrl => "${EnvConfig.baseUrl}/api/v1";
-  static String get baseImageUrl => "${EnvConfig.baseUrl}/storage/";
+  static const String apiVersion = "v1";
+  static String get baseUrl => EnvConfig.baseUrl;
+  static String get apiUrl => "$baseUrl/api/$apiVersion";
+  static String get baseImageUrl => "$baseUrl/storage/";
   static String get webSocketUrl =>
-      "${EnvConfig.baseUrl.replaceFirst('https://', 'wss://').replaceFirst('http://', 'ws://')}/app/astrology-key?protocol=7&client=js&version=8.4.0-rc2&flash=false";
+      "${baseUrl.replaceFirst('https://', 'wss://').replaceFirst('http://', 'ws://')}/app/astrology-key?protocol=7&client=js&version=8.4.0-rc2&flash=false";
   static const String broadcastingAuth = "/broadcasting/auth";
 
   // ==========================================

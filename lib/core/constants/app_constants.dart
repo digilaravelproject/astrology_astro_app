@@ -4,7 +4,7 @@ import 'package:astro_astrologer/core/services/config/env_config.dart';
 
 class AppConstants {
   static String appName = EnvConfig.appName;
-  static String baseUrl = AppUrls.baseUrl;
+  static String baseUrl = AppUrls.apiUrl;
   static const String fontFamily = 'Poppins';
   static const String defaultTag = 'PCB_APP'; // default tag for log checking
   static const String googleMapApiKey =
