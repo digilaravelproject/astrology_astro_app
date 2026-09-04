@@ -70,7 +70,9 @@ class AppUrls {
   static const String updateOtherDetails = "/astrologer/profile/other-details";
 
   static const String packageSpawnChannel =
-      '/astrologer/packages/session/spawn-channel';
+      "/astrologer/packages/session/spawn-channel";
+  static const String packageSwitchChannel =
+      "/astrologer/packages/session/switch-channel";
   static const String packageTerminateChannel =
       '/astrologer/packages/session/terminate-channel';
   static const String packageHeartbeat =
