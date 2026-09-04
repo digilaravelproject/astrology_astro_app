@@ -1,4 +1,4 @@
-import '../../utils/logger.dart';
+import 'package:astro_astrologer/core/utils/logger.dart';
 
 class ResponseModel {
   final bool isSuccess;

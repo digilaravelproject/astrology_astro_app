@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../core/services/network/api_checker.dart';
-import '../../../../core/utils/custom_snackbar.dart';
-import '../../domain/usecases/get_billing_address_usecase.dart';
-import '../../domain/usecases/update_billing_address_usecase.dart';
+import 'package:astro_astrologer/core/services/network/api_checker.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
+import 'package:astro_astrologer/features/profile/domain/usecases/get_billing_address_usecase.dart';
+import 'package:astro_astrologer/features/profile/domain/usecases/update_billing_address_usecase.dart';
 
 class BillingController extends GetxController {
   final GetBillingAddressUseCase _getBillingAddressUseCase;

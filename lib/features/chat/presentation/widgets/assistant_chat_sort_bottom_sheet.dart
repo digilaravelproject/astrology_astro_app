@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/widgets/app_text.dart';
+import 'package:astro_astrologer/core/theme/app_colors.dart';
+import 'package:astro_astrologer/core/widgets/app_text.dart';
 
 class AssistantChatSortBottomSheet extends StatefulWidget {
   const AssistantChatSortBottomSheet({super.key});

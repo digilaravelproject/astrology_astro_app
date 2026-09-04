@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'core/services/DynamicAppIcon/dynamic_app_icon_manager.dart';
 import 'core/services/config/env_config.dart';
-import 'features/language/controllers/localization_controller.dart';
+import 'features/language/presentation/controllers/localization_controller.dart';
 import 'core/theme/theme_controller.dart';
 import 'core/services/storage/shared_prefs.dart';
 import 'translations/translations.dart';

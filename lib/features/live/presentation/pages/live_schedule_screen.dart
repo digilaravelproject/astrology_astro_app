@@ -3,13 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:intl/intl.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/widgets/app_text.dart';
-import '../../../../core/widgets/custom_button.dart';
-import '../../../../core/widgets/custom_app_bar.dart';
-import '../controllers/live_controller.dart';
-import '../../data/models/live_session_model.dart';
-import '../../../../core/utils/custom_snackbar.dart';
+import 'package:astro_astrologer/core/theme/app_colors.dart';
+import 'package:astro_astrologer/core/widgets/app_text.dart';
+import 'package:astro_astrologer/core/widgets/custom_button.dart';
+import 'package:astro_astrologer/core/widgets/custom_app_bar.dart';
+import 'package:astro_astrologer/features/live/presentation/controllers/live_controller.dart';
+import 'package:astro_astrologer/features/live/data/models/live_session_model.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class LiveScheduleScreen extends StatefulWidget {
   const LiveScheduleScreen({super.key});

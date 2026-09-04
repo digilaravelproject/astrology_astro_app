@@ -9,17 +9,17 @@ import 'kundli_tabs/manglik_report_tab.dart';
 import 'kundli_tabs/divisional_chart_tab.dart';
 import 'kundli_tabs/dasha_tab.dart';
 import 'kundli_tabs/kp_tab.dart';
-import 'controllers/panchang_controller.dart';
-import 'controllers/dasha_controller.dart';
-import 'controllers/birth_chart_controller.dart';
-import 'controllers/navamsha_controller.dart';
-import 'controllers/transit_controller.dart';
-import 'controllers/divisional_chart_controller.dart';
-import 'controllers/house_cusps_controller.dart';
-import 'controllers/kp_controller.dart';
-import 'controllers/manglik_controller.dart';
-import 'models/dasha_model.dart';
-import 'controllers/planet_positions_controller.dart';
+import 'presentation/controllers/panchang_controller.dart';
+import 'presentation/controllers/dasha_controller.dart';
+import 'presentation/controllers/birth_chart_controller.dart';
+import 'presentation/controllers/navamsha_controller.dart';
+import 'presentation/controllers/transit_controller.dart';
+import 'presentation/controllers/divisional_chart_controller.dart';
+import 'presentation/controllers/house_cusps_controller.dart';
+import 'presentation/controllers/kp_controller.dart';
+import 'presentation/controllers/manglik_controller.dart';
+import 'data/models/dasha_model.dart';
+import 'presentation/controllers/planet_positions_controller.dart';
 import 'package:collection/collection.dart';
 
 class KundliScreen extends StatefulWidget {

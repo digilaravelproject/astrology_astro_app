@@ -1,4 +1,4 @@
-import '../../../../core/services/network/api_client.dart';
+import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'splash_repository_interface.dart';
 
 class SplashRepository implements SplashRepositoryInterface {

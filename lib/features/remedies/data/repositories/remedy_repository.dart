@@ -1,7 +1,7 @@
-import '../../../../core/services/network/response_model.dart';
-import '../../domain/models/remedy_model.dart';
-import '../../domain/repositories/remedy_repository_interface.dart';
-import '../datasources/remedy_remote_data_source.dart';
+import 'package:astro_astrologer/core/services/network/response_model.dart';
+import 'package:astro_astrologer/features/remedies/data/models/remedy_model.dart';
+import 'package:astro_astrologer/features/remedies/domain/repositories/remedy_repository_interface.dart';
+import 'package:astro_astrologer/features/remedies/data/datasources/remedy_remote_data_source.dart';
 
 class RemedyRepository implements RemedyRepositoryInterface {
   final RemedyRemoteDataSource _remoteDataSource;

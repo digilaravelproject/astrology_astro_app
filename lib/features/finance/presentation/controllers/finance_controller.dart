@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../domain/models/bank_account_model.dart';
-import '../../domain/usecases/add_bank_account_usecase.dart';
-import '../../domain/usecases/get_bank_accounts_usecase.dart';
-import '../../domain/usecases/set_default_bank_account_usecase.dart';
+import 'package:astro_astrologer/features/finance/data/models/bank_account_model.dart';
+import 'package:astro_astrologer/features/finance/domain/usecases/add_bank_account_usecase.dart';
+import 'package:astro_astrologer/features/finance/domain/usecases/get_bank_accounts_usecase.dart';
+import 'package:astro_astrologer/features/finance/domain/usecases/set_default_bank_account_usecase.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class FinanceController extends GetxController {

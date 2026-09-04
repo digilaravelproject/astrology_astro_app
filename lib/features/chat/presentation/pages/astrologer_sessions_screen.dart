@@ -1,3 +1,4 @@
+import 'package:astro_astrologer/features/chat/data/models/chat_session_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -8,13 +9,12 @@ import 'package:astro_astrologer/core/theme/app_colors.dart';
 import 'package:astro_astrologer/core/widgets/app_text.dart';
 import 'package:astro_astrologer/core/widgets/custom_app_bar.dart';
 import 'package:astro_astrologer/core/widgets/custom_button.dart';
-import 'package:astro_astrologer/features/chat/domain/models/chat_session_model.dart';
 import 'package:astro_astrologer/features/chat/presentation/bindings/chat_binding.dart';
 import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
 import 'package:astro_astrologer/features/chat/presentation/pages/create_default_message_screen.dart';
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
-import 'package:astro_astrologer/features/home/widgets/animated_favorite_button.dart';
-import 'package:astro_astrologer/features/home/widgets/add_note_bottom_sheet.dart';
+import 'package:astro_astrologer/features/home/presentation/widgets/animated_favorite_button.dart';
+import 'package:astro_astrologer/features/home/presentation/widgets/add_note_bottom_sheet.dart';
 import 'package:astro_astrologer/features/chat/presentation/pages/assistance_chat_room_screen.dart';
 
 import 'controllers/astrologer_sessions_controller.dart';

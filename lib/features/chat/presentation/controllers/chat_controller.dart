@@ -21,13 +21,13 @@ import 'package:astro_astrologer/features/chat/presentation/widgets/floating_cha
 import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
 import 'package:astro_astrologer/core/services/storage/shared_prefs.dart';
 import 'package:astro_astrologer/core/constants/app_constants.dart';
-import 'package:astro_astrologer/features/auth/domain/models/user_model.dart';
+import 'package:astro_astrologer/features/auth/data/models/user_model.dart';
 import 'package:astro_astrologer/core/services/sound_vibration_service.dart';
 
 import 'package:astro_astrologer/features/chat/presentation/bindings/chat_binding.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
-import 'package:astro_astrologer/features/auth/controllers/auth_controller.dart';
+import 'package:astro_astrologer/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:astro_astrologer/core/services/foreground_task_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';

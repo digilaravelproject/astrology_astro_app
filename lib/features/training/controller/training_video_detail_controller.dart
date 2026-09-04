@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
-import '../model/training_videos_model.dart';
-import '../usecase/training_video_use_case.dart';
-import '../../../core/utils/custom_snackbar.dart';
+import 'package:astro_astrologer/features/training/model/training_videos_model.dart';
+import 'package:astro_astrologer/features/training/usecase/training_video_use_case.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class TrainingVideoDetailController extends GetxController {
   final GetTrainingVideoDetailUseCase _useCase;

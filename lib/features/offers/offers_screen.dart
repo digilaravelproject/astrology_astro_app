@@ -9,8 +9,8 @@ import 'package:astro_astrologer/features/offers/domain/usecases/get_offers_usec
 import 'package:astro_astrologer/features/offers/domain/usecases/toggle_offer_usecase.dart';
 import 'package:astro_astrologer/features/offers/domain/usecases/get_offer_history_usecase.dart';
 import 'package:astro_astrologer/features/offers/data/repositories/offer_repository.dart';
-import 'package:astro_astrologer/features/offers/domain/models/offer_model.dart';
-import 'package:astro_astrologer/features/offers/domain/models/offer_history_model.dart';
+import 'package:astro_astrologer/features/offers/data/models/offer_model.dart';
+import 'package:astro_astrologer/features/offers/data/models/offer_history_model.dart';
 
 class OffersScreen extends StatefulWidget {
   const OffersScreen({super.key});

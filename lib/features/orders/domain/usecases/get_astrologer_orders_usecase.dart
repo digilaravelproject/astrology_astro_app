@@ -1,5 +1,5 @@
-import '../models/astrologer_order_model.dart';
-import '../repositories/i_orders_repository.dart';
+import 'package:astro_astrologer/features/orders/data/models/astrologer_order_model.dart';
+import 'package:astro_astrologer/features/orders/domain/repositories/i_orders_repository.dart';
 
 class GetAstrologerOrdersUseCase {
   final IOrdersRepository _repository;

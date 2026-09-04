@@ -1,6 +1,6 @@
 import 'package:astro_astrologer/features/chat/domain/entities/chat_message.dart';
 import 'package:astro_astrologer/features/chat/domain/entities/chat_session.dart';
-import 'package:astro_astrologer/features/chat/domain/models/chat_session_model.dart';
+import 'package:astro_astrologer/features/chat/data/models/chat_session_model.dart';
 
 abstract class IChatRepository {
   Future<({List<ChatMessage> messages, String? startedAt, int? peerId})>

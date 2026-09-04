@@ -1,10 +1,10 @@
 import 'package:get/get.dart';
-import '../../../core/services/network/api_client.dart';
-import '../controllers/skill_controller.dart';
-import '../controllers/other_detail_cotroller.dart';
-import '../dataSource/skill_data_source.dart';
-import '../repository/skill_repository.dart';
-import '../usecase/skill_usecase.dart';
+import 'package:astro_astrologer/core/services/network/api_client.dart';
+import 'package:astro_astrologer/features/profile/presentation/controllers/skill_controller.dart';
+import 'package:astro_astrologer/features/profile/presentation/controllers/other_detail_cotroller.dart';
+import 'package:astro_astrologer/features/profile/dataSource/skill_data_source.dart';
+import 'package:astro_astrologer/features/profile/repository/skill_repository.dart';
+import 'package:astro_astrologer/features/profile/usecase/skill_usecase.dart';
 
 class AstrologerSkillsBinding extends Bindings {
   @override

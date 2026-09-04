@@ -9,9 +9,9 @@ import 'package:astro_astrologer/features/chat/presentation/pages/chat_history_s
 import 'package:astro_astrologer/features/kundli/kundli_list_screen.dart';
 import 'package:astro_astrologer/features/chat/presentation/widgets/assistant_chat_sort_bottom_sheet.dart';
 import '../../../core/utils/date_formatter.dart';
-import '../home/widgets/animated_favorite_button.dart';
-import 'controllers/follower_controller.dart';
-import 'domain/models/follower_model.dart';
+import 'package:astro_astrologer/features/home/presentation/widgets/animated_favorite_button.dart';
+import 'presentation/controllers/follower_controller.dart';
+import 'data/models/follower_model.dart';
 
 class MyFollowersScreen extends StatefulWidget {
   const MyFollowersScreen({super.key});

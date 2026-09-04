@@ -6,8 +6,8 @@ import '../../../core/widgets/custom_app_bar.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart' as sax;
 import 'create_kundli_screen.dart';
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
-import 'controllers/saved_kundli_controller.dart';
-import 'models/kundli_list_response_model.dart';
+import 'presentation/controllers/saved_kundli_controller.dart';
+import 'data/models/kundli_list_response_model.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class KundliListScreen extends StatefulWidget {

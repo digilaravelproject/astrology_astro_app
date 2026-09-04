@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/localization_controller.dart';
+import 'package:astro_astrologer/features/language/presentation/controllers/localization_controller.dart';
 
 class LanguageBottomSheet extends StatelessWidget {
   final LocalizationController controller;

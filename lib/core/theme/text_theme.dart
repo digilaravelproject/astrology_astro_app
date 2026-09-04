@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/dimensions.dart';
+import 'package:astro_astrologer/core/constants/dimensions.dart';
 import 'app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 

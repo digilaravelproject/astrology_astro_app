@@ -1,10 +1,10 @@
 import 'package:get/get.dart';
-import '../../../../core/services/network/api_client.dart';
-import '../../data/datasources/live_remote_data_source.dart';
-import '../../data/repositories/live_repository_impl.dart';
-import '../../domain/repositories/live_repository.dart';
-import '../../domain/usecases/live_usecases.dart';
-import '../controllers/live_controller.dart';
+import 'package:astro_astrologer/core/services/network/api_client.dart';
+import 'package:astro_astrologer/features/live/data/datasources/live_remote_data_source.dart';
+import 'package:astro_astrologer/features/live/data/repositories/live_repository_impl.dart';
+import 'package:astro_astrologer/features/live/domain/repositories/live_repository.dart';
+import 'package:astro_astrologer/features/live/domain/usecases/live_usecases.dart';
+import 'package:astro_astrologer/features/live/presentation/controllers/live_controller.dart';
 
 class LiveBinding extends Bindings {
   @override

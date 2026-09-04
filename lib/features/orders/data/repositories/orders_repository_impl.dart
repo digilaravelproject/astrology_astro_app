@@ -1,7 +1,7 @@
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
-import '../../domain/models/astrologer_order_model.dart';
-import '../../domain/repositories/i_orders_repository.dart';
+import 'package:astro_astrologer/features/orders/data/models/astrologer_order_model.dart';
+import 'package:astro_astrologer/features/orders/domain/repositories/i_orders_repository.dart';
 
 class OrdersRepositoryImpl implements IOrdersRepository {
   final ApiClient _apiClient;

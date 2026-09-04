@@ -1,6 +1,6 @@
-import '../../../../core/services/network/response_model.dart';
-import '../../domain/repositories/billing_repository_interface.dart';
-import '../datasources/billing_remote_data_source.dart';
+import 'package:astro_astrologer/core/services/network/response_model.dart';
+import 'package:astro_astrologer/features/profile/domain/repositories/billing_repository_interface.dart';
+import 'package:astro_astrologer/features/profile/data/datasources/billing_remote_data_source.dart';
 
 class BillingRepository implements BillingRepositoryInterface {
   final BillingRemoteDataSourceInterface dataSource;

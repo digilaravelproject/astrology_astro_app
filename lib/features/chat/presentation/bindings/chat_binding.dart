@@ -1,15 +1,15 @@
 import 'package:get/get.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
-import '../../data/datasources/chat_local_data_source.dart';
-import '../../data/datasources/chat_remote_data_source.dart';
-import '../../data/repositories/chat_repository_impl.dart';
-import '../../domain/repositories/i_chat_repository.dart';
-import '../../domain/usecases/end_chat_session_usecase.dart';
-import '../../domain/usecases/load_chat_history_usecase.dart';
-import '../../domain/usecases/mark_messages_read_usecase.dart';
-import '../../domain/usecases/send_attachment_usecase.dart';
-import '../../domain/usecases/send_text_message_usecase.dart';
-import '../controllers/chat_controller.dart';
+import 'package:astro_astrologer/features/chat/data/datasources/chat_local_data_source.dart';
+import 'package:astro_astrologer/features/chat/data/datasources/chat_remote_data_source.dart';
+import 'package:astro_astrologer/features/chat/data/repositories/chat_repository_impl.dart';
+import 'package:astro_astrologer/features/chat/domain/repositories/i_chat_repository.dart';
+import 'package:astro_astrologer/features/chat/domain/usecases/end_chat_session_usecase.dart';
+import 'package:astro_astrologer/features/chat/domain/usecases/load_chat_history_usecase.dart';
+import 'package:astro_astrologer/features/chat/domain/usecases/mark_messages_read_usecase.dart';
+import 'package:astro_astrologer/features/chat/domain/usecases/send_attachment_usecase.dart';
+import 'package:astro_astrologer/features/chat/domain/usecases/send_text_message_usecase.dart';
+import 'package:astro_astrologer/features/chat/presentation/controllers/chat_controller.dart';
 
 class ChatBinding extends Bindings {
   @override

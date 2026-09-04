@@ -1,7 +1,7 @@
-import '../models/weekly_ranking_model.dart';
-import '../models/wallet_summary_model.dart';
-import '../models/wallet_transaction_model.dart';
-import '../models/invoice_model.dart';
+import 'package:astro_astrologer/features/wallet/data/models/weekly_ranking_model.dart';
+import 'package:astro_astrologer/features/wallet/data/models/wallet_summary_model.dart';
+import 'package:astro_astrologer/features/wallet/data/models/wallet_transaction_model.dart';
+import 'package:astro_astrologer/features/wallet/data/models/invoice_model.dart';
 
 abstract class IWalletRepository {
   Future<WeeklyRankingData> getWeeklyRankings();

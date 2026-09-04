@@ -3,13 +3,13 @@ import 'dart:ui';
 import 'package:dio/dio.dart';
 import 'package:astro_astrologer/core/services/storage/token_manger.dart';
 import 'package:get/get.dart' as getx;
-import '../../../routes/route_helper.dart';
-import '../../constants/app_constants.dart';
-import '../../utils/custom_snackbar.dart';
-import '../../utils/logger.dart';
-import '../storage/shared_prefs.dart';
+import 'package:astro_astrologer/routes/route_helper.dart';
+import 'package:astro_astrologer/core/constants/app_constants.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
+import 'package:astro_astrologer/core/utils/logger.dart';
+import 'package:astro_astrologer/core/services/storage/shared_prefs.dart';
 import 'response_model.dart';
-import '../../widgets/error_screen.dart';
+import 'package:astro_astrologer/core/widgets/error_screen.dart';
 
 class ApiChecker {
   /// Centralized method to handle ResponseModel and show Snackbars

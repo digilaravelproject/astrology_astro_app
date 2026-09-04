@@ -1,7 +1,7 @@
-import '../model/other_details_model.dart';
-import '../model/skill_model.dart';
-import '../../../core/services/network/response_model.dart';
-import '../repository/skill_repository.dart';
+import 'package:astro_astrologer/features/profile/model/other_details_model.dart';
+import 'package:astro_astrologer/features/profile/model/skill_model.dart';
+import 'package:astro_astrologer/core/services/network/response_model.dart';
+import 'package:astro_astrologer/features/profile/repository/skill_repository.dart';
 
 class UpdateAstrologerSkillsUseCase {
   final AstrologerSkillsRepository _repository;

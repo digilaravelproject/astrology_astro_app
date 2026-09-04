@@ -1,4 +1,4 @@
-import '../models/astrologer_order_model.dart';
+import 'package:astro_astrologer/features/orders/data/models/astrologer_order_model.dart';
 
 abstract class IOrdersRepository {
   Future<List<AstrologerOrderModel>> getOrders({

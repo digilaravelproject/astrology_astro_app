@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../utils/ui_spacer.dart';
+import 'package:astro_astrologer/core/utils/ui_spacer.dart';
 import 'custom_app_bar.dart';
 
 class CustomBaseWidget extends StatefulWidget {

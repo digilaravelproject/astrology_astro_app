@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
-import '../../domain/repositories/performance_repository_interface.dart';
-import '../../domain/models/performance_model.dart';
-import '../../../../core/services/network/response_model.dart';
-import '../../../../core/utils/custom_snackbar.dart';
+import 'package:astro_astrologer/features/profile/domain/repositories/performance_repository_interface.dart';
+import 'package:astro_astrologer/features/profile/data/models/performance_model.dart';
+import 'package:astro_astrologer/core/services/network/response_model.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class PerformanceController extends GetxController {
   final PerformanceRepositoryInterface repository;

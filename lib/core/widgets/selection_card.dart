@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../theme/app_colors.dart';
-import '../constants/dimensions.dart';
+import 'package:astro_astrologer/core/theme/app_colors.dart';
+import 'package:astro_astrologer/core/constants/dimensions.dart';
 
 class SelectionCard extends StatelessWidget {
   final String title;

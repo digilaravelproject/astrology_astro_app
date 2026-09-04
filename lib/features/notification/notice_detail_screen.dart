@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'domain/models/notice_model.dart';
+import 'data/models/notice_model.dart';
 import '../../../core/utils/date_formatter.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_app_bar.dart';

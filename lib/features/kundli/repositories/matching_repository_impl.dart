@@ -1,8 +1,8 @@
 import 'dart:convert';
 import '../../../../core/services/network/astrology_api_client.dart';
 import 'matching_repository.dart';
-import '../models/matching_request_model.dart';
-import '../models/matching_response_model.dart';
+import 'package:astro_astrologer/features/kundli/data/models/matching_request_model.dart';
+import 'package:astro_astrologer/features/kundli/data/models/matching_response_model.dart';
 
 class MatchingRepositoryImpl implements MatchingRepository {
   final AstrologyApiClient _client;

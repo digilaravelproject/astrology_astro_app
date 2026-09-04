@@ -1,5 +1,5 @@
-import '../models/wallet_transaction_model.dart';
-import '../repositories/i_wallet_repository.dart';
+import 'package:astro_astrologer/features/wallet/data/models/wallet_transaction_model.dart';
+import 'package:astro_astrologer/features/wallet/domain/repositories/i_wallet_repository.dart';
 
 class GetWalletEarningsUseCase {
   final IWalletRepository _repository;

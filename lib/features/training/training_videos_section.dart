@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/widgets/app_text.dart';
 import 'package:get/get.dart';
-import '../../routes/app_routes.dart';
+import 'package:astro_astrologer/routes/app_routes.dart';
 import '../../../core/constants/app_urls.dart';
 import 'controller/training_video_controller.dart';
 import 'model/training_videos_model.dart';

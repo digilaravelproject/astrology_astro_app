@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../core/theme/app_colors.dart';
-import '../../routes/route_helper.dart';
+import 'package:astro_astrologer/core/theme/app_colors.dart';
+import 'package:astro_astrologer/routes/route_helper.dart';
 import 'kundli_screen.dart';
-import 'controllers/matching_controller.dart';
-import 'models/matching_response_model.dart';
+import 'presentation/controllers/matching_controller.dart';
+import 'data/models/matching_response_model.dart';
 
 class KundliMatchScreen extends GetView<MatchingController> {
   const KundliMatchScreen({super.key});

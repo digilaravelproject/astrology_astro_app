@@ -1,6 +1,6 @@
-import '../../domain/models/blog_model.dart';
-import '../../domain/repositories/blog_repository_interface.dart';
-import '../datasources/blog_remote_data_source.dart';
+import 'package:astro_astrologer/features/blog/data/models/blog_model.dart';
+import 'package:astro_astrologer/features/blog/domain/repositories/blog_repository_interface.dart';
+import 'package:astro_astrologer/features/blog/data/datasources/blog_remote_data_source.dart';
 
 class BlogRepository implements BlogRepositoryInterface {
   final BlogRemoteDataSourceInterface remoteDataSource;

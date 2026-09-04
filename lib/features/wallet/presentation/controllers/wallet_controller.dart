@@ -1,11 +1,11 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import '../../domain/models/wallet_summary_model.dart';
-import '../../domain/models/wallet_transaction_model.dart';
-import '../../domain/usecases/get_wallet_summary_usecase.dart';
-import '../../domain/usecases/get_wallet_earnings_usecase.dart';
-import '../../domain/usecases/get_wallet_withdrawals_usecase.dart';
-import '../../domain/usecases/request_withdrawal_usecase.dart';
+import 'package:astro_astrologer/features/wallet/data/models/wallet_summary_model.dart';
+import 'package:astro_astrologer/features/wallet/data/models/wallet_transaction_model.dart';
+import 'package:astro_astrologer/features/wallet/domain/usecases/get_wallet_summary_usecase.dart';
+import 'package:astro_astrologer/features/wallet/domain/usecases/get_wallet_earnings_usecase.dart';
+import 'package:astro_astrologer/features/wallet/domain/usecases/get_wallet_withdrawals_usecase.dart';
+import 'package:astro_astrologer/features/wallet/domain/usecases/request_withdrawal_usecase.dart';
 
 class WalletController extends GetxController {
   final GetWalletSummaryUseCase _getWalletSummaryUseCase;

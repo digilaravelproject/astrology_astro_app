@@ -1,6 +1,6 @@
 import '../../../../core/services/network/astrology_api_client.dart';
 import '../../../../core/utils/logger.dart';
-import '../models/navamsha_model.dart';
+import 'package:astro_astrologer/features/kundli/data/models/navamsha_model.dart';
 
 class NavamshaRepository {
   final AstrologyApiClient _client;

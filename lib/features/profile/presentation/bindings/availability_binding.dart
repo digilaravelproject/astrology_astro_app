@@ -1,11 +1,11 @@
 import 'package:get/get.dart';
-import '../../../../core/services/network/api_client.dart';
-import '../../data/datasources/availability_remote_data_source.dart';
-import '../../data/repositories/availability_repository.dart';
-import '../../domain/repositories/availability_repository_interface.dart';
-import '../../domain/usecases/get_availability_usecase.dart';
-import '../../domain/usecases/update_availability_usecase.dart';
-import '../controllers/availability_controller.dart';
+import 'package:astro_astrologer/core/services/network/api_client.dart';
+import 'package:astro_astrologer/features/profile/data/datasources/availability_remote_data_source.dart';
+import 'package:astro_astrologer/features/profile/data/repositories/availability_repository.dart';
+import 'package:astro_astrologer/features/profile/domain/repositories/availability_repository_interface.dart';
+import 'package:astro_astrologer/features/profile/domain/usecases/get_availability_usecase.dart';
+import 'package:astro_astrologer/features/profile/domain/usecases/update_availability_usecase.dart';
+import 'package:astro_astrologer/features/profile/presentation/controllers/availability_controller.dart';
 
 class AvailabilityBinding extends Bindings {
   @override

@@ -1,5 +1,5 @@
 import 'package:astro_astrologer/features/orders/data/repositories/history_repository.dart';
-import 'package:astro_astrologer/features/call/domain/models/call_session_model.dart';
+import 'package:astro_astrologer/features/call/data/models/call_session_model.dart';
 
 class GetAstrologerCallSessionsUseCase {
   final HistoryRepository _repository;

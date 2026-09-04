@@ -3,8 +3,8 @@ import 'package:astro_astrologer/features/chat/data/datasources/chat_remote_data
 import 'package:astro_astrologer/features/chat/data/models/chat_message_model.dart';
 import 'package:astro_astrologer/features/chat/domain/entities/chat_message.dart';
 import 'package:astro_astrologer/features/chat/domain/entities/chat_session.dart';
-import 'package:astro_astrologer/features/chat/domain/models/chat_session_model.dart'
-    as history_model;
+// import 'package:astro_astrologer/features/chat/data/models/chat_session_model.dart' as history_model;
+import 'package:astro_astrologer/features/chat/data/models/chat_session_model.dart' as history_model;
 import 'package:astro_astrologer/features/chat/domain/repositories/i_chat_repository.dart';
 
 class ChatRepositoryImpl implements IChatRepository {

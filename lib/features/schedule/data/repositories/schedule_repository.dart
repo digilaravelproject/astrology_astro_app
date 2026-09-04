@@ -1,6 +1,6 @@
-import '../../domain/repositories/schedule_repository_interface.dart';
-import '../datasources/schedule_remote_data_source.dart';
-import '../../../../core/services/network/response_model.dart';
+import 'package:astro_astrologer/features/schedule/domain/repositories/schedule_repository_interface.dart';
+import 'package:astro_astrologer/features/schedule/data/datasources/schedule_remote_data_source.dart';
+import 'package:astro_astrologer/core/services/network/response_model.dart';
 
 class ScheduleRepository implements ScheduleRepositoryInterface {
   final ScheduleRemoteDataSource _remoteDataSource;

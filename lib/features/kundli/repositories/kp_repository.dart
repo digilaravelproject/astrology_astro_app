@@ -1,6 +1,6 @@
 import '../../../../core/services/network/astrology_api_client.dart';
 import '../../../../core/utils/logger.dart';
-import '../models/kp_model.dart';
+import 'package:astro_astrologer/features/kundli/data/models/kp_model.dart';
 
 class KPRepository {
   final AstrologyApiClient _client;

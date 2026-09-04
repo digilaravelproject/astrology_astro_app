@@ -1,6 +1,6 @@
 import '../../../../core/services/network/astrology_api_client.dart';
 import '../../../../core/utils/logger.dart';
-import '../models/birth_chart_model.dart';
+import 'package:astro_astrologer/features/kundli/data/models/birth_chart_model.dart';
 
 class BirthChartRepository {
   final AstrologyApiClient _client;

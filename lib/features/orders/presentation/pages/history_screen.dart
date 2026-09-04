@@ -8,9 +8,9 @@ import 'package:astro_astrologer/core/widgets/custom_button.dart';
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
 import 'package:astro_astrologer/core/widgets/loyal_badge.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../../../core/constants/app_urls.dart';
-import '../../../call/call_history_screen.dart';
-import '../../../chat/presentation/pages/chat_history_screen.dart';
+import 'package:astro_astrologer/core/constants/app_urls.dart';
+import 'package:astro_astrologer/features/call/call_history_screen.dart';
+import 'package:astro_astrologer/features/chat/presentation/pages/chat_history_screen.dart';
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});

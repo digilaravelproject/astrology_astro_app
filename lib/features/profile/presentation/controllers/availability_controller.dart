@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
-import '../../domain/models/availability_model.dart';
-import '../../domain/usecases/get_availability_usecase.dart';
-import '../../domain/usecases/update_availability_usecase.dart';
+import 'package:astro_astrologer/features/profile/data/models/availability_model.dart';
+import 'package:astro_astrologer/features/profile/domain/usecases/get_availability_usecase.dart';
+import 'package:astro_astrologer/features/profile/domain/usecases/update_availability_usecase.dart';
 
 class AvailabilityController extends GetxController {
   final GetAvailabilityUseCase _getAvailabilityUseCase;

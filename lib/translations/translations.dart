@@ -1,6 +1,6 @@
 // lib/translations/translations.dart
 import 'package:get/get.dart';
-import '../core/services/translations/translation_loader.dart';
+import 'package:astro_astrologer/core/services/translations/translation_loader.dart';
 
 class AppTranslations extends Translations {
   // Internal data store

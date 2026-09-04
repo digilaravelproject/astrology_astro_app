@@ -1,13 +1,13 @@
 import 'package:get/get.dart';
-import '../../../../core/services/network/api_client.dart';
-import '../../data/datasources/phone_number_remote_data_source.dart';
-import '../../data/repositories/phone_number_repository.dart';
-import '../../domain/repositories/phone_number_repository_interface.dart';
-import '../../domain/usecases/get_phone_numbers_usecase.dart';
-import '../../domain/usecases/add_phone_number_usecase.dart';
-import '../../domain/usecases/set_default_phone_number_usecase.dart';
-import '../../domain/usecases/verify_phone_number_usecase.dart';
-import '../controllers/phone_number_controller.dart';
+import 'package:astro_astrologer/core/services/network/api_client.dart';
+import 'package:astro_astrologer/features/profile/data/datasources/phone_number_remote_data_source.dart';
+import 'package:astro_astrologer/features/profile/data/repositories/phone_number_repository.dart';
+import 'package:astro_astrologer/features/profile/domain/repositories/phone_number_repository_interface.dart';
+import 'package:astro_astrologer/features/profile/domain/usecases/get_phone_numbers_usecase.dart';
+import 'package:astro_astrologer/features/profile/domain/usecases/add_phone_number_usecase.dart';
+import 'package:astro_astrologer/features/profile/domain/usecases/set_default_phone_number_usecase.dart';
+import 'package:astro_astrologer/features/profile/domain/usecases/verify_phone_number_usecase.dart';
+import 'package:astro_astrologer/features/profile/presentation/controllers/phone_number_controller.dart';
 
 class PhoneNumberBinding extends Bindings {
   @override

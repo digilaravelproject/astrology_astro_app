@@ -1,5 +1,5 @@
-import '../../data/models/panchang_model.dart';
-import '../repositories/panchang_repository.dart';
+import 'package:astro_astrologer/features/panchang/data/models/panchang_model.dart';
+import 'package:astro_astrologer/features/panchang/domain/repositories/panchang_repository.dart';
 
 class GetPanchangUseCase {
   final PanchangRepository repository;

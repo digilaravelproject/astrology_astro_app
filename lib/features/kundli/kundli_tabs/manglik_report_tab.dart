@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text.dart';
-import '../controllers/manglik_controller.dart';
+import 'package:astro_astrologer/features/kundli/presentation/controllers/manglik_controller.dart';
 
 class ManglikReportTab extends StatelessWidget {
   const ManglikReportTab({super.key});

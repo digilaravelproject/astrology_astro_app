@@ -6,15 +6,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:livekit_client/livekit_client.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/widgets/app_text.dart';
-import '../../data/models/live_session_model.dart';
-import '../controllers/live_controller.dart';
-import '../../../../core/utils/custom_snackbar.dart';
-import '../../../../core/services/network/websocket_service.dart';
-import '../../../../core/services/network/api_client.dart';
-import '../../../../core/constants/app_urls.dart';
-import '../../../../core/constants/app_constants.dart';
+import 'package:astro_astrologer/core/theme/app_colors.dart';
+import 'package:astro_astrologer/core/widgets/app_text.dart';
+import 'package:astro_astrologer/features/live/data/models/live_session_model.dart';
+import 'package:astro_astrologer/features/live/presentation/controllers/live_controller.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
+import 'package:astro_astrologer/core/services/network/websocket_service.dart';
+import 'package:astro_astrologer/core/services/network/api_client.dart';
+import 'package:astro_astrologer/core/constants/app_urls.dart';
+import 'package:astro_astrologer/core/constants/app_constants.dart';
 
 class LiveRoomScreen extends StatefulWidget {
   final LiveSessionModel session;

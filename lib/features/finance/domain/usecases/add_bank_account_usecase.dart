@@ -1,6 +1,6 @@
 import 'dart:io';
-import '../repositories/finance_repository_interface.dart';
-import '../../../../core/services/network/response_model.dart';
+import 'package:astro_astrologer/features/finance/domain/repositories/finance_repository_interface.dart';
+import 'package:astro_astrologer/core/services/network/response_model.dart';
 
 class AddBankAccountUseCase {
   final FinanceRepositoryInterface _repository;

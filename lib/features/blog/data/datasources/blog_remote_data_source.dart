@@ -1,9 +1,9 @@
-import '../../../../core/services/network/api_client.dart';
-import '../../../../core/services/network/response_model.dart';
-import '../../../../core/constants/app_urls.dart';
-import '../../../../core/constants/app_constants.dart';
-import '../../../../core/services/storage/shared_prefs.dart';
-import '../../../../core/utils/logger.dart';
+import 'package:astro_astrologer/core/services/network/api_client.dart';
+import 'package:astro_astrologer/core/services/network/response_model.dart';
+import 'package:astro_astrologer/core/constants/app_urls.dart';
+import 'package:astro_astrologer/core/constants/app_constants.dart';
+import 'package:astro_astrologer/core/services/storage/shared_prefs.dart';
+import 'package:astro_astrologer/core/utils/logger.dart';
 
 abstract class BlogRemoteDataSourceInterface {
   Future<ResponseModel> getBlogList();

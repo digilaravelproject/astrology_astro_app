@@ -5,10 +5,10 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import 'blog_detail_screen.dart';
-import 'domain/models/blog_model.dart';
+import 'data/models/blog_model.dart';
 import 'presentation/controllers/blog_controller.dart';
 import 'presentation/bindings/blog_binding.dart';
-import '../../core/constants/app_urls.dart';
+import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/widgets/custom_image_widget.dart';
 
 class BlogScreen extends StatefulWidget {

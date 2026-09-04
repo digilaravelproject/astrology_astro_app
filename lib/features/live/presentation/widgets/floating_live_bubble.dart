@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
-import '../../data/models/live_session_model.dart';
-import '../pages/live_schedule_screen.dart';
+import 'package:astro_astrologer/features/live/data/models/live_session_model.dart';
+import 'package:astro_astrologer/features/live/presentation/pages/live_schedule_screen.dart';
 
 class FloatingLiveBubble {
   static int? sessionId;

@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
-import '../../data/datasources/blog_remote_data_source.dart';
-import '../../data/repositories/blog_repository.dart';
-import '../../domain/usecases/get_blogs_usecase.dart';
-import '../../domain/usecases/get_blog_details_usecase.dart';
-import '../controllers/blog_controller.dart';
+import 'package:astro_astrologer/features/blog/data/datasources/blog_remote_data_source.dart';
+import 'package:astro_astrologer/features/blog/data/repositories/blog_repository.dart';
+import 'package:astro_astrologer/features/blog/domain/usecases/get_blogs_usecase.dart';
+import 'package:astro_astrologer/features/blog/domain/usecases/get_blog_details_usecase.dart';
+import 'package:astro_astrologer/features/blog/presentation/controllers/blog_controller.dart';
 
 class BlogBinding extends Bindings {
   @override

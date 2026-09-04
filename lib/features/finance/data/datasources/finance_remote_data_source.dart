@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:dio/dio.dart' as dio;
-import '../../../../core/services/network/api_client.dart';
-import '../../../../core/services/network/response_model.dart';
-import '../../../../core/constants/app_urls.dart';
+import 'package:astro_astrologer/core/services/network/api_client.dart';
+import 'package:astro_astrologer/core/services/network/response_model.dart';
+import 'package:astro_astrologer/core/constants/app_urls.dart';
 
 class FinanceRemoteDataSource {
   final ApiClient _apiClient;

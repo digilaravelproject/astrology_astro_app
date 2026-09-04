@@ -9,11 +9,11 @@ import 'package:iconsax_flutter/iconsax_flutter.dart' as sax;
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
 import '../../../core/widgets/location_search_screen.dart';
 import '../../../core/services/network/astrology_api_client.dart';
-import 'controllers/saved_kundli_controller.dart';
-import 'controllers/matching_controller.dart';
+import 'presentation/controllers/saved_kundli_controller.dart';
+import 'presentation/controllers/matching_controller.dart';
 import 'repositories/matching_repository_impl.dart';
 import 'usecases/get_matching_usecase.dart';
-import 'models/create_kundli_response_model.dart';
+import 'data/models/create_kundli_response_model.dart';
 import 'kundali_matching_screen.dart';
 
 class CreateKundliScreen extends StatefulWidget {

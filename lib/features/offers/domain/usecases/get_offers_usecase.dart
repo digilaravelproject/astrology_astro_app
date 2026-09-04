@@ -1,5 +1,5 @@
 import 'package:astro_astrologer/features/offers/data/repositories/offer_repository.dart';
-import 'package:astro_astrologer/features/offers/domain/models/offer_model.dart';
+import 'package:astro_astrologer/features/offers/data/models/offer_model.dart';
 
 class GetOffersUseCase {
   final OfferRepository repository;

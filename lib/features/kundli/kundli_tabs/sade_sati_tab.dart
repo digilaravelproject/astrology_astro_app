@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text.dart';
-import '../controllers/sade_sati_controller.dart';
-import '../models/sade_sati_model.dart';
+import 'package:astro_astrologer/features/kundli/presentation/controllers/sade_sati_controller.dart';
+import 'package:astro_astrologer/features/kundli/data/models/sade_sati_model.dart';
 
 class SadeSatiTab extends StatelessWidget {
   const SadeSatiTab({super.key});

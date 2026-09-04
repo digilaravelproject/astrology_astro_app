@@ -5,8 +5,8 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 import 'astromall_filter_bottom_sheet.dart';
-import 'package:astro_astrologer/features/home/widgets/add_note_bottom_sheet.dart';
-import 'package:astro_astrologer/features/home/widgets/animated_favorite_button.dart';
+import 'package:astro_astrologer/features/home/presentation/widgets/add_note_bottom_sheet.dart';
+import 'package:astro_astrologer/features/home/presentation/widgets/animated_favorite_button.dart';
 import 'astromall_listings_screen.dart';
 
 class AstromallOrdersScreen extends StatefulWidget {

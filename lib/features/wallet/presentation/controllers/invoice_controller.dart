@@ -3,11 +3,11 @@ import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
-import '../../domain/models/invoice_model.dart';
-import '../../domain/usecases/get_invoices_summary_usecase.dart';
-import '../../../../core/constants/app_urls.dart';
-import '../../../../core/services/storage/token_manger.dart';
-import '../../../../core/utils/custom_snackbar.dart';
+import 'package:astro_astrologer/features/wallet/data/models/invoice_model.dart';
+import 'package:astro_astrologer/features/wallet/domain/usecases/get_invoices_summary_usecase.dart';
+import 'package:astro_astrologer/core/constants/app_urls.dart';
+import 'package:astro_astrologer/core/services/storage/token_manger.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class InvoiceController extends GetxController {
   final GetInvoicesSummaryUseCase _getInvoicesSummaryUseCase;

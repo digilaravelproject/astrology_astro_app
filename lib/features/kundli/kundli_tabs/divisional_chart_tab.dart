@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:astro_astrologer/features/kundli/kundli_chart_widget.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/widgets/app_text.dart';
-import '../controllers/divisional_chart_controller.dart';
+import 'package:astro_astrologer/core/theme/app_colors.dart';
+import 'package:astro_astrologer/core/widgets/app_text.dart';
+import 'package:astro_astrologer/features/kundli/presentation/controllers/divisional_chart_controller.dart';
 
 class DivisionalChartTab extends StatefulWidget {
   final String datetime;

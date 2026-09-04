@@ -1,6 +1,6 @@
-import '../../../../core/services/network/response_model.dart';
-import '../../domain/repositories/live_repository.dart';
-import '../datasources/live_remote_data_source.dart';
+import 'package:astro_astrologer/core/services/network/response_model.dart';
+import 'package:astro_astrologer/features/live/domain/repositories/live_repository.dart';
+import 'package:astro_astrologer/features/live/data/datasources/live_remote_data_source.dart';
 
 class LiveRepositoryImpl implements LiveRepository {
   final LiveRemoteDataSource dataSource;

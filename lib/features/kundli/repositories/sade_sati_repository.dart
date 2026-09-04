@@ -1,6 +1,6 @@
 import '../../../../core/services/network/astrology_api_client.dart';
 import '../../../../core/utils/logger.dart';
-import '../models/sade_sati_model.dart';
+import 'package:astro_astrologer/features/kundli/data/models/sade_sati_model.dart';
 
 class SadeSatiRepository {
   final AstrologyApiClient _client;

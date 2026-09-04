@@ -1,6 +1,6 @@
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 
-import '../services/config/env_config.dart';
+import 'package:astro_astrologer/core/services/config/env_config.dart';
 
 class AppConstants {
   static String appName = EnvConfig.appName;
@@ -27,6 +27,7 @@ class AppConstants {
   static const String token = 'token';
   static const String userData = 'user_data';
   static const String isLoggedIn = 'is_logged_in';
+  static const String hasSeenPermission = 'has_seen_permission';
   // Call-related constants
   static const String outgoingRingPath =
       'audio/astrolger_app_sound.mp3'; // Unused, updated for consistency

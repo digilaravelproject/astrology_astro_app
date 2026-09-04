@@ -3,7 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../constants/image_constants.dart';
+import 'package:astro_astrologer/core/constants/image_constants.dart';
 
 /// Enum to represent different image types
 enum ImageType { svg, svgString, png, network, file, gif, unknown }

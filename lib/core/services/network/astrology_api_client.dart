@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import '../../constants/astrology_api_constants.dart';
-import '../../utils/logger.dart';
+import 'package:astro_astrologer/core/constants/astrology_api_constants.dart';
+import 'package:astro_astrologer/core/utils/logger.dart';
 
 class AstrologyApiClient {
   final Dio _dio;

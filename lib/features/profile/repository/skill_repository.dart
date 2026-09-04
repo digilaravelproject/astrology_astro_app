@@ -1,6 +1,6 @@
-import '../dataSource/skill_data_source.dart';
-import '../model/skill_model.dart';
-import '../../../core/services/network/response_model.dart';
+import 'package:astro_astrologer/features/profile/dataSource/skill_data_source.dart';
+import 'package:astro_astrologer/features/profile/model/skill_model.dart';
+import 'package:astro_astrologer/core/services/network/response_model.dart';
 
 class AstrologerSkillsRepository {
   final AstrologerSkillsRemoteDataSource _remoteDataSource;

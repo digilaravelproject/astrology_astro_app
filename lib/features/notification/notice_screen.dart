@@ -5,8 +5,8 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import '../../../core/utils/date_formatter.dart';
-import 'controllers/notice_controller.dart';
-import 'domain/models/notice_model.dart';
+import 'presentation/controllers/notice_controller.dart';
+import 'data/models/notice_model.dart';
 import 'notice_detail_screen.dart';
 
 class NoticeScreen extends GetView<NoticeController> {

@@ -1,6 +1,6 @@
 import '../../../../core/services/network/astrology_api_client.dart';
 import '../../../../core/utils/logger.dart';
-import '../models/divisional_chart_model.dart';
+import 'package:astro_astrologer/features/kundli/data/models/divisional_chart_model.dart';
 
 class DivisionalChartRepository {
   final AstrologyApiClient _client;

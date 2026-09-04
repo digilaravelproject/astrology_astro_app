@@ -8,8 +8,8 @@ import 'package:astro_astrologer/features/call/presentation/controllers/call_con
 import 'package:astro_astrologer/features/call/presentation/pages/call_screen.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-import '../../domain/models/astrologer_order_model.dart';
-import '../../domain/usecases/get_astrologer_orders_usecase.dart';
+import 'package:astro_astrologer/features/orders/data/models/astrologer_order_model.dart';
+import 'package:astro_astrologer/features/orders/domain/usecases/get_astrologer_orders_usecase.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class OrdersController extends GetxController {

@@ -1,6 +1,6 @@
 import '../../../../core/services/network/astrology_api_client.dart';
 import '../../../../core/utils/logger.dart';
-import '../models/transit_model.dart';
+import 'package:astro_astrologer/features/kundli/data/models/transit_model.dart';
 
 class TransitRepository {
   final AstrologyApiClient _client;

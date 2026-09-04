@@ -1,7 +1,7 @@
 import 'dart:io';
-import '../../domain/repositories/finance_repository_interface.dart';
-import '../datasources/finance_remote_data_source.dart';
-import '../../../../core/services/network/response_model.dart';
+import 'package:astro_astrologer/features/finance/domain/repositories/finance_repository_interface.dart';
+import 'package:astro_astrologer/features/finance/data/datasources/finance_remote_data_source.dart';
+import 'package:astro_astrologer/core/services/network/response_model.dart';
 
 class FinanceRepository implements FinanceRepositoryInterface {
   final FinanceRemoteDataSource _remoteDataSource;

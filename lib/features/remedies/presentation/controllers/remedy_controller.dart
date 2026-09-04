@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../core/utils/logger.dart';
-import '../../domain/models/remedy_model.dart';
-import '../../domain/usecases/get_remedies_usecase.dart';
-import '../../domain/usecases/get_remedy_details_usecase.dart';
+import 'package:astro_astrologer/core/utils/logger.dart';
+import 'package:astro_astrologer/features/remedies/data/models/remedy_model.dart';
+import 'package:astro_astrologer/features/remedies/domain/usecases/get_remedies_usecase.dart';
+import 'package:astro_astrologer/features/remedies/domain/usecases/get_remedy_details_usecase.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class RemedyController extends GetxController {

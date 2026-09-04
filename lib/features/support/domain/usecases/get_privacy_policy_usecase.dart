@@ -1,6 +1,6 @@
-import '../../../../core/services/network/response_model.dart';
-import '../models/faq_model.dart';
-import '../repositories/support_repository.dart';
+import 'package:astro_astrologer/core/services/network/response_model.dart';
+import 'package:astro_astrologer/features/support/data/models/faq_model.dart';
+import 'package:astro_astrologer/features/support/domain/repositories/support_repository.dart';
 
 class GetPrivacyPolicyUseCase {
   final SupportRepository repository;

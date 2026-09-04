@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
-import '../constants/app_constants.dart';
-import '../services/storage/shared_prefs.dart';
+import 'package:astro_astrologer/core/constants/app_constants.dart';
+import 'package:astro_astrologer/core/services/storage/shared_prefs.dart';
 import 'light_theme.dart';
 import 'dark_theme.dart';
 

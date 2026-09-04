@@ -1,5 +1,5 @@
-import '../../../../core/services/network/response_model.dart';
-import '../repositories/live_repository.dart';
+import 'package:astro_astrologer/core/services/network/response_model.dart';
+import 'package:astro_astrologer/features/live/domain/repositories/live_repository.dart';
 
 class GetLiveSessionsUseCase {
   final LiveRepository repository;

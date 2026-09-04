@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../constants/dimensions.dart';
-import '../theme/app_colors.dart';
+import 'package:astro_astrologer/core/constants/dimensions.dart';
+import 'package:astro_astrologer/core/theme/app_colors.dart';
 
 enum ButtonStyleType { filled, outlined, text, gradient }
 

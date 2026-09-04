@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text.dart';
-import '../controllers/shadbala_controller.dart';
-import '../models/shadbala_model.dart';
+import 'package:astro_astrologer/features/kundli/presentation/controllers/shadbala_controller.dart';
+import 'package:astro_astrologer/features/kundli/data/models/shadbala_model.dart';
 
 class ShadBalaTab extends StatelessWidget {
   const ShadBalaTab({super.key});

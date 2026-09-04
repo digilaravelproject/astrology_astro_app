@@ -1,6 +1,6 @@
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
-import 'package:astro_astrologer/features/call/domain/models/call_session_model.dart';
+import 'package:astro_astrologer/features/call/data/models/call_session_model.dart';
 
 abstract class HistoryRepository {
   Future<CallSessionListResponse> getCallSessions({int page = 1});

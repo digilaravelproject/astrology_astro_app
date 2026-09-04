@@ -7,12 +7,12 @@ import 'package:astro_astrologer/core/widgets/custom_app_bar.dart';
 import 'package:astro_astrologer/core/widgets/custom_button.dart';
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
 import 'package:astro_astrologer/core/widgets/loyal_badge.dart';
-import '../../../../core/widgets/custom_image_widget.dart';
-import '../controllers/orders_controller.dart';
+import 'package:astro_astrologer/core/widgets/custom_image_widget.dart';
+import 'package:astro_astrologer/features/orders/presentation/controllers/orders_controller.dart';
 import 'package:astro_astrologer/features/orders/domain/usecases/get_astrologer_orders_usecase.dart';
 import 'package:astro_astrologer/features/orders/domain/repositories/i_orders_repository.dart';
 import 'package:astro_astrologer/features/orders/data/repositories/orders_repository_impl.dart';
-import '../../domain/models/astrologer_order_model.dart';
+import 'package:astro_astrologer/features/orders/data/models/astrologer_order_model.dart';
 import 'package:intl/intl.dart';
 
 class OrdersScreen extends StatefulWidget {

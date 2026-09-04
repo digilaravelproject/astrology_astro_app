@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../domain/models/blog_model.dart';
-import '../../domain/usecases/get_blogs_usecase.dart';
-import '../../domain/usecases/get_blog_details_usecase.dart';
+import 'package:astro_astrologer/features/blog/data/models/blog_model.dart';
+import 'package:astro_astrologer/features/blog/domain/usecases/get_blogs_usecase.dart';
+import 'package:astro_astrologer/features/blog/domain/usecases/get_blog_details_usecase.dart';
 
 class BlogController extends GetxController {
   final GetBlogsUseCase _getBlogsUseCase;

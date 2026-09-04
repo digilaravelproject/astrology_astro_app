@@ -9,15 +9,15 @@ import 'package:flutter/foundation.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart';
 import 'package:get/get.dart';
-import '../../utils/logger.dart';
-import '../storage/token_manger.dart';
+import 'package:astro_astrologer/core/utils/logger.dart';
+import 'package:astro_astrologer/core/services/storage/token_manger.dart';
 import 'api_checker.dart';
 import 'multipart.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:dio_cache_interceptor_hive_store/dio_cache_interceptor_hive_store.dart';
 import 'network_info.dart';
-import '../../widgets/no_internet_screen.dart';
+import 'package:astro_astrologer/core/widgets/no_internet_screen.dart';
 import 'response_model.dart';
 
 class ApiClient {

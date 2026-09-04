@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
-import 'package:astro_astrologer/features/chat/domain/models/chat_session_model.dart';
+import 'package:astro_astrologer/features/chat/data/models/chat_session_model.dart';
 
 class AstrologerSessionsController extends GetxController {
   final ApiClient _apiClient;

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../domain/usecases/set_sleep_hours_usecase.dart';
-import '../../domain/usecases/get_sleep_hours_usecase.dart';
-import '../../domain/models/sleep_hours_model.dart';
-import '../../../../core/utils/custom_snackbar.dart';
-import '../../../../core/constants/app_constants.dart';
-import '../../../../core/services/storage/shared_prefs.dart';
+import 'package:astro_astrologer/features/schedule/domain/usecases/set_sleep_hours_usecase.dart';
+import 'package:astro_astrologer/features/schedule/domain/usecases/get_sleep_hours_usecase.dart';
+import 'package:astro_astrologer/features/schedule/data/models/sleep_hours_model.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
+import 'package:astro_astrologer/core/constants/app_constants.dart';
+import 'package:astro_astrologer/core/services/storage/shared_prefs.dart';
 
 class ScheduleController extends GetxController {
   final SetSleepHoursUseCase _setSleepHoursUseCase;

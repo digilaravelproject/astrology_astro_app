@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
-import '../../core/widgets/custom_image_widget.dart';
+import 'package:astro_astrologer/core/widgets/custom_image_widget.dart';
 
 class CallScreen extends StatefulWidget {
   final Map<String, dynamic> request;

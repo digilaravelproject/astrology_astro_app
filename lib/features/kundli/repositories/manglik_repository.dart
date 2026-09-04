@@ -1,6 +1,6 @@
 import '../../../../core/services/network/astrology_api_client.dart';
 import '../../../../core/utils/logger.dart';
-import '../models/manglik_model.dart';
+import 'package:astro_astrologer/features/kundli/data/models/manglik_model.dart';
 
 class ManglikRepository {
   final AstrologyApiClient _client;

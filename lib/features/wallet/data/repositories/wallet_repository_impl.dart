@@ -1,10 +1,10 @@
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
-import '../../domain/models/wallet_summary_model.dart';
-import '../../domain/models/wallet_transaction_model.dart';
-import '../../domain/models/weekly_ranking_model.dart';
-import '../../domain/models/invoice_model.dart';
-import '../../domain/repositories/i_wallet_repository.dart';
+import 'package:astro_astrologer/features/wallet/data/models/wallet_summary_model.dart';
+import 'package:astro_astrologer/features/wallet/data/models/wallet_transaction_model.dart';
+import 'package:astro_astrologer/features/wallet/data/models/weekly_ranking_model.dart';
+import 'package:astro_astrologer/features/wallet/data/models/invoice_model.dart';
+import 'package:astro_astrologer/features/wallet/domain/repositories/i_wallet_repository.dart';
 
 class WalletRepositoryImpl implements IWalletRepository {
   final ApiClient _apiClient;

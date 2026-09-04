@@ -1,5 +1,5 @@
-import '../../../core/services/network/response_model.dart';
-import '../repository/training_video_repository.dart';
+import 'package:astro_astrologer/core/services/network/response_model.dart';
+import 'package:astro_astrologer/features/training/repository/training_video_repository.dart';
 
 class GetTrainingVideosUseCase {
   final TrainingVideoRepository _repository;

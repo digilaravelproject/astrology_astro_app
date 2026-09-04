@@ -1,7 +1,7 @@
-import '../../../../core/services/network/api_client.dart';
-import '../../../../core/services/network/response_model.dart';
-import '../../../../core/constants/app_urls.dart';
-import '../../domain/repositories/performance_repository_interface.dart';
+import 'package:astro_astrologer/core/services/network/api_client.dart';
+import 'package:astro_astrologer/core/services/network/response_model.dart';
+import 'package:astro_astrologer/core/constants/app_urls.dart';
+import 'package:astro_astrologer/features/profile/domain/repositories/performance_repository_interface.dart';
 
 class PerformanceRepository implements PerformanceRepositoryInterface {
   final ApiClient apiClient;

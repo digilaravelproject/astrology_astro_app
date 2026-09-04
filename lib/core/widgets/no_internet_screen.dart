@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
-import '../services/network/network_info.dart';
+import 'package:astro_astrologer/core/services/network/network_info.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class NoInternetScreen extends StatefulWidget {

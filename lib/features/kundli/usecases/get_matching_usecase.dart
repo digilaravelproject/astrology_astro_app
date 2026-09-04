@@ -1,6 +1,6 @@
-import '../models/matching_request_model.dart';
-import '../models/matching_response_model.dart';
-import '../repositories/matching_repository.dart';
+import 'package:astro_astrologer/features/kundli/data/models/matching_request_model.dart';
+import 'package:astro_astrologer/features/kundli/data/models/matching_response_model.dart';
+import 'package:astro_astrologer/features/kundli/repositories/matching_repository.dart';
 
 class GetMatchingUseCase {
   final MatchingRepository repository;

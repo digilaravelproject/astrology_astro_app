@@ -1,5 +1,5 @@
-import '../repositories/phone_number_repository_interface.dart';
-import '../../../../core/services/network/response_model.dart';
+import 'package:astro_astrologer/features/profile/domain/repositories/phone_number_repository_interface.dart';
+import 'package:astro_astrologer/core/services/network/response_model.dart';
 
 class AddPhoneNumberUseCase {
   final PhoneNumberRepositoryInterface _repository;

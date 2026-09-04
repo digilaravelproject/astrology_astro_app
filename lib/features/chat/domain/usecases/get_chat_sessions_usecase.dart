@@ -1,5 +1,5 @@
 import 'package:astro_astrologer/features/chat/domain/repositories/i_chat_repository.dart';
-import 'package:astro_astrologer/features/chat/domain/models/chat_session_model.dart';
+import 'package:astro_astrologer/features/chat/data/models/chat_session_model.dart';
 
 class GetChatSessionsUseCase {
   final IChatRepository _repository;

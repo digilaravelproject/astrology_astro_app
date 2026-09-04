@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text.dart';
-import '../controllers/house_cusps_controller.dart';
-import '../controllers/planet_positions_controller.dart';
+import 'package:astro_astrologer/features/kundli/presentation/controllers/house_cusps_controller.dart';
+import 'package:astro_astrologer/features/kundli/presentation/controllers/planet_positions_controller.dart';
 
 class BhavBalaTab extends StatelessWidget {
   const BhavBalaTab({super.key});

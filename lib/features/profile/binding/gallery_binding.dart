@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import 'package:astro_astrologer/core/utils/logger.dart';
 import 'package:astro_astrologer/features/profile/repository/gallery_repository.dart';
 import 'package:astro_astrologer/features/profile/usecase/gallery_usecases.dart';
-import 'package:astro_astrologer/features/profile/controllers/gallery_controller.dart';
+import 'package:astro_astrologer/features/profile/presentation/controllers/gallery_controller.dart';
 
 class GalleryBinding extends Bindings {
   @override

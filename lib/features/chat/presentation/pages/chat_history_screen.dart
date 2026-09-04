@@ -7,18 +7,18 @@ import 'package:astro_astrologer/core/theme/app_colors.dart';
 import 'package:astro_astrologer/core/widgets/app_text.dart';
 import 'package:astro_astrologer/core/widgets/custom_app_bar.dart';
 import 'package:astro_astrologer/core/widgets/custom_button.dart';
+import 'controllers/astrologer_sessions_controller.dart';
 import 'create_default_message_screen.dart';
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
 import 'package:astro_astrologer/features/call/call_details_screen.dart';
-import 'package:astro_astrologer/features/home/widgets/add_note_bottom_sheet.dart';
-import 'package:astro_astrologer/features/home/widgets/animated_favorite_button.dart';
+import 'package:astro_astrologer/features/home/presentation/widgets/add_note_bottom_sheet.dart';
+import 'package:astro_astrologer/features/home/presentation/widgets/animated_favorite_button.dart';
 import 'package:astro_astrologer/features/chat/presentation/pages/assistance_chat_room_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:astro_astrologer/core/widgets/loyal_badge.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
-import 'controllers/astrologer_sessions_controller.dart';
-import '../bindings/chat_binding.dart';
+import 'package:astro_astrologer/features/chat/presentation/bindings/chat_binding.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 class ChatHistoryScreen extends StatelessWidget {

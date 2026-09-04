@@ -5,8 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_text.dart';
 
-import 'domain/models/blog_model.dart';
-import '../../core/constants/app_urls.dart';
+import 'data/models/blog_model.dart';
+import 'package:astro_astrologer/core/constants/app_urls.dart';
 
 import 'presentation/controllers/blog_controller.dart';
 import 'package:astro_astrologer/core/widgets/custom_image_widget.dart';

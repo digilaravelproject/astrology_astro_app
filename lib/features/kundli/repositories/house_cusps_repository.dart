@@ -1,6 +1,6 @@
 import '../../../../core/services/network/astrology_api_client.dart';
 import '../../../../core/utils/logger.dart';
-import '../models/house_cusps_model.dart';
+import 'package:astro_astrologer/features/kundli/data/models/house_cusps_model.dart';
 
 class HouseCuspsRepository {
   final AstrologyApiClient _client;

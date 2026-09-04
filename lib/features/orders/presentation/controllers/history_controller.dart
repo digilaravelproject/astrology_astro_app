@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:astro_astrologer/features/call/domain/models/call_session_model.dart';
+import 'package:astro_astrologer/features/call/data/models/call_session_model.dart';
 import 'package:astro_astrologer/features/orders/domain/usecases/get_astrologer_call_sessions_usecase.dart';
 
 class HistoryController extends GetxController {

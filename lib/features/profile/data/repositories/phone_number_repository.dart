@@ -1,7 +1,7 @@
-import '../../domain/models/phone_number_model.dart';
-import '../../domain/repositories/phone_number_repository_interface.dart';
-import '../datasources/phone_number_remote_data_source.dart';
-import '../../../../core/services/network/response_model.dart';
+import 'package:astro_astrologer/features/profile/data/models/phone_number_model.dart';
+import 'package:astro_astrologer/features/profile/domain/repositories/phone_number_repository_interface.dart';
+import 'package:astro_astrologer/features/profile/data/datasources/phone_number_remote_data_source.dart';
+import 'package:astro_astrologer/core/services/network/response_model.dart';
 
 class PhoneNumberRepository implements PhoneNumberRepositoryInterface {
   final PhoneNumberRemoteDataSource _remoteDataSource;

@@ -1,7 +1,7 @@
 import 'dart:convert';
-import '../../../../core/services/network/astrology_api_client.dart';
-import '../../domain/repositories/panchang_repository.dart';
-import '../models/panchang_model.dart';
+import 'package:astro_astrologer/core/services/network/astrology_api_client.dart';
+import 'package:astro_astrologer/features/panchang/domain/repositories/panchang_repository.dart';
+import 'package:astro_astrologer/features/panchang/data/models/panchang_model.dart';
 
 class PanchangRepositoryImpl implements PanchangRepository {
   final AstrologyApiClient _client;

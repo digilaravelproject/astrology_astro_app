@@ -1,7 +1,7 @@
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
-import 'package:astro_astrologer/features/offers/domain/models/offer_model.dart';
-import 'package:astro_astrologer/features/offers/domain/models/offer_history_model.dart';
+import 'package:astro_astrologer/features/offers/data/models/offer_model.dart';
+import 'package:astro_astrologer/features/offers/data/models/offer_history_model.dart';
 
 abstract class OfferRepository {
   Future<List<OfferModel>> getOffers();

@@ -1,6 +1,6 @@
 import 'package:astro_astrologer/core/services/network/astrology_api_client.dart';
 import 'package:astro_astrologer/core/utils/logger.dart';
-import '../models/dasha_model.dart';
+import 'package:astro_astrologer/features/kundli/data/models/dasha_model.dart';
 
 class DashaRepository {
   final AstrologyApiClient _client;

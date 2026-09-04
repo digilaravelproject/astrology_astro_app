@@ -2,10 +2,10 @@ import 'package:get/get.dart';
 import 'package:astro_astrologer/core/services/network/response_model.dart';
 import 'package:astro_astrologer/features/profile/domain/usecases/verify_phone_number_usecase.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
-import '../../domain/models/phone_number_model.dart';
-import '../../domain/usecases/get_phone_numbers_usecase.dart';
-import '../../domain/usecases/add_phone_number_usecase.dart';
-import '../../domain/usecases/set_default_phone_number_usecase.dart';
+import 'package:astro_astrologer/features/profile/data/models/phone_number_model.dart';
+import 'package:astro_astrologer/features/profile/domain/usecases/get_phone_numbers_usecase.dart';
+import 'package:astro_astrologer/features/profile/domain/usecases/add_phone_number_usecase.dart';
+import 'package:astro_astrologer/features/profile/domain/usecases/set_default_phone_number_usecase.dart';
 
 class PhoneNumberController extends GetxController {
   final GetPhoneNumbersUseCase _getPhoneNumbersUseCase;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/dimensions.dart';
+import 'package:astro_astrologer/core/constants/dimensions.dart';
 
 class Styles {
   // Primary button style

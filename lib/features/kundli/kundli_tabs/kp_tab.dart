@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text.dart';
-import '../controllers/kp_controller.dart';
+import 'package:astro_astrologer/features/kundli/presentation/controllers/kp_controller.dart';
 
 class KPTab extends StatelessWidget {
   const KPTab({super.key});

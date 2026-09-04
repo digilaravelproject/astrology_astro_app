@@ -1,13 +1,13 @@
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import '../../../../core/utils/custom_snackbar.dart';
-import '../../../../core/services/network/api_checker.dart';
-import '../../../../core/services/local_notification_service.dart';
-import '../../data/models/live_session_model.dart';
-import '../../domain/usecases/live_usecases.dart';
-import '../../../../core/constants/app_constants.dart';
-import '../../../../core/services/storage/shared_prefs.dart';
-import '../pages/live_room_screen.dart';
+import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
+import 'package:astro_astrologer/core/services/network/api_checker.dart';
+import 'package:astro_astrologer/core/services/local_notification_service.dart';
+import 'package:astro_astrologer/features/live/data/models/live_session_model.dart';
+import 'package:astro_astrologer/features/live/domain/usecases/live_usecases.dart';
+import 'package:astro_astrologer/core/constants/app_constants.dart';
+import 'package:astro_astrologer/core/services/storage/shared_prefs.dart';
+import 'package:astro_astrologer/features/live/presentation/pages/live_room_screen.dart';
 
 class LiveController extends GetxController {
   final GetLiveSessionsUseCase _getSessionsUseCase;

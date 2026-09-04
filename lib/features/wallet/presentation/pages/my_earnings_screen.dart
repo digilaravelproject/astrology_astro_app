@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:astro_astrologer/core/theme/app_colors.dart';
 import 'package:astro_astrologer/core/widgets/app_text.dart';
 import 'package:astro_astrologer/core/widgets/custom_app_bar.dart';
-import 'package:astro_astrologer/features/profile/screens/weekly_ranking_screen.dart';
+import 'package:astro_astrologer/features/profile/presentation/screens/weekly_ranking_screen.dart';
 import 'package:astro_astrologer/features/wallet/presentation/controllers/wallet_controller.dart';
 import 'package:astro_astrologer/features/wallet/domain/usecases/get_wallet_summary_usecase.dart';
 import 'package:astro_astrologer/features/wallet/domain/usecases/get_wallet_earnings_usecase.dart';

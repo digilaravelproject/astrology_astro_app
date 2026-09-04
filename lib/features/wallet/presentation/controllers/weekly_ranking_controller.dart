@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import '../../domain/models/weekly_ranking_model.dart';
-import '../../domain/repositories/i_wallet_repository.dart';
+import 'package:astro_astrologer/features/wallet/data/models/weekly_ranking_model.dart';
+import 'package:astro_astrologer/features/wallet/domain/repositories/i_wallet_repository.dart';
 
 class WeeklyRankingController extends GetxController {
   final IWalletRepository _walletRepository;

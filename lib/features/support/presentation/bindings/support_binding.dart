@@ -1,14 +1,14 @@
 import 'package:get/get.dart';
-import '../../../../core/services/network/api_client.dart';
-import '../../domain/repositories/support_repository.dart';
-import '../../domain/usecases/get_faq_usecase.dart';
-import '../../domain/usecases/get_payment_policy_usecase.dart';
-import '../../domain/usecases/get_privacy_policy_usecase.dart';
-import '../../domain/usecases/get_terms_and_conditions_usecase.dart';
-import '../../domain/usecases/get_about_us_usecase.dart';
-import '../../domain/usecases/get_customer_support_usecase.dart';
-import '../../domain/usecases/submit_feedback_usecase.dart';
-import '../controllers/support_controller.dart';
+import 'package:astro_astrologer/core/services/network/api_client.dart';
+import 'package:astro_astrologer/features/support/domain/repositories/support_repository.dart';
+import 'package:astro_astrologer/features/support/domain/usecases/get_faq_usecase.dart';
+import 'package:astro_astrologer/features/support/domain/usecases/get_payment_policy_usecase.dart';
+import 'package:astro_astrologer/features/support/domain/usecases/get_privacy_policy_usecase.dart';
+import 'package:astro_astrologer/features/support/domain/usecases/get_terms_and_conditions_usecase.dart';
+import 'package:astro_astrologer/features/support/domain/usecases/get_about_us_usecase.dart';
+import 'package:astro_astrologer/features/support/domain/usecases/get_customer_support_usecase.dart';
+import 'package:astro_astrologer/features/support/domain/usecases/submit_feedback_usecase.dart';
+import 'package:astro_astrologer/features/support/presentation/controllers/support_controller.dart';
 
 class SupportBinding extends Bindings {
   @override

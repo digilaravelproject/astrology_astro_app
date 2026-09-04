@@ -1,5 +1,5 @@
-import '../../../../core/services/network/response_model.dart';
-import '../repositories/billing_repository_interface.dart';
+import 'package:astro_astrologer/core/services/network/response_model.dart';
+import 'package:astro_astrologer/features/profile/domain/repositories/billing_repository_interface.dart';
 
 class GetBillingAddressUseCase {
   final BillingRepositoryInterface repository;

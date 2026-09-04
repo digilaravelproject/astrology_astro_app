@@ -1,5 +1,5 @@
-import '../../../../core/services/network/response_model.dart';
-import '../repositories/notification_repository_interface.dart';
+import 'package:astro_astrologer/core/services/network/response_model.dart';
+import 'package:astro_astrologer/features/notification/domain/repositories/notification_repository_interface.dart';
 
 class GetNotificationDetailUseCase {
   final NotificationRepositoryInterface _repository;

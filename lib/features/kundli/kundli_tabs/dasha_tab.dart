@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:astro_astrologer/core/theme/app_colors.dart';
 import 'package:astro_astrologer/core/widgets/app_text.dart';
-import '../controllers/dasha_controller.dart';
-import '../models/dasha_model.dart';
+import 'package:astro_astrologer/features/kundli/presentation/controllers/dasha_controller.dart';
+import 'package:astro_astrologer/features/kundli/data/models/dasha_model.dart';
 
 class DashaTab extends StatelessWidget {
   final DashaController controller;

@@ -1,9 +1,9 @@
-import '../models/kundli_request_model.dart';
-import '../models/kundli_response_model.dart';
-import '../models/create_kundli_request_model.dart';
-import '../models/create_kundli_response_model.dart';
-import '../models/kundli_list_response_model.dart';
-import '../models/kundli_detail_response_model.dart';
+import 'package:astro_astrologer/features/kundli/data/models/kundli_request_model.dart';
+import 'package:astro_astrologer/features/kundli/data/models/kundli_response_model.dart';
+import 'package:astro_astrologer/features/kundli/data/models/create_kundli_request_model.dart';
+import 'package:astro_astrologer/features/kundli/data/models/create_kundli_response_model.dart';
+import 'package:astro_astrologer/features/kundli/data/models/kundli_list_response_model.dart';
+import 'package:astro_astrologer/features/kundli/data/models/kundli_detail_response_model.dart';
 
 abstract class KundliRepository {
   Future<KundliResponseModel> getBirthChart(KundliRequestModel request);
