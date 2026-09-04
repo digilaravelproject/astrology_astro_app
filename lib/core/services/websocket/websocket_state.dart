@@ -20,6 +20,9 @@ class WebSocketState {
   static final Map<int, String> sessionStartTimes = {};
 
   // ─── Chat State ────────────────────────────────────────────────────────────
+  /// Current Ping time to WS server in ms.
+  static final RxInt currentPingMs = 0.obs;
+
   /// Maps sessionId → current status string (e.g. 'ongoing', 'accepted').
   static final RxMap<int, String> sessionStatusUpdates = <int, String>{}.obs;
 

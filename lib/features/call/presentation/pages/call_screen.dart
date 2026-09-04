@@ -13,6 +13,7 @@ import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 import 'package:astro_astrologer/features/call/presentation/widgets/floating_call_bubble.dart';
+import 'package:astro_astrologer/core/widgets/network_ping_indicator.dart';
 
 class CallScreen extends StatefulWidget {
   const CallScreen({super.key});
@@ -177,6 +178,12 @@ class _CallScreenState extends State<CallScreen> {
                             ],
                           ],
                         ),
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Obx(() => NetworkPingIndicator(
+                              pingMs: controller.currentPingMs.value,
+                            )),
                       ),
                     ],
                   ),

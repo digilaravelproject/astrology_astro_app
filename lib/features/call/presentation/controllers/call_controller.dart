@@ -37,6 +37,7 @@ class CallController extends GetxController {
   bool get isChatAlsoActive => session.isChatAlsoActive;
   int? get subSessionId => session.subSessionId;
   
+  RxInt get currentPingMs => webrtcService.currentPingMs;
   RxBool isMuted = false.obs;
   RxBool isSpeakerOn = false.obs;
 

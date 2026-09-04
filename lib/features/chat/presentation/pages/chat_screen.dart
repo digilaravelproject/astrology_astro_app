@@ -7,6 +7,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:astro_astrologer/core/theme/app_colors.dart';
 import 'package:astro_astrologer/core/widgets/app_text.dart';
+import 'package:astro_astrologer/core/widgets/custom_text_field.dart';
+import 'package:astro_astrologer/core/widgets/network_ping_indicator.dart';
 import 'package:astro_astrologer/core/widgets/custom_app_bar.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
@@ -337,6 +339,17 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             }
           },
           actions: [
+            Obx(() {
+              if (_controller.status.value.name == 'ongoing') {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: NetworkPingIndicator(pingMs: _controller.currentPingMs.value),
+                  ),
+                );
+              }
+              return const SizedBox.shrink();
+            }),
             Center(
               child: Padding(
                 padding: const EdgeInsets.only(right: 8),

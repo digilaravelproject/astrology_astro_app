@@ -30,6 +30,7 @@ class ChatController extends GetxController {
   RxBool get isLoading => session.isLoading;
   Rx<ChatStatus> get status => session.status;
   RxInt get elapsedSeconds => session.elapsedSeconds;
+  RxInt get currentPingMs => WebSocketService.currentPingMs;
   Rx<ChatMessage?> get replyingToMessage => messaging.replyingToMessage;
   TextEditingController get messageController => messaging.messageController;
   ScrollController get scrollController => messaging.scrollController;

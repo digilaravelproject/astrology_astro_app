@@ -282,7 +282,10 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
         connectOptions: ConnectOptions(
           rtcConfiguration: RTCConfiguration(iceServers: [turnServer]),
         ),
-        roomOptions: const RoomOptions(adaptiveStream: true, dynacast: true),
+        roomOptions: const RoomOptions(
+          adaptiveStream: true,
+          dynacast: true,
+        ),
       );
       _room = room;
 
@@ -306,7 +309,9 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
 
       // 3. Create local video track
       final videoTrack = await LocalVideoTrack.createCameraTrack(
-        const CameraCaptureOptions(cameraPosition: CameraPosition.front),
+        const CameraCaptureOptions(
+          cameraPosition: CameraPosition.front,
+        ),
       );
       await room.localParticipant?.publishVideoTrack(videoTrack);
       _localVideoTrack = videoTrack;
@@ -317,13 +322,13 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
           const AudioCaptureOptions(
             autoGainControl: true,
             echoCancellation: true,
-            noiseSuppression: false,
+            noiseSuppression: true, // Turn on for better quality without much CPU overhead
           ),
         );
         await room.localParticipant?.publishAudioTrack(
           audioTrack,
           publishOptions: const AudioPublishOptions(
-            encoding: AudioEncoding.presetMusicHighQuality,
+            encoding: AudioEncoding.presetSpeech, // Optimize for speech instead of MusicHighQuality
             dtx: true,
           ),
         );
