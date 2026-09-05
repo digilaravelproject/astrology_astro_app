@@ -65,7 +65,11 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         type == 'session_ended' ||
         type == 'chat_summary' ||
         type == 'CHAT_MISSED' ||
-        type?.toLowerCase() == 'chat_dismissed') {
+        type?.toLowerCase() == 'chat_dismissed' ||
+        type?.toLowerCase() == 'chat_cancelled' ||
+        type?.toLowerCase() == 'call_cancelled' ||
+        type?.toLowerCase() == 'chat_rejected' ||
+        type?.toLowerCase() == 'call_rejected') {
       LocalNotificationService.markSessionCancelled(parsedSessionId.toString());
       CallkitService.endCall(parsedSessionId.toString());
       LocalNotificationService.cancelOngoingLiveNotification(parsedSessionId);

@@ -92,14 +92,26 @@ class ChatSessionController extends GetxController with WidgetsBindingObserver {
     try {
       final apiClient = Get.find<ApiClient>();
       final response = await apiClient.get(AppUrls.getCurrentSession, handleError: false, showErrorScreen: false);
-      if (!response.isSuccess || response.body == null) return;
-
+      if (!response.isSuccess) return;
+      
       final body = response.body;
       final sessionData = body is Map ? (body['session'] ?? body['data']?['session'] ?? body['data']) : null;
-      if (sessionData == null) return;
-
-      final String sessionStatus = sessionData['status']?.toString() ?? '';
-      if (sessionStatus != 'initiated' && sessionStatus != 'ongoing') return;
+      
+      final String sessionStatus = sessionData != null ? (sessionData['status']?.toString() ?? '') : '';
+      
+      if (sessionData == null || (sessionStatus != 'initiated' && sessionStatus != 'ongoing')) {
+        if (_orchestrator.sessionId != null && (status.value == ChatStatus.ongoing || status.value == ChatStatus.initiated)) {
+          status.value = ChatStatus.completed;
+          stopRingtone();
+          timer?.cancel();
+          FloatingChatBubble.dismiss(stopForegroundService: true);
+          if (Get.isRegistered<AuthController>()) Get.find<AuthController>().checkLoginStatus();
+          Future.delayed(const Duration(milliseconds: 400), () {
+            if (Get.currentRoute.isNotEmpty && Get.isRegistered<ChatController>()) Get.back();
+          });
+        }
+        return;
+      }
 
       final int incomingId = int.tryParse(sessionData['id']?.toString() ?? '') ?? 0;
       if (incomingId == 0) return;
@@ -160,12 +172,7 @@ class ChatSessionController extends GetxController with WidgetsBindingObserver {
           if (newStatus == 'ongoing' || newStatus == 'accepted') {
             stopRingtone();
             final startedAtStr = WebSocketService.sessionStartTimes[sid];
-            DateTime? serverStartTime;
-            if (startedAtStr != null && startedAtStr.isNotEmpty) {
-              String isoUtc = startedAtStr.trim().replaceAll(' ', 'T');
-              if (!isoUtc.endsWith('Z') && !isoUtc.contains('+') && !isoUtc.contains('-')) isoUtc += 'Z';
-              serverStartTime = DateTime.tryParse(isoUtc)?.toLocal();
-            }
+            final serverStartTime = parseSmartDate(startedAtStr);
             final effectiveStart = serverStartTime ?? DateTime.now();
             startedAt = effectiveStart.toUtc().toIso8601String();
             WebSocketService.sessionStartTimes[sid] = startedAt!;

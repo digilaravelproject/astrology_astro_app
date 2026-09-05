@@ -134,8 +134,9 @@ class CallkitService {
 
             // 1. Call POST /chat/{id}/accept API — required to change status from initiated → ongoing
             bool accepted = false;
+            String? backendStartedAtStr;
             // Record accept time as canonical start — passed to ChatScreen and ForegroundTask
-            final acceptedAt = DateTime.now();
+            final fallbackAcceptedAt = DateTime.now();
             try {
               int retries = 0;
               debugPrint('CallKit: Waiting for ApiClient...');
@@ -163,11 +164,36 @@ class CallkitService {
                 );
 
                 if (accepted) {
+                  final body = resp.body;
+                  if (body != null) {
+                    final sessionData = body is Map ? (body['session'] ?? body['data']?['session'] ?? body['data']) : null;
+                    if (sessionData != null && sessionData is Map) {
+                      backendStartedAtStr = sessionData['started_at']?.toString() ?? sessionData['accepted_at']?.toString();
+                    }
+                  }
+
                   ForegroundTaskService.startActiveSessionNotification(
                     title: 'Active Chat',
                     type: 'Chat',
-                    startedAt: acceptedAt,
+                    startedAt: fallbackAcceptedAt,
                   );
+                } else {
+                  // Fallback for cold boot: the background isolate might have already accepted the chat.
+                  // Try to fetch the active session to get the true backend started_at.
+                  debugPrint('CallKit: accept API returned false. Trying to fetch current session for started_at...');
+                  try {
+                    final currentResp = await Get.find<ApiClient>().get(AppUrls.getCurrentSession);
+                    if (currentResp.isSuccess && currentResp.body != null) {
+                      final body = currentResp.body;
+                      final sessionData = body is Map ? (body['session'] ?? body['data']?['session'] ?? body['data']) : null;
+                      if (sessionData != null && sessionData is Map && sessionData['id'] == sId) {
+                        backendStartedAtStr = sessionData['started_at']?.toString() ?? sessionData['accepted_at']?.toString();
+                        debugPrint('CallKit: Recovered started_at from getCurrentSession: $backendStartedAtStr');
+                      }
+                    }
+                  } catch (e) {
+                    debugPrint('CallKit: Error fetching current session: $e');
+                  }
                 }
               }
             } catch (e) {
@@ -178,6 +204,7 @@ class CallkitService {
             lastAcceptedSessionId = sId.toString();
 
             // 2. Navigate to ChatScreen — pass acceptedAt so all 3 timers start from same moment
+            final String finalStartedAtStr = backendStartedAtStr ?? fallbackAcceptedAt.toUtc().toIso8601String();
             Future.microtask(() async {
               debugPrint('CallKit: Navigation task for ChatScreen started');
               // Wait until splash screen is gone and navigator is ready
@@ -200,7 +227,7 @@ class CallkitService {
                   initialStatus: 'ongoing',
                   userName: FloatingChatBubble.name ?? 'User',
                   userImage: '',
-                  startedAtString: acceptedAt.toUtc().toIso8601String(),
+                  startedAtString: finalStartedAtStr,
                 ),
                 binding: ChatBinding(),
               );

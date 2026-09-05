@@ -303,7 +303,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   child: AppText(
                     widget.userName.isNotEmpty
                         ? widget.userName.substring(0, 1).toUpperCase()
-                        : 'U',
+                        : '',
                     color: AppColors.deepPink,
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -953,7 +953,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                   ? widget.userName
                                       .substring(0, 1)
                                       .toUpperCase()
-                                  : 'U',
+                                  : '',
                               style: TextStyle(
                                 fontSize: 48,
                                 fontWeight: FontWeight.bold,
@@ -967,7 +967,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                         child: Text(
                           widget.userName.isNotEmpty
                               ? widget.userName.substring(0, 1).toUpperCase()
-                              : 'U',
+                              : '',
                           style: TextStyle(
                             fontSize: 48,
                             fontWeight: FontWeight.bold,

@@ -182,7 +182,11 @@ class FCMNotificationService {
             type == 'session_ended' ||
             type == 'chat_summary' ||
             type == 'CHAT_MISSED' ||
-            type == 'CHAT_DISMISSED') {
+            type == 'CHAT_DISMISSED' ||
+            type?.toLowerCase() == 'chat_cancelled' ||
+            type?.toLowerCase() == 'call_cancelled' ||
+            type?.toLowerCase() == 'chat_rejected' ||
+            type?.toLowerCase() == 'call_rejected') {
           LocalNotificationService.markSessionCancelled(parsedSessionId.toString());
           CallkitService.endCall(parsedSessionId.toString());
           FloatingChatBubble.dismiss(stopForegroundService: true);

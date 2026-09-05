@@ -191,7 +191,9 @@ class RouteHelper {
           userImage: args['userImage'] ?? '',
           sessionId: args['sessionId'] ?? 0,
           initialStatus: args['initialStatus'] ?? 'ongoing',
+          startedAtString: args['startedAtString'],
           isPackageChat: args['isPackageChat'] ?? false,
+          subSessionId: args['subSessionId'],
         );
       },
       binding: ChatBinding(),

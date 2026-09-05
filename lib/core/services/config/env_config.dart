@@ -3,7 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 enum Environment { development, staging, production }
 
 class EnvConfig {
-  static late final Environment environment;
+  static Environment environment = Environment.development;
 
   static Future<void> load() async {
     print("load() => ENV Loaded: start");

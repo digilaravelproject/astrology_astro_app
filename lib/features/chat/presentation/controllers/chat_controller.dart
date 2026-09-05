@@ -86,7 +86,7 @@ class ChatController extends GetxController {
     if (session.status.value == ChatStatus.ongoing) {
       final effectiveStart = startedAtString != null ? session.parseSmartDate(startedAtString) : null;
       final startTime = effectiveStart ?? DateTime.now();
-      WebSocketService.sessionStartTimes[sessionId] = startTime.toIso8601String();
+      WebSocketService.sessionStartTimes[sessionId] = startTime.toUtc().toIso8601String();
       ForegroundTaskService.startActiveSessionNotification(title: 'Active Chat'.tr, type: 'Chat', startedAt: startTime);
     } else if (session.status.value == ChatStatus.initiated) {
       session.startRingtone();
