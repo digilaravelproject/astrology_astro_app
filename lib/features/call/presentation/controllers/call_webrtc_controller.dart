@@ -138,48 +138,15 @@ class CallWebRTCController extends GetxController {
   }
 
   Future<void> terminateChannelOnly() async {
-    final subId = _orchestrator.session.subSessionId;
-    if (subId == null) return;
-    try {
-      await _apiClient.post(
-        AppUrls.packageTerminateChannel,
-        data: {'sub_session_id': subId, 'channel_type': 'call', 'action': 'channel_only'},
-      );
-      final chatSessId = _orchestrator.session.activeChatSessionId ?? 0;
-      final cName = _orchestrator.session.consumerName ?? 'User';
-      final cImage = _orchestrator.session.consumerImage ?? '';
-
-      final wasVisible = _orchestrator.isCallScreenVisible;
-      _orchestrator.session.cleanUp();
-      if (wasVisible) Get.back();
-
-      if (chatSessId > 0) {
-        Get.toNamed(AppRoutes.chatScreen, arguments: {'userName': cName, 'userImage': cImage, 'sessionId': chatSessId, 'initialStatus': 'ongoing', 'isPackageChat': false});
-      }
-    } catch (e) {
-      CustomSnackBar.showError('Failed to end call. Please try again.');
-    }
+    // Unified endpoint: /call/{id}/end handles session_type automatically
+    await endCall();
   }
 
   Future<void> terminateEntireSession() async {
-    final subId = _orchestrator.session.subSessionId;
-    if (subId == null) {
-      await endCall();
-      return;
-    }
-    try {
-      await _apiClient.post(
-        AppUrls.packageTerminateChannel,
-        data: {'sub_session_id': subId, 'channel_type': 'call', 'action': 'complete_session'},
-      );
-      _orchestrator.status.value = CallStatus.completed;
-      final wasVisible = _orchestrator.isCallScreenVisible;
-      _orchestrator.session.cleanUp();
-      if (wasVisible) Get.back();
-    } catch (e) {
-      await endCall();
-    }
+    // Unified endpoint: /call/{id}/end handles both normal & prepaid session_type
+    await endCall();
   }
+
 
   Future<void> endCall() async {
     if (_orchestrator.sessionId == null) return;

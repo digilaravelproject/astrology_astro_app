@@ -142,7 +142,7 @@ class AppUrls {
   // ==========================================
   static const String packageSpawnChannel = "/astrologer/packages/session/spawn-channel";
   static const String packageSwitchChannel = "/astrologer/packages/session/switch-channel";
-  static const String packageTerminateChannel = '/astrologer/packages/session/terminate-channel';
+  // Note: terminate-channel endpoint removed. Use /call/{id}/end or /chat/{id}/end instead.
   static const String packageHeartbeat = '/astrologer/packages/session/heartbeat';
   static const String packageActiveBanner = '/astrologer/packages/active-banner';
 

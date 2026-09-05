@@ -262,42 +262,13 @@ class ChatSessionController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> terminateChannelOnly() async {
-    final subId = subSessionId;
-    if (subId == null) return;
-    try {
-      isLoading.value = true;
-      await Get.find<ApiClient>().post(AppUrls.packageTerminateChannel, data: {'sub_session_id': subId, 'channel_type': 'chat', 'action': 'channel_only'});
-      status.value = ChatStatus.completed;
-      timer?.cancel();
-      FloatingChatBubble.dismiss();
-      WebSocketService.activeSessionId = null;
-      Get.back();
-    } catch (_) {
-      CustomSnackBar.showError('Failed to end chat.');
-    } finally {
-      isLoading.value = false;
-    }
+    // Unified endpoint: /chat/{id}/end handles session_type automatically
+    await endChatSession();
   }
 
   Future<void> terminateEntireSession() async {
-    final subId = subSessionId;
-    if (subId == null) {
-      await endChatSession();
-      return;
-    }
-    try {
-      isLoading.value = true;
-      await Get.find<ApiClient>().post(AppUrls.packageTerminateChannel, data: {'sub_session_id': subId, 'channel_type': 'chat', 'action': 'complete_session'});
-      status.value = ChatStatus.completed;
-      timer?.cancel();
-      FloatingChatBubble.dismiss();
-      WebSocketService.activeSessionId = null;
-      Get.back();
-    } catch (_) {
-      await endChatSession();
-    } finally {
-      isLoading.value = false;
-    }
+    // Unified endpoint: /chat/{id}/end handles both normal & prepaid session_type
+    await endChatSession();
   }
 
   Future<void> rejectChatSession() async {
