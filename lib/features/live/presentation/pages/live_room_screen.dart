@@ -15,6 +15,7 @@ import 'package:astro_astrologer/core/services/websocket/websocket_service.dart'
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/constants/app_constants.dart';
+import 'package:astro_astrologer/features/auth/presentation/controllers/auth_controller.dart';
 
 class LiveRoomScreen extends StatefulWidget {
   final LiveSessionModel session;
@@ -517,6 +518,40 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                     ),
           ),
 
+          // Top gradient for header visibility
+          Positioned(
+            top: 0, left: 0, right: 0,
+            height: 120,
+            child: IgnorePointer(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.black.withOpacity(0.6), Colors.transparent],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // Bottom gradient for comments/inputs visibility
+          Positioned(
+            bottom: 0, left: 0, right: 0,
+            height: 400,
+            child: IgnorePointer(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [Colors.black.withOpacity(0.7), Colors.transparent],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
           // 3. Top Header Bar
           Positioned(
             top: MediaQuery.of(context).padding.top + 10,
@@ -525,67 +560,99 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Live indicator + Viewer count
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
+                // Astrologer Info Panel (Avatar, Name, LIVE Badge, Viewers)
+                Obx(() {
+                  final user = Get.find<AuthController>().currentUser.value;
+                  final name = user?.name ?? 'Astrologer';
+                  final image = user?.profilePhoto;
+                  final currentCount = _controller.currentActiveSession.value?.viewerCount ?? _viewerCount;
+
+                  return Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Avatar with LIVE badge
+                      Stack(
+                        clipBehavior: Clip.none,
                         children: [
-                          Icon(Icons.circle, color: Colors.white, size: 8),
-                          SizedBox(width: 4),
-                          AppText('LIVE'.tr,
-                            color: Colors.white,
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 2),
+                            ),
+                            child: ClipOval(
+                              child: image != null && image.isNotEmpty
+                                  ? CachedNetworkImage(
+                                      imageUrl: image.startsWith('http') ? image : '${AppUrls.baseImageUrl}$image',
+                                      fit: BoxFit.cover,
+                                      errorWidget: (_, __, ___) => const Icon(Icons.person, color: Colors.grey),
+                                    )
+                                  : const Icon(Icons.person, color: Colors.grey),
+                            ),
+                          ),
+                          Positioned(
+                            bottom: -4,
+                            left: 0,
+                            right: 0,
+                            child: Center(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: const Text(
+                                  'LIVE',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 8,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
+                      const SizedBox(width: 10),
+                      // Name and Stats
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(
-                            Icons.visibility,
-                            color: Colors.white,
-                            size: 14,
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                name.isNotEmpty ? (name.length > 15 ? '${name.substring(0, 15)}...' : name) : 'Astrologer',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              const Icon(Icons.verified, color: Colors.blue, size: 14),
+                            ],
                           ),
-                          const SizedBox(width: 4),
-                          Obx(() {
-                            final currentCount =
-                                _controller
-                                    .currentActiveSession
-                                    .value
-                                    ?.viewerCount ??
-                                _viewerCount;
-                            return AppText(
-                              '$currentCount',
-                              color: Colors.white,
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                            );
-                          }),
+                          const SizedBox(height: 2),
+                          Row(
+                            children: [
+                              const Icon(Icons.visibility, color: Colors.white70, size: 12),
+                              const SizedBox(width: 4),
+                              Text(
+                                '$currentCount',
+                                style: const TextStyle(color: Colors.white70, fontSize: 12),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  );
+                }),
 
                 // End Session Button
                 IconButton(
