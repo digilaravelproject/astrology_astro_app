@@ -119,6 +119,9 @@ class ChatWsHandler {
         WebSocketState.activeSessionId = null;
       }
       WebSocketState.chatEndedSessionId.value = sessionId;
+      
+      WebSocketState.sessionStatusUpdates[sessionId] = 'ended';
+      WebSocketState.sessionStatusUpdates.refresh();
     } catch (e) {
       Logger.e('ChatWsHandler: error handling ChatEnded -> $e');
     }

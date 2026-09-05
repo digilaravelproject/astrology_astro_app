@@ -300,6 +300,9 @@ class ChatSessionController extends GetxController with WidgetsBindingObserver {
       timer?.cancel();
       FloatingChatBubble.dismiss();
       CallkitService.endAllCalls();
+      if (_orchestrator.sessionId != null) {
+        WebSocketService.sessionStatusUpdates[_orchestrator.sessionId!] = 'ended';
+      }
     }
   }
 
