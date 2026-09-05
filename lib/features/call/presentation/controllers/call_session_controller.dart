@@ -155,10 +155,14 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
       sId = int.tryParse(session['id']?.toString() ?? '') ?? sId;
     }
     final sIdBeforeCleanup = sessionId ?? sId;
+    final wasVisible = isCallScreenVisible;
     cleanUp();
 
-    if (isCallScreenVisible || Get.currentRoute == '/CallScreen') {
-      Get.until((route) => route.isFirst);
+    if (wasVisible || Get.currentRoute == '/CallScreen' || Get.currentRoute == '/call-screen' || Get.currentRoute == AppRoutes.callScreen) {
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+      Get.back(); // Pop the call screen
     }
   }
 
@@ -181,11 +185,15 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
 
   void showOngoingNotification() {
     if (sessionId != null) {
-      ForegroundTaskService.startActiveSessionNotification(
-        title: 'Active Call'.tr,
-        type: 'Call',
-        startedAt: callStartedAt ?? DateTime.now(),
-      );
+      try {
+        ForegroundTaskService.startActiveSessionNotification(
+          title: 'Active Call'.tr,
+          type: 'Call',
+          startedAt: callStartedAt ?? DateTime.now(),
+        );
+      } catch (e) {
+        debugPrint('Failed to show ongoing notification: $e');
+      }
     }
   }
 

@@ -59,6 +59,9 @@ class CallkitService {
             break;
           }
           debugPrint('CallKit: Processing payload: $payload');
+          
+          // Force app to launch into foreground when accept is tapped
+          ForegroundTaskService.launchApp();
 
           if (payload.startsWith('call_')) {
             // ── Incoming CALL accepted ──
@@ -67,7 +70,14 @@ class CallkitService {
               await Future.delayed(const Duration(milliseconds: 100));
               retries++;
             }
-            if (!Get.isRegistered<CallController>()) break;
+            if (!Get.isRegistered<CallController>()) {
+              debugPrint('CallKit: Forcing InitialBindings for CallController...');
+              InitialBindings().dependencies();
+            }
+            if (!Get.isRegistered<CallController>()) {
+              debugPrint('CallKit: ERROR - CallController still not registered!');
+              break;
+            }
             final ctrl = Get.find<CallController>();
             
             final sIdStr = payload.replaceFirst('call_', '');
@@ -85,32 +95,59 @@ class CallkitService {
 
             final offerSdp = ctrl.incomingOfferSdp ?? '';
 
-            WidgetsBinding.instance.addPostFrameCallback((_) async {
-              bool success;
-              if (offerSdp.isNotEmpty) {
-                success = await ctrl.acceptCall(offerSdp);
+            debugPrint('CallKit: Executing call accept logic...');
+            bool success = false;
+            String finalOfferSdp = offerSdp;
+
+            try {
+              // If offerSdp is empty (likely due to cold boot), try to fetch it from the backend API
+              if (finalOfferSdp.isEmpty) {
+                debugPrint('CallKit: incomingOfferSdp is empty. Attempting to fetch from current session...');
+                final fetchedSdp = await ctrl.fetchOfferSdpFromCurrentSession();
+                if (fetchedSdp != null && fetchedSdp.isNotEmpty) {
+                  finalOfferSdp = fetchedSdp;
+                  debugPrint('CallKit: Successfully fetched offerSdp from API.');
+                }
+              }
+
+              if (finalOfferSdp.isNotEmpty) {
+                debugPrint('CallKit: Calling ctrl.acceptCall(offerSdp)...');
+                success = await ctrl.acceptCall(finalOfferSdp);
               } else {
+                debugPrint('CallKit: Calling ctrl.acceptCallDirect()...');
                 success = await ctrl.acceptCallDirect();
               }
-              if (success) {
-                // End CallKit telecom session so "Hang Up" notification disappears.
-                // The actual call continues over our WebRTC implementation.
-                Future.delayed(const Duration(milliseconds: 500), () {
-                  FlutterCallkitIncoming.endCall(sessionId);
-                });
-                
-                // Wait until splash screen is gone to avoid Get.offAllNamed clearing this route
-                int waitRetries = 0;
-                while ((Get.currentRoute == RouteHelper.getSplashRoute() || Get.currentRoute.isEmpty) && waitRetries < 50) {
-                  await Future.delayed(const Duration(milliseconds: 100));
-                  waitRetries++;
-                }
+            } catch (e) {
+              debugPrint('CallKit: Exception during acceptCall: $e');
+            }
 
+            debugPrint('CallKit: Accept result success = $success');
+
+            if (success) {
+              // End CallKit telecom session so "Hang Up" notification disappears.
+              // The actual call continues over our WebRTC implementation.
+              Future.delayed(const Duration(milliseconds: 500), () {
+                FlutterCallkitIncoming.endCall(sessionId!);
+              });
+              
+              // Wait until splash screen is gone and navigator is ready
+              int waitRetries = 0;
+              while ((Get.key.currentState == null || Get.currentRoute == RouteHelper.getSplashRoute() || Get.currentRoute.isEmpty || Get.currentRoute == '/') && waitRetries < 150) {
+                await Future.delayed(const Duration(milliseconds: 100));
+                waitRetries++;
+              }
+
+              if (Get.key.currentState == null) {
+                debugPrint('CallKit: Navigation failed, UI not ready.');
+              } else {
                 if (!ctrl.isCallScreenVisible) {
+                  debugPrint('CallKit: Navigating to CallScreen.');
                   Get.toNamed(AppRoutes.callScreen);
                 }
               }
-            });
+            } else {
+              debugPrint('CallKit: Failed to accept call. Not navigating to CallScreen.');
+            }
           } else if (payload.startsWith('chat_')) {
             // ── Incoming CHAT accepted ──
             debugPrint('CallKit: Entered chat_ block');
@@ -240,25 +277,68 @@ class CallkitService {
         // ──────────────────────────────────────────────────────────────
         case CallEventActionCallDecline():
           debugPrint('CallKit: DECLINED');
-          final payload = event.callKitParams.extra?['payload'] as String?;
+          String? payload = event.callKitParams.extra?['payload'] as String?;
+          final callerName = event.callKitParams.nameCaller;
+          final sessionId = event.callKitParams.id;
+          final handleStr = event.callKitParams.handle;
 
-          if (payload == null) break;
+          // Reconstruct payload if lost during cold boot (Android CallKit issue)
+          if (payload == null && sessionId != null) {
+            if (handleStr == 'Chat Request' ||
+                (callerName != null && callerName.contains('Chat Req'))) {
+              payload = 'chat_$sessionId';
+            } else {
+              payload = 'call_$sessionId';
+            }
+            debugPrint('CallKit: Reconstructed payload in DECLINE -> $payload');
+          }
+
+          if (payload == null) {
+            debugPrint('CallKit: DECLINE ERROR - Payload is null');
+            break;
+          }
+
+          // Ensure ApiClient is registered if app was killed
+          int apiRetries = 0;
+          while (!Get.isRegistered<ApiClient>() && apiRetries < 10) {
+            await Future.delayed(const Duration(milliseconds: 100));
+            apiRetries++;
+          }
+          if (!Get.isRegistered<ApiClient>()) {
+            debugPrint('CallKit: DECLINE - Forcing InitialBindings registration...');
+            InitialBindings().dependencies();
+          }
 
           if (payload.startsWith('call_')) {
             // ── Reject incoming call — calls POST /call/{id}/reject ──
             int retries = 0;
-            while (!Get.isRegistered<CallController>() && retries < 40) {
+            while (!Get.isRegistered<CallController>() && retries < 10) {
               await Future.delayed(const Duration(milliseconds: 100));
               retries++;
             }
+            final sIdStr = payload.replaceFirst('call_', '');
+            final sId = int.tryParse(sIdStr);
+
             if (Get.isRegistered<CallController>()) {
               final ctrl = Get.find<CallController>();
-              final sIdStr = payload.replaceFirst('call_', '');
-              final sId = int.tryParse(sIdStr);
               if (sId != null) {
                 ctrl.sessionId = sId;
               }
               ctrl.rejectCall();
+            } else if (sId != null) {
+               // Fallback: call reject API directly
+               try {
+                 if (Get.isRegistered<ApiClient>()) {
+                   await Get.find<ApiClient>().post(
+                     AppUrls.rejectCall(sId),
+                     handleError: false,
+                     showErrorScreen: false,
+                   );
+                   debugPrint('CallKit: Call reject API called directly for session $sId');
+                 }
+               } catch (e) {
+                 debugPrint('CallKit: Error rejecting call directly: $e');
+               }
             }
           } else if (payload.startsWith('chat_')) {
             // ── Reject chat request — use sessionId from payload directly ──
@@ -272,11 +352,6 @@ class CallkitService {
             FloatingChatBubble.dismiss();
 
             if (chatSessionId != null) {
-              int retries = 0;
-              while (!Get.isRegistered<ApiClient>() && retries < 40) {
-                await Future.delayed(const Duration(milliseconds: 100));
-                retries++;
-              }
               // Try via controller first (sets status, cleans up UI)
               if (Get.isRegistered<ChatController>() &&
                   Get.find<ChatController>().sessionId != null) {
@@ -325,6 +400,10 @@ class CallkitService {
     required String avatar,
     required String type, // 'call' or 'chat'
   }) async {
+    if (lastAcceptedSessionId == sessionId) {
+      debugPrint('CallKit: Ignoring incoming call for already accepted session $sessionId');
+      return;
+    }
     final String notifTitle = type == 'call' ? 'Incoming Call' : 'Chat Request';
     final String nameCallerParam =
         type == 'call' ? callerName : 'Chat Req: $callerName';

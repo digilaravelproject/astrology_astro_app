@@ -207,4 +207,8 @@ class ForegroundTaskService {
       Logger.d("ForegroundTaskService stopService failed: $e");
     }
   }
+
+  static void launchApp() {
+    FlutterForegroundTask.launchApp();
+  }
 }

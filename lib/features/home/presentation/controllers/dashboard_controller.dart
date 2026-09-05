@@ -12,7 +12,7 @@ import 'package:astro_astrologer/features/call/presentation/controllers/call_con
 import 'package:astro_astrologer/core/services/local_notification_service.dart';
 import 'package:astro_astrologer/core/services/websocket/websocket_service.dart';
 
-class DashboardController extends GetxController {
+class DashboardController extends GetxController with WidgetsBindingObserver {
   var selectedIndex = 0.obs;
 
   void changeIndex(int index) {

@@ -90,7 +90,9 @@ class CallWebRTCController extends GetxController {
         return true;
       } else {
         _orchestrator.session.cleanUp();
-        CustomSnackBar.showError('Failed to accept call: ${response.message}');
+        Future.delayed(const Duration(seconds: 1), () {
+          CustomSnackBar.showError('Failed to accept call: ${response.message}');
+        });
         return false;
       }
     } catch (e) {
@@ -195,11 +197,17 @@ class CallWebRTCController extends GetxController {
         
         final wasVisible = _orchestrator.isCallScreenVisible;
         _orchestrator.session.cleanUp();
-        if (wasVisible) Get.back();
+        if (wasVisible || Get.currentRoute == '/CallScreen' || Get.currentRoute == '/call-screen' || Get.currentRoute == AppRoutes.callScreen) {
+          if (Get.isDialogOpen ?? false) Get.back();
+          Get.back();
+        }
       } else {
         final wasVisible = _orchestrator.isCallScreenVisible;
         _orchestrator.session.cleanUp();
-        if (wasVisible) Get.back();
+        if (wasVisible || Get.currentRoute == '/CallScreen' || Get.currentRoute == '/call-screen' || Get.currentRoute == AppRoutes.callScreen) {
+          if (Get.isDialogOpen ?? false) Get.back();
+          Get.back();
+        }
       }
     } catch (e) {
       _orchestrator.session.cleanUp();
@@ -260,7 +268,7 @@ class CallWebRTCController extends GetxController {
     return false;
   }
 
-  Future<void> checkCurrentActiveCallSession() async {
+  Future<void> checkCurrentActiveCallSession({int retries = 0}) async {
     try {
       final response = await _apiClient.get(
         AppUrls.currentCallSession,
@@ -271,32 +279,37 @@ class CallWebRTCController extends GetxController {
         final bodyMap = response.body;
         final session = bodyMap is Map ? (bodyMap['session'] ?? bodyMap['data']?['session']) : null;
         if (session != null) {
-          final sessionStatus = session['status']?.toString();
-          if (sessionStatus == 'ongoing' || sessionStatus == 'ringing' || sessionStatus == 'dialing' || sessionStatus == 'initiated') {
-            if (_orchestrator.status.value == CallStatus.completed || _orchestrator.status.value == CallStatus.cancelled || _orchestrator.status.value == CallStatus.rejected) return;
+          final sessionStatus = session['status']?.toString().toLowerCase() ?? 'idle';
 
-            _orchestrator.session.isSummaryShown = false;
-            _orchestrator.session.sessionId = int.tryParse(session['id']?.toString() ?? '');
-            _orchestrator.webrtcService.activeSessionId = _orchestrator.sessionId;
-            _orchestrator.status.value = CallStatus.values.firstWhere(
-              (e) => e.name == (sessionStatus == 'initiated' ? 'ringing' : sessionStatus),
-              orElse: () => CallStatus.ongoing,
-            );
+          if (_orchestrator.status.value == CallStatus.completed || _orchestrator.status.value == CallStatus.cancelled || _orchestrator.status.value == CallStatus.rejected) return;
 
-            _orchestrator.session.consumerId = int.tryParse(session['consumer_id']?.toString() ?? '');
-            final consumer = session['consumer'];
-            _orchestrator.session.consumerName = consumer?['name']?.toString() ?? 'User';
-            _orchestrator.session.consumerImage = consumer?['image']?.toString() ?? consumer?['profile_image']?.toString() ?? consumer?['profile_photo']?.toString() ?? '';
+          _orchestrator.session.isSummaryShown = false;
+          _orchestrator.session.sessionId = int.tryParse(session['id']?.toString() ?? '');
+          _orchestrator.webrtcService.activeSessionId = _orchestrator.sessionId;
+          
+          _orchestrator.status.value = CallStatus.values.firstWhere(
+            (e) => e.name == (sessionStatus == 'initiated' ? 'ringing' : sessionStatus),
+            orElse: () => CallStatus.ongoing,
+          );
 
-            if (sessionStatus == 'ongoing') {
-              final startedAtStr = session['started_at']?.toString();
-              if (startedAtStr != null) {
-                final startedAt = DateTime.tryParse(startedAtStr)?.toLocal();
-                if (startedAt != null) _orchestrator.durationSeconds.value = DateTime.now().difference(startedAt).inSeconds;
-              }
-              _orchestrator.session.startCallTimer();
+          if (sessionStatus == 'initiated') {
+            final offerSdp = session['offer']?.toString() ?? session['offer_sdp']?.toString() ?? session['consumer_sdp']?.toString();
+            _orchestrator.session.incomingOfferSdp = offerSdp ?? '';
+            
+            if (retries < 5) {
+              await Future.delayed(const Duration(seconds: 2));
+              return checkCurrentActiveCallSession(retries: retries + 1);
+            }
+          } else if (sessionStatus == 'ongoing') {
+            final startedAtStr = session['started_at']?.toString();
+            if (startedAtStr != null) {
+              final startedAt = DateTime.tryParse(startedAtStr)?.toLocal();
+              if (startedAt != null) _orchestrator.durationSeconds.value = DateTime.now().difference(startedAt).inSeconds;
+            }
+            _orchestrator.session.startCallTimer();
+            
+            if (_orchestrator.webrtcService.peerConnection == null) {
               final offerSdp = session['offer']?.toString() ?? session['offer_sdp']?.toString() ?? session['consumer_sdp']?.toString();
-              
               if (offerSdp != null && offerSdp.isNotEmpty) {
                 await _orchestrator.webrtcService.acceptOffer(_orchestrator.sessionId!, offerSdp);
               } else {
@@ -305,31 +318,21 @@ class CallWebRTCController extends GetxController {
                   await _apiClient.post(AppUrls.acceptCall(_orchestrator.sessionId!), data: {'answer': newOffer.sdp}, handleError: false, showErrorScreen: false);
                 } catch (e) {}
               }
-            } else if (sessionStatus == 'ringing' || sessionStatus == 'dialing' || sessionStatus == 'initiated') {
-              final offerSdp = session['offer']?.toString() ?? session['offer_sdp']?.toString() ?? session['consumer_sdp']?.toString();
-              _orchestrator.session.incomingOfferSdp = offerSdp ?? '';
             }
 
-            if (sessionStatus == 'ongoing') {
-              if (_orchestrator.status.value == CallStatus.completed || _orchestrator.status.value == CallStatus.cancelled || _orchestrator.status.value == CallStatus.idle || isEndingCall) return;
-              if (!_orchestrator.isCallScreenVisible && _orchestrator.status.value == CallStatus.ongoing) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (Get.currentRoute != '/CallScreen') Get.toNamed(AppRoutes.callScreen);
-                });
+            if (!_orchestrator.isCallScreenVisible && _orchestrator.status.value == CallStatus.ongoing) {
+              if (Get.currentRoute != AppRoutes.callScreen) {
+                Get.toNamed(AppRoutes.callScreen);
               }
             }
           } else {
             if (_orchestrator.isCallScreenVisible || Get.isDialogOpen == true) Get.back();
             _orchestrator.session.cleanUp();
           }
-        } else {
-          if (_orchestrator.isCallScreenVisible || Get.isDialogOpen == true) Get.back();
-          _orchestrator.session.cleanUp();
         }
-      } else {
-        if (_orchestrator.isCallScreenVisible || Get.isDialogOpen == true) Get.back();
-        _orchestrator.session.cleanUp();
       }
-    } catch (e) {}
+    } catch (e) {
+      debugPrint('checkCurrentActiveCallSession Error: $e');
+    }
   }
 }
