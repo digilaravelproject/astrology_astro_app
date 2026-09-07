@@ -433,8 +433,17 @@ class AuthController extends GetxController {
   Future<void> logout() async {
     try {
       isLoading.value = true;
-      await FCMNotificationService.removeDeviceToken();
+      try {
+        await FCMNotificationService.removeDeviceToken();
+      } catch (_) {}
+      
       final response = await _logoutUseCase.execute();
+
+      try {
+        if (Get.isRegistered<WebSocketService>()) {
+          Get.find<WebSocketService>().disconnect();
+        }
+      } catch (_) {}
 
       if (response.isSuccess) {
         await Get.find<ApiClient>().clearCache();
@@ -446,6 +455,8 @@ class AuthController extends GetxController {
       }
     } catch (e) {
       CustomSnackBar.showError(e.toString());
+      // Force logout on error
+      Get.offAllNamed(RouteHelper.getLoginRoute());
     } finally {
       isLoading.value = false;
     }

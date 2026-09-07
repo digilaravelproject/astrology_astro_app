@@ -102,7 +102,7 @@ class AuthService implements AuthServiceInterface {
 
   @override
   Future<void> clearUserInfo() async {
-    await SharedPrefs.remove(AppConstants.userData);
+    await SharedPrefs.clear();
     await TokenManager.clearToken();
     await SharedPrefs.setBool(AppConstants.isLoggedIn, false);
   }

@@ -28,24 +28,24 @@ class SplashController extends GetxController {
       // Initialize splash service
       final isReady = await _splashService.initialize();
 
-      if (isReady) {
-        // Wait for 2 seconds to show splash screen
-        await Future.delayed(const Duration(seconds: 2));
+      // Wait for 2 seconds to show splash screen
+      await Future.delayed(const Duration(seconds: 2));
 
-        // Check if user is logged in and has user data
-        final isLoggedIn =
-            SharedPrefs.getBool(AppConstants.isLoggedIn) ?? false;
-        final userData = SharedPrefs.getString(AppConstants.userData);
+      bool cameraGranted = await Permission.camera.isGranted;
+      bool micGranted = await Permission.microphone.isGranted;
+      bool notifGranted = await Permission.notification.isGranted;
 
-        print(
-          '[SPLASH] isLoggedIn: $isLoggedIn, hasUserData: ${userData != null && userData.isNotEmpty}',
-        );
+      if (cameraGranted && micGranted && notifGranted) {
+        if (isReady) {
+          // Check if user is logged in and has user data
+          final isLoggedIn =
+              SharedPrefs.getBool(AppConstants.isLoggedIn) ?? false;
+          final userData = SharedPrefs.getString(AppConstants.userData);
 
-        bool cameraGranted = await Permission.camera.isGranted;
-        bool micGranted = await Permission.microphone.isGranted;
-        bool notifGranted = await Permission.notification.isGranted;
+          print(
+            '[SPLASH] isLoggedIn: $isLoggedIn, hasUserData: ${userData != null && userData.isNotEmpty}',
+          );
 
-        if (cameraGranted && micGranted && notifGranted) {
           if (isLoggedIn && userData != null && userData.isNotEmpty) {
             Get.find<WebSocketService>().connect();
             FCMNotificationService.registerDeviceToken(null);
@@ -54,12 +54,12 @@ class SplashController extends GetxController {
             Get.offAllNamed(RouteHelper.getLoginRoute());
           }
         } else {
-          Get.offAllNamed(RouteHelper.getPermissionRoute());
+          // Handle maintenance or version issues
+          // For now, just navigate to login
+          Get.offAllNamed(RouteHelper.getLoginRoute());
         }
       } else {
-        // Handle maintenance or version issues
-        // For now, just navigate to login
-        Get.offAllNamed(RouteHelper.getLoginRoute());
+        Get.offAllNamed(RouteHelper.getPermissionRoute());
       }
     } catch (e) {
       print('[SPLASH] Error during initialization: $e');
