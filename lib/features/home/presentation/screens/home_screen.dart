@@ -49,6 +49,7 @@ import 'package:astro_astrologer/features/wallet/presentation/controllers/wallet
 import 'package:astro_astrologer/features/wallet/domain/usecases/get_wallet_summary_usecase.dart';
 import 'package:astro_astrologer/features/wallet/domain/usecases/get_wallet_earnings_usecase.dart';
 import 'package:astro_astrologer/features/wallet/domain/usecases/get_wallet_withdrawals_usecase.dart';
+import 'package:astro_astrologer/features/home/presentation/widgets/go_live_bottom_sheet.dart';
 import 'package:astro_astrologer/features/wallet/domain/usecases/request_withdrawal_usecase.dart';
 import 'package:astro_astrologer/features/wallet/data/repositories/wallet_repository_impl.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
@@ -1078,7 +1079,7 @@ Widget _buildMenuGrid() {
       bgColor: AppColors.primaryColor.withOpacity(0.08),
       iconBgColor: AppColors.primaryColor.withOpacity(0.18),
       textColor: AppColors.primaryColor,
-      onTap: () => _showGoLiveBottomSheet(Get.context!),
+      onTap: () => showGoLiveBottomSheet(Get.context!),
     ),
     _MenuData(
       title: 'Chat'.tr,
@@ -1219,116 +1220,6 @@ Widget _buildMenuGrid() {
     itemBuilder: (context, index) {
       return _buildMenuItem(menuItems[index]);
     },
-  );
-}
-
-void _showGoLiveBottomSheet(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    backgroundColor: Colors.transparent,
-    builder:
-        (context) => SafeArea(
-          top: false,
-          child: Container(
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                const SizedBox(height: 25),
-                AppText(
-                  'Go Live'.tr,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF2E1A47),
-                ),
-                const SizedBox(height: 12),
-                AppText(
-                  'Would you like to go live instantly or schedule it for later?'
-                      .tr,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey[600],
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 30),
-
-                // Go Live Instantly Button
-                SizedBox(
-                  width: double.infinity,
-                  height: 55,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Get.back();
-                      // For actual implementation, replace this with direct navigation
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(
-                        0xFF4CAF50,
-                      ), // Green for Go Live
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: AppText(
-                      'Go Live Instantly'.tr,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 14),
-
-                // Schedule for Later Button
-                SizedBox(
-                  width: double.infinity,
-                  height: 55,
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Get.back();
-                      Get.toNamed(AppRoutes.liveSchedule);
-                    },
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(
-                        0xFF1E88E5,
-                      ), // Blue for Schedule
-                      elevation: 0,
-                      side: const BorderSide(
-                        color: Color(0xFF1E88E5),
-                        width: 1.5,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: AppText(
-                      'Schedule for Later'.tr,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF2196F3),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-              ],
-            ),
-          ),
-        ),
   );
 }
 

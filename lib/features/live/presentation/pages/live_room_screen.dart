@@ -185,8 +185,10 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
       }
     });
 
-    // Initialize camera stream
-    _initCamera();
+    // Initialize camera stream after the first frame renders to ensure context and platform channels are ready.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initCamera();
+    });
   }
 
   void _scrollToBottom() {
@@ -243,12 +245,25 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
         _room = null;
       }
 
-      final cameraStatus = await Permission.camera.request();
-      final micStatus = await Permission.microphone.request();
+      var cameraStatus = await Permission.camera.status;
+      var micStatus = await Permission.microphone.status;
+      bool wasRequestedJustNow = false;
+
+      if (!cameraStatus.isGranted || !micStatus.isGranted) {
+        cameraStatus = await Permission.camera.request();
+        micStatus = await Permission.microphone.request();
+        wasRequestedJustNow = true;
+      }
 
       if (!cameraStatus.isGranted) {
         debugPrint('[LIVE] Camera permission not granted');
+        CustomSnackBar.showError('Camera permission is required to go live');
         return;
+      }
+
+      // Hardware needs a slight delay to initialize after permission dialog is dismissed
+      if (wasRequestedJustNow) {
+        await Future.delayed(const Duration(milliseconds: 800));
       }
 
       // 1. Get LiveKit credentials from backend
