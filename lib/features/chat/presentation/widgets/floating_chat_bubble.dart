@@ -241,6 +241,7 @@ class _FloatingChatBubbleWidgetState extends State<FloatingChatBubbleWidget> {
   }
 
   void _startTimer() {
+    _timer?.cancel();
     void updateDuration() {
       final actualStr =
           widget.startedAt ??

@@ -243,6 +243,7 @@ class _FloatingCallBubbleWidgetState extends State<FloatingCallBubbleWidget> {
   }
 
   void _startTimer(String? startedAtStr) {
+    _timer?.cancel();
     void updateDuration() {
       final startedAt = _parseSmartDate(startedAtStr);
       if (startedAt != null) {
