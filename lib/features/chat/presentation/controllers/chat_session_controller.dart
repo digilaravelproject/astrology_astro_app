@@ -21,6 +21,7 @@ import 'package:astro_astrologer/core/constants/app_constants.dart';
 import 'package:astro_astrologer/features/auth/data/models/user_model.dart';
 import 'chat_controller.dart';
 import 'package:astro_astrologer/routes/app_routes.dart';
+import 'package:astro_astrologer/core/services/storage/token_manger.dart';
 
 class ChatSessionController extends GetxController with WidgetsBindingObserver {
   final EndChatSessionUseCase _endChatSessionUseCase;
@@ -84,7 +85,11 @@ class ChatSessionController extends GetxController with WidgetsBindingObserver {
         minimizeToBubble(ctx, _orchestrator.userName!, "", shouldPop: false);
       }
     } else if (state == AppLifecycleState.resumed) {
-      checkPendingChatSession();
+      TokenManager.getToken().then((token) {
+        if (token != null && token.isNotEmpty) {
+          checkPendingChatSession();
+        }
+      });
     }
   }
 
@@ -122,7 +127,7 @@ class ChatSessionController extends GetxController with WidgetsBindingObserver {
       final String userAvatar = userAvatarRaw.isNotEmpty && userAvatarRaw != 'null' ? userAvatarRaw : 'assets/images/app_logo.png';
 
       if (sessionStatus == 'initiated') {
-        if (status.value == ChatStatus.initiated && _orchestrator.sessionId == incomingId) return;
+        if ((status.value == ChatStatus.initiated || status.value == ChatStatus.ongoing) && _orchestrator.sessionId == incomingId) return;
         CallkitService.showCallkitNotification(sessionId: incomingId.toString(), callerName: userName, avatar: userAvatar, type: 'chat');
       } else if (sessionStatus == 'ongoing') {
         if (_orchestrator.sessionId == incomingId) return;
@@ -362,6 +367,7 @@ class ChatSessionController extends GetxController with WidgetsBindingObserver {
             final String userAvatarRaw = liveSender['profile_photo_url']?.toString() ?? liveSender['profile_photo']?.toString() ?? '';
             final String userAvatar = userAvatarRaw.isNotEmpty && userAvatarRaw != 'null' ? userAvatarRaw : 'assets/images/app_logo.png';
             final incomingId = sid ?? (liveSession['id'] != null ? int.tryParse(liveSession['id'].toString()) : 0);
+            if ((status.value == ChatStatus.initiated || status.value == ChatStatus.ongoing) && _orchestrator.sessionId == incomingId) return;
             CallkitService.showCallkitNotification(sessionId: incomingId.toString(), callerName: userName, avatar: userAvatar, type: 'chat');
           });
         } else {

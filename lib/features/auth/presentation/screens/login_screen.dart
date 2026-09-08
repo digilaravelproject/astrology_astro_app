@@ -207,7 +207,10 @@ class LoginScreen extends StatelessWidget {
                 child: TextFormField(
                   controller: authController.mobileController,
                   keyboardType: TextInputType.phone,
-                  maxLength: 10,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(10),
+                  ],
                   onChanged: (value) {
                     // Clear error when user starts typing
                     if (errorMessage.value.isNotEmpty) {

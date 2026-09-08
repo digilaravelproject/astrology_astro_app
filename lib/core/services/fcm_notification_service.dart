@@ -13,25 +13,15 @@ import 'package:astro_astrologer/core/services/callkit_service.dart';
 import 'package:flutter_callkit_incoming/entities/entities.dart';
 import 'package:astro_astrologer/core/constants/app_constants.dart';
 import 'local_notification_service.dart';
+import 'package:astro_astrologer/features/chat/presentation/controllers/chat_controller.dart';
+import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 
 class FCMNotificationService {
   static final FirebaseMessaging _firebaseMessaging =
       FirebaseMessaging.instance;
 
   static Future<void> initialize() async {
-    // 1. Request Notification Permission
-    NotificationSettings settings = await _firebaseMessaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-      provisional: false,
-    );
-
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      debugPrint('User granted notification permission');
-    } else {
-      debugPrint('User declined notification permission');
-    }
+    // 1. Notification Permission is now requested in PermissionScreen
 
     // 2. Get & Register Device Token
     try {
@@ -209,6 +199,26 @@ class FCMNotificationService {
         // 2. Process Incoming Requests
         if (type == 'CHAT_REQUEST' || type == 'CALL_REQUEST' || type == 'call' || type == 'audio_call' || type == 'video_call' || type == 'chat') {
           final String channelType = message.data['channel_type']?.toString() ?? ((type == 'call' || type == 'audio_call' || type == 'video_call') ? 'call' : 'chat');
+          
+          // Check if session is already active to prevent duplicate CallKit screens during an ongoing chat/call
+          bool isAlreadyActive = false;
+          if (Get.isRegistered<ChatController>() && Get.find<ChatController>().sessionId == parsedSessionId) {
+            isAlreadyActive = true;
+          }
+          if (Get.isRegistered<CallController>() && Get.find<CallController>().sessionId == parsedSessionId) {
+            isAlreadyActive = true;
+          }
+          if (CallkitService.lastAcceptedSessionId == parsedSessionId.toString()) {
+            isAlreadyActive = true;
+          }
+
+          if (isAlreadyActive) {
+            debugPrint('[FCM] Ignoring duplicate CallKit notification for active session: $parsedSessionId');
+            // If it's a message for an active chat session, we might want to show a normal notification
+            // unless the user is actively viewing the ChatScreen. For now, we skip CallKit.
+            return;
+          }
+
           final String userName = message.data['user_name']?.toString() ?? message.data['caller_name']?.toString() ?? 'User';
           final String userAvatarRaw = message.data['user_avatar']?.toString() ?? message.data['caller_image']?.toString() ?? '';
           final String userAvatar = userAvatarRaw.isNotEmpty ? userAvatarRaw : 'assets/images/app_logo.png';

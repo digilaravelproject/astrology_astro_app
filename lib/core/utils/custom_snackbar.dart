@@ -33,7 +33,8 @@ class CustomSnackBar {
     _currentOverlay?.remove();
     _currentOverlay = null;
 
-    _currentOverlay = OverlayEntry(
+    late OverlayEntry newOverlay;
+    newOverlay = OverlayEntry(
       builder:
           (context) => _SnackbarWidget(
             title: title,
@@ -42,17 +43,25 @@ class CustomSnackBar {
             icon: icon,
             textColor: effectiveTextColor,
             onDismiss: () {
-              _currentOverlay?.remove();
-              _currentOverlay = null;
+              if (_currentOverlay == newOverlay) {
+                _currentOverlay?.remove();
+                _currentOverlay = null;
+              }
             },
           ),
     );
 
-    overlay.insert(_currentOverlay!);
+    _currentOverlay = newOverlay;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_currentOverlay == newOverlay) {
+        overlay.insert(newOverlay);
+      }
+    });
 
     // Auto-remove after 4 seconds
     Future.delayed(const Duration(seconds: 4), () {
-      if (_currentOverlay != null) {
+      if (_currentOverlay == newOverlay) {
         _currentOverlay?.remove();
         _currentOverlay = null;
       }
@@ -60,7 +69,12 @@ class CustomSnackBar {
   }
 
   static void showSuccess(String message, {String title = 'Success'}) {
-    // Disabled as per user request
+    _show(
+      title: title,
+      message: message,
+      backgroundColor: Colors.green,
+      icon: Icons.check_circle_rounded,
+    );
   }
 
   static void showError(
@@ -68,21 +82,30 @@ class CustomSnackBar {
     String title = 'Error',
     bool isApiError = false,
   }) {
-    if (!isApiError) return;
-    _show(
-      title: title,
-      message: message,
-      backgroundColor: AppColors.errorColor,
-      icon: Icons.error_rounded,
-    );
+    // _show(
+    //   title: title,
+    //   message: message,
+    //   backgroundColor: AppColors.errorColor,
+    //   icon: Icons.error_rounded,
+    // );
   }
 
   static void showInfo(String message, {String title = 'Info'}) {
-    // Disabled as per user request
+    _show(
+      title: title,
+      message: message,
+      backgroundColor: Colors.blue,
+      icon: Icons.info_rounded,
+    );
   }
 
   static void showWarning(String message, {String title = 'Warning'}) {
-    // Disabled as per user request
+    _show(
+      title: title,
+      message: message,
+      backgroundColor: Colors.orange,
+      icon: Icons.warning_rounded,
+    );
   }
 
   // Dummy method to replace Get.snackbar globally
@@ -216,7 +239,7 @@ class _SnackbarWidgetState extends State<_SnackbarWidget>
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -227,7 +250,7 @@ class _SnackbarWidgetState extends State<_SnackbarWidget>
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(

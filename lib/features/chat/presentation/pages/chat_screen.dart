@@ -852,66 +852,80 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                               ],
                             ),
                           ),
-                        Row(
-                          children: [
-                            IconButton(
-                              icon: const Icon(
-                                Icons.add_circle_outline,
-                                color: Colors.grey,
-                              ),
-                              onPressed: _showAttachmentBottomSheet,
-                            ),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.auto_awesome,
-                                color: AppColors.primaryColor,
-                              ),
-                              tooltip: "Kundli".tr,
-                              onPressed: () => _openKundli(context),
-                            ),
-                            Expanded(
-                              child: TextField(
-                                controller: _controller.messageController,
-                                decoration: InputDecoration(
-                                  hintText: "Type a message...".tr,
-                                  filled: true,
-                                  fillColor: const Color(0xFFF5F5F5),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(24),
-                                    borderSide: BorderSide.none,
+                        ValueListenableBuilder<TextEditingValue>(
+                          valueListenable: _controller.messageController,
+                          builder: (context, value, child) {
+                            final hasText = value.text.trim().isNotEmpty;
+                            return Row(
+                              children: [
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.add_circle_outline,
+                                    color: Colors.grey,
+                                    size: 22,
                                   ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(24),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(24),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 12,
+                                  onPressed: _showAttachmentBottomSheet,
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(minWidth: 40),
+                                ),
+                                Expanded(
+                                  child: TextField(
+                                    controller: _controller.messageController,
+                                    decoration: InputDecoration(
+                                      hintText: "Type a message...".tr,
+                                      filled: true,
+                                      fillColor: const Color(0xFFF5F5F5),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(24),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(24),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(24),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 10,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            GestureDetector(
-                              onTap: () => _controller.sendTextMessage(),
-                              child: Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: const BoxDecoration(
-                                  color: AppColors.deepPink,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Iconsax.send_1_copy,
-                                  color: Colors.white,
-                                  size: 20,
-                                ),
-                              ),
-                            ),
-                          ],
+                                if (!hasText)
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.auto_awesome,
+                                      color: AppColors.primaryColor,
+                                      size: 22,
+                                    ),
+                                    tooltip: "Kundli".tr,
+                                    onPressed: () => _openKundli(context),
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(minWidth: 40),
+                                  )
+                                else
+                                  GestureDetector(
+                                    onTap: () => _controller.sendTextMessage(),
+                                    child: Container(
+                                      margin: const EdgeInsets.only(left: 8),
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: const BoxDecoration(
+                                        color: AppColors.deepPink,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(
+                                        Iconsax.send_1_copy,
+                                        color: Colors.white,
+                                        size: 18,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            );
+                          },
                         ),
                       ],
                     ),

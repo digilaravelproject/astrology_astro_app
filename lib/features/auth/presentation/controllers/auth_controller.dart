@@ -182,8 +182,15 @@ class AuthController extends GetxController {
 
       if (response.isSuccess) {
         CustomSnackBar.showSuccess(response.message);
-        Get.offAllNamed(RouteHelper.getLoginRoute());
-        Get.back();
+        
+        try {
+          Get.find<WebSocketService>().connect();
+          FCMNotificationService.registerDeviceToken(null);
+        } catch (e) {
+          print('WebSocket connect error: $e');
+        }
+
+        Get.offAllNamed(RouteHelper.getDashboardRoute());
       } else {
         CustomSnackBar.showError(response.message);
       }

@@ -36,7 +36,15 @@ class ChatWsHandler {
                 : (int.tryParse(session['id']?.toString() ?? '') ?? 0);
         final String name = senderData['name']?.toString() ?? 'User';
 
+        bool isAlreadyActive = false;
+        if (Get.isRegistered<ChatController>() && Get.find<ChatController>().sessionId == sessionId) {
+          isAlreadyActive = true;
+        }
         if (CallkitService.lastAcceptedSessionId == sessionId.toString()) {
+          isAlreadyActive = true;
+        }
+
+        if (isAlreadyActive) {
           return;
         }
 

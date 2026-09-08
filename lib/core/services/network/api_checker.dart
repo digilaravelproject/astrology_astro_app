@@ -71,11 +71,12 @@ class ApiChecker {
         }
       case 401:
         _logout();
+        final errorMessage = response.data is Map ? (response.data['msg'] ?? response.data['message'] ?? 'Unauthorized') : 'Unauthorized';
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
           type: DioExceptionType.badResponse,
-          error: 'Unauthorized',
+          error: errorMessage,
         );
       case 403:
         throw DioException(
@@ -203,9 +204,10 @@ class ApiChecker {
         case DioExceptionType.badResponse:
           if (error.response?.statusCode == 401) {
             _logout();
-            return const ResponseModel(
+            final errorMessage = error.response?.data is Map ? (error.response?.data['msg'] ?? error.response?.data['message'] ?? 'Unauthorized') : 'Unauthorized';
+            return ResponseModel(
               isSuccess: false,
-              message: 'Unauthorized',
+              message: errorMessage,
               statusCode: 401,
             );
           }
@@ -310,16 +312,17 @@ class ApiChecker {
     final statusCode = response.statusCode ?? 500;
 
     if (statusCode == 401) {
-      if (showToaster) {
+      final errorMessage = response.data is Map ? (response.data['msg'] ?? response.data['message'] ?? 'Session expired. Please login again.') : 'Session expired. Please login again.';
+      if (showToaster && !isLoggingOut) {
         CustomSnackBar.showError(
-          'Session expired. Please login again.',
+          errorMessage,
           isApiError: true,
         );
       }
       _logout();
-      return const ResponseModel(
+      return ResponseModel(
         isSuccess: false,
-        message: 'Unauthorized',
+        message: errorMessage,
         statusCode: 401,
       );
     }
@@ -332,7 +335,7 @@ class ApiChecker {
             statusCode: statusCode,
           );
 
-          if (showToaster) {
+          if (showToaster && !isLoggingOut) {
             if (responseModel.errors != null &&
                 responseModel.errors!.isNotEmpty) {
               CustomSnackBar.showError(
@@ -345,7 +348,7 @@ class ApiChecker {
 
           return responseModel;
         } catch (e) {
-          if (showToaster) {
+          if (showToaster && !isLoggingOut) {
             CustomSnackBar.showError('Something went wrong', isApiError: true);
           }
           return ResponseModel(
@@ -355,7 +358,7 @@ class ApiChecker {
           );
         }
       } else {
-        if (showToaster) {
+        if (showToaster && !isLoggingOut) {
           CustomSnackBar.showError('Something went wrong', isApiError: true);
         }
         return ResponseModel(
@@ -411,7 +414,19 @@ class ApiChecker {
     );
   }
 
+  static bool isLoggingOut = false;
+
   static void _logout() async {
+    if (isLoggingOut) return;
+    
+    // Prevent logout loop and navigation if already on Login or OTP screens
+    final currentRoute = getx.Get.currentRoute;
+    if (currentRoute == RouteHelper.getLoginRoute() || currentRoute == RouteHelper.getOtpRoute()) {
+      return;
+    }
+
+    isLoggingOut = true;
+
     try {
       if (getx.Get.isRegistered<astro_fcm.FCMNotificationService>()) {
         await astro_fcm.FCMNotificationService.removeDeviceToken();
@@ -439,5 +454,9 @@ class ApiChecker {
     if (getx.Get.currentRoute != RouteHelper.getLoginRoute()) {
       getx.Get.offAllNamed(RouteHelper.getLoginRoute());
     }
+
+    Future.delayed(const Duration(seconds: 2), () {
+      isLoggingOut = false;
+    });
   }
 }

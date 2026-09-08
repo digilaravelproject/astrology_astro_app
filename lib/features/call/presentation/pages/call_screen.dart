@@ -330,7 +330,6 @@ class _CallScreenState extends State<CallScreen> {
                                           .fetchOfferSdpFromCurrentSession() ??
                                       '';
                                 }
-                                if (sdp.isEmpty) return;
                                 final success = await controller.acceptCall(
                                   sdp,
                                 );
