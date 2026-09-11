@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:astro_astrologer/features/notification/domain/usecases/get_notification_count_usecase.dart';
 import 'package:astro_astrologer/features/notification/domain/usecases/get_notifications_usecase.dart';
@@ -37,6 +38,12 @@ class NotificationController extends GetxController {
   final selectedNotification = Rx<NotificationItemModel?>(null);
   final isDetailLoading = false.obs;
 
+  // Pagination support & ScrollController
+  final ScrollController scrollController = ScrollController();
+  int _currentPage = 1;
+  bool _hasMore = true;
+  final isFetchingMore = false.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -60,6 +67,19 @@ class NotificationController extends GetxController {
     Logger.d('NotificationController: onReady called');
     // Initial fetch when controller is ready
     getNotificationCount();
+  }
+
+  @override
+  void onClose() {
+    scrollController.dispose();
+    super.onClose();
+  }
+
+  void _scrollListener() {
+    if (scrollController.position.pixels >=
+        scrollController.position.maxScrollExtent - 200) {
+      getNotifications(refresh: false);
+    }
   }
 
   Future<void> getNotificationCount() async {
@@ -105,11 +125,6 @@ class NotificationController extends GetxController {
     }
   }
 
-  // Pagination state
-  int _currentPage = 1;
-  bool _hasMore = true;
-  final isFetchingMore = false.obs;
-
   Future<void> getNotifications({bool refresh = false}) async {
     try {
       if (!Get.isRegistered<AuthController>()) return;
@@ -128,8 +143,12 @@ class NotificationController extends GetxController {
         _currentPage = 1;
         _hasMore = true;
         isNotificationsLoading.value = true;
+        notifications.clear();
+        if (!scrollController.hasListeners) {
+          scrollController.addListener(_scrollListener);
+        }
       } else {
-        if (!_hasMore || isFetchingMore.value) return;
+        if (!_hasMore || isFetchingMore.value || isNotificationsLoading.value) return;
         isFetchingMore.value = true;
       }
 

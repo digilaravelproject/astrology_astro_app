@@ -179,12 +179,12 @@ class _CallScreenState extends State<CallScreen> {
                           ],
                         ),
                       ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Obx(() => NetworkPingIndicator(
-                              pingMs: controller.currentPingMs.value,
-                            )),
-                      ),
+                      // Align(
+                      //   alignment: Alignment.centerRight,
+                      //   child: Obx(() => NetworkPingIndicator(
+                      //         pingMs: controller.currentPingMs.value,
+                      //       )),
+                      // ),
                     ],
                   ),
                 ),
@@ -415,7 +415,7 @@ class _CallScreenState extends State<CallScreen> {
                         // Switch to Chat (visible during ongoing call)
                         if (controller.isPackageCall)
                           _buildControlButton(
-                            icon: Icons.swap_calls_rounded,
+                            icon: Icons.message,
                             label: 'Chat'.tr,
                             isActive: false,
                             onPressed: () => _showSwitchToChatDialog(context),

@@ -7,6 +7,9 @@ import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/features/chat/presentation/controllers/assistance_chat_room_controller.dart';
 import 'package:astro_astrologer/core/theme/app_colors.dart';
 import 'package:astro_astrologer/core/widgets/app_text.dart';
+import 'package:astro_astrologer/core/widgets/custom_app_bar.dart';
+import 'package:astro_astrologer/core/widgets/network_ping_indicator.dart';
+import 'package:astro_astrologer/core/widgets/full_screen_image_viewer.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:astro_astrologer/features/chat/domain/entities/chat_message.dart';
 import 'package:astro_astrologer/features/kundli/kundli_screen.dart';
@@ -323,9 +326,9 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
         alignment: message.isMe ? Alignment.centerRight : Alignment.centerLeft,
         child: Container(
           margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          padding: message.type == 'image' ? const EdgeInsets.only(bottom: 8) : const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
-            color: message.isMe ? AppColors.deepPink : Colors.white,
+            color: message.isMe ? AppColors.deepPink.withValues(alpha: 0.85) : Colors.white,
             borderRadius: BorderRadius.only(
               topLeft: const Radius.circular(16),
               topRight: const Radius.circular(16),
@@ -388,8 +391,16 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
                   ),
                 ),
               if (message.type == 'image')
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
+                GestureDetector(
+                  onTap: () {
+                    final imageUrl = message.image != null && message.image!.startsWith('http')
+                        ? message.image
+                        : message.attachmentUrl != null && message.attachmentUrl!.startsWith('http')
+                            ? message.attachmentUrl
+                            : '${AppUrls.baseImageUrl}${message.attachmentUrl ?? ""}';
+                    final imagePath = message.image != null && File(message.image!).existsSync() ? message.image : null;
+                    Get.to(() => FullScreenImageViewer(imageUrl: imageUrl, imagePath: imagePath));
+                  },
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child:
@@ -401,7 +412,7 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
                               width: 200,
                               fit: BoxFit.cover,
                             )
-                            : (message.image != null
+                            : (message.image != null && File(message.image!).existsSync()
                                 ? Image.file(
                                   File(message.image!),
                                   height: 150,
@@ -462,27 +473,38 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
                   ),
                 )
               else if (mainText.isNotEmpty)
-                AppText(
-                  mainText,
-                  fontSize: 14,
-                  color: message.isMe ? Colors.white : Colors.black87,
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: message.type == 'image' ? 12 : 0),
+                  child: AppText(
+                    mainText,
+                    fontSize: 14,
+                    color: message.isMe ? Colors.white : Colors.black87,
+                  ),
                 ),
               const SizedBox(height: 4),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  AppText(
-                    _formatTime(message.time),
-                    fontSize: 10,
-                    color:
-                        message.isMe
-                            ? Colors.white.withOpacity(0.7)
-                            : Colors.grey[600]!,
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: message.type == 'image' ? 12 : 0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AppText(
+                          _formatTime(message.time),
+                          fontSize: 10,
+                          color:
+                              message.isMe
+                                  ? Colors.white.withOpacity(0.7)
+                                  : Colors.grey[600]!,
+                        ),
+                        if (message.isMe) ...[
+                          const SizedBox(width: 4),
+                          _buildStatusIcon(message.status),
+                        ],
+                      ],
+                    ),
                   ),
-                  if (message.isMe) ...[
-                    const SizedBox(width: 4),
-                    _buildStatusIcon(message.status),
-                  ],
                 ],
               ),
             ],
@@ -606,19 +628,13 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
                 final hasText = value.text.trim().isNotEmpty;
                 return Row(
                   children: [
-                    IconButton(
-                      icon: const Icon(
-                        Icons.add_circle_outline,
-                        color: Colors.grey,
-                        size: 22,
-                      ),
-                      onPressed: _showAttachmentBottomSheet,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(minWidth: 40),
-                    ),
                     Expanded(
                       child: TextField(
                         controller: controller.messageController,
+                        minLines: 1,
+                        maxLines: 5,
+                        keyboardType: TextInputType.multiline,
+                        textInputAction: TextInputAction.newline,
                         decoration: InputDecoration(
                           hintText: "Type a message...".tr,
                           filled: true,
@@ -641,11 +657,20 @@ class _AssistanceChatRoomScreenState extends State<AssistanceChatRoomScreen> {
                           ),
                         ),
                         textCapitalization: TextCapitalization.sentences,
-                        minLines: 1,
-                        maxLines: 4,
                       ),
                     ),
-                    if (hasText)
+                    if (!hasText)
+                      IconButton(
+                        icon: const Icon(
+                          Icons.add_circle_outline,
+                          color: Colors.grey,
+                          size: 22,
+                        ),
+                        onPressed: _showAttachmentBottomSheet,
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(minWidth: 40),
+                      )
+                    else
                       Obx(
                         () => GestureDetector(
                           onTap:

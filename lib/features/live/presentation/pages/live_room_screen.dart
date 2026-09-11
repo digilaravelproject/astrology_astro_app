@@ -48,6 +48,8 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
   LocalVideoTrack? _localVideoTrack;
   LocalAudioTrack? _localAudioTrack;
   bool _isLiveKitConnected = false;
+  int _cameraInitRetryCount = 0;
+  static const int _maxCameraRetries = 3;
 
   @override
   void initState() {
@@ -354,6 +356,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
       if (mounted) {
         setState(() {
           _isLiveKitConnected = true;
+          _cameraInitRetryCount = 0; // Reset on success
         });
       }
 
@@ -366,8 +369,25 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
       }
     } catch (e) {
       debugPrint('[LIVE] Error connecting to LiveKit / publishing: $e');
-      CustomSnackBar.showError('LiveKit Connection Error: $e');
       _disconnectLiveKit();
+
+      // Auto-retry up to _maxCameraRetries times with backoff
+      if (_cameraInitRetryCount < _maxCameraRetries) {
+        _cameraInitRetryCount++;
+        final delay = Duration(milliseconds: 1500 * _cameraInitRetryCount);
+        debugPrint('[LIVE] Retrying camera init (attempt $_cameraInitRetryCount) after ${delay.inMilliseconds}ms');
+        await Future.delayed(delay);
+        if (mounted) {
+          _isConnectingLiveKit = false; // Allow re-entry
+          _initCamera();
+        }
+      } else {
+        // All retries exhausted — show user-visible error
+        debugPrint('[LIVE] Camera init failed after $_maxCameraRetries retries: $e');
+        if (mounted) {
+          CustomSnackBar.showError('Camera connection failed. Tap the retry button to try again.');
+        }
+      }
     } finally {
       _isConnectingLiveKit = false;
     }
@@ -504,33 +524,82 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
             child:
                 _isCameraOn && _localVideoTrack != null
                     ? VideoTrackRenderer(
-                      _localVideoTrack!,
-                      fit: VideoViewFit.cover,
-                    )
+                        _localVideoTrack!,
+                        fit: VideoViewFit.cover,
+                      )
                     : Container(
-                      color: Colors.grey.shade900,
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              _isCameraOn ? Icons.videocam : Icons.videocam_off,
-                              size: 80,
-                              color: Colors.white.withOpacity(0.3),
-                            ),
-                            const SizedBox(height: 12),
-                            AppText(
-                              _isCameraOn
-                                  ? 'Initializing camera...'
-                                  : 'Camera is Stopped',
-                              color: Colors.white70,
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ],
+                        color: Colors.grey.shade900,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                _isCameraOn
+                                    ? (_isConnectingLiveKit
+                                        ? Icons.videocam
+                                        : Icons.videocam_off_rounded)
+                                    : Icons.videocam_off,
+                                size: 80,
+                                color: Colors.white.withOpacity(0.3),
+                              ),
+                              const SizedBox(height: 12),
+                              AppText(
+                                _isCameraOn
+                                    ? (_isConnectingLiveKit
+                                        ? 'Initializing camera...'
+                                        : 'Camera failed to start')
+                                    : 'Camera is Stopped',
+                                color: Colors.white70,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              // Show retry button when camera fails (not loading, not intentionally off)
+                              if (_isCameraOn && !_isConnectingLiveKit && !_isLiveKitConnected) ...
+                                [
+                                  const SizedBox(height: 20),
+                                  GestureDetector(
+                                    onTap: () {
+                                      if (!_isConnectingLiveKit) {
+                                        _cameraInitRetryCount = 0;
+                                        _initCamera();
+                                      }
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                        vertical: 12,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.15),
+                                        borderRadius: BorderRadius.circular(30),
+                                        border: Border.all(
+                                          color: Colors.white.withOpacity(0.3),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(
+                                            Icons.refresh_rounded,
+                                            color: Colors.white,
+                                            size: 18,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          AppText(
+                                            'Retry Camera',
+                                            color: Colors.white,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
           ),
 
           // Top gradient for header visibility

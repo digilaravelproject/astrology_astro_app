@@ -7,8 +7,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:astro_astrologer/core/theme/app_colors.dart';
 import 'package:astro_astrologer/core/widgets/app_text.dart';
-import 'package:astro_astrologer/core/widgets/custom_text_field.dart';
+import 'package:astro_astrologer/core/widgets/custom_app_bar.dart';
 import 'package:astro_astrologer/core/widgets/network_ping_indicator.dart';
+import 'package:astro_astrologer/core/widgets/full_screen_image_viewer.dart';
 import 'package:astro_astrologer/core/widgets/custom_app_bar.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
@@ -341,11 +342,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           actions: [
             Obx(() {
               if (_controller.status.value.name == 'ongoing') {
-                return Center(
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: NetworkPingIndicator(pingMs: _controller.currentPingMs.value),
-                  ),
+                return const Center(
+                  // child: Padding(
+                  //   padding: const EdgeInsets.only(right: 8.0),
+                  //   child: NetworkPingIndicator(pingMs: _controller.currentPingMs.value),
+                  // ),
                 );
               }
               return const SizedBox.shrink();
@@ -571,12 +572,12 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                             constraints: BoxConstraints(
                               maxWidth: Get.width * 0.75,
                             ),
-                            padding: const EdgeInsets.symmetric(
+                            padding: message.type == 'image' ? const EdgeInsets.only(bottom: 8) : const EdgeInsets.symmetric(
                               horizontal: 16,
                               vertical: 12,
                             ),
                             decoration: BoxDecoration(
-                              color: isMe ? AppColors.deepPink : Colors.white,
+                              color: isMe ? AppColors.deepPink.withValues(alpha: 0.85) : Colors.white,
                               borderRadius: BorderRadius.only(
                                 topLeft: const Radius.circular(16),
                                 topRight: const Radius.circular(16),
@@ -648,55 +649,66 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                     ),
                                   ),
                                 if (message.type == 'image')
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child:
-                                        message.image != null &&
-                                                message.image!.startsWith(
-                                                  'http',
-                                                )
-                                            ? CustomImageWidget(
-                                              imagePath: message.image!,
-                                              height: 150,
-                                              width: 200,
-                                              fit: BoxFit.cover,
-                                            )
-                                            : (message.image != null &&
-                                                    File(
-                                                      message.image!,
-                                                    ).existsSync()
-                                                ? Image.file(
-                                                  File(message.image!),
-                                                  height: 150,
-                                                  width: 200,
-                                                  fit: BoxFit.cover,
-                                                )
-                                                : CustomImageWidget(
-                                                  imagePath:
-                                                      message.attachmentUrl !=
-                                                                  null &&
-                                                              message
-                                                                  .attachmentUrl!
-                                                                  .startsWith(
-                                                                    'http',
-                                                                  )
-                                                          ? message
-                                                              .attachmentUrl!
-                                                          : '${AppUrls.baseImageUrl}${message.attachmentUrl ?? ""}',
-                                                  height: 150,
-                                                  width: 200,
-                                                  fit: BoxFit.cover,
-                                                  errorBuilder:
-                                                      (c, e, s) => Container(
-                                                        height: 150,
-                                                        width: 200,
-                                                        color: Colors.grey,
-                                                        child: const Icon(
-                                                          Icons.broken_image,
-                                                          color: Colors.white,
+                                  GestureDetector(
+                                    onTap: () {
+                                      final imageUrl = message.image != null && message.image!.startsWith('http')
+                                          ? message.image
+                                          : message.attachmentUrl != null && message.attachmentUrl!.startsWith('http')
+                                              ? message.attachmentUrl
+                                              : '${AppUrls.baseImageUrl}${message.attachmentUrl ?? ""}';
+                                      final imagePath = message.image != null && File(message.image!).existsSync() ? message.image : null;
+                                      Get.to(() => FullScreenImageViewer(imageUrl: imageUrl, imagePath: imagePath));
+                                    },
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child:
+                                          message.image != null &&
+                                                  message.image!.startsWith(
+                                                    'http',
+                                                  )
+                                              ? CustomImageWidget(
+                                                imagePath: message.image!,
+                                                height: 150,
+                                                width: 200,
+                                                fit: BoxFit.cover,
+                                              )
+                                              : (message.image != null &&
+                                                      File(
+                                                        message.image!,
+                                                      ).existsSync()
+                                                  ? Image.file(
+                                                    File(message.image!),
+                                                    height: 150,
+                                                    width: 200,
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                  : CustomImageWidget(
+                                                    imagePath:
+                                                        message.attachmentUrl !=
+                                                                    null &&
+                                                                message
+                                                                    .attachmentUrl!
+                                                                    .startsWith(
+                                                                      'http',
+                                                                    )
+                                                            ? message
+                                                                .attachmentUrl!
+                                                            : '${AppUrls.baseImageUrl}${message.attachmentUrl ?? ""}',
+                                                    height: 150,
+                                                    width: 200,
+                                                    fit: BoxFit.cover,
+                                                    errorBuilder:
+                                                        (c, e, s) => Container(
+                                                          height: 150,
+                                                          width: 200,
+                                                          color: Colors.grey,
+                                                          child: const Icon(
+                                                            Icons.broken_image,
+                                                            color: Colors.white,
+                                                          ),
                                                         ),
-                                                      ),
-                                                )),
+                                                  )),
+                                    ),
                                   )
                                 else if (message.type == 'document')
                                   Container(
@@ -727,40 +739,51 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                     ),
                                   )
                                 else if (mainText.isNotEmpty)
-                                  AppText(
-                                    mainText,
-                                    fontSize: 14,
-                                    color: isMe ? Colors.white : Colors.black87,
-                                    height: 1.4,
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: message.type == 'image' ? 12 : 0),
+                                    child: AppText(
+                                      mainText,
+                                      fontSize: 14,
+                                      color: isMe ? Colors.white : Colors.black87,
+                                      height: 1.4,
+                                    ),
                                   ),
                                 const SizedBox(height: 4),
                                 Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    AppText(
-                                      "${message.time.hour.toString().padLeft(2, '0')}:${message.time.minute.toString().padLeft(2, '0')} ${message.time.hour >= 12 ? 'pm' : 'am'}",
-                                      fontSize: 10,
-                                      color:
-                                          isMe
-                                              ? Colors.white.withOpacity(0.7)
-                                              : Colors.grey,
-                                    ),
-                                    if (isMe) ...[
-                                      const SizedBox(width: 4),
-                                      Icon(
-                                        status == 'sending...'
-                                            ? Icons.access_time
-                                            : status == 'sent'
-                                            ? Icons.check
-                                            : Icons.done_all,
-                                        size: 16,
-                                        color:
-                                            (status == 'seen' ||
-                                                    status == 'read')
-                                                ? Colors.blueAccent
-                                                : Colors.white.withOpacity(0.7),
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: message.type == 'image' ? 12 : 0),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          AppText(
+                                            "${message.time.hour.toString().padLeft(2, '0')}:${message.time.minute.toString().padLeft(2, '0')} ${message.time.hour >= 12 ? 'pm' : 'am'}",
+                                            fontSize: 10,
+                                            color:
+                                                isMe
+                                                    ? Colors.white.withOpacity(0.7)
+                                                    : Colors.grey,
+                                          ),
+                                          if (isMe) ...[
+                                            const SizedBox(width: 4),
+                                            Icon(
+                                              status == 'sending...'
+                                                  ? Icons.access_time
+                                                  : status == 'sent'
+                                                  ? Icons.check
+                                                  : Icons.done_all,
+                                              size: 16,
+                                              color:
+                                                  (status == 'seen' ||
+                                                          status == 'read')
+                                                      ? Colors.blueAccent
+                                                      : Colors.white.withOpacity(0.7),
+                                            ),
+                                          ],
+                                        ],
                                       ),
-                                    ],
+                                    ),
                                   ],
                                 ),
                               ],
@@ -858,19 +881,13 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                             final hasText = value.text.trim().isNotEmpty;
                             return Row(
                               children: [
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.add_circle_outline,
-                                    color: Colors.grey,
-                                    size: 22,
-                                  ),
-                                  onPressed: _showAttachmentBottomSheet,
-                                  padding: EdgeInsets.zero,
-                                  constraints: const BoxConstraints(minWidth: 40),
-                                ),
                                 Expanded(
                                   child: TextField(
                                     controller: _controller.messageController,
+                                    minLines: 1,
+                                    maxLines: 5,
+                                    keyboardType: TextInputType.multiline,
+                                    textInputAction: TextInputAction.newline,
                                     decoration: InputDecoration(
                                       hintText: "Type a message...".tr,
                                       filled: true,
@@ -894,7 +911,17 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                     ),
                                   ),
                                 ),
-                                if (!hasText)
+                                if (!hasText) ...[
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.add_circle_outline,
+                                      color: Colors.grey,
+                                      size: 22,
+                                    ),
+                                    onPressed: _showAttachmentBottomSheet,
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(minWidth: 40),
+                                  ),
                                   IconButton(
                                     icon: const Icon(
                                       Icons.auto_awesome,
@@ -905,8 +932,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                     onPressed: () => _openKundli(context),
                                     padding: EdgeInsets.zero,
                                     constraints: const BoxConstraints(minWidth: 40),
-                                  )
-                                else
+                                  ),
+                                ] else
                                   GestureDetector(
                                     onTap: () => _controller.sendTextMessage(),
                                     child: Container(

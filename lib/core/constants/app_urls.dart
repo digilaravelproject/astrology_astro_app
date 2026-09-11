@@ -213,7 +213,7 @@ class AppUrls {
   static const String pusherSubscriptionSucceeded = 'pusher_internal:subscription_succeeded';
   static const String pusherSubscribe = 'pusher:subscribe';
   static const String pusherPing = 'pusher:ping';
-  static const String pusherPong = '{"event":"pusher:pong"}';
+  static const String pusherPong = 'pusher:pong';
 
   // ==========================================
   // System Events - Call
