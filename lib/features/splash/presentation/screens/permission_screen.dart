@@ -47,7 +47,7 @@ class _PermissionScreenState extends State<PermissionScreen>
     isCameraGranted = await Permission.camera.isGranted;
     isMicrophoneGranted = await Permission.microphone.isGranted;
     isNotificationGranted = await Permission.notification.isGranted;
-    isSystemAlertWindowGranted = await Permission.systemAlertWindow.isGranted;
+    isSystemAlertWindowGranted = GetPlatform.isIOS ? true : await Permission.systemAlertWindow.isGranted;
     if (mounted) {
       setState(() {});
     }
@@ -97,8 +97,10 @@ class _PermissionScreenState extends State<PermissionScreen>
       Permission.camera,
       Permission.microphone,
       Permission.notification,
-      Permission.systemAlertWindow,
     ];
+    if (!GetPlatform.isIOS) {
+      permissions.add(Permission.systemAlertWindow);
+    }
 
     await permissions.request();
     await _checkPermissions();
@@ -111,7 +113,7 @@ class _PermissionScreenState extends State<PermissionScreen>
       bool notifPermanentlyDenied =
           await Permission.notification.isPermanentlyDenied;
       bool alertPermanentlyDenied =
-          await Permission.systemAlertWindow.isPermanentlyDenied;
+          GetPlatform.isIOS ? false : await Permission.systemAlertWindow.isPermanentlyDenied;
 
       if (cameraPermanentlyDenied ||
           micPermanentlyDenied ||
@@ -184,13 +186,15 @@ class _PermissionScreenState extends State<PermissionScreen>
                 description: 'To notify you about chat and call requests.',
                 isGranted: isNotificationGranted,
               ),
-              const SizedBox(height: 20),
-              _buildPermissionItem(
-                icon: Icons.filter_none,
-                title: 'Display over other apps'.tr,
-                description: 'Required to show incoming calls when app is closed.',
-                isGranted: isSystemAlertWindowGranted,
-              ),
+              if (!GetPlatform.isIOS) ...[
+                const SizedBox(height: 20),
+                _buildPermissionItem(
+                  icon: Icons.filter_none,
+                  title: 'Display over other apps'.tr,
+                  description: 'Required to show incoming calls when app is closed.',
+                  isGranted: isSystemAlertWindowGranted,
+                ),
+              ],
               const Spacer(),
               if (!_allPermissionsGranted)
                 SizedBox(
