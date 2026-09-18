@@ -16,6 +16,8 @@ import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/constants/app_constants.dart';
 import 'package:astro_astrologer/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
+import 'package:astro_astrologer/core/enums/session_status_enums.dart';
 
 class LiveRoomScreen extends StatefulWidget {
   final LiveSessionModel session;
@@ -205,6 +207,79 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
     });
   }
 
+  Widget _buildActiveCallUI(CallController controller) {
+    return Container(
+      color: Colors.black87,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              radius: 40,
+              backgroundImage: controller.session.consumerImage != null && controller.session.consumerImage!.isNotEmpty
+                  ? NetworkImage(
+                      controller.session.consumerImage!.startsWith('http')
+                          ? controller.session.consumerImage!
+                          : '${AppUrls.baseImageUrl}${controller.session.consumerImage}',
+                    )
+                  : null,
+              child: controller.session.consumerImage == null || controller.session.consumerImage!.isEmpty
+                  ? const Icon(Icons.person, color: Colors.white, size: 40)
+                  : null,
+            ),
+            const SizedBox(height: 16),
+            AppText(
+              controller.session.consumerName ?? 'User',
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+            const SizedBox(height: 8),
+            Obx(() {
+              final minutes = (controller.durationSeconds.value ~/ 60).toString().padLeft(2, '0');
+              final seconds = (controller.durationSeconds.value % 60).toString().padLeft(2, '0');
+              return AppText(
+                '$minutes:$seconds',
+                color: Colors.greenAccent,
+                fontSize: 16,
+              );
+            }),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    controller.toggleMute();
+                  },
+                  child: Obx(() => CircleAvatar(
+                    radius: 25,
+                    backgroundColor: controller.isMuted.value ? Colors.white : Colors.white24,
+                    child: Icon(
+                      controller.isMuted.value ? Icons.mic_off : Icons.mic,
+                      color: controller.isMuted.value ? Colors.black : Colors.white,
+                    ),
+                  )),
+                ),
+                const SizedBox(width: 24),
+                GestureDetector(
+                  onTap: () {
+                    controller.terminateEntireSession();
+                  },
+                  child: const CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.red,
+                    child: Icon(Icons.call_end, color: Colors.white, size: 30),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showGiftAnimation(
     String giftIconUrl,
     String senderName,
@@ -331,8 +406,11 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
           cameraPosition: CameraPosition.front,
         ),
       );
-      await room.localParticipant?.publishVideoTrack(videoTrack);
+      final videoPub = await room.localParticipant?.publishVideoTrack(videoTrack);
       _localVideoTrack = videoTrack;
+      if (videoPub != null) {
+        _reportMediaStatus(videoPub, 'on');
+      }
 
       // 4. Create local audio track
       if (micStatus.isGranted) {
@@ -343,7 +421,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
             noiseSuppression: true, // Turn on for better quality without much CPU overhead
           ),
         );
-        await room.localParticipant?.publishAudioTrack(
+        final audioPub = await room.localParticipant?.publishAudioTrack(
           audioTrack,
           publishOptions: const AudioPublishOptions(
             encoding: AudioEncoding.presetSpeech, // Optimize for speech instead of MusicHighQuality
@@ -351,6 +429,9 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
           ),
         );
         _localAudioTrack = audioTrack;
+        if (audioPub != null) {
+          _reportMediaStatus(audioPub, 'on');
+        }
       }
 
       if (mounted) {
@@ -521,8 +602,9 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
         children: [
           // 1. Camera View Area (Renders LiveKit VideoRenderer or fallback)
           Positioned.fill(
-            child:
-                _isCameraOn && _localVideoTrack != null
+            child: Builder(
+              builder: (context) {
+                Widget cameraView = _isCameraOn && _localVideoTrack != null
                     ? VideoTrackRenderer(
                         _localVideoTrack!,
                         fit: VideoViewFit.cover,
@@ -599,7 +681,27 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                             ],
                           ),
                         ),
-                      ),
+                      );
+
+                if (Get.isRegistered<CallController>()) {
+                  final callCtrl = Get.find<CallController>();
+                  return Obx(() {
+                    final status = callCtrl.status.value;
+                    bool isCallActive = callCtrl.session.isLiveCall && status == CallStatus.ongoing;
+                    if (isCallActive) {
+                      return Column(
+                        children: [
+                          Expanded(child: cameraView),
+                          Expanded(child: _buildActiveCallUI(callCtrl)),
+                        ],
+                      );
+                    }
+                    return cameraView;
+                  });
+                }
+                return cameraView;
+              },
+            ),
           ),
 
           // Top gradient for header visibility

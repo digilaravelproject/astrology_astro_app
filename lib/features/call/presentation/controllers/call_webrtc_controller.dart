@@ -287,7 +287,11 @@ class CallWebRTCController extends GetxController {
               }
             }
 
-            if (!_orchestrator.isCallScreenVisible && _orchestrator.status.value == CallStatus.ongoing) {
+            // Check if it's a live call session
+            final sType = session['session_type']?.toString();
+            _orchestrator.session.isLiveCall = sType == 'live';
+
+            if (!_orchestrator.session.isLiveCall && !_orchestrator.isCallScreenVisible && _orchestrator.status.value == CallStatus.ongoing) {
               if (Get.currentRoute != AppRoutes.callScreen) {
                 Get.toNamed(AppRoutes.callScreen);
               }

@@ -24,6 +24,7 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
   bool isSpeakerOn = false;
   bool isCallScreenVisible = false;
   bool isPackageCall = false;
+  bool isLiveCall = false;
   int? subSessionId;
   bool isChatAlsoActive = false;
   int? activeChatSessionId;
@@ -63,10 +64,11 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
           consumerName = callerData['name']?.toString() ?? 'User';
           consumerImage = callerData['profile_photo']?.toString();
           isPackageCall = session['is_package'] == true || int.tryParse(session['sub_session_id']?.toString() ?? '') != null;
+          isLiveCall = session['session_type'] == 'live';
           subSessionId = int.tryParse(session['sub_session_id']?.toString() ?? '');
           final offerSdp = callerData['offer']?.toString();
           if (offerSdp != null) {
-            handleIncomingCall(offerSdp);
+            handleIncomingCall(offerSdp, isLiveCall: isLiveCall);
           }
         }
       }
@@ -114,12 +116,17 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
     });
   }
 
-  void handleIncomingCall(String offerSdp) {
+  void handleIncomingCall(String offerSdp, {bool isLiveCall = false}) {
     incomingOfferSdp = offerSdp;
     isSummaryShown = false;
     status.value = CallStatus.ringing;
     startRingtone(isIncoming: true);
     startRingingTimeout();
+
+    if (isLiveCall) {
+      _showLiveCallIncomingDialog();
+      return;
+    }
 
     final String name = (consumerName != null && consumerName!.isNotEmpty) ? consumerName! : 'User';
     final String userAvatar = (consumerImage != null && consumerImage!.isNotEmpty && consumerImage != 'null') ? consumerImage! : 'assets/images/app_logo.png';
@@ -133,6 +140,39 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
       callerName: name,
       avatar: userAvatar,
       type: 'call',
+    );
+  }
+
+  void _showLiveCallIncomingDialog() {
+    if (Get.isDialogOpen ?? false) return;
+    Get.dialog(
+      AlertDialog(
+        backgroundColor: Colors.black87,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        title: const Text('Incoming Live Call', style: TextStyle(color: Colors.white)),
+        content: Text(
+          '${consumerName ?? 'User'} is calling you.',
+          style: const TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Get.back();
+              _orchestrator.rejectCall();
+            },
+            child: const Text('Reject', style: TextStyle(color: Colors.redAccent)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+            onPressed: () {
+              Get.back();
+              _orchestrator.acceptCallDirect();
+            },
+            child: const Text('Accept', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+      barrierDismissible: false,
     );
   }
 

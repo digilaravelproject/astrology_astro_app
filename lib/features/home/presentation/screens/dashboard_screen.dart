@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:astro_astrologer/core/theme/app_colors.dart';
@@ -20,6 +22,8 @@ import 'package:astro_astrologer/features/call/presentation/controllers/call_con
 import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
 import 'package:astro_astrologer/features/call/presentation/widgets/floating_call_bubble.dart';
 import 'package:astro_astrologer/features/home/presentation/widgets/go_live_bottom_sheet.dart';
+import 'package:astro_astrologer/features/chat/presentation/pages/assistance_chat_room_screen.dart';
+import 'package:astro_astrologer/core/services/fcm_notification_service.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -40,7 +44,57 @@ class _DashboardScreenState extends State<DashboardScreen> {
       if (Get.isRegistered<CallController>()) {
         Get.find<CallController>().checkCurrentActiveCallSession();
       }
+      Future.delayed(const Duration(milliseconds: 500), _consumePendingNotification);
     });
+  }
+
+  void _consumePendingNotification() async {
+    try {
+      // 1. Check local notification launch details (for cold start from killed state)
+      try {
+        final launchDetails = await FlutterLocalNotificationsPlugin().getNotificationAppLaunchDetails();
+        if (launchDetails != null && launchDetails.didNotificationLaunchApp) {
+          final payload = launchDetails.notificationResponse?.payload;
+          if (payload != null && payload.isNotEmpty) {
+            final Map<String, dynamic> data = jsonDecode(payload);
+            FCMNotificationService.pendingNotificationData = data;
+            debugPrint('[DashboardScreen] Extracted local notification launch payload');
+          }
+        }
+      } catch (e) {
+        debugPrint('[DashboardScreen] Error checking local notification launch details: $e');
+      }
+
+      final Map<String, dynamic>? data = FCMNotificationService.pendingNotificationData;
+      if (data == null) return;
+
+      final type = data['type']?.toString();
+      final notificationType = data['notification_type']?.toString();
+      final bool isChatAssistance = type == 'assistance_chat' || type == 'chat_assistance' || notificationType == 'assistance_chat';
+
+      if (isChatAssistance) {
+        FCMNotificationService.pendingNotificationData = null;
+        
+        final String rawSessionId =
+            data['session_id']?.toString() ??
+            data['chat_session_id']?.toString() ??
+            data['chat_assistance_session_id']?.toString() ??
+            data['id']?.toString() ??
+            '';
+        final int? sId = int.tryParse(rawSessionId);
+        if (sId != null && sId > 0) {
+           final userName = data['user_name']?.toString() ?? data['sender_name']?.toString() ?? 'User';
+           final userImage = data['user_avatar']?.toString() ?? data['sender_image']?.toString() ?? '';
+           Get.to(() => AssistanceChatRoomScreen(
+             sessionId: sId,
+             userName: userName,
+             userImage: userImage,
+           ));
+        }
+      }
+    } catch (e) {
+      debugPrint('[DashboardScreen] Error consuming pending notification: $e');
+    }
   }
 
   Future<void> _requestPermissions() async {

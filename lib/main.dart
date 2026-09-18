@@ -127,6 +127,18 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       if (type?.toLowerCase() == 'gift' || type?.toLowerCase() == 'payout_settlement' || type?.toLowerCase() == 'wallet') {
         final ref = data['reference_id']?.toString() ?? data['entity_id']?.toString() ?? '';
         payloadStr = ref.isNotEmpty ? 'wallet_$ref' : data.toString();
+      } else if (type == 'assistance_chat' || type == 'chat_assistance') {
+        String uName = data['user_name']?.toString() ?? data['sender_name']?.toString() ?? 'User';
+        if (uName.startsWith('New query from ')) {
+          uName = uName.replaceAll('New query from ', '').replaceAll(' (Assistant Chat)', '').trim();
+        }
+        final uAvatar = data['user_avatar']?.toString() ?? data['sender_image']?.toString() ?? '';
+        payloadStr = jsonEncode({
+          'type': 'assistance_chat',
+          'session_id': rawSessionId,
+          'user_name': uName,
+          'user_avatar': uAvatar,
+        });
       } else {
         payloadStr = rawSessionId.isNotEmpty ? rawSessionId : data.toString();
       }
@@ -134,16 +146,18 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       String channelId = 'general';
       if (payloadStr.startsWith('wallet_')) channelId = 'wallet';
 
-      LocalNotificationService.showNotification(
-        notificationId: parsedSessionId > 0 ? parsedSessionId : null,
-        title: title,
-        body: body,
-        payload: payloadStr,
-        channelId: channelId,
-        playSound: true,
-        priority: Priority.high,
-        importance: Importance.max,
-      );
+      if (message.notification == null) {
+        LocalNotificationService.showNotification(
+          notificationId: parsedSessionId > 0 ? parsedSessionId : null,
+          title: title,
+          body: body,
+          payload: payloadStr,
+          channelId: channelId,
+          playSound: true,
+          priority: Priority.high,
+          importance: Importance.max,
+        );
+      }
     }
 
     if (data.containsKey('session')) {

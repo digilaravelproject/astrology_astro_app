@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -20,6 +21,8 @@ import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/services/websocket/websocket_service.dart';
 import 'package:astro_astrologer/routes/app_routes.dart';
+import 'package:astro_astrologer/features/chat/presentation/pages/assistance_chat_room_screen.dart';
+import 'package:astro_astrologer/core/services/fcm_notification_service.dart';
 
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse notificationResponse) {
@@ -259,6 +262,39 @@ class LocalNotificationService {
 
   static void handleNotificationRouting(String payload, bool isAnswer, bool isDecline, {String? callerName}) async {
     debugPrint('Routing payload: $payload, isAnswer: $isAnswer, isDecline: $isDecline');
+    
+    // Handle JSON payloads
+    if (payload.startsWith('{') && payload.endsWith('}')) {
+      try {
+        final Map<String, dynamic> data = jsonDecode(payload);
+        if (data['type'] == 'assistance_chat') {
+          // Pass it to FCMNotificationService to handle cold start vs foreground routing
+          FCMNotificationService.pendingNotificationData = data;
+          
+          if (Get.currentRoute == '' || Get.currentRoute == '/' || Get.currentRoute == AppRoutes.splash) {
+             // Let Splash/Dashboard consume it
+             return;
+          }
+          
+          final String rawSessionId = data['session_id']?.toString() ?? '';
+          final int? sId = int.tryParse(rawSessionId);
+          if (sId != null && sId > 0) {
+            FCMNotificationService.pendingNotificationData = null; // Consume immediately
+            final userName = data['user_name']?.toString() ?? 'User';
+            final userImage = data['user_avatar']?.toString() ?? '';
+            Get.to(() => AssistanceChatRoomScreen(
+              sessionId: sId,
+              userName: userName,
+              userImage: userImage,
+            ));
+          }
+          return;
+        }
+      } catch (e) {
+        debugPrint('[LocalNotificationService] JSON parse error for payload: $e');
+      }
+    }
+
     final bool isChat = payload.startsWith('chat_');
     final int? sessionId = isChat ? int.tryParse(payload.replaceFirst('chat_', '')) : null;
 
@@ -342,6 +378,37 @@ class LocalNotificationService {
       debugPrint('[LocalNotificationService] Wallet notification tapped. Payload: $payload');
       // TODO: Navigate to Wallet screen when route is available
       // Get.toNamed('/wallet');
+    } else if (payload.startsWith('{"type":"assistance_chat"')) {
+      try {
+        final data = jsonDecode(payload);
+        final sIdStr = data['session_id']?.toString() ?? '';
+        final int? sId = int.tryParse(sIdStr);
+        if (sId != null && sId > 0) {
+          final userName = data['user_name']?.toString() ?? 'User';
+          final userImage = data['user_avatar']?.toString() ?? '';
+          Future.delayed(const Duration(milliseconds: 4500), () {
+            Get.to(() => AssistanceChatRoomScreen(
+              sessionId: sId,
+              userName: userName,
+              userImage: userImage,
+            ));
+          });
+        }
+      } catch (e) {
+        debugPrint('Error parsing assistance chat payload: $e');
+      }
+    } else if (payload.startsWith('assistance_chat_')) {
+      final rawPayloadStr = payload.replaceFirst('assistance_chat_', '');
+      final int? sId = int.tryParse(rawPayloadStr);
+      if (sId != null && sId > 0) {
+        // Delaying to ensure route is ready in case of background
+        Future.delayed(const Duration(milliseconds: 4500), () {
+          Get.to(() => AssistanceChatRoomScreen(
+            sessionId: sId,
+            userName: 'User',
+          ));
+        });
+      }
     } else {
       final rawPayloadStr = payload.replaceFirst('chat_', '').replaceFirst('CHAT_REQUEST_', '');
       final int? sId = int.tryParse(rawPayloadStr);

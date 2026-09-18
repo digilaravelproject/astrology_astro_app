@@ -1,4 +1,5 @@
 import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
+import 'package:astro_astrologer/features/chat/presentation/pages/assistance_chat_room_screen.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -19,6 +20,8 @@ import 'package:astro_astrologer/features/call/presentation/controllers/call_con
 class FCMNotificationService {
   static final FirebaseMessaging _firebaseMessaging =
       FirebaseMessaging.instance;
+  static int? pendingLiveSessionId;
+  static Map<String, dynamic>? pendingNotificationData;
 
   static Future<void> initialize() async {
     // 1. Notification Permission is now requested in PermissionScreen
@@ -87,7 +90,17 @@ class FCMNotificationService {
           final refId = message.data['reference_id']?.toString() ?? message.data['entity_id']?.toString() ?? '';
           structuredPayload = refId.isNotEmpty ? 'wallet_$refId' : message.data.toString();
         } else if (type == 'assistance_chat' || type == 'chat_assistance') {
-          structuredPayload = rawSessionId.isNotEmpty ? 'assistance_chat_$rawSessionId' : message.data.toString();
+          String uName = message.data['user_name']?.toString() ?? message.data['sender_name']?.toString() ?? 'User';
+          if (uName.startsWith('New query from ')) {
+            uName = uName.replaceAll('New query from ', '').replaceAll(' (Assistant Chat)', '').trim();
+          }
+          final uAvatar = message.data['user_avatar']?.toString() ?? message.data['sender_image']?.toString() ?? '';
+          structuredPayload = jsonEncode({
+            'type': 'assistance_chat',
+            'session_id': rawSessionId,
+            'user_name': uName,
+            'user_avatar': uAvatar,
+          });
         } else {
           structuredPayload =
               rawSessionId.isNotEmpty ? rawSessionId : message.data.toString();
@@ -282,30 +295,19 @@ class FCMNotificationService {
       if (message != null) {
         debugPrint('[FCMNotificationService] Cold-start notification detected: ${message.data}');
         
-        // Delaying to wait for routing to finish
-        Future.delayed(const Duration(milliseconds: 2500), () {
-          final type = message.data['type']?.toString();
-          final notificationType = message.data['notification_type']?.toString();
-          
-          if (type == 'assistance_chat' || type == 'chat_assistance' || notificationType == 'assistance_chat') {
-            final String rawSessionId =
-                message.data['session_id']?.toString() ??
-                message.data['chat_session_id']?.toString() ??
-                message.data['chat_assistance_session_id']?.toString() ??
-                message.data['id']?.toString() ??
-                '';
-            final int? sId = int.tryParse(rawSessionId);
-            if (sId != null && sId > 0) {
-               final userName = message.data['user_name']?.toString() ?? message.data['sender_name']?.toString() ?? 'User';
-               final userImage = message.data['user_avatar']?.toString() ?? message.data['sender_image']?.toString() ?? '';
-               Get.to(() => AssistanceChatRoomScreen(
-                 sessionId: sId,
-                 userName: userName,
-                 userImage: userImage,
-               ));
-            }
-          }
-        });
+        final type = message.data['type']?.toString();
+        final notificationType = message.data['notification_type']?.toString();
+        final bool isChatAssistance = type == 'assistance_chat' || type == 'chat_assistance' || notificationType == 'assistance_chat';
+
+        if (isChatAssistance) {
+          pendingNotificationData = Map<String, dynamic>.from(message.data);
+          debugPrint('[FCMNotificationService] Stored pendingNotificationData for cold start.');
+        } else {
+          // Delaying to wait for routing to finish (splash screen)
+          Future.delayed(const Duration(milliseconds: 4500), () {
+            // Existing logic for other types if any
+          });
+        }
       }
     });
   }
