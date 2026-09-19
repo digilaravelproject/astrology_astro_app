@@ -405,8 +405,7 @@ class CallkitService {
       return;
     }
     final String notifTitle = type == 'call' ? 'Incoming Call' : 'Chat Request';
-    final String nameCallerParam =
-        type == 'call' ? callerName : 'Chat Req: $callerName';
+    final String nameCallerParam = callerName;
     final String payloadStr = '${type}_$sessionId';
     final String safeAvatar =
         (avatar.isNotEmpty && avatar != 'null')

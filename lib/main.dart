@@ -90,7 +90,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       final String userName = data['user_name']?.toString() ?? data['caller_name']?.toString() ?? 'User';
       
       final String notifTitle = channelType == 'call' ? 'Incoming Call' : 'Chat Request';
-      final String nameCallerParam = channelType == 'call' ? userName : 'Chat Req: $userName';
+      final String nameCallerParam = userName;
       final String notifBody = '$userName • Astrologer • Now';
       final String payloadStr = '${channelType}_$parsedSessionId';
       
