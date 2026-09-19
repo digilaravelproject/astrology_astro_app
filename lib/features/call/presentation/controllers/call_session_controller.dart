@@ -146,31 +146,86 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
   void _showLiveCallIncomingDialog() {
     if (Get.isDialogOpen ?? false) return;
     Get.dialog(
-      AlertDialog(
-        backgroundColor: Colors.black87,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        title: const Text('Incoming Live Call', style: TextStyle(color: Colors.white)),
-        content: Text(
-          '${consumerName ?? 'User'} is calling you.',
-          style: const TextStyle(color: Colors.white70),
+      Align(
+        alignment: Alignment.topCenter,
+        child: Container(
+          margin: const EdgeInsets.only(top: 50, left: 16, right: 16),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.9),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.green, width: 1.5),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.green.withOpacity(0.2),
+                blurRadius: 10,
+                spreadRadius: 2,
+              )
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 20,
+                  backgroundColor: Colors.pink.shade900,
+                  backgroundImage: consumerImage != null && consumerImage!.isNotEmpty && consumerImage != 'null'
+                      ? NetworkImage(consumerImage!.startsWith('http') ? consumerImage! : '${AppUrls.baseImageUrl}$consumerImage')
+                      : null,
+                  child: consumerImage == null || consumerImage!.isEmpty || consumerImage == 'null' ? const Icon(Icons.person, color: Colors.white) : null,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        'Incoming Live Call',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${consumerName ?? 'User'} is calling you...',
+                        style: const TextStyle(color: Colors.white70, fontSize: 13),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Get.back();
+                    _orchestrator.rejectCall();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+                    child: const Icon(Icons.call_end, color: Colors.white, size: 22),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                GestureDetector(
+                  onTap: () {
+                    Get.back();
+                    _orchestrator.acceptCallDirect();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: const BoxDecoration(color: Colors.green, shape: BoxShape.circle),
+                    child: const Icon(Icons.call, color: Colors.white, size: 22),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Get.back();
-              _orchestrator.rejectCall();
-            },
-            child: const Text('Reject', style: TextStyle(color: Colors.redAccent)),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-            onPressed: () {
-              Get.back();
-              _orchestrator.acceptCallDirect();
-            },
-            child: const Text('Accept', style: TextStyle(color: Colors.white)),
-          ),
-        ],
       ),
       barrierDismissible: false,
     );

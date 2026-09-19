@@ -44,6 +44,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
   StreamSubscription? _userJoinedSubscription;
   StreamSubscription? _userLeftSubscription;
   StreamSubscription? _viewerCountSubscription;
+  Worker? _callStatusWorker;
   late int _viewerCount;
 
   Room? _room;
@@ -60,6 +61,18 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
     _viewerCount = widget.session.viewerCount;
     _isCameraOn = widget.session.isCameraOn;
     _isMuted = !widget.session.isAudioOn;
+
+    if (Get.isRegistered<CallController>()) {
+      _callStatusWorker = ever(Get.find<CallController>().status, (status) {
+        if (mounted) {
+          if (status == CallStatus.ongoing) {
+            if (!_isMuted) _setMicState(true);
+          } else if (status != CallStatus.ongoing && status != CallStatus.ringing && status != CallStatus.waiting) {
+            if (_isMuted) _setMicState(false);
+          }
+        }
+      });
+    }
 
     // Subscribe to dynamic websocket channel
     try {
@@ -209,68 +222,155 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
 
   Widget _buildActiveCallUI(CallController controller) {
     return Container(
-      color: Colors.black87,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            const Color(0xFF1E1E2C),
+            const Color(0xFF0F0F17),
+            Colors.black,
+          ],
+        ),
+      ),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircleAvatar(
-              radius: 40,
-              backgroundImage: controller.session.consumerImage != null && controller.session.consumerImage!.isNotEmpty
-                  ? NetworkImage(
-                      controller.session.consumerImage!.startsWith('http')
-                          ? controller.session.consumerImage!
-                          : '${AppUrls.baseImageUrl}${controller.session.consumerImage}',
-                    )
-                  : null,
-              child: controller.session.consumerImage == null || controller.session.consumerImage!.isEmpty
-                  ? const Icon(Icons.person, color: Colors.white, size: 40)
-                  : null,
+            // Glowing Avatar
+            Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [Colors.greenAccent.withOpacity(0.5), Colors.blueAccent.withOpacity(0.5)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.greenAccent.withOpacity(0.2),
+                    blurRadius: 20,
+                    spreadRadius: 5,
+                  )
+                ],
+              ),
+              child: CircleAvatar(
+                radius: 45,
+                backgroundColor: Colors.grey.shade800,
+                backgroundImage: controller.session.consumerImage != null && controller.session.consumerImage!.isNotEmpty && controller.session.consumerImage != 'null'
+                    ? NetworkImage(
+                        controller.session.consumerImage!.startsWith('http')
+                            ? controller.session.consumerImage!
+                            : '${AppUrls.baseImageUrl}${controller.session.consumerImage}',
+                      )
+                    : null,
+                child: controller.session.consumerImage == null || controller.session.consumerImage!.isEmpty || controller.session.consumerImage == 'null'
+                    ? const Icon(Icons.person, color: Colors.white70, size: 45)
+                    : null,
+              ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
+            // User Name
             AppText(
               controller.session.consumerName ?? 'User',
               color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontSize: 22,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.5,
             ),
             const SizedBox(height: 8),
+            // Call Timer
             Obx(() {
               final minutes = (controller.durationSeconds.value ~/ 60).toString().padLeft(2, '0');
               final seconds = (controller.durationSeconds.value % 60).toString().padLeft(2, '0');
-              return AppText(
-                '$minutes:$seconds',
-                color: Colors.greenAccent,
-                fontSize: 16,
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.mic, color: Colors.greenAccent, size: 14),
+                    const SizedBox(width: 6),
+                    AppText(
+                      '$minutes:$seconds',
+                      color: Colors.greenAccent,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 1.2,
+                    ),
+                  ],
+                ),
               );
             }),
-            const SizedBox(height: 24),
+            const SizedBox(height: 40),
+            // Action Buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // Mute Button
                 GestureDetector(
                   onTap: () {
                     controller.toggleMute();
                   },
-                  child: Obx(() => CircleAvatar(
-                    radius: 25,
-                    backgroundColor: controller.isMuted.value ? Colors.white : Colors.white24,
-                    child: Icon(
-                      controller.isMuted.value ? Icons.mic_off : Icons.mic,
-                      color: controller.isMuted.value ? Colors.black : Colors.white,
-                    ),
-                  )),
+                  child: Obx(() => Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: controller.isMuted.value ? Colors.white : Colors.white.withOpacity(0.15),
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white.withOpacity(0.3)),
+                        ),
+                        child: Icon(
+                          controller.isMuted.value ? Icons.mic_off : Icons.mic,
+                          color: controller.isMuted.value ? Colors.black : Colors.white,
+                          size: 28,
+                        ),
+                      )),
                 ),
-                const SizedBox(width: 24),
+                const SizedBox(width: 32),
+                // End Call Button
                 GestureDetector(
                   onTap: () {
                     controller.terminateEntireSession();
                   },
-                  child: const CircleAvatar(
-                    radius: 30,
-                    backgroundColor: Colors.red,
-                    child: Icon(Icons.call_end, color: Colors.white, size: 30),
+                  child: Container(
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      color: Colors.redAccent,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.redAccent.withOpacity(0.4),
+                          blurRadius: 12,
+                          spreadRadius: 2,
+                        )
+                      ],
+                    ),
+                    child: const Icon(Icons.call_end, color: Colors.white, size: 32),
                   ),
+                ),
+                const SizedBox(width: 32),
+                // Speaker Button
+                GestureDetector(
+                  onTap: () {
+                    controller.toggleSpeaker();
+                  },
+                  child: Obx(() => Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: controller.isSpeakerOn.value ? Colors.white : Colors.white.withOpacity(0.15),
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white.withOpacity(0.3)),
+                        ),
+                        child: Icon(
+                          controller.isSpeakerOn.value ? Icons.volume_up : Icons.volume_down,
+                          color: controller.isSpeakerOn.value ? Colors.black : Colors.white,
+                          size: 28,
+                        ),
+                      )),
                 ),
               ],
             ),
@@ -549,7 +649,39 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
     }
   }
 
+  Future<void> _setMicState(bool mute) async {
+    if (_isTogglingMic) return;
+    _isTogglingMic = true;
+    try {
+      final publication =
+          _room?.localParticipant?.audioTrackPublications.isNotEmpty == true
+              ? _room!.localParticipant!.audioTrackPublications.first
+              : null;
+      if (publication != null) {
+        if (publication.muted == mute) return;
+        setState(() {
+          _isMuted = mute;
+        });
+        if (mute) {
+          await publication.mute();
+        } else {
+          await publication.unmute();
+        }
+        await _reportMediaStatus(publication, mute ? 'off' : 'on');
+      }
+    } finally {
+      _isTogglingMic = false;
+    }
+  }
+
   Future<void> _toggleMic() async {
+    if (Get.isRegistered<CallController>()) {
+      final callCtrl = Get.find<CallController>();
+      if (callCtrl.session.isLiveCall && callCtrl.status.value == CallStatus.ongoing) {
+        CustomSnackBar.showError('Live mic is disabled during active calls.');
+        return;
+      }
+    }
     if (_isTogglingMic) return;
     _isTogglingMic = true;
     try {
@@ -576,6 +708,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
 
   @override
   void dispose() {
+    _callStatusWorker?.dispose();
     _simulatedCommentTimer?.cancel();
     _commentsSubscription?.cancel();
     _superChatSubscription?.cancel();
@@ -596,11 +729,9 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          // 1. Camera View Area (Renders LiveKit VideoRenderer or fallback)
+    Widget liveStreamUI = Stack(
+      children: [
+        // 1. Camera View Area (Renders LiveKit VideoRenderer or fallback)
           Positioned.fill(
             child: Builder(
               builder: (context) {
@@ -683,22 +814,6 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                         ),
                       );
 
-                if (Get.isRegistered<CallController>()) {
-                  final callCtrl = Get.find<CallController>();
-                  return Obx(() {
-                    final status = callCtrl.status.value;
-                    bool isCallActive = callCtrl.session.isLiveCall && status == CallStatus.ongoing;
-                    if (isCallActive) {
-                      return Column(
-                        children: [
-                          Expanded(child: cameraView),
-                          Expanded(child: _buildActiveCallUI(callCtrl)),
-                        ],
-                      );
-                    }
-                    return cameraView;
-                  });
-                }
                 return cameraView;
               },
             ),
@@ -1091,7 +1206,26 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
 
           ..._giftAnimations,
         ],
-      ),
+      );
+
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Obx(() {
+        final callCtrl = Get.isRegistered<CallController>() ? Get.find<CallController>() : null;
+        if (callCtrl != null) {
+          final status = callCtrl.status.value;
+          bool isCallActive = callCtrl.session.isLiveCall && status == CallStatus.ongoing;
+          if (isCallActive) {
+            return Column(
+              children: [
+                Expanded(child: liveStreamUI),
+                Expanded(child: _buildActiveCallUI(callCtrl)),
+              ],
+            );
+          }
+        }
+        return liveStreamUI;
+      }),
     );
   }
 
