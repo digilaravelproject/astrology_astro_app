@@ -15,6 +15,7 @@ import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/bindings/initial_bindings.dart';
 import 'package:astro_astrologer/core/services/sound_vibration_service.dart';
+import 'package:astro_astrologer/features/splash/presentation/controllers/splash_controller.dart';
 import 'package:astro_astrologer/routes/route_helper.dart';
 import 'package:astro_astrologer/routes/app_routes.dart';
 
@@ -132,9 +133,22 @@ class CallkitService {
               
               // Wait until splash screen is gone and navigator is ready
               int waitRetries = 0;
-              while ((Get.key.currentState == null || Get.currentRoute == RouteHelper.getSplashRoute() || Get.currentRoute.isEmpty || Get.currentRoute == '/') && waitRetries < 150) {
+              while (Get.key.currentState == null && waitRetries < 150) {
                 await Future.delayed(const Duration(milliseconds: 100));
                 waitRetries++;
+              }
+              
+              try {
+                if (Get.isRegistered<SplashController>()) {
+                  final splashController = Get.find<SplashController>();
+                  while (splashController.isLoading.value && waitRetries < 150) {
+                    await Future.delayed(const Duration(milliseconds: 100));
+                    waitRetries++;
+                  }
+                  await Future.delayed(const Duration(milliseconds: 300));
+                }
+              } catch (e) {
+                debugPrint('CallKit: Error waiting for SplashController: $e');
               }
 
               if (Get.key.currentState == null) {
@@ -246,13 +260,27 @@ class CallkitService {
               debugPrint('CallKit: Navigation task for ChatScreen started');
               // Wait until splash screen is gone and navigator is ready
               int waitRetries = 0;
-              while ((Get.key.currentState == null || Get.currentRoute == RouteHelper.getSplashRoute() || Get.currentRoute.isEmpty || Get.currentRoute == '/') && waitRetries < 150) {
+              while (Get.key.currentState == null && waitRetries < 150) {
                 await Future.delayed(const Duration(milliseconds: 100));
                 waitRetries++;
               }
               
-              if (Get.key.currentState == null || Get.currentRoute == RouteHelper.getSplashRoute() || Get.currentRoute.isEmpty || Get.currentRoute == '/') {
-                debugPrint('CallKit: Navigation failed, UI not ready after 15 seconds. Current route: ${Get.currentRoute}');
+              try {
+                if (Get.isRegistered<SplashController>()) {
+                  final splashController = Get.find<SplashController>();
+                  while (splashController.isLoading.value && waitRetries < 150) {
+                    await Future.delayed(const Duration(milliseconds: 100));
+                    waitRetries++;
+                  }
+                  // Allow time for the Get.offAllNamed animation to complete
+                  await Future.delayed(const Duration(milliseconds: 300));
+                }
+              } catch (e) {
+                debugPrint('CallKit: Error waiting for SplashController: $e');
+              }
+              
+              if (Get.key.currentState == null) {
+                debugPrint('CallKit: Navigation failed, UI not ready after 15 seconds.');
                 return;
               }
               
