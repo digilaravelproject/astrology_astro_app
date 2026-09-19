@@ -145,10 +145,14 @@ class ForegroundTaskService {
 
   static Future<void> requestPermissions() async {
     if (Platform.isAndroid) {
-      final NotificationPermission notificationPermissionStatus =
-          await FlutterForegroundTask.checkNotificationPermission();
-      if (notificationPermissionStatus != NotificationPermission.granted) {
-        await FlutterForegroundTask.requestNotificationPermission();
+      try {
+        final NotificationPermission notificationPermissionStatus =
+            await FlutterForegroundTask.checkNotificationPermission();
+        if (notificationPermissionStatus != NotificationPermission.granted) {
+          await FlutterForegroundTask.requestNotificationPermission();
+        }
+      } catch (e) {
+        debugPrint('ForegroundTaskService: requestPermissions failed (likely background isolate): $e');
       }
     }
   }
@@ -159,34 +163,25 @@ class ForegroundTaskService {
     required String type, // 'Chat' or 'Call'
     DateTime? startedAt,
   }) async {
-    await requestPermissions();
-
-    // Default to now if not provided
-    final startTimeMillis =
-        (startedAt ?? DateTime.now()).millisecondsSinceEpoch;
-
-    await FlutterForegroundTask.saveData(
-      key: 'startedAt',
-      value: startTimeMillis,
-    );
-    await FlutterForegroundTask.saveData(key: 'sessionType', value: type);
-    await FlutterForegroundTask.saveData(key: 'title', value: title);
-
     try {
-      if (await FlutterForegroundTask.isRunningService) {
-        FlutterForegroundTask.sendDataToTask({
-          'startedAt': startTimeMillis,
-          'sessionType': type,
-          'title': title,
-        });
-        FlutterForegroundTask.updateService(
-          notificationTitle: title,
-          notificationText: 'Ongoing session • 00:00',
-        );
-      } else {
-        // Add a 1.5s delay to avoid OOM crash on low-RAM devices during WebRTC init
-        await Future.delayed(const Duration(milliseconds: 1500));
-        
+      try {
+        await requestPermissions();
+      } catch (e) {
+        debugPrint('ForegroundTaskService: Failed to request permissions: $e');
+      }
+
+      // Default to now if not provided
+      final startTimeMillis =
+          (startedAt ?? DateTime.now()).millisecondsSinceEpoch;
+
+      await FlutterForegroundTask.saveData(
+        key: 'startedAt',
+        value: startTimeMillis,
+      );
+      await FlutterForegroundTask.saveData(key: 'sessionType', value: type);
+      await FlutterForegroundTask.saveData(key: 'title', value: title);
+
+      try {
         if (await FlutterForegroundTask.isRunningService) {
           FlutterForegroundTask.sendDataToTask({
             'startedAt': startTimeMillis,
@@ -204,11 +199,12 @@ class ForegroundTaskService {
             callback: startCallback,
           );
         }
+      } catch (e) {
+        debugPrint('ForegroundTaskService startService failed: $e');
       }
     } catch (e) {
-      Logger.d("ForegroundTaskService startService failed: $e");
+      debugPrint("ForegroundTaskService exception: $e");
     }
-
   }
 
   static void listenTaskData(Function(dynamic) callback) {
