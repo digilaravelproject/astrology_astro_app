@@ -14,6 +14,7 @@ import 'package:astro_astrologer/features/call/presentation/widgets/floating_cal
 import 'package:astro_astrologer/features/call/presentation/pages/call_screen.dart';
 import 'call_controller.dart';
 import 'package:astro_astrologer/routes/app_routes.dart';
+import 'package:astro_astrologer/core/services/storage/shared_prefs.dart';
 
 class CallSessionController extends GetxController with WidgetsBindingObserver {
   final Rx<CallStatus> status = CallStatus.idle.obs;
@@ -271,10 +272,37 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
     });
   }
 
-  void startCallTimer() {
+  StreamSubscription? _globalTimerSub;
+
+  void startCallTimer({int? startedAtMillis}) {
     callTimer?.cancel();
+    _globalTimerSub?.cancel();
+    _globalTimerSub = ForegroundTaskService.globalElapsedSeconds.listen((val) {
+      if (val > 0) durationSeconds.value = val;
+    });
+
+    final sid = sessionId;
+    if (sid == null) return;
+    
+    int? effectiveStartedAtMillis = startedAtMillis;
+    if (effectiveStartedAtMillis != null) {
+      SharedPrefs.setInt('active_call_started_at_$sid', effectiveStartedAtMillis);
+    } else {
+      effectiveStartedAtMillis = SharedPrefs.getInt('active_call_started_at_$sid');
+      if (effectiveStartedAtMillis == null) {
+        effectiveStartedAtMillis = DateTime.now().millisecondsSinceEpoch;
+        SharedPrefs.setInt('active_call_started_at_$sid', effectiveStartedAtMillis);
+      }
+    }
+    
+    final startedAt = DateTime.fromMillisecondsSinceEpoch(effectiveStartedAtMillis);
+    callStartedAt = startedAt;
+    
     callTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      durationSeconds.value++;
+      if (ForegroundTaskService.globalElapsedSeconds.value == 0) {
+        final diff = DateTime.now().difference(startedAt).inSeconds;
+        durationSeconds.value = diff >= 0 ? diff : 0;
+      }
     });
   }
 
@@ -305,10 +333,14 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
     stopRingtone();
     CallkitService.endAllCalls();
     callTimer?.cancel();
+    _globalTimerSub?.cancel();
     callTimer = null;
     ringingTimer?.cancel();
     ringingTimer = null;
     ForegroundTaskService.stopService();
+    if (sessionId != null) {
+      SharedPrefs.remove('active_call_started_at_$sessionId');
+    }
     FloatingCallBubble.dismiss();
     _orchestrator.webrtcService.dispose();
     status.value = CallStatus.idle;

@@ -48,8 +48,8 @@ class CallWebRTCController extends GetxController {
       if (response.isSuccess) {
         CallkitService.endAllCalls();
         _orchestrator.session.callStartedAt = DateTime.now();
-        _orchestrator.durationSeconds.value = 0;
-        _orchestrator.session.startCallTimer();
+        final acceptedMillis = DateTime.now().millisecondsSinceEpoch;
+        _orchestrator.session.startCallTimer(startedAtMillis: acceptedMillis);
         _orchestrator.session.showOngoingNotification();
         return true;
       } else {
@@ -271,9 +271,15 @@ class CallWebRTCController extends GetxController {
             final startedAtStr = session['started_at']?.toString();
             if (startedAtStr != null) {
               final startedAt = DateTime.tryParse(startedAtStr)?.toLocal();
-              if (startedAt != null) _orchestrator.durationSeconds.value = DateTime.now().difference(startedAt).inSeconds;
+              if (startedAt != null) {
+                _orchestrator.durationSeconds.value = DateTime.now().difference(startedAt).inSeconds;
+                _orchestrator.session.startCallTimer(startedAtMillis: startedAt.millisecondsSinceEpoch);
+              } else {
+                _orchestrator.session.startCallTimer();
+              }
+            } else {
+              _orchestrator.session.startCallTimer();
             }
-            _orchestrator.session.startCallTimer();
             
             if (_orchestrator.webrtcService.peerConnection == null) {
               final offerSdp = session['offer']?.toString() ?? session['offer_sdp']?.toString() ?? session['consumer_sdp']?.toString();

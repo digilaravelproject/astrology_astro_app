@@ -1,4 +1,5 @@
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:get/get.dart';
 import 'package:astro_astrologer/core/utils/logger.dart';
 import 'dart:io';
 
@@ -70,6 +71,10 @@ class CallForegroundTaskHandler extends TaskHandler {
         notificationTitle: _title,
         notificationText: 'Ongoing session • $timeString',
       );
+      FlutterForegroundTask.sendDataToMain({
+        'action': 'timer_update',
+        'elapsedSeconds': _elapsedCounter,
+      });
     }
   }
 
@@ -100,7 +105,11 @@ class CallForegroundTaskHandler extends TaskHandler {
 }
 
 class ForegroundTaskService {
+  static final RxInt globalElapsedSeconds = 0.obs;
+
   static Future<void> init() async {
+    FlutterForegroundTask.addTaskDataCallback(_onReceiveTaskData);
+
     FlutterForegroundTask.init(
       androidNotificationOptions: AndroidNotificationOptions(
         channelId: 'active_session_silent_channel_v1',
@@ -126,6 +135,12 @@ class ForegroundTaskService {
         stopWithTask: false,
       ),
     );
+  }
+
+  static void _onReceiveTaskData(Object data) {
+    if (data is Map && data['action'] == 'timer_update') {
+      globalElapsedSeconds.value = data['elapsedSeconds'] as int;
+    }
   }
 
   static Future<void> requestPermissions() async {
@@ -202,6 +217,7 @@ class ForegroundTaskService {
 
   static Future<void> stopService() async {
     try {
+      globalElapsedSeconds.value = 0;
       await FlutterForegroundTask.stopService();
     } catch (e) {
       Logger.d("ForegroundTaskService stopService failed: $e");
