@@ -46,7 +46,7 @@ class CallWebRTCController extends GetxController {
       );
 
       if (response.isSuccess) {
-        CallkitService.endAllCalls();
+        // CallkitService.endAllCalls();
         _orchestrator.session.callStartedAt = DateTime.now();
         final acceptedMillis = DateTime.now().millisecondsSinceEpoch;
         _orchestrator.session.startCallTimer(startedAtMillis: acceptedMillis);
@@ -84,7 +84,7 @@ class CallWebRTCController extends GetxController {
       );
 
       if (response.isSuccess) {
-        CallkitService.endAllCalls();
+        // CallkitService.endAllCalls();
         _orchestrator.session.startCallTimer();
         _orchestrator.session.showOngoingNotification();
         return true;
@@ -253,6 +253,12 @@ class CallWebRTCController extends GetxController {
           _orchestrator.session.isSummaryShown = false;
           _orchestrator.session.sessionId = int.tryParse(session['id']?.toString() ?? '');
           _orchestrator.webrtcService.activeSessionId = _orchestrator.sessionId;
+          
+          final consumerData = session['consumer'] ?? session['caller'];
+          if (consumerData != null) {
+            _orchestrator.session.consumerName = consumerData['name']?.toString() ?? 'User';
+            _orchestrator.session.consumerImage = consumerData['profile_photo']?.toString();
+          }
           
           _orchestrator.status.value = CallStatus.values.firstWhere(
             (e) => e.name == (sessionStatus == 'initiated' ? 'ringing' : sessionStatus),

@@ -49,16 +49,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   void _consumePendingNotification() async {
+    debugPrint('[DashboardScreen] _consumePendingNotification started');
     try {
       // 1. Check local notification launch details (for cold start from killed state)
       try {
         final launchDetails = await FlutterLocalNotificationsPlugin().getNotificationAppLaunchDetails();
+        debugPrint('[DashboardScreen] launchDetails: ${launchDetails?.didNotificationLaunchApp}, payload: ${launchDetails?.notificationResponse?.payload}');
         if (launchDetails != null && launchDetails.didNotificationLaunchApp) {
           final payload = launchDetails.notificationResponse?.payload;
           if (payload != null && payload.isNotEmpty) {
             final Map<String, dynamic> data = jsonDecode(payload);
             FCMNotificationService.pendingNotificationData = data;
-            debugPrint('[DashboardScreen] Extracted local notification launch payload');
+            debugPrint('[DashboardScreen] Extracted local notification launch payload: $data');
           }
         }
       } catch (e) {
@@ -66,11 +68,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
       }
 
       final Map<String, dynamic>? data = FCMNotificationService.pendingNotificationData;
+      debugPrint('[DashboardScreen] pendingNotificationData: $data');
       if (data == null) return;
 
       final type = data['type']?.toString();
       final notificationType = data['notification_type']?.toString();
       final bool isChatAssistance = type == 'assistance_chat' || type == 'chat_assistance' || notificationType == 'assistance_chat';
+
+      debugPrint('[DashboardScreen] type: $type, isChatAssistance: $isChatAssistance');
 
       if (isChatAssistance) {
         FCMNotificationService.pendingNotificationData = null;
@@ -82,14 +87,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
             data['id']?.toString() ??
             '';
         final int? sId = int.tryParse(rawSessionId);
+        debugPrint('[DashboardScreen] rawSessionId: $rawSessionId, parsed: $sId');
         if (sId != null && sId > 0) {
            final userName = data['user_name']?.toString() ?? data['sender_name']?.toString() ?? 'User';
            final userImage = data['user_avatar']?.toString() ?? data['sender_image']?.toString() ?? '';
+           debugPrint('[DashboardScreen] Navigating to AssistanceChatRoomScreen with sessionId: $sId');
            Get.to(() => AssistanceChatRoomScreen(
              sessionId: sId,
              userName: userName,
              userImage: userImage,
            ));
+        } else {
+           debugPrint('[DashboardScreen] Invalid sessionId, cannot navigate.');
         }
       }
     } catch (e) {

@@ -1,4 +1,6 @@
 import 'package:astro_astrologer/core/services/foreground_task_service.dart';
+import 'package:astro_astrologer/core/enums/session_status_enums.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_callkit_incoming/entities/entities.dart';
@@ -128,35 +130,32 @@ class CallkitService {
               // End CallKit telecom session so "Hang Up" notification disappears.
               // The actual call continues over our WebRTC implementation.
               Future.delayed(const Duration(milliseconds: 500), () {
-                FlutterCallkitIncoming.endCall(sessionId!);
+                // FlutterCallkitIncoming.endCall(sessionId!);
               });
               
               // Wait until splash screen is gone and navigator is ready
               int waitRetries = 0;
-              while (Get.key.currentState == null && waitRetries < 150) {
+              while (Get.context == null && waitRetries < 150) {
                 await Future.delayed(const Duration(milliseconds: 100));
                 waitRetries++;
               }
               
-              try {
-                if (Get.isRegistered<SplashController>()) {
-                  final splashController = Get.find<SplashController>();
-                  while (splashController.isLoading.value && waitRetries < 150) {
-                    await Future.delayed(const Duration(milliseconds: 100));
-                    waitRetries++;
-                  }
-                  await Future.delayed(const Duration(milliseconds: 300));
-                }
-              } catch (e) {
-                debugPrint('CallKit: Error waiting for SplashController: $e');
+              // Wait until SplashController completes its navigation to Dashboard
+              while ((Get.currentRoute == '' || Get.currentRoute == '/' || Get.currentRoute == AppRoutes.splash) && waitRetries < 150) {
+                await Future.delayed(const Duration(milliseconds: 100));
+                waitRetries++;
               }
+              await Future.delayed(const Duration(milliseconds: 300)); // Allow animation to settle
 
-              if (Get.key.currentState == null) {
+              if (Get.context == null) {
                 debugPrint('CallKit: Navigation failed, UI not ready.');
               } else {
                 if (!ctrl.isCallScreenVisible) {
                   debugPrint('CallKit: Navigating to CallScreen.');
                   Get.toNamed(AppRoutes.callScreen);
+                }
+                if (ctrl.status.value == CallStatus.ongoing) {
+                  ctrl.session.showOngoingNotification();
                 }
               }
             } else {
@@ -180,7 +179,7 @@ class CallkitService {
             // End CallKit telecom session so it doesn't linger
             Future.delayed(const Duration(milliseconds: 500), () {
               debugPrint('CallKit: Ending CallKit session for $sessionId');
-              FlutterCallkitIncoming.endCall(sessionId);
+              // FlutterCallkitIncoming.endCall(sessionId);
             });
 
             // 1. Call POST /chat/{id}/accept API — required to change status from initiated → ongoing
@@ -223,11 +222,7 @@ class CallkitService {
                     }
                   }
 
-                  ForegroundTaskService.startActiveSessionNotification(
-                    title: 'Active Chat',
-                    type: 'Chat',
-                    startedAt: fallbackAcceptedAt,
-                  );
+                  // We will start the foreground notification later once UI is mounted.
                 } else {
                   // Fallback for cold boot: the background isolate might have already accepted the chat.
                   // Try to fetch the active session to get the true backend started_at.
@@ -260,31 +255,39 @@ class CallkitService {
               debugPrint('CallKit: Navigation task for ChatScreen started');
               // Wait until splash screen is gone and navigator is ready
               int waitRetries = 0;
-              while (Get.key.currentState == null && waitRetries < 150) {
+              while (Get.context == null && waitRetries < 150) {
                 await Future.delayed(const Duration(milliseconds: 100));
                 waitRetries++;
               }
               
-              try {
-                if (Get.isRegistered<SplashController>()) {
-                  final splashController = Get.find<SplashController>();
-                  while (splashController.isLoading.value && waitRetries < 150) {
-                    await Future.delayed(const Duration(milliseconds: 100));
-                    waitRetries++;
-                  }
-                  // Allow time for the Get.offAllNamed animation to complete
-                  await Future.delayed(const Duration(milliseconds: 300));
-                }
-              } catch (e) {
-                debugPrint('CallKit: Error waiting for SplashController: $e');
+              // Wait until SplashController completes its navigation to Dashboard
+              while ((Get.currentRoute == '' || Get.currentRoute == '/' || Get.currentRoute == AppRoutes.splash) && waitRetries < 150) {
+                await Future.delayed(const Duration(milliseconds: 100));
+                waitRetries++;
               }
+              // Allow time for the Get.offAllNamed animation to complete
+              await Future.delayed(const Duration(milliseconds: 300));
               
-              if (Get.key.currentState == null) {
+              if (Get.context == null) {
                 debugPrint('CallKit: Navigation failed, UI not ready after 15 seconds.');
                 return;
               }
               
+              // Clear pending navigation since we are handling it now
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.remove('pending_chat_navigation');
+              await prefs.remove('pending_chat_name');
+              await prefs.remove('pending_chat_started_at');
+              
               debugPrint('CallKit: Current route before navigating to ChatScreen: ${Get.currentRoute}');
+
+              if (accepted || backendStartedAtStr != null) {
+                ForegroundTaskService.startActiveSessionNotification(
+                  title: 'Active Chat',
+                  type: 'Chat',
+                  startedAt: fallbackAcceptedAt,
+                );
+              }
 
               Get.to(
                 () => ChatScreen(

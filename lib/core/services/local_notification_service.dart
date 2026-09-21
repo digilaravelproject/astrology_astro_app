@@ -267,7 +267,7 @@ class LocalNotificationService {
     if (payload.startsWith('{') && payload.endsWith('}')) {
       try {
         final Map<String, dynamic> data = jsonDecode(payload);
-        if (data['type'] == 'assistance_chat') {
+        if (data['type'] == 'assistance_chat' || data['type'] == 'chat_assistance') {
           // Pass it to FCMNotificationService to handle cold start vs foreground routing
           FCMNotificationService.pendingNotificationData = data;
           
@@ -276,12 +276,17 @@ class LocalNotificationService {
              return;
           }
           
-          final String rawSessionId = data['session_id']?.toString() ?? '';
+          final String rawSessionId =
+              data['session_id']?.toString() ??
+              data['chat_session_id']?.toString() ??
+              data['chat_assistance_session_id']?.toString() ??
+              data['id']?.toString() ??
+              '';
           final int? sId = int.tryParse(rawSessionId);
           if (sId != null && sId > 0) {
             FCMNotificationService.pendingNotificationData = null; // Consume immediately
-            final userName = data['user_name']?.toString() ?? 'User';
-            final userImage = data['user_avatar']?.toString() ?? '';
+            final userName = data['user_name']?.toString() ?? data['sender_name']?.toString() ?? 'User';
+            final userImage = data['user_avatar']?.toString() ?? data['sender_image']?.toString() ?? '';
             Get.to(() => AssistanceChatRoomScreen(
               sessionId: sId,
               userName: userName,

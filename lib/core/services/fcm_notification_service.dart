@@ -302,6 +302,12 @@ class FCMNotificationService {
         if (isChatAssistance) {
           pendingNotificationData = Map<String, dynamic>.from(message.data);
           debugPrint('[FCMNotificationService] Stored pendingNotificationData for cold start.');
+          Future.delayed(const Duration(milliseconds: 3500), () {
+            if (pendingNotificationData != null) {
+               // If dashboard didn't consume it, consume it now.
+               LocalNotificationService.handleNotificationRouting(jsonEncode(message.data), false, false);
+            }
+          });
         } else {
           // Delaying to wait for routing to finish (splash screen)
           Future.delayed(const Duration(milliseconds: 4500), () {

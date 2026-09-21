@@ -302,18 +302,25 @@ class ChatSessionController extends GetxController with WidgetsBindingObserver {
   Future<void> endChatSession() async {
     if (_orchestrator.sessionId == null) return;
     isLoading.value = true;
+    final int endedSessionId = _orchestrator.sessionId!;
     try {
-      final session = await _endChatSessionUseCase.execute(_orchestrator.sessionId!);
+      final session = await _endChatSessionUseCase.execute(endedSessionId);
       if (session != null) WebSocketService.activeSessionId = null;
     } catch (_) {} finally {
       isLoading.value = false;
       status.value = ChatStatus.completed;
       timer?.cancel();
-      FloatingChatBubble.dismiss();
+      _globalTimerSub?.cancel();
+      FloatingChatBubble.dismiss(stopForegroundService: true);
       CallkitService.endAllCalls();
-      if (_orchestrator.sessionId != null) {
-        WebSocketService.sessionStatusUpdates[_orchestrator.sessionId!] = 'ended';
-      }
+      WebSocketService.sessionStatusUpdates[endedSessionId] = 'ended';
+      ForegroundTaskService.stopService();
+      // Navigate back to dashboard after a small delay so UI updates first
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (Get.isRegistered<ChatController>()) {
+          Get.back();
+        }
+      });
     }
   }
 

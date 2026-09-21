@@ -1,5 +1,6 @@
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:get/get.dart';
+import 'package:flutter/foundation.dart';
 import 'package:astro_astrologer/core/utils/logger.dart';
 import 'dart:io';
 
