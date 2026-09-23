@@ -12,6 +12,8 @@ import 'package:astro_astrologer/core/enums/session_status_enums.dart';
 import 'package:astro_astrologer/core/services/storage/token_manger.dart';
 import 'package:astro_astrologer/features/call/presentation/widgets/floating_call_bubble.dart';
 import 'package:astro_astrologer/features/call/presentation/pages/call_screen.dart';
+import 'package:astro_astrologer/features/live/presentation/controllers/live_controller.dart';
+import 'package:astro_astrologer/core/services/local_notification_service.dart';
 import 'call_controller.dart';
 import 'package:astro_astrologer/routes/app_routes.dart';
 import 'package:astro_astrologer/core/services/storage/shared_prefs.dart';
@@ -331,6 +333,9 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
   void cleanUp() {
     if (status.value == CallStatus.idle && sessionId == null) return;
     stopRingtone();
+    if (Get.isRegistered<LiveController>()) {
+      Get.find<LiveController>().isAudioOn.value = true;
+    }
     CallkitService.endAllCalls();
     callTimer?.cancel();
     _globalTimerSub?.cancel();
@@ -339,6 +344,7 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
     ringingTimer = null;
     ForegroundTaskService.stopService();
     if (sessionId != null) {
+      LocalNotificationService.cancelOngoingCallNotification(sessionId!);
       SharedPrefs.remove('active_call_started_at_$sessionId');
     }
     FloatingCallBubble.dismiss();

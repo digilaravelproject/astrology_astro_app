@@ -37,6 +37,7 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
 }
 
 class LocalNotificationService {
+  static const int ACTIVE_CALL_NOTIFICATION_ID = 888888;
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
@@ -495,5 +496,62 @@ class LocalNotificationService {
     } catch (e) {
       debugPrint('Accept error: $e');
     }
+  }
+
+  static Future<void> cancelOngoingCallNotification(int? sessionId) async {
+    await _notificationsPlugin.cancel(ACTIVE_CALL_NOTIFICATION_ID);
+    if (sessionId != null) {
+      await _notificationsPlugin.cancel(sessionId);
+      await _notificationsPlugin.cancel(sessionId + 100000);
+      await _notificationsPlugin.cancel(sessionId + 200000);
+    }
+    try {
+      await ForegroundTaskService.stopService();
+    } catch (_) {}
+  }
+
+  static Future<void> showOngoingCallNotification({
+    required int sessionId,
+    required String title,
+    required String body,
+    int? startedAtMillis,
+  }) async {
+    final int startTime = startedAtMillis ?? DateTime.now().millisecondsSinceEpoch;
+    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+      'active_consultation_foreground_channel_v3',
+      'Active Consultation Service',
+      channelDescription: 'Ongoing active call and chat consultation status',
+      icon: '@mipmap/ic_launcher',
+      importance: Importance.low,
+      priority: Priority.low,
+      ongoing: true,
+      autoCancel: false,
+      onlyAlertOnce: true,
+      showWhen: true,
+      usesChronometer: true,
+      when: startTime,
+      category: AndroidNotificationCategory.call,
+      visibility: NotificationVisibility.public,
+      additionalFlags: Int32List.fromList([2, 64]),
+    );
+
+    final NotificationDetails notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: const DarwinNotificationDetails(
+        presentAlert: false,
+        presentBadge: false,
+        presentSound: false,
+      ),
+    );
+
+    try {
+      await _notificationsPlugin.show(
+        ACTIVE_CALL_NOTIFICATION_ID,
+        title,
+        body,
+        notificationDetails,
+        payload: 'call_$sessionId',
+      );
+    } catch (_) {}
   }
 }

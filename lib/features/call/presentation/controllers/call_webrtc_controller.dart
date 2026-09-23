@@ -6,6 +6,8 @@ import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/utils/logger.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 import 'package:astro_astrologer/core/services/callkit_service.dart';
+import 'package:astro_astrologer/core/services/local_notification_service.dart';
+import 'package:astro_astrologer/features/live/presentation/controllers/live_controller.dart';
 import 'package:astro_astrologer/core/enums/session_status_enums.dart';
 import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
 import 'call_controller.dart';
@@ -225,6 +227,17 @@ class CallWebRTCController extends GetxController {
           _orchestrator.session.consumerImage = caller?['profile_photo']?.toString();
           _orchestrator.session.isSummaryShown = false;
           _orchestrator.status.value = CallStatus.ringing;
+          
+          if (Get.isRegistered<LiveController>()) {
+            Get.find<LiveController>().isAudioOn.value = false;
+          }
+
+          LocalNotificationService.showOngoingCallNotification(
+            sessionId: _orchestrator.sessionId!,
+            title: '${_orchestrator.session.consumerName} • Incoming Call',
+            body: 'Incoming Audio Call...',
+          );
+
           _orchestrator.session.startRingtone(isIncoming: true);
           _orchestrator.session.startRingingTimeout();
           return true;
@@ -264,6 +277,12 @@ class CallWebRTCController extends GetxController {
             (e) => e.name == (sessionStatus == 'initiated' ? 'ringing' : sessionStatus),
             orElse: () => CallStatus.ongoing,
           );
+
+          if (_orchestrator.status.value == CallStatus.ongoing || _orchestrator.status.value == CallStatus.ringing) {
+            if (Get.isRegistered<LiveController>()) {
+              Get.find<LiveController>().isAudioOn.value = false;
+            }
+          }
 
           if (sessionStatus == 'initiated') {
             final offerSdp = session['offer']?.toString() ?? session['offer_sdp']?.toString() ?? session['consumer_sdp']?.toString();
@@ -308,6 +327,20 @@ class CallWebRTCController extends GetxController {
                 Get.toNamed(AppRoutes.callScreen);
               }
             }
+
+            LocalNotificationService.showOngoingCallNotification(
+              sessionId: _orchestrator.sessionId!,
+              title: '${_orchestrator.session.consumerName} • Active Call',
+              body: 'Tap to return to call session',
+              startedAtMillis: () {
+                if (startedAtStr != null) {
+                  String isoUtc = startedAtStr.trim().replaceAll(' ', 'T');
+                  if (!isoUtc.endsWith('Z') && !isoUtc.contains('+') && !isoUtc.contains('-')) isoUtc += 'Z';
+                  return DateTime.tryParse(isoUtc)?.toLocal().millisecondsSinceEpoch;
+                }
+                return null;
+              }(),
+            );
           } else {
             if (_orchestrator.isCallScreenVisible || Get.isDialogOpen == true) Get.back();
             _orchestrator.session.cleanUp();

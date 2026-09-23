@@ -205,10 +205,20 @@ class WebRTCService {
       };
 
       peerConnection!.onAddStream = (stream) {
-        Logger.d('WebRTCService: Remote stream added.');
+        Logger.d('WebRTCService: Remote stream added via onAddStream.');
         remoteStream = stream;
         if (onRemoteStreamAdded != null) {
           onRemoteStreamAdded!(stream);
+        }
+      };
+
+      peerConnection!.onTrack = (event) {
+        Logger.d('WebRTCService: Remote track added via onTrack: ${event.track.kind}');
+        if (event.streams.isNotEmpty) {
+          remoteStream = event.streams[0];
+          if (onRemoteStreamAdded != null) {
+            onRemoteStreamAdded!(remoteStream!);
+          }
         }
       };
 
