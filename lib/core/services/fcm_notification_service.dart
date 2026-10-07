@@ -204,6 +204,7 @@ class FCMNotificationService {
             type == 'CALL_DISMISSED') {
           LocalNotificationService.markSessionCancelled(parsedSessionId.toString());
           CallkitService.endCall(parsedSessionId.toString());
+          LocalNotificationService.cancelOngoingCallNotification(parsedSessionId);
           if (parsedSessionId > 0) return;
         } else if (type == 'PACKAGE_EXHAUSTED' || type == 'package') {
           if (parsedSessionId > 0)

@@ -31,6 +31,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     await EnvConfig.load();
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
     await LocalNotificationService.initialize(requestPermission: false);
+    try { await ForegroundTaskService.init(); } catch (_) {}
     
     // Initialize WebSocket in background so it can listen to dismissal events immediately
     try {

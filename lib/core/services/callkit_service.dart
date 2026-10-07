@@ -102,6 +102,15 @@ class CallkitService {
             bool success = false;
             String finalOfferSdp = offerSdp;
 
+            // Wait for the app to be fully resumed to avoid ANR on getUserMedia
+            debugPrint('CallKit: Waiting for app to resume before accepting call...');
+            int resumeRetries = 0;
+            while (WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed && resumeRetries < 50) {
+              await Future.delayed(const Duration(milliseconds: 100));
+              resumeRetries++;
+            }
+            debugPrint('CallKit: App resumed or timed out.');
+
             try {
               // If offerSdp is empty (likely due to cold boot), try to fetch it from the backend API
               if (finalOfferSdp.isEmpty) {

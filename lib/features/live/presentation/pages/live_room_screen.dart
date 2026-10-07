@@ -63,12 +63,41 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
     _isMuted = !widget.session.isAudioOn;
 
     if (Get.isRegistered<CallController>()) {
-      _callStatusWorker = ever(Get.find<CallController>().status, (status) {
+      _callStatusWorker = ever(Get.find<CallController>().status, (status) async {
         if (mounted) {
           if (status == CallStatus.ongoing) {
-            if (!_isMuted) _setMicState(true);
+            // Just stop the LiveKit mic to free hardware for the Call!
+            if (_localAudioTrack != null) {
+              await _localAudioTrack?.stop();
+              _localAudioTrack = null;
+              await _reportMediaStatus(null, 'off');
+              setState(() { _isMuted = true; });
+            }
           } else if (status != CallStatus.ongoing && status != CallStatus.ringing && status != CallStatus.waiting) {
-            if (_isMuted) _setMicState(false);
+            // Call ended! Restart LiveKit mic!
+            if (_localAudioTrack == null) {
+               try {
+                 final audioTrack = await LocalAudioTrack.create(
+                    const AudioCaptureOptions(
+                      autoGainControl: true,
+                      echoCancellation: true,
+                      noiseSuppression: true,
+                    ),
+                  );
+                  final audioPub = await _room?.localParticipant?.publishAudioTrack(
+                    audioTrack,
+                    publishOptions: const AudioPublishOptions(
+                      encoding: AudioEncoding.presetSpeech,
+                      dtx: true,
+                    ),
+                  );
+                  _localAudioTrack = audioTrack;
+                  setState(() { _isMuted = false; });
+                  if (audioPub != null) _reportMediaStatus(audioPub, 'on');
+               } catch (e) {
+                 debugPrint('[LIVE] Failed to restart mic after call: $e');
+               }
+            }
           }
         }
       });

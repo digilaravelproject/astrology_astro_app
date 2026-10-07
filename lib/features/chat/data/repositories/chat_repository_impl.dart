@@ -143,7 +143,13 @@ class ChatRepositoryImpl implements IChatRepository {
         if (msgResponse.isSuccess && msgResponse.body != null) {
           final msgData = msgResponse.body['data'] ?? msgResponse.body;
           if (msgData != null) {
-            final id = int.tryParse(msgData['id']?.toString() ?? '') ?? 0;
+            int id = 0;
+            final messageObj = msgData['message'];
+            if (messageObj != null && messageObj['id'] != null) {
+              id = int.tryParse(messageObj['id']?.toString() ?? '') ?? 0;
+            } else if (msgData['id'] != null) {
+              id = int.tryParse(msgData['id']?.toString() ?? '') ?? 0;
+            }
             return (id: id, url: url);
           }
         }
@@ -179,7 +185,13 @@ class ChatRepositoryImpl implements IChatRepository {
         if (msgResponse.isSuccess && msgResponse.body != null) {
           final msgData = msgResponse.body['data'] ?? msgResponse.body;
           if (msgData != null) {
-            final id = int.tryParse(msgData['id']?.toString() ?? '') ?? 0;
+            int id = 0;
+            final messageObj = msgData['message'];
+            if (messageObj != null && messageObj['id'] != null) {
+              id = int.tryParse(messageObj['id']?.toString() ?? '') ?? 0;
+            } else if (msgData['id'] != null) {
+              id = int.tryParse(msgData['id']?.toString() ?? '') ?? 0;
+            }
             return (id: id, url: url);
           }
         }

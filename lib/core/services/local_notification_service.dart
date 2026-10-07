@@ -37,7 +37,6 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
 }
 
 class LocalNotificationService {
-  static const int ACTIVE_CALL_NOTIFICATION_ID = 888888;
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
@@ -499,11 +498,11 @@ class LocalNotificationService {
   }
 
   static Future<void> cancelOngoingCallNotification(int? sessionId) async {
-    await _notificationsPlugin.cancel(ACTIVE_CALL_NOTIFICATION_ID);
+    try { await _notificationsPlugin.cancel(ACTIVE_CALL_NOTIFICATION_ID); } catch (_) {}
     if (sessionId != null) {
-      await _notificationsPlugin.cancel(sessionId);
-      await _notificationsPlugin.cancel(sessionId + 100000);
-      await _notificationsPlugin.cancel(sessionId + 200000);
+      try { await _notificationsPlugin.cancel(sessionId); } catch (_) {}
+      try { await _notificationsPlugin.cancel(sessionId + 100000); } catch (_) {}
+      try { await _notificationsPlugin.cancel(sessionId + 200000); } catch (_) {}
     }
     try {
       await ForegroundTaskService.stopService();
