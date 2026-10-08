@@ -40,6 +40,10 @@ class CallWebRTCController extends GetxController {
       // Start the foreground service BEFORE accessing the microphone,
       // so Android allows microphone access even if the app is in the background.
       _orchestrator.session.showOngoingNotification();
+      
+      // Add a slight delay to ensure the OS has fully spun up the foreground service
+      // and granted background mic permissions before we request the stream.
+      await Future.delayed(const Duration(milliseconds: 1000));
 
       final answerDescription = await _orchestrator.webrtcService.acceptOffer(_orchestrator.sessionId!, sdpToUse);
       
@@ -82,6 +86,10 @@ class CallWebRTCController extends GetxController {
       // Start the foreground service BEFORE accessing the microphone,
       // so Android allows microphone access even if the app is in the background.
       _orchestrator.session.showOngoingNotification();
+      
+      // Add a slight delay to ensure the OS has fully spun up the foreground service
+      // and granted background mic permissions before we request the stream.
+      await Future.delayed(const Duration(milliseconds: 1000));
 
       final offerDescription = await _orchestrator.webrtcService.createOffer(_orchestrator.sessionId!);
       
