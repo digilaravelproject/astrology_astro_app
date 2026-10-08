@@ -307,10 +307,10 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
     });
   }
 
-  void showOngoingNotification() {
+  Future<void> showOngoingNotification() async {
     if (sessionId != null) {
       try {
-        ForegroundTaskService.startActiveSessionNotification(
+        await ForegroundTaskService.startActiveSessionNotification(
           title: 'Active Call'.tr,
           type: 'Call',
           startedAt: callStartedAt ?? DateTime.now(),

@@ -66,6 +66,7 @@ class CallkitService {
           
           // Force app to launch into foreground when accept is tapped
           ForegroundTaskService.launchApp();
+          await Future.delayed(const Duration(seconds: 1));
 
           if (payload.startsWith('call_')) {
             // ── Incoming CALL accepted ──
