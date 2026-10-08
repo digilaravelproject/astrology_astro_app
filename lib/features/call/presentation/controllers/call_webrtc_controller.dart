@@ -32,25 +32,10 @@ class CallWebRTCController extends GetxController {
       _orchestrator.status.value = CallStatus.ongoing;
       _orchestrator.durationSeconds.value = 0;
 
-      String sdpToUse = (offerSdp.isNotEmpty) ? offerSdp : (_orchestrator.session.incomingOfferSdp ?? '');
-      
-      if (sdpToUse.isEmpty) {
-        // Fallback: wait for the SDP from the backend API if we don't have it yet.
-        int retry = 0;
-        while (sdpToUse.isEmpty && retry < 10) {
-          await Future.delayed(const Duration(milliseconds: 500));
-          final fetchedSdp = await fetchOfferSdpFromCurrentSession();
-          if (fetchedSdp != null && fetchedSdp.isNotEmpty) {
-            sdpToUse = fetchedSdp;
-          }
-          retry++;
-        }
-      }
+      final sdpToUse = (offerSdp.isNotEmpty) ? offerSdp : (_orchestrator.session.incomingOfferSdp ?? '');
 
       if (sdpToUse.isEmpty) {
-        CustomSnackBar.showError('Error: Could not retrieve call data. Please wait or try again.');
-        _orchestrator.session.cleanUp();
-        return false;
+        return await acceptCallDirect();
       }
 
       // Start the foreground service BEFORE accessing the microphone,
@@ -237,32 +222,10 @@ class CallWebRTCController extends GetxController {
         final bodyMap = response.body;
         final session = bodyMap is Map ? (bodyMap['session'] ?? bodyMap['data']?['session']) : null;
         if (session != null) {
-          final callerData = session['caller'] ?? session['consumer'] ?? {};
-          final sdp = session['offer']?.toString() ?? session['offer_sdp']?.toString() ?? session['consumer_sdp']?.toString() ?? callerData['offer']?.toString() ?? callerData['offer_sdp']?.toString();
-          if (sdp != null && sdp.isNotEmpty) return sdp;
+          return session['offer']?.toString() ?? session['offer_sdp']?.toString() ?? session['consumer_sdp']?.toString();
         }
       }
     } catch (e) {}
-
-    // Fallback: check pending calls
-    try {
-      final response = await _apiClient.get(
-        AppUrls.pendingCallSessions,
-        handleError: false,
-        showErrorScreen: false,
-      );
-      if (response.isSuccess && response.body != null) {
-        final bodyMap = response.body;
-        final pendingCalls = bodyMap is Map ? (bodyMap['pending_calls'] ?? bodyMap['data']?['pending_calls']) : null;
-        if (pendingCalls is List && pendingCalls.isNotEmpty) {
-          final call = pendingCalls.firstWhere((c) => c['id'].toString() == _orchestrator.sessionId?.toString(), orElse: () => pendingCalls.first);
-          final callerData = call['caller'] ?? call['consumer'] ?? {};
-          final sdp = call['offer']?.toString() ?? call['offer_sdp']?.toString() ?? call['consumer_sdp']?.toString() ?? callerData['offer']?.toString() ?? callerData['offer_sdp']?.toString();
-          if (sdp != null && sdp.isNotEmpty) return sdp;
-        }
-      }
-    } catch (e) {}
-
     return null;
   }
 
@@ -338,8 +301,7 @@ class CallWebRTCController extends GetxController {
           );
 
           if (sessionStatus == 'initiated') {
-            final callerInfo = session['caller'] ?? session['consumer'] ?? {};
-            final offerSdp = session['offer']?.toString() ?? session['offer_sdp']?.toString() ?? session['consumer_sdp']?.toString() ?? callerInfo['offer']?.toString();
+            final offerSdp = session['offer']?.toString() ?? session['offer_sdp']?.toString() ?? session['consumer_sdp']?.toString();
             _orchestrator.session.incomingOfferSdp = offerSdp ?? '';
             
             if (retries < 5) {
@@ -361,8 +323,7 @@ class CallWebRTCController extends GetxController {
             }
             
             if (_orchestrator.webrtcService.peerConnection == null) {
-              final callerInfo = session['caller'] ?? session['consumer'] ?? {};
-              final offerSdp = session['offer']?.toString() ?? session['offer_sdp']?.toString() ?? session['consumer_sdp']?.toString() ?? callerInfo['offer']?.toString();
+              final offerSdp = session['offer']?.toString() ?? session['offer_sdp']?.toString() ?? session['consumer_sdp']?.toString();
               if (offerSdp != null && offerSdp.isNotEmpty) {
                 await _orchestrator.webrtcService.acceptOffer(_orchestrator.sessionId!, offerSdp);
               } else {
