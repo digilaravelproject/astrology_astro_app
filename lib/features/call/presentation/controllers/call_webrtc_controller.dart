@@ -37,6 +37,10 @@ class CallWebRTCController extends GetxController {
         return await acceptCallDirect();
       }
 
+      // Start the foreground service BEFORE accessing the microphone,
+      // so Android allows microphone access even if the app is in the background.
+      _orchestrator.session.showOngoingNotification();
+
       final answerDescription = await _orchestrator.webrtcService.acceptOffer(_orchestrator.sessionId!, sdpToUse);
       
       final response = await _apiClient.post(
@@ -74,6 +78,10 @@ class CallWebRTCController extends GetxController {
       _orchestrator.session.ringingTimer?.cancel();
       _orchestrator.status.value = CallStatus.ongoing;
       _orchestrator.durationSeconds.value = 0;
+
+      // Start the foreground service BEFORE accessing the microphone,
+      // so Android allows microphone access even if the app is in the background.
+      _orchestrator.session.showOngoingNotification();
 
       final offerDescription = await _orchestrator.webrtcService.createOffer(_orchestrator.sessionId!);
       

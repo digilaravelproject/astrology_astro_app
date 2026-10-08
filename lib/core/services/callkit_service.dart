@@ -109,7 +109,7 @@ class CallkitService {
             if (Platform.isAndroid) {
               debugPrint('CallKit: Waiting for Android app to resume before accepting call...');
               int resumeRetries = 0;
-              while (WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed && resumeRetries < 150) {
+              while (WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed && resumeRetries < 30) {
                 await Future.delayed(const Duration(milliseconds: 100));
                 resumeRetries++;
               }

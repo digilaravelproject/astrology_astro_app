@@ -52,7 +52,7 @@
         <!-- Foreground Task Service -->
         <service
             android:name="com.pravera.flutter_foreground_task.service.ForegroundService"
-            android:foregroundServiceType="mediaPlayback"
+            android:foregroundServiceType="mediaPlayback|microphone"
             android:stopWithTask="false"
             android:exported="false" />
         
