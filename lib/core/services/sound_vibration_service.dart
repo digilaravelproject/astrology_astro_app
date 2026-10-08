@@ -12,19 +12,33 @@ class SoundVibrationService {
   AudioPlayer? _audioPlayer;
   Timer? _loopTimer;
 
+  int _playId = 0;
+
   /// Play a sound from assets.
   /// Example: [soundName] = 'incoming_ring' (resolves to 'audio/incoming_ring.mp3')
   Future<void> playSound(String soundName, {bool loop = false}) async {
     try {
       await stopSound();
-      _audioPlayer = AudioPlayer();
+      
+      _playId++;
+      final int currentPlayId = _playId;
+      
+      final player = AudioPlayer();
+      _audioPlayer = player;
 
       String assetPath = soundName;
       if (!soundName.contains('/') && !soundName.contains('.')) {
         assetPath = 'audio/$soundName.mp3';
       }
 
-      await _audioPlayer?.play(AssetSource(assetPath));
+      await player.play(AssetSource(assetPath));
+
+      if (_playId != currentPlayId || _audioPlayer != player) {
+        // stopSound() was called while we were waiting for native play to start
+        await player.stop();
+        await player.dispose();
+        return;
+      }
 
       if (loop) {
         await _audioPlayer?.setReleaseMode(ReleaseMode.loop);
