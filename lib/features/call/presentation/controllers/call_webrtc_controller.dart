@@ -11,6 +11,7 @@ import 'package:astro_astrologer/core/enums/session_status_enums.dart';
 import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
 import 'call_controller.dart';
 import 'package:astro_astrologer/routes/app_routes.dart';
+import 'package:astro_astrologer/core/services/websocket/websocket_service.dart';
 
 class CallWebRTCController extends GetxController {
   final ApiClient _apiClient = Get.find<ApiClient>();
@@ -43,6 +44,15 @@ class CallWebRTCController extends GetxController {
 
       final answerDescription = await _orchestrator.webrtcService.acceptOffer(_orchestrator.sessionId!, sdpToUse);
       
+      final ws = Get.isRegistered<WebSocketService>() ? Get.find<WebSocketService>() : null;
+      if (ws != null && !ws.isConnected) {
+        int wsRetries = 0;
+        while (!ws.isConnected && wsRetries < 40) {
+          await Future.delayed(const Duration(milliseconds: 100));
+          wsRetries++;
+        }
+      }
+
       final response = await _apiClient.post(
         AppUrls.acceptCall(_orchestrator.sessionId!),
         data: {'answer': answerDescription.sdp},
@@ -85,6 +95,15 @@ class CallWebRTCController extends GetxController {
 
       final offerDescription = await _orchestrator.webrtcService.createOffer(_orchestrator.sessionId!);
       
+      final ws = Get.isRegistered<WebSocketService>() ? Get.find<WebSocketService>() : null;
+      if (ws != null && !ws.isConnected) {
+        int wsRetries = 0;
+        while (!ws.isConnected && wsRetries < 40) {
+          await Future.delayed(const Duration(milliseconds: 100));
+          wsRetries++;
+        }
+      }
+
       final response = await _apiClient.post(
         AppUrls.acceptCall(_orchestrator.sessionId!),
         data: {'answer': offerDescription.sdp},
