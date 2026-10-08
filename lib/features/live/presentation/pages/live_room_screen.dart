@@ -66,21 +66,36 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
       _callStatusWorker = ever(Get.find<CallController>().status, (status) async {
         if (mounted) {
           if (status == CallStatus.ongoing) {
-            // Just mute the LiveKit mic to free hardware for the Call without breaking AudioSession!
-            if (_localAudioTrack != null && !_isMuted) {
-              await _localAudioTrack?.mute();
+            // Just stop the LiveKit mic to free hardware for the Call!
+            if (_localAudioTrack != null) {
+              await _localAudioTrack?.stop();
+              _localAudioTrack = null;
               await _reportMediaStatus(null, 'off');
               setState(() { _isMuted = true; });
             }
           } else if (status != CallStatus.ongoing && status != CallStatus.ringing && status != CallStatus.waiting) {
-            // Call ended! Unmute LiveKit mic!
-            if (_localAudioTrack != null && _isMuted) {
+            // Call ended! Restart LiveKit mic!
+            if (_localAudioTrack == null) {
                try {
-                  await _localAudioTrack?.unmute();
+                 final audioTrack = await LocalAudioTrack.create(
+                    const AudioCaptureOptions(
+                      autoGainControl: true,
+                      echoCancellation: true,
+                      noiseSuppression: true,
+                    ),
+                  );
+                  final audioPub = await _room?.localParticipant?.publishAudioTrack(
+                    audioTrack,
+                    publishOptions: const AudioPublishOptions(
+                      encoding: AudioEncoding.presetSpeech,
+                      dtx: true,
+                    ),
+                  );
+                  _localAudioTrack = audioTrack;
                   setState(() { _isMuted = false; });
-                  await _reportMediaStatus(null, 'on');
+                  if (audioPub != null) _reportMediaStatus(audioPub, 'on');
                } catch (e) {
-                 debugPrint('[LIVE] Failed to unmute mic after call: $e');
+                 debugPrint('[LIVE] Failed to restart mic after call: $e');
                }
             }
           }

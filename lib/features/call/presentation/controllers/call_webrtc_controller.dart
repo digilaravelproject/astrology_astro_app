@@ -42,6 +42,10 @@ class CallWebRTCController extends GetxController {
       // so Android allows microphone access even if the app is in the background.
       await _orchestrator.session.showOngoingNotification();
 
+      // IMPORTANT: Give LiveRoomScreen time to stop the LiveKit mic hardware.
+      // If getUserMedia is called while LiveKit is still stopping, the OS mic gets locked or silent.
+      await Future.delayed(const Duration(milliseconds: 1500));
+
       final answerDescription = await _orchestrator.webrtcService.acceptOffer(_orchestrator.sessionId!, sdpToUse);
       
       final ws = Get.isRegistered<WebSocketService>() ? Get.find<WebSocketService>() : null;
@@ -92,6 +96,8 @@ class CallWebRTCController extends GetxController {
       // Start the foreground service BEFORE accessing the microphone,
       // so Android allows microphone access even if the app is in the background.
       await _orchestrator.session.showOngoingNotification();
+
+      await Future.delayed(const Duration(milliseconds: 1500));
 
       final offerDescription = await _orchestrator.webrtcService.createOffer(_orchestrator.sessionId!);
       
