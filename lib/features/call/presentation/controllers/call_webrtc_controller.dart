@@ -234,7 +234,7 @@ class CallWebRTCController extends GetxController {
           final int newSessionId = int.tryParse(call['id']?.toString() ?? '') ?? 0;
           final caller = call['caller'];
 
-          if (_orchestrator.status.value == CallStatus.ringing && _orchestrator.sessionId == newSessionId) return true;
+          if ((_orchestrator.status.value == CallStatus.ringing || _orchestrator.status.value == CallStatus.ongoing) && _orchestrator.sessionId == newSessionId) return true;
 
           _orchestrator.session.sessionId = newSessionId;
           _orchestrator.session.consumerId = int.tryParse(caller?['id']?.toString() ?? '') ?? 0;
