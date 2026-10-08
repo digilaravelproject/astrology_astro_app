@@ -122,20 +122,24 @@ class SoundVibrationService {
     }
   }
 
+  bool _isRinging = false;
+
   /// Helper to start both sound and vibration (e.g. for incoming/outgoing ringtones)
   Future<void> startRingtone(
     String soundName, {
     bool loop = true,
     bool vibrate = true,
   }) async {
+    _isRinging = true;
     await playSound(soundName, loop: loop);
-    if (vibrate) {
+    if (vibrate && _isRinging) {
       await startVibration(pattern: const [500, 1000, 500, 1000], repeat: 0);
     }
   }
 
   /// Helper to stop both sound and vibration
   Future<void> stopRingtone() async {
+    _isRinging = false;
     await stopSound();
     await stopVibration();
   }
