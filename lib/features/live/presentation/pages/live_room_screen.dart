@@ -510,7 +510,6 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
         ),
       );
       _room = room;
-      Hardware.instance.setSpeakerphoneOn(true);
 
       final listener = room.createListener();
       listener.on<LocalTrackPublishedEvent>((event) {
@@ -578,6 +577,10 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
       if (_isMuted) {
         await _localAudioTrack?.mute();
       }
+      
+      // Ensure speakerphone is on after everything is setup
+      Hardware.instance.setSpeakerphoneOn(true);
+      
     } catch (e) {
       debugPrint('[LIVE] Error connecting to LiveKit / publishing: $e');
       _disconnectLiveKit();
