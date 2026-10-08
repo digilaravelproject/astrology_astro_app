@@ -510,6 +510,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
         ),
       );
       _room = room;
+      Hardware.instance.setSpeakerphoneOn(true);
 
       final listener = room.createListener();
       listener.on<LocalTrackPublishedEvent>((event) {

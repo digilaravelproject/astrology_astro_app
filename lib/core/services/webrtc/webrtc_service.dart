@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:get/get.dart' hide navigator;
+import 'package:livekit_client/livekit_client.dart';
 import 'package:astro_astrologer/core/constants/app_constants.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
@@ -310,6 +311,7 @@ class WebRTCService {
   void toggleSpeaker(bool isSpeakerOn) {
     try {
       Helper.setSpeakerphoneOn(isSpeakerOn);
+      Hardware.instance.setSpeakerphoneOn(isSpeakerOn);
       Logger.d('WebRTCService: Helper.setSpeakerphoneOn($isSpeakerOn) called');
     } catch (e) {
       Logger.e('WebRTCService: Helper.setSpeakerphoneOn error -> $e');
