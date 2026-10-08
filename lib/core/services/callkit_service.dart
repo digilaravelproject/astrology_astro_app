@@ -103,18 +103,10 @@ class CallkitService {
             bool success = false;
             String finalOfferSdp = offerSdp;
 
-            // Wait for the app to be fully resumed to avoid ANR on getUserMedia and to ensure Microphone permissions are granted.
-            // On iOS, CallKit grants background microphone access automatically, so we don't need to wait.
-            // On Android, we MUST wait for the app to come to foreground, otherwise getUserMedia will fail or return empty track.
-            if (Platform.isAndroid) {
-              debugPrint('CallKit: Waiting for Android app to resume before accepting call...');
-              int resumeRetries = 0;
-              while (WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed && resumeRetries < 30) {
-                await Future.delayed(const Duration(milliseconds: 100));
-                resumeRetries++;
-              }
-              debugPrint('CallKit: Android app resumed or timed out.');
-            }
+            // On iOS, CallKit grants background microphone access automatically.
+            // On Android, we must accept instantly so we catch the CallkitIncomingActivity while it's still in the foreground,
+            // before it finishes and drops our app to the background.
+            debugPrint('CallKit: Proceeding to accept call instantly to secure mic permission.');
 
             try {
               // If offerSdp is empty (likely due to cold boot), try to fetch it from the backend API
