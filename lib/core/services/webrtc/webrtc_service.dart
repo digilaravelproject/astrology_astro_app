@@ -57,7 +57,7 @@ class WebRTCService {
 
       // Force audio routing to speaker and microphone unmute by default
       toggleMute(false);
-      toggleSpeaker(true);
+      // toggleSpeaker(true); // Moved to onIceConnectionState to prevent audio routing bugs on first call
     } catch (e) {
       Logger.e('WebRTCService: Error initializing local stream -> $e');
       rethrow;
@@ -95,6 +95,8 @@ class WebRTCService {
         Logger.d('WebRTCService: Connection state changed -> $state');
         if (state == RTCIceConnectionState.RTCIceConnectionStateConnected) {
           _startPingTimer();
+          // Set speaker ON only after connection is established to avoid first-call routing bugs
+          toggleSpeaker(true);
         } else if (state == RTCIceConnectionState.RTCIceConnectionStateDisconnected || 
                    state == RTCIceConnectionState.RTCIceConnectionStateFailed ||
                    state == RTCIceConnectionState.RTCIceConnectionStateClosed) {
@@ -194,6 +196,8 @@ class WebRTCService {
         Logger.d('WebRTCService: Connection state changed -> $state');
         if (state == RTCIceConnectionState.RTCIceConnectionStateConnected) {
           _startPingTimer();
+          // Set speaker ON only after connection is established to avoid first-call routing bugs
+          toggleSpeaker(true);
         } else if (state == RTCIceConnectionState.RTCIceConnectionStateDisconnected || 
                    state == RTCIceConnectionState.RTCIceConnectionStateFailed ||
                    state == RTCIceConnectionState.RTCIceConnectionStateClosed) {
