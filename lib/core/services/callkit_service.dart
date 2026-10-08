@@ -110,23 +110,8 @@ class CallkitService {
             debugPrint('CallKit: Proceeding to accept call instantly to secure mic permission.');
 
             try {
-              // If offerSdp is empty (likely due to cold boot), try to fetch it from the backend API
-              if (finalOfferSdp.isEmpty) {
-                debugPrint('CallKit: incomingOfferSdp is empty. Attempting to fetch from current session...');
-                final fetchedSdp = await ctrl.fetchOfferSdpFromCurrentSession();
-                if (fetchedSdp != null && fetchedSdp.isNotEmpty) {
-                  finalOfferSdp = fetchedSdp;
-                  debugPrint('CallKit: Successfully fetched offerSdp from API.');
-                }
-              }
-
-              if (finalOfferSdp.isNotEmpty) {
-                debugPrint('CallKit: Calling ctrl.acceptCall(offerSdp)...');
-                success = await ctrl.acceptCall(finalOfferSdp);
-              } else {
-                debugPrint('CallKit: Calling ctrl.acceptCallDirect()...');
-                success = await ctrl.acceptCallDirect();
-              }
+              debugPrint('CallKit: Calling ctrl.acceptCall(offerSdp)...');
+              success = await ctrl.acceptCall(finalOfferSdp);
             } catch (e) {
               debugPrint('CallKit: Exception during acceptCall: $e');
             }

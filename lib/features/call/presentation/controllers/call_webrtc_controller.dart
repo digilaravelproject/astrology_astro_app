@@ -32,10 +32,25 @@ class CallWebRTCController extends GetxController {
       _orchestrator.status.value = CallStatus.ongoing;
       _orchestrator.durationSeconds.value = 0;
 
-      final sdpToUse = (offerSdp.isNotEmpty) ? offerSdp : (_orchestrator.session.incomingOfferSdp ?? '');
+      String sdpToUse = (offerSdp.isNotEmpty) ? offerSdp : (_orchestrator.session.incomingOfferSdp ?? '');
+      
+      if (sdpToUse.isEmpty) {
+        // Fallback: wait for the SDP from the backend API if we don't have it yet.
+        int retry = 0;
+        while (sdpToUse.isEmpty && retry < 10) {
+          await Future.delayed(const Duration(milliseconds: 500));
+          final fetchedSdp = await fetchOfferSdpFromCurrentSession();
+          if (fetchedSdp != null && fetchedSdp.isNotEmpty) {
+            sdpToUse = fetchedSdp;
+          }
+          retry++;
+        }
+      }
 
       if (sdpToUse.isEmpty) {
-        return await acceptCallDirect();
+        CustomSnackBar.showError('Error: Could not retrieve call data. Please wait or try again.');
+        _orchestrator.session.cleanUp();
+        return false;
       }
 
       // Start the foreground service BEFORE accessing the microphone,
