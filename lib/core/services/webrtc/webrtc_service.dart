@@ -384,15 +384,11 @@ class WebRTCService {
     try {
       localStream?.getTracks().forEach((track) => track.stop());
       localStream?.dispose();
-      localStream = null;
       remoteStream?.dispose();
-      remoteStream = null;
       peerConnection?.close();
       peerConnection?.dispose();
-      peerConnection = null;
       _isRemoteDescriptionSet = false;
       _remoteCandidateQueue.clear();
-      _activeSessionId = null;
       Logger.d('WebRTCService: Disposed peer connection & streams.');
     } catch (e) {
       Logger.e('WebRTCService: Error disposing WebRTC resources -> $e');

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:get/get.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
@@ -26,9 +25,6 @@ class CallWebRTCController extends GetxController {
     if (_orchestrator.sessionId == null) return false;
     if (isAccepting) return false;
     isAccepting = true;
-    
-    await Permission.microphone.request();
-    await Permission.camera.request();
     try {
       _orchestrator.session.isSummaryShown = false;
       _orchestrator.session.stopRingtone();
@@ -111,35 +107,42 @@ class CallWebRTCController extends GetxController {
       _orchestrator.status.value = CallStatus.ongoing;
       _orchestrator.durationSeconds.value = 0;
 
-      // Request permissions before proceeding, especially on fresh install cold boots
-      await Permission.microphone.request();
-      await Permission.camera.request();
-
       // Start the foreground service BEFORE accessing the microphone,
       // so Android allows microphone access even if the app is in the background.
       await _orchestrator.session.showOngoingNotification();
 
       await Future.delayed(const Duration(milliseconds: 1500));
 
-      String? sdpToUse;
-      int retries = 0;
-      while ((sdpToUse == null || sdpToUse.isEmpty) && retries < 8) {
-        sdpToUse = await fetchOfferSdpFromCurrentSession();
-        if (sdpToUse == null || sdpToUse.isEmpty) {
-          await Future.delayed(const Duration(milliseconds: 1000));
-          retries++;
+      final offerDescription = await _orchestrator.webrtcService.createOffer(_orchestrator.sessionId!);
+      
+      final ws = Get.isRegistered<WebSocketService>() ? Get.find<WebSocketService>() : null;
+      if (ws != null && !ws.isConnected) {
+        int wsRetries = 0;
+        while (!ws.isConnected && wsRetries < 40) {
+          await Future.delayed(const Duration(milliseconds: 100));
+          wsRetries++;
         }
       }
 
-      if (sdpToUse == null || sdpToUse.isEmpty) {
-        Future.delayed(const Duration(seconds: 1), () {
-          CustomSnackBar.showError('Could not fetch offer SDP to accept call.');
-        });
+      final response = await _apiClient.post(
+        AppUrls.acceptCall(_orchestrator.sessionId!),
+        data: {'answer': offerDescription.sdp},
+        handleError: true,
+        showErrorScreen: false,
+      );
+
+      if (response.isSuccess) {
+        // CallkitService.endAllCalls();
+        _orchestrator.session.startCallTimer();
+        _orchestrator.session.showOngoingNotification();
+        return true;
+      } else {
         _orchestrator.session.cleanUp();
+        Future.delayed(const Duration(seconds: 1), () {
+          CustomSnackBar.showError('Failed to accept call: ${response.message}');
+        });
         return false;
       }
-
-      return await acceptCall(sdpToUse);
     } catch (e) {
       _orchestrator.session.cleanUp();
       return false;
@@ -234,7 +237,6 @@ class CallWebRTCController extends GetxController {
         AppUrls.currentCallSession,
         handleError: false,
         showErrorScreen: false,
-        onCacheData: (_) {}, // Forces bypassing the cache
       );
       if (response.isSuccess && response.body != null) {
         final bodyMap = response.body;
@@ -294,7 +296,6 @@ class CallWebRTCController extends GetxController {
         AppUrls.currentCallSession,
         handleError: false,
         showErrorScreen: false,
-        onCacheData: (_) {}, // Forces bypassing the cache for real-time state
       );
       if (response.isSuccess && response.body != null) {
         final bodyMap = response.body;
