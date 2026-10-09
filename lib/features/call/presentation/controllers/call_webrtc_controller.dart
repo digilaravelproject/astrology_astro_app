@@ -70,6 +70,20 @@ class CallWebRTCController extends GetxController {
         final acceptedMillis = DateTime.now().millisecondsSinceEpoch;
         _orchestrator.session.startCallTimer(startedAtMillis: acceptedMillis);
         _orchestrator.session.showOngoingNotification();
+
+        // Process missed ICE candidates from API response
+        final bodyMap = response.body;
+        final sessionData = bodyMap is Map ? (bodyMap['session'] ?? bodyMap['data']?['session']) : null;
+        if (sessionData != null && sessionData['ice_candidates'] is List) {
+           final candidatesList = sessionData['ice_candidates'] as List;
+           for (var ice in candidatesList) {
+             final candidateStr = ice['candidate'];
+             if (candidateStr != null) {
+               _orchestrator.webrtcService.addRemoteCandidate(candidateStr.toString());
+             }
+           }
+        }
+
         return true;
       } else {
         _orchestrator.session.cleanUp();
@@ -338,6 +352,17 @@ class CallWebRTCController extends GetxController {
                   await _apiClient.post(AppUrls.acceptCall(_orchestrator.sessionId!), data: {'answer': newOffer.sdp}, handleError: false, showErrorScreen: false);
                 } catch (e) {}
               }
+            }
+
+            // Process missed ICE candidates from API response
+            if (session['ice_candidates'] is List) {
+               final candidatesList = session['ice_candidates'] as List;
+               for (var ice in candidatesList) {
+                 final candidateStr = ice['candidate'];
+                 if (candidateStr != null) {
+                   _orchestrator.webrtcService.addRemoteCandidate(candidateStr.toString());
+                 }
+               }
             }
 
             // Check if it's a live call session
