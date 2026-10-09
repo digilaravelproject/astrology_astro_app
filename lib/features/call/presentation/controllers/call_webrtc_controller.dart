@@ -234,6 +234,7 @@ class CallWebRTCController extends GetxController {
         AppUrls.currentCallSession,
         handleError: false,
         showErrorScreen: false,
+        onCacheData: (_) {}, // Forces bypassing the cache
       );
       if (response.isSuccess && response.body != null) {
         final bodyMap = response.body;
@@ -293,6 +294,7 @@ class CallWebRTCController extends GetxController {
         AppUrls.currentCallSession,
         handleError: false,
         showErrorScreen: false,
+        onCacheData: (_) {}, // Forces bypassing the cache for real-time state
       );
       if (response.isSuccess && response.body != null) {
         final bodyMap = response.body;
