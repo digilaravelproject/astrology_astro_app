@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:get/get.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
@@ -25,6 +26,9 @@ class CallWebRTCController extends GetxController {
     if (_orchestrator.sessionId == null) return false;
     if (isAccepting) return false;
     isAccepting = true;
+    
+    await Permission.microphone.request();
+    await Permission.camera.request();
     try {
       _orchestrator.session.isSummaryShown = false;
       _orchestrator.session.stopRingtone();
@@ -106,6 +110,10 @@ class CallWebRTCController extends GetxController {
       _orchestrator.session.ringingTimer?.cancel();
       _orchestrator.status.value = CallStatus.ongoing;
       _orchestrator.durationSeconds.value = 0;
+
+      // Request permissions before proceeding, especially on fresh install cold boots
+      await Permission.microphone.request();
+      await Permission.camera.request();
 
       // Start the foreground service BEFORE accessing the microphone,
       // so Android allows microphone access even if the app is in the background.
