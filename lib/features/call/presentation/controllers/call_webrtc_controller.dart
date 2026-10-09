@@ -113,36 +113,25 @@ class CallWebRTCController extends GetxController {
 
       await Future.delayed(const Duration(milliseconds: 1500));
 
-      final offerDescription = await _orchestrator.webrtcService.createOffer(_orchestrator.sessionId!);
-      
-      final ws = Get.isRegistered<WebSocketService>() ? Get.find<WebSocketService>() : null;
-      if (ws != null && !ws.isConnected) {
-        int wsRetries = 0;
-        while (!ws.isConnected && wsRetries < 40) {
-          await Future.delayed(const Duration(milliseconds: 100));
-          wsRetries++;
+      String? sdpToUse;
+      int retries = 0;
+      while ((sdpToUse == null || sdpToUse.isEmpty) && retries < 8) {
+        sdpToUse = await fetchOfferSdpFromCurrentSession();
+        if (sdpToUse == null || sdpToUse.isEmpty) {
+          await Future.delayed(const Duration(milliseconds: 1000));
+          retries++;
         }
       }
 
-      final response = await _apiClient.post(
-        AppUrls.acceptCall(_orchestrator.sessionId!),
-        data: {'answer': offerDescription.sdp},
-        handleError: true,
-        showErrorScreen: false,
-      );
-
-      if (response.isSuccess) {
-        // CallkitService.endAllCalls();
-        _orchestrator.session.startCallTimer();
-        _orchestrator.session.showOngoingNotification();
-        return true;
-      } else {
-        _orchestrator.session.cleanUp();
+      if (sdpToUse == null || sdpToUse.isEmpty) {
         Future.delayed(const Duration(seconds: 1), () {
-          CustomSnackBar.showError('Failed to accept call: ${response.message}');
+          CustomSnackBar.showError('Could not fetch offer SDP to accept call.');
         });
+        _orchestrator.session.cleanUp();
         return false;
       }
+
+      return await acceptCall(sdpToUse);
     } catch (e) {
       _orchestrator.session.cleanUp();
       return false;
