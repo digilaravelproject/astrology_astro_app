@@ -311,7 +311,7 @@ class WebRTCService {
   void toggleSpeaker(bool isSpeakerOn) {
     try {
       Helper.setSpeakerphoneOn(isSpeakerOn);
-      Hardware.instance.setSpeakerphoneOn(isSpeakerOn);
+      // Hardware.instance.setSpeakerphoneOn(isSpeakerOn); // TEMP HIDDEN FOR EMULATOR
       Logger.d('WebRTCService: Helper.setSpeakerphoneOn($isSpeakerOn) called');
     } catch (e) {
       Logger.e('WebRTCService: Helper.setSpeakerphoneOn error -> $e');
