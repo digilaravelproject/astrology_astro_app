@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 import 'package:astro_astrologer/core/services/network/api_checker.dart';
 import 'package:astro_astrologer/features/live/domain/usecases/live_usecases.dart';
@@ -29,6 +31,51 @@ class LiveBroadcastController extends GetxController {
 
   LiveSessionController get _sessionCtrl => Get.find<LiveSessionController>();
 
+  /// Pre-check and request camera & microphone permissions before starting any broadcast
+  Future<bool> _ensureMediaPermissions() async {
+    try {
+      var cameraStatus = await Permission.camera.status;
+      var micStatus = await Permission.microphone.status;
+
+      if (!cameraStatus.isGranted || !micStatus.isGranted) {
+        final statuses = await [
+          Permission.camera,
+          Permission.microphone,
+        ].request();
+
+        cameraStatus = statuses[Permission.camera] ?? await Permission.camera.status;
+        micStatus = statuses[Permission.microphone] ?? await Permission.microphone.status;
+
+        if (!cameraStatus.isGranted) {
+          if (cameraStatus.isPermanentlyDenied) {
+            CustomSnackBar.showError('Camera permission is permanently denied. Please enable it in Settings.'.tr);
+            await openAppSettings();
+          } else {
+            CustomSnackBar.showError('Camera permission is required to go live'.tr);
+          }
+          return false;
+        }
+
+        if (!micStatus.isGranted) {
+          if (micStatus.isPermanentlyDenied) {
+            CustomSnackBar.showError('Microphone permission is required to go live. Please enable it in Settings.'.tr);
+            await openAppSettings();
+          } else {
+            CustomSnackBar.showError('Microphone permission is required to go live'.tr);
+          }
+          return false;
+        }
+
+        // Brief delay so OS hardware states settle before initializing WebRTC/LiveKit
+        await Future.delayed(const Duration(milliseconds: 400));
+      }
+      return true;
+    } catch (e) {
+      debugPrint('[LIVE] Permission check error: $e');
+      return true;
+    }
+  }
+
   Future<void> createSession({
     required String title,
     required String description,
@@ -39,6 +86,11 @@ class LiveBroadcastController extends GetxController {
     bool isInstant = false,
   }) async {
     try {
+      if (isInstant) {
+        final hasPermissions = await _ensureMediaPermissions();
+        if (!hasPermissions) return;
+      }
+
       isCreating.value = true;
 
       final Map<String, dynamic> data = {
@@ -61,17 +113,27 @@ class LiveBroadcastController extends GetxController {
 
       if (result.isSuccess) {
         ApiChecker.handleResponse(result, showSuccess: true);
+
+        // Close bottom sheet or dialog FIRST before pushing live room
+        if (Get.isBottomSheetOpen ?? false) {
+          Get.back();
+        } else if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+
         await _sessionCtrl.getSessions();
-        await _sessionCtrl.checkCurrentActiveSession();
-        Get.back();
+        await _sessionCtrl.checkCurrentActiveSession(autoNavigate: false);
+
         if (isInstant && _sessionCtrl.currentActiveSession.value != null) {
-          _sessionCtrl.isRoomOpen = true;
-          Get.toNamed(
-            AppRoutes.liveRoomScreen,
-            arguments: _sessionCtrl.currentActiveSession.value!,
-          )?.then((_) {
-            _sessionCtrl.isRoomOpen = false;
-          });
+          if (!_sessionCtrl.isRoomOpen) {
+            _sessionCtrl.isRoomOpen = true;
+            Get.toNamed(
+              AppRoutes.liveRoomScreen,
+              arguments: _sessionCtrl.currentActiveSession.value!,
+            )?.then((_) {
+              _sessionCtrl.isRoomOpen = false;
+            });
+          }
         }
       } else {
         ApiChecker.handleResponse(result);
@@ -106,23 +168,28 @@ class LiveBroadcastController extends GetxController {
 
   Future<void> startSession(int id) async {
     try {
+      final hasPermissions = await _ensureMediaPermissions();
+      if (!hasPermissions) return;
+
       _sessionCtrl.isLoading.value = true;
       final result = await _startSessionUseCase.call(id);
       if (result.isSuccess) {
         ApiChecker.handleResponse(result, showSuccess: true);
         await _sessionCtrl.getSessions();
-        await _sessionCtrl.checkCurrentActiveSession();
+        await _sessionCtrl.checkCurrentActiveSession(autoNavigate: false);
         if (_sessionCtrl.currentActiveSession.value != null) {
           _sessionCtrl.showLiveBubbleAndNotification(
             _sessionCtrl.currentActiveSession.value!,
           );
-          _sessionCtrl.isRoomOpen = true;
-          Get.toNamed(
-            AppRoutes.liveRoomScreen,
-            arguments: _sessionCtrl.currentActiveSession.value!,
-          )?.then((_) {
-            _sessionCtrl.isRoomOpen = false;
-          });
+          if (!_sessionCtrl.isRoomOpen) {
+            _sessionCtrl.isRoomOpen = true;
+            Get.toNamed(
+              AppRoutes.liveRoomScreen,
+              arguments: _sessionCtrl.currentActiveSession.value!,
+            )?.then((_) {
+              _sessionCtrl.isRoomOpen = false;
+            });
+          }
         }
       } else {
         ApiChecker.handleResponse(result);

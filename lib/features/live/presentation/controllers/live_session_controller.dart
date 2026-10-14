@@ -53,7 +53,7 @@ class LiveSessionController extends GetxController {
     LocalNotificationService.cancelOngoingLiveNotification(sessionId);
   }
 
-  Future<void> checkCurrentActiveSession() async {
+  Future<void> checkCurrentActiveSession({bool autoNavigate = true}) async {
     try {
       final result = await _getCurrentSessionUseCase.call();
       if (result.isSuccess && result.body != null) {
@@ -74,7 +74,7 @@ class LiveSessionController extends GetxController {
           print('[LIVE] Active ongoing session found: ${session.title}');
           showLiveBubbleAndNotification(session);
 
-          if (!isRoomOpen) {
+          if (autoNavigate && !isRoomOpen) {
             isRoomOpen = true;
             Get.toNamed(AppRoutes.liveRoomScreen, arguments: session)?.then((_) {
               isRoomOpen = false;

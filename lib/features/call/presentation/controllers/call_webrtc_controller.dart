@@ -32,10 +32,18 @@ class CallWebRTCController extends GetxController {
       _orchestrator.status.value = CallStatus.ongoing;
       _orchestrator.durationSeconds.value = 0;
 
-      final sdpToUse = (offerSdp.isNotEmpty) ? offerSdp : (_orchestrator.session.incomingOfferSdp ?? '');
+      String sdpToUse = (offerSdp.isNotEmpty) ? offerSdp : (_orchestrator.session.incomingOfferSdp ?? '');
 
       if (sdpToUse.isEmpty) {
-        return await acceptCallDirect();
+        sdpToUse = await fetchOfferSdpFromCurrentSession() ?? '';
+      }
+
+      if (sdpToUse.isEmpty) {
+        Logger.e('acceptCall failed: No offer SDP found locally or via current-session API.');
+        _orchestrator.session.cleanUp();
+        isAccepting = false;
+        CustomSnackBar.showError('Could not connect: User offer missing.');
+        return false;
       }
 
       // Start the foreground service BEFORE accessing the microphone,
@@ -91,6 +99,7 @@ class CallWebRTCController extends GetxController {
         return false;
       }
     } catch (e) {
+      Logger.e('CallWebRTCController: Exception in acceptCall -> $e');
       _orchestrator.session.cleanUp();
       return false;
     } finally {
@@ -99,54 +108,16 @@ class CallWebRTCController extends GetxController {
   }
 
   Future<bool> acceptCallDirect() async {
-    if (_orchestrator.sessionId == null) return false;
-    try {
-      _orchestrator.session.isSummaryShown = false;
-      _orchestrator.session.stopRingtone();
-      _orchestrator.session.ringingTimer?.cancel();
-      _orchestrator.status.value = CallStatus.ongoing;
-      _orchestrator.durationSeconds.value = 0;
-
-      // Start the foreground service BEFORE accessing the microphone,
-      // so Android allows microphone access even if the app is in the background.
-      await _orchestrator.session.showOngoingNotification();
-
-      await Future.delayed(const Duration(milliseconds: 1500));
-
-      final offerDescription = await _orchestrator.webrtcService.createOffer(_orchestrator.sessionId!);
-      
-      final ws = Get.isRegistered<WebSocketService>() ? Get.find<WebSocketService>() : null;
-      if (ws != null && !ws.isConnected) {
-        int wsRetries = 0;
-        while (!ws.isConnected && wsRetries < 40) {
-          await Future.delayed(const Duration(milliseconds: 100));
-          wsRetries++;
-        }
-      }
-
-      final response = await _apiClient.post(
-        AppUrls.acceptCall(_orchestrator.sessionId!),
-        data: {'answer': offerDescription.sdp},
-        handleError: true,
-        showErrorScreen: false,
-      );
-
-      if (response.isSuccess) {
-        // CallkitService.endAllCalls();
-        _orchestrator.session.startCallTimer();
-        _orchestrator.session.showOngoingNotification();
-        return true;
-      } else {
-        _orchestrator.session.cleanUp();
-        Future.delayed(const Duration(seconds: 1), () {
-          CustomSnackBar.showError('Failed to accept call: ${response.message}');
-        });
-        return false;
-      }
-    } catch (e) {
-      _orchestrator.session.cleanUp();
-      return false;
+    String sdp = _orchestrator.session.incomingOfferSdp ?? '';
+    if (sdp.isEmpty && _orchestrator.sessionId != null) {
+      sdp = await fetchOfferSdpFromCurrentSession() ?? '';
     }
+    if (sdp.isNotEmpty) {
+      return await acceptCall(sdp);
+    }
+    Logger.e('acceptCallDirect failed: No offer SDP available.');
+    _orchestrator.session.cleanUp();
+    return false;
   }
 
   Future<void> rejectCall() async {

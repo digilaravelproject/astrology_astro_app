@@ -25,7 +25,11 @@ class WebRTCService {
     'iceServers': [
       {'urls': AppConstants.webrtcStunServer},
       {
-        'urls': AppConstants.liveKitTurnServerUrl,
+        'urls': [
+          AppConstants.liveKitTurnServerUrl,
+          '${AppConstants.liveKitTurnServerUrl}?transport=udp',
+          '${AppConstants.liveKitTurnServerUrl}?transport=tcp',
+        ],
         'username': AppConstants.liveKitTurnUsername,
         'credential': AppConstants.liveKitTurnCredential,
       },
@@ -84,6 +88,7 @@ class WebRTCService {
 
   Future<RTCSessionDescription> createOffer(int sessionId) async {
     try {
+      activeSessionId = sessionId;
       await initLocalStream();
       peerConnection = await createPeerConnection(_iceConfig, _constraints);
 
@@ -93,10 +98,9 @@ class WebRTCService {
       };
 
       peerConnection!.onIceConnectionState = (state) {
-        Logger.d('WebRTCService: Connection state changed -> $state');
+        Logger.d('WebRTCService: ICE Connection state changed -> $state');
         if (state == RTCIceConnectionState.RTCIceConnectionStateConnected) {
           _startPingTimer();
-          // Set speaker ON only after connection is established to avoid first-call routing bugs
           toggleSpeaker(true);
         } else if (state == RTCIceConnectionState.RTCIceConnectionStateDisconnected || 
                    state == RTCIceConnectionState.RTCIceConnectionStateFailed ||
@@ -108,11 +112,34 @@ class WebRTCService {
         }
       };
 
+      peerConnection!.onConnectionState = (state) {
+        Logger.d('WebRTCService: Peer connection state changed -> $state');
+        if (state == RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
+          _startPingTimer();
+          toggleSpeaker(true);
+        }
+      };
+
       peerConnection!.onAddStream = (stream) {
-        Logger.d('WebRTCService: Remote stream added.');
+        Logger.d('WebRTCService: Remote stream added via onAddStream.');
         remoteStream = stream;
+        remoteStream!.getAudioTracks().forEach((track) => track.enabled = true);
         if (onRemoteStreamAdded != null) {
           onRemoteStreamAdded!(stream);
+        }
+      };
+
+      peerConnection!.onTrack = (event) {
+        Logger.d('WebRTCService: Remote track added via onTrack: ${event.track.kind}');
+        if (event.track.kind == 'audio') {
+          event.track.enabled = true;
+        }
+        if (event.streams.isNotEmpty) {
+          remoteStream = event.streams[0];
+          remoteStream!.getAudioTracks().forEach((track) => track.enabled = true);
+          if (onRemoteStreamAdded != null) {
+            onRemoteStreamAdded!(remoteStream!);
+          }
         }
       };
 
@@ -185,6 +212,7 @@ class WebRTCService {
     String offerSdp,
   ) async {
     try {
+      activeSessionId = sessionId;
       await initLocalStream();
       peerConnection = await createPeerConnection(_iceConfig, _constraints);
 
@@ -194,10 +222,9 @@ class WebRTCService {
       };
 
       peerConnection!.onIceConnectionState = (state) {
-        Logger.d('WebRTCService: Connection state changed -> $state');
+        Logger.d('WebRTCService: ICE Connection state changed -> $state');
         if (state == RTCIceConnectionState.RTCIceConnectionStateConnected) {
           _startPingTimer();
-          // Set speaker ON only after connection is established to avoid first-call routing bugs
           toggleSpeaker(true);
         } else if (state == RTCIceConnectionState.RTCIceConnectionStateDisconnected || 
                    state == RTCIceConnectionState.RTCIceConnectionStateFailed ||
@@ -209,9 +236,18 @@ class WebRTCService {
         }
       };
 
+      peerConnection!.onConnectionState = (state) {
+        Logger.d('WebRTCService: Peer connection state changed -> $state');
+        if (state == RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
+          _startPingTimer();
+          toggleSpeaker(true);
+        }
+      };
+
       peerConnection!.onAddStream = (stream) {
         Logger.d('WebRTCService: Remote stream added via onAddStream.');
         remoteStream = stream;
+        remoteStream!.getAudioTracks().forEach((track) => track.enabled = true);
         if (onRemoteStreamAdded != null) {
           onRemoteStreamAdded!(stream);
         }
@@ -219,8 +255,12 @@ class WebRTCService {
 
       peerConnection!.onTrack = (event) {
         Logger.d('WebRTCService: Remote track added via onTrack: ${event.track.kind}');
+        if (event.track.kind == 'audio') {
+          event.track.enabled = true;
+        }
         if (event.streams.isNotEmpty) {
           remoteStream = event.streams[0];
+          remoteStream!.getAudioTracks().forEach((track) => track.enabled = true);
           if (onRemoteStreamAdded != null) {
             onRemoteStreamAdded!(remoteStream!);
           }
@@ -255,18 +295,28 @@ class WebRTCService {
     }
   }
 
-  Future<void> addRemoteCandidate(String candidateJson) async {
+  Future<void> addRemoteCandidate(dynamic candidateData) async {
     try {
-      Map<String, dynamic> candidateMap = jsonDecode(candidateJson);
+      Map<String, dynamic> candidateMap;
+      if (candidateData is Map) {
+        candidateMap = Map<String, dynamic>.from(candidateData);
+      } else {
+        try {
+          candidateMap = jsonDecode(candidateData.toString());
+        } catch (e) {
+          // If it's a plain string, wrap it
+          candidateMap = {'candidate': candidateData.toString(), 'sdpMid': '0', 'sdpMLineIndex': 0};
+        }
+      }
+      
       RTCIceCandidate candidate = RTCIceCandidate(
         candidateMap['candidate']?.toString() ??
             candidateMap['iceCandidate']?.toString() ??
             '',
-        candidateMap['sdpMid']?.toString() ?? '',
+        candidateMap['sdpMid']?.toString() ?? '0',
         candidateMap['sdpMLineIndex'] is int
             ? candidateMap['sdpMLineIndex']
-            : int.tryParse(candidateMap['sdpMLineIndex']?.toString() ?? '') ??
-                0,
+            : int.tryParse(candidateMap['sdpMLineIndex']?.toString() ?? '') ?? 0,
       );
 
       if (peerConnection != null && _isRemoteDescriptionSet) {

@@ -22,7 +22,8 @@ class LiveController extends GetxController {
 
   // Session & UI delegates
   Future<void> getSessions() => _session.getSessions();
-  Future<void> checkCurrentActiveSession() => _session.checkCurrentActiveSession();
+  Future<void> checkCurrentActiveSession({bool autoNavigate = true}) =>
+      _session.checkCurrentActiveSession(autoNavigate: autoNavigate);
   void showLiveBubbleAndNotification(LiveSessionModel session) => _session.showLiveBubbleAndNotification(session);
   void stopLiveBubbleAndNotification(int sessionId) => _session.stopLiveBubbleAndNotification(sessionId);
   Future<void> fetchComments(int sessionId) => _session.fetchComments(sessionId);

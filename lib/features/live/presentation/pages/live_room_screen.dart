@@ -59,16 +59,24 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
     super.initState();
     _controller = Get.find<LiveController>();
     _viewerCount = widget.session.viewerCount;
-    _isCameraOn = widget.session.isCameraOn;
-    _isMuted = !widget.session.isAudioOn;
+    _isCameraOn = widget.session.isBroadcasting ? widget.session.isCameraOn : true;
+    _isMuted = widget.session.isBroadcasting ? !widget.session.isAudioOn : false;
 
     if (Get.isRegistered<CallController>()) {
       _callStatusWorker = ever(Get.find<CallController>().status, (status) async {
         if (mounted) {
           if (status == CallStatus.ongoing) {
             // Just stop the LiveKit mic to free hardware for the Call!
+            if (_room?.localParticipant != null) {
+              try {
+                for (var pub in _room!.localParticipant!.audioTrackPublications) {
+                  await pub.mute();
+                }
+              } catch (_) {}
+            }
             if (_localAudioTrack != null) {
               await _localAudioTrack?.stop();
+              await _localAudioTrack?.dispose();
               _localAudioTrack = null;
               await _reportMediaStatus(null, 'off');
               setState(() { _isMuted = true; });
@@ -456,8 +464,12 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
       bool wasRequestedJustNow = false;
 
       if (!cameraStatus.isGranted || !micStatus.isGranted) {
-        cameraStatus = await Permission.camera.request();
-        micStatus = await Permission.microphone.request();
+        final statuses = await [
+          Permission.camera,
+          Permission.microphone,
+        ].request();
+        cameraStatus = statuses[Permission.camera] ?? await Permission.camera.status;
+        micStatus = statuses[Permission.microphone] ?? await Permission.microphone.status;
         wasRequestedJustNow = true;
       }
 
