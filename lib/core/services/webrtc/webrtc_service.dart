@@ -63,9 +63,9 @@ class WebRTCService {
       // Configure audio session for two-way communication
       await initAudioSession();
 
-      // Force audio routing to speaker and microphone unmute by default
+      // Force microphone unmute and route to earpiece by default (speaker OFF)
       toggleMute(false);
-      toggleSpeaker(true); 
+      toggleSpeaker(false); 
     } catch (e) {
       Logger.e('WebRTCService: Error initializing local stream -> $e');
       rethrow;
@@ -361,7 +361,7 @@ class WebRTCService {
     }
   }
 
-  bool currentSpeakerState = true;
+  bool currentSpeakerState = false;
 
   Future<void> initAudioSession() async {
     try {

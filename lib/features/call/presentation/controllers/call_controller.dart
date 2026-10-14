@@ -39,7 +39,7 @@ class CallController extends GetxController {
   
   RxInt get currentPingMs => webrtcService.currentPingMs;
   RxBool isMuted = false.obs;
-  RxBool isSpeakerOn = true.obs;
+  RxBool isSpeakerOn = false.obs;
 
   bool get isEndingCall => webrtc.isEndingCall;
   int get packageMasterSeconds => WebSocketService.packageRemainingSeconds.value;
