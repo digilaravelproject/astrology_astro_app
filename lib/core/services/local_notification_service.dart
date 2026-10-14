@@ -213,7 +213,7 @@ class LocalNotificationService {
   }) async {
     final AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
-          'active_live_channel_v1',
+          'active_live_channel_v2',
           'Active Live Sessions',
           channelDescription:
               'Ongoing notification for active live stream sessions',
@@ -226,6 +226,9 @@ class LocalNotificationService {
           showWhen: true,
           usesChronometer: startedAtMillis != null,
           when: startedAtMillis,
+          category: AndroidNotificationCategory.status,
+          visibility: NotificationVisibility.public,
+          additionalFlags: Int32List.fromList([2, 32, 64]),
         );
 
     final NotificationDetails notificationDetails = NotificationDetails(

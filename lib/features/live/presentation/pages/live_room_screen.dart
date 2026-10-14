@@ -58,6 +58,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
   void initState() {
     super.initState();
     _controller = Get.find<LiveController>();
+    _controller.showLiveBubbleAndNotification(widget.session);
     _viewerCount = widget.session.viewerCount;
     _isCameraOn = widget.session.isBroadcasting ? widget.session.isCameraOn : true;
     _isMuted = widget.session.isBroadcasting ? !widget.session.isAudioOn : false;
@@ -762,6 +763,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
     _viewerCountSubscription?.cancel();
     _scrollController.dispose();
     _controller.stopBroadcast(widget.session.id);
+    _controller.stopLiveBubbleAndNotification(widget.session.id);
     _disconnectLiveKit(updateState: false);
     try {
       final ws = Get.find<WebSocketService>();
