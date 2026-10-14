@@ -60,6 +60,9 @@ class WebRTCService {
       localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
       Logger.d('WebRTCService: Local audio stream initialized successfully.');
 
+      // Configure audio session for two-way communication
+      await initAudioSession();
+
       // Force audio routing to speaker and microphone unmute by default
       toggleMute(false);
       toggleSpeaker(true); 
@@ -101,7 +104,7 @@ class WebRTCService {
         Logger.d('WebRTCService: ICE Connection state changed -> $state');
         if (state == RTCIceConnectionState.RTCIceConnectionStateConnected) {
           _startPingTimer();
-          toggleSpeaker(true);
+          toggleSpeaker(currentSpeakerState);
         } else if (state == RTCIceConnectionState.RTCIceConnectionStateDisconnected || 
                    state == RTCIceConnectionState.RTCIceConnectionStateFailed ||
                    state == RTCIceConnectionState.RTCIceConnectionStateClosed) {
@@ -116,7 +119,7 @@ class WebRTCService {
         Logger.d('WebRTCService: Peer connection state changed -> $state');
         if (state == RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
           _startPingTimer();
-          toggleSpeaker(true);
+          toggleSpeaker(currentSpeakerState);
         }
       };
 
@@ -225,7 +228,7 @@ class WebRTCService {
         Logger.d('WebRTCService: ICE Connection state changed -> $state');
         if (state == RTCIceConnectionState.RTCIceConnectionStateConnected) {
           _startPingTimer();
-          toggleSpeaker(true);
+          toggleSpeaker(currentSpeakerState);
         } else if (state == RTCIceConnectionState.RTCIceConnectionStateDisconnected || 
                    state == RTCIceConnectionState.RTCIceConnectionStateFailed ||
                    state == RTCIceConnectionState.RTCIceConnectionStateClosed) {
@@ -240,7 +243,7 @@ class WebRTCService {
         Logger.d('WebRTCService: Peer connection state changed -> $state');
         if (state == RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
           _startPingTimer();
-          toggleSpeaker(true);
+          toggleSpeaker(currentSpeakerState);
         }
       };
 
@@ -358,10 +361,32 @@ class WebRTCService {
     }
   }
 
+  bool currentSpeakerState = true;
+
+  Future<void> initAudioSession() async {
+    try {
+      // ignore: experimental_member_use
+      await AudioManager.instance.setAudioSessionOptions(
+        // ignore: experimental_member_use
+        const AudioSessionOptions.communication(),
+      );
+      Logger.d('WebRTCService: LiveKit AudioManager configured for communication.');
+    } catch (e) {
+      Logger.e('WebRTCService: Error configuring audio session -> $e');
+    }
+  }
+
   void toggleSpeaker(bool isSpeakerOn) {
+    currentSpeakerState = isSpeakerOn;
+    try {
+      AudioManager.instance.setSpeakerOutputPreferred(isSpeakerOn, force: isSpeakerOn);
+      Logger.d('WebRTCService: AudioManager.setSpeakerOutputPreferred($isSpeakerOn, force: $isSpeakerOn) called');
+    } catch (e) {
+      Logger.e('WebRTCService: AudioManager.setSpeakerOutputPreferred error -> $e');
+    }
+
     try {
       Helper.setSpeakerphoneOn(isSpeakerOn);
-      // Hardware.instance.setSpeakerphoneOn(isSpeakerOn); // TEMP HIDDEN FOR EMULATOR
       Logger.d('WebRTCService: Helper.setSpeakerphoneOn($isSpeakerOn) called');
     } catch (e) {
       Logger.e('WebRTCService: Helper.setSpeakerphoneOn error -> $e');
@@ -369,6 +394,7 @@ class WebRTCService {
 
     if (localStream != null) {
       localStream!.getAudioTracks().forEach((track) {
+        // ignore: deprecated_member_use
         track.enableSpeakerphone(isSpeakerOn);
       });
       Logger.d('WebRTCService: Track Speakerphone enabled = $isSpeakerOn');
@@ -432,6 +458,13 @@ class WebRTCService {
 
   void dispose() {
     try {
+      try {
+        // ignore: experimental_member_use
+        AudioManager.instance.deactivateAudioSession();
+        Logger.d('WebRTCService: AudioManager session deactivated');
+      } catch (e) {
+        Logger.e('WebRTCService: Error deactivating audio session -> $e');
+      }
       localStream?.getTracks().forEach((track) => track.stop());
       localStream?.dispose();
       remoteStream?.dispose();

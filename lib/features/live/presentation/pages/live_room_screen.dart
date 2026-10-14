@@ -592,7 +592,11 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
       }
       
       // Ensure speakerphone is on after everything is setup
-      // Hardware.instance.setSpeakerphoneOn(true); // TEMP HIDDEN FOR EMULATOR
+      try {
+        await AudioManager.instance.setSpeakerOutputPreferred(true, force: true);
+      } catch (e) {
+        debugPrint('[LIVE] Error setting speakerphone: $e');
+      }
       
     } catch (e) {
       debugPrint('[LIVE] Error connecting to LiveKit / publishing: $e');

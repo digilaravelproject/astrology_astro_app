@@ -134,10 +134,14 @@ class CallkitService {
             debugPrint('CallKit: Accept result success = $success');
 
             if (success) {
-              // End CallKit telecom session so "Hang Up" notification disappears.
+              // End CallKit telecom session so "Hang Up" notification disappears
+              // and Android Telecom releases its audio routing lock.
               // The actual call continues over our WebRTC implementation.
               Future.delayed(const Duration(milliseconds: 500), () {
-                // FlutterCallkitIncoming.endCall(sessionId!);
+                if (sessionId != null) {
+                  FlutterCallkitIncoming.endCall(sessionId);
+                  debugPrint('CallKit: Ended CallKit Telecom session $sessionId to release audio routing lock.');
+                }
               });
               
               // Wait until splash screen is gone and navigator is ready
@@ -186,7 +190,9 @@ class CallkitService {
             // End CallKit telecom session so it doesn't linger
             Future.delayed(const Duration(milliseconds: 500), () {
               debugPrint('CallKit: Ending CallKit session for $sessionId');
-              // FlutterCallkitIncoming.endCall(sessionId);
+              if (sessionId != null) {
+                FlutterCallkitIncoming.endCall(sessionId);
+              }
             });
 
             // 1. Call POST /chat/{id}/accept API — required to change status from initiated → ongoing
