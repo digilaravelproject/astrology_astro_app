@@ -458,6 +458,7 @@ class WebRTCService {
 
   void dispose() {
     try {
+      _stopPingTimer();
       try {
         // ignore: experimental_member_use
         AudioManager.instance.deactivateAudioSession();
@@ -467,11 +468,16 @@ class WebRTCService {
       }
       localStream?.getTracks().forEach((track) => track.stop());
       localStream?.dispose();
+      localStream = null;
       remoteStream?.dispose();
+      remoteStream = null;
       peerConnection?.close();
       peerConnection?.dispose();
+      peerConnection = null;
       _isRemoteDescriptionSet = false;
       _remoteCandidateQueue.clear();
+      _queuedIceCandidates.clear();
+      _activeSessionId = null;
       Logger.d('WebRTCService: Disposed peer connection & streams.');
     } catch (e) {
       Logger.e('WebRTCService: Error disposing WebRTC resources -> $e');
