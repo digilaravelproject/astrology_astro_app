@@ -182,19 +182,41 @@ class ForegroundTaskService {
       await FlutterForegroundTask.saveData(key: 'sessionType', value: type);
       await FlutterForegroundTask.saveData(key: 'title', value: title);
 
+      final List<ForegroundServiceTypes> serviceTypes = type == 'Call'
+          ? [
+              ForegroundServiceTypes.microphone,
+              ForegroundServiceTypes.phoneCall,
+              ForegroundServiceTypes.mediaPlayback,
+            ]
+          : [
+              ForegroundServiceTypes.dataSync,
+            ];
+
       try {
         if (await FlutterForegroundTask.isRunningService) {
-          FlutterForegroundTask.sendDataToTask({
-            'startedAt': startTimeMillis,
-            'sessionType': type,
-            'title': title,
-          });
-          FlutterForegroundTask.updateService(
-            notificationTitle: title,
-            notificationText: 'Ongoing session • 00:00',
-          );
+          final currentType = await FlutterForegroundTask.getData<String>(key: 'sessionType');
+          if (type == 'Call' && currentType != 'Call') {
+            await FlutterForegroundTask.stopService();
+            await FlutterForegroundTask.startService(
+              serviceTypes: serviceTypes,
+              notificationTitle: title,
+              notificationText: 'Ongoing session • 00:00',
+              callback: startCallback,
+            );
+          } else {
+            FlutterForegroundTask.sendDataToTask({
+              'startedAt': startTimeMillis,
+              'sessionType': type,
+              'title': title,
+            });
+            FlutterForegroundTask.updateService(
+              notificationTitle: title,
+              notificationText: 'Ongoing session • 00:00',
+            );
+          }
         } else {
           await FlutterForegroundTask.startService(
+            serviceTypes: serviceTypes,
             notificationTitle: title,
             notificationText: 'Ongoing session • 00:00',
             callback: startCallback,

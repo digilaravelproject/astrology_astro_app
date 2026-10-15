@@ -367,7 +367,10 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive || state == AppLifecycleState.hidden) {
+      if (status.value == CallStatus.ongoing) {
+        showOngoingNotification();
+      }
       final ctx = Get.context;
       if (ctx == null) return;
       if ((status.value == CallStatus.ongoing || status.value == CallStatus.ringing || status.value == CallStatus.dialing) && sessionId != null && consumerName != null) {
@@ -375,7 +378,7 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
       }
     } else if (state == AppLifecycleState.resumed) {
       TokenManager.getToken().then((token) {
-        if (token != null && token.isNotEmpty) {
+        if (token.isNotEmpty) {
           _orchestrator.checkPendingCall();
         }
       });
