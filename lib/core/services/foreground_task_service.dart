@@ -164,6 +164,12 @@ class ForegroundTaskService {
     required String type, // 'Chat' or 'Call'
     DateTime? startedAt,
   }) async {
+    // Only WebRTC audio calls require an OS-level ForegroundService for microphone/audio routing.
+    // Chat sessions must NOT start a ForegroundService because Android 14+ restricts background FGS and crashes.
+    if (type != 'Call') {
+      return;
+    }
+
     try {
       try {
         await requestPermissions();
