@@ -57,6 +57,9 @@ Future<void> initApp() async {
 
   // Initialize notifications
   await LocalNotificationService.initialize();
+  try {
+    await LocalNotificationService.cancelOngoingCallNotification(null);
+  } catch (_) {}
 
   // Initialize foreground task service
   await ForegroundTaskService.init();

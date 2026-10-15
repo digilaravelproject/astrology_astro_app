@@ -133,12 +133,15 @@ class ChatHistoryScreen extends StatelessWidget {
                         "POB".tr: session.consumer?.placeOfBirth ?? "N/A",
                       };
 
+                      final earned = session.earnedAmount;
+                      final displayPrice = (earned % 1 == 0 ? earned.toInt() : earned.toStringAsFixed(2)).toString();
+
                       return _buildHistoryCard(
                         context,
                         type: "Regular",
                         status: session.status.capitalizeFirst ?? "Completed",
                         id: "#${session.id}",
-                        price: session.totalCost.toString(),
+                        price: displayPrice,
                         date: session.createdAt.toString().split('.')[0],
                         details: details,
                         imageUrl: session.consumer?.profilePhoto,

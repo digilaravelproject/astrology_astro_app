@@ -34,6 +34,7 @@ class ChatSessionModel {
   final num ratePerMinute;
   final int durationSeconds;
   final num totalCost;
+  final num? astrologerEarning;
   final String createdAt;
   final int unreadCount;
   final int? chatAssistanceSessionId;
@@ -44,6 +45,16 @@ class ChatSessionModel {
 
   final ChatSessionLatestMessage? latestMessage;
 
+  num get earnedAmount {
+    if (astrologerEarning != null && astrologerEarning! > 0) {
+      return astrologerEarning!;
+    }
+    if (totalCost > 0) {
+      return (totalCost * 0.6).roundToDouble();
+    }
+    return 0.0;
+  }
+
   ChatSessionModel({
     required this.id,
     required this.consumerId,
@@ -52,6 +63,7 @@ class ChatSessionModel {
     required this.ratePerMinute,
     required this.durationSeconds,
     required this.totalCost,
+    this.astrologerEarning,
     required this.createdAt,
     required this.unreadCount,
     this.chatAssistanceSessionId,
@@ -69,6 +81,8 @@ class ChatSessionModel {
       ratePerMinute: json['rate_per_minute'] ?? 0,
       durationSeconds: json['duration_seconds'] ?? 0,
       totalCost: json['total_cost'] ?? 0.0,
+      astrologerEarning:
+          num.tryParse(json['astrologer_earning']?.toString() ?? ''),
       createdAt: json['created_at'] ?? '',
       unreadCount: json['unread_count'] ?? 0,
       chatAssistanceSessionId: json['chat_assistance_session_id'],

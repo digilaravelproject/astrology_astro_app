@@ -228,7 +228,6 @@ class LocalNotificationService {
           when: startedAtMillis,
           category: AndroidNotificationCategory.status,
           visibility: NotificationVisibility.public,
-          additionalFlags: Int32List.fromList([2, 32, 64]),
         );
 
     final NotificationDetails notificationDetails = NotificationDetails(
@@ -250,7 +249,27 @@ class LocalNotificationService {
   }
 
   static Future<void> cancelOngoingLiveNotification(int sessionId) async {
-    await _notificationsPlugin.cancel(sessionId + 300000);
+    try {
+      const AndroidNotificationDetails clearDetails = AndroidNotificationDetails(
+        'active_live_channel_v2',
+        'Active Live Sessions',
+        channelDescription: 'Ongoing notification for active live stream sessions',
+        importance: Importance.min,
+        priority: Priority.min,
+        ongoing: false,
+        autoCancel: true,
+        showWhen: false,
+        playSound: false,
+        enableVibration: false,
+      );
+      await _notificationsPlugin.show(
+        sessionId + 300000,
+        '',
+        '',
+        const NotificationDetails(android: clearDetails),
+      );
+    } catch (_) {}
+    try { await _notificationsPlugin.cancel(sessionId + 300000); } catch (_) {}
   }
 
   static final Set<String> _cancelledSessions = {};
@@ -501,6 +520,26 @@ class LocalNotificationService {
   }
 
   static Future<void> cancelOngoingCallNotification(int? sessionId) async {
+    try {
+      const AndroidNotificationDetails clearDetails = AndroidNotificationDetails(
+        'active_consultation_foreground_channel_v3',
+        'Active Consultation Service',
+        channelDescription: 'Ongoing active call and chat consultation status',
+        importance: Importance.min,
+        priority: Priority.min,
+        ongoing: false,
+        autoCancel: true,
+        showWhen: false,
+        playSound: false,
+        enableVibration: false,
+      );
+      await _notificationsPlugin.show(
+        ACTIVE_CALL_NOTIFICATION_ID,
+        '',
+        '',
+        const NotificationDetails(android: clearDetails),
+      );
+    } catch (_) {}
     try { await _notificationsPlugin.cancel(ACTIVE_CALL_NOTIFICATION_ID); } catch (_) {}
     if (sessionId != null) {
       try { await _notificationsPlugin.cancel(sessionId); } catch (_) {}
@@ -534,7 +573,6 @@ class LocalNotificationService {
       when: startTime,
       category: AndroidNotificationCategory.call,
       visibility: NotificationVisibility.public,
-      additionalFlags: Int32List.fromList([2, 64]),
     );
 
     final NotificationDetails notificationDetails = NotificationDetails(

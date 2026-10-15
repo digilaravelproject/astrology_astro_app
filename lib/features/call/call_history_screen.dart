@@ -139,12 +139,15 @@ class CallHistoryScreen extends StatelessWidget {
                       "POB": session.consumer?.placeOfBirth ?? "N/A",
                     };
 
+                    final earned = session.earnedAmount;
+                    final displayPrice = (earned % 1 == 0 ? earned.toInt() : earned.toStringAsFixed(2)).toString();
+
                     return _buildHistoryCard(
                       context,
                       type: "New (indian)".tr,
                       status: session.status.capitalizeFirst ?? "Completed",
                       id: "${session.id}",
-                      price: session.totalCost.toString(),
+                      price: displayPrice,
                       date: session.createdAt ?? "N/A",
                       details: details,
                       showRefund: false,

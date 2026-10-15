@@ -227,7 +227,8 @@ class AstrologerSessionsScreen extends StatelessWidget {
     final pob = _toTitleCase(consumer?.placeOfBirth ?? 'N/A');
     final gender = _toTitleCase(consumer?.gender ?? 'N/A');
     final rate = '₹ ${session.ratePerMinute}/min';
-    final totalCost = session.totalCost.toStringAsFixed(1);
+    final earned = session.earnedAmount;
+    final totalCost = (earned % 1 == 0 ? earned.toInt() : earned.toStringAsFixed(2)).toString();
 
     // Build detail map
     final details = <String, String>{

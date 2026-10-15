@@ -401,7 +401,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     AppText(
-                      '₹ ${session.amount}',
+                      '₹ ${(session.amount % 1 == 0 ? session.amount.toInt() : session.amount.toStringAsFixed(2))}',
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFF2E1A47),

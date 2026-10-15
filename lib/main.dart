@@ -24,6 +24,8 @@ import 'dart:convert';
 
 import 'features/chat/presentation/widgets/overlay_main.dart';
 import 'package:astro_astrologer/core/services/foreground_task_service.dart';
+import 'package:astro_astrologer/features/call/presentation/widgets/floating_call_bubble.dart';
+import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -74,6 +76,9 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       LocalNotificationService.markSessionCancelled(parsedSessionId.toString());
       CallkitService.endCall(parsedSessionId.toString());
       LocalNotificationService.cancelOngoingLiveNotification(parsedSessionId);
+      LocalNotificationService.cancelOngoingCallNotification(parsedSessionId);
+      FloatingCallBubble.dismiss(stopForegroundService: true);
+      FloatingChatBubble.dismiss(stopForegroundService: true);
       ForegroundTaskService.stopService();
       return;
     } else if (title.contains('Call Ended') ||
@@ -84,6 +89,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       LocalNotificationService.markSessionCancelled(parsedSessionId.toString());
       CallkitService.endCall(parsedSessionId.toString());
       LocalNotificationService.cancelOngoingLiveNotification(parsedSessionId);
+      LocalNotificationService.cancelOngoingCallNotification(parsedSessionId);
+      FloatingCallBubble.dismiss(stopForegroundService: true);
       ForegroundTaskService.stopService();
       return;
     } else if (type?.toUpperCase() == 'CHAT_REQUEST' || type?.toUpperCase() == 'CALL_REQUEST' || type?.toLowerCase() == 'call' || type?.toLowerCase() == 'audio_call' || type?.toLowerCase() == 'video_call' || type?.toLowerCase() == 'chat') {

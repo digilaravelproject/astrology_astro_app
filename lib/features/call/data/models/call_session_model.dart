@@ -31,6 +31,7 @@ class CallSessionModel {
   final int ratePerMinute;
   final int durationSeconds;
   final num totalCost;
+  final num? astrologerEarning;
   final String? createdAt;
   final String? startedAt;
   final String? endedAt;
@@ -38,6 +39,16 @@ class CallSessionModel {
   final int? chatAssistanceSessionId;
   final CallSessionUserModel? provider;
   final CallSessionUserModel? consumer;
+
+  num get earnedAmount {
+    if (astrologerEarning != null && astrologerEarning! > 0) {
+      return astrologerEarning!;
+    }
+    if (totalCost > 0) {
+      return (totalCost * 0.6).roundToDouble();
+    }
+    return 0.0;
+  }
 
   CallSessionModel({
     required this.id,
@@ -47,6 +58,7 @@ class CallSessionModel {
     required this.ratePerMinute,
     required this.durationSeconds,
     required this.totalCost,
+    this.astrologerEarning,
     this.createdAt,
     this.startedAt,
     this.endedAt,
@@ -67,6 +79,8 @@ class CallSessionModel {
       durationSeconds:
           int.tryParse(json['duration_seconds']?.toString() ?? '') ?? 0,
       totalCost: num.tryParse(json['total_cost']?.toString() ?? '') ?? 0.0,
+      astrologerEarning:
+          num.tryParse(json['astrologer_earning']?.toString() ?? ''),
       createdAt: json['created_at']?.toString(),
       startedAt: json['started_at']?.toString(),
       endedAt: json['ended_at']?.toString(),
