@@ -220,8 +220,8 @@ class LocalNotificationService {
           icon: '@mipmap/ic_launcher',
           importance: Importance.max,
           priority: Priority.high,
-          ongoing: true,
-          autoCancel: false,
+          ongoing: false,
+          autoCancel: true,
           onlyAlertOnce: true,
           showWhen: true,
           usesChronometer: startedAtMillis != null,
@@ -521,26 +521,8 @@ class LocalNotificationService {
 
   static Future<void> cancelOngoingCallNotification(int? sessionId) async {
     try {
-      const AndroidNotificationDetails clearDetails = AndroidNotificationDetails(
-        'active_consultation_foreground_channel_v3',
-        'Active Consultation Service',
-        channelDescription: 'Ongoing active call and chat consultation status',
-        importance: Importance.min,
-        priority: Priority.min,
-        ongoing: false,
-        autoCancel: true,
-        showWhen: false,
-        playSound: false,
-        enableVibration: false,
-      );
-      await _notificationsPlugin.show(
-        ACTIVE_CALL_NOTIFICATION_ID,
-        '',
-        '',
-        const NotificationDetails(android: clearDetails),
-      );
+      await _notificationsPlugin.cancel(ACTIVE_CALL_NOTIFICATION_ID);
     } catch (_) {}
-    try { await _notificationsPlugin.cancel(ACTIVE_CALL_NOTIFICATION_ID); } catch (_) {}
     if (sessionId != null) {
       try { await _notificationsPlugin.cancel(sessionId); } catch (_) {}
       try { await _notificationsPlugin.cancel(sessionId + 100000); } catch (_) {}
@@ -565,8 +547,8 @@ class LocalNotificationService {
       icon: '@mipmap/ic_launcher',
       importance: Importance.low,
       priority: Priority.low,
-      ongoing: true,
-      autoCancel: false,
+      ongoing: false,
+      autoCancel: true,
       onlyAlertOnce: true,
       showWhen: true,
       usesChronometer: true,

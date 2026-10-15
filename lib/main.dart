@@ -57,7 +57,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         'unknown_session';
     final int parsedSessionId = int.tryParse(rawSessionId) ?? 0;
 
-    final String? reason = data['reason']?.toString()?.toLowerCase();
+    final String? reason = data['reason']?.toString().toLowerCase();
     
     if (title.contains('Chat Ended') ||
         title.contains('Cancelled') ||

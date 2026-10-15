@@ -13,6 +13,8 @@ import 'package:astro_astrologer/core/services/local_notification_service.dart';
 import 'package:astro_astrologer/core/services/websocket/websocket_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:astro_astrologer/features/chat/presentation/controllers/chat_controller.dart';
+import 'package:astro_astrologer/features/call/presentation/widgets/floating_call_bubble.dart';
+import 'package:astro_astrologer/core/services/foreground_task_service.dart';
 
 class DashboardController extends GetxController with WidgetsBindingObserver {
   var selectedIndex = 0.obs;
@@ -28,9 +30,29 @@ class DashboardController extends GetxController with WidgetsBindingObserver {
   @override
   void onInit() {
     super.onInit();
+    WidgetsBinding.instance.addObserver(this);
     final isLoggedIn = SharedPrefs.getBool(AppConstants.isLoggedIn) ?? false;
     if (isLoggedIn) {
       checkCurrentActiveSession();
+    }
+  }
+
+  @override
+  void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.onClose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      final isLoggedIn = SharedPrefs.getBool(AppConstants.isLoggedIn) ?? false;
+      if (isLoggedIn) {
+        checkCurrentActiveSession();
+        if (Get.isRegistered<CallController>()) {
+          Get.find<CallController>().checkCurrentActiveCallSession();
+        }
+      }
     }
   }
 
@@ -193,8 +215,23 @@ class DashboardController extends GetxController with WidgetsBindingObserver {
                 );
               }
             }
+          } else {
+            FloatingChatBubble.dismiss(stopForegroundService: true);
+            FloatingCallBubble.dismiss(stopForegroundService: true);
+            LocalNotificationService.cancelOngoingCallNotification(sessionId is int ? sessionId : null);
+            try { ForegroundTaskService.stopService(); } catch (_) {}
           }
+        } else {
+          FloatingChatBubble.dismiss(stopForegroundService: true);
+          FloatingCallBubble.dismiss(stopForegroundService: true);
+          LocalNotificationService.cancelOngoingCallNotification(null);
+          try { ForegroundTaskService.stopService(); } catch (_) {}
         }
+      } else {
+        FloatingChatBubble.dismiss(stopForegroundService: true);
+        FloatingCallBubble.dismiss(stopForegroundService: true);
+        LocalNotificationService.cancelOngoingCallNotification(null);
+        try { ForegroundTaskService.stopService(); } catch (_) {}
       }
     } catch (e) {
       debugPrint("Error checking active session: $e");

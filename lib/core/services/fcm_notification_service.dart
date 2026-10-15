@@ -1,4 +1,6 @@
 import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
+import 'package:astro_astrologer/features/call/presentation/widgets/floating_call_bubble.dart';
+import 'package:astro_astrologer/core/services/foreground_task_service.dart';
 import 'package:astro_astrologer/features/chat/presentation/pages/assistance_chat_room_screen.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -175,7 +177,7 @@ class FCMNotificationService {
         else if (importanceRaw == 'none')
           importance = Importance.none;
 
-        final String? reason = message.data['reason']?.toString()?.toLowerCase();
+        final String? reason = message.data['reason']?.toString().toLowerCase();
         
         // 1. Check for Cancellations / Ended events FIRST
         if (title.contains('Chat Ended') ||
@@ -194,7 +196,11 @@ class FCMNotificationService {
             type?.toLowerCase() == 'call_rejected') {
           LocalNotificationService.markSessionCancelled(parsedSessionId.toString());
           CallkitService.endCall(parsedSessionId.toString());
+          LocalNotificationService.cancelOngoingLiveNotification(parsedSessionId);
+          LocalNotificationService.cancelOngoingCallNotification(parsedSessionId);
           FloatingChatBubble.dismiss(stopForegroundService: true);
+          FloatingCallBubble.dismiss(stopForegroundService: true);
+          try { ForegroundTaskService.stopService(); } catch (_) {}
           return;
         } else if (title.contains('Call Ended') ||
             type == 'call_ended' ||
@@ -204,11 +210,17 @@ class FCMNotificationService {
             type == 'CALL_DISMISSED') {
           LocalNotificationService.markSessionCancelled(parsedSessionId.toString());
           CallkitService.endCall(parsedSessionId.toString());
+          LocalNotificationService.cancelOngoingLiveNotification(parsedSessionId);
           LocalNotificationService.cancelOngoingCallNotification(parsedSessionId);
+          FloatingChatBubble.dismiss(stopForegroundService: true);
+          FloatingCallBubble.dismiss(stopForegroundService: true);
+          try { ForegroundTaskService.stopService(); } catch (_) {}
           if (parsedSessionId > 0) return;
         } else if (type == 'PACKAGE_EXHAUSTED' || type == 'package') {
-          if (parsedSessionId > 0)
+          if (parsedSessionId > 0) {
             FloatingChatBubble.dismiss(stopForegroundService: true);
+            FloatingCallBubble.dismiss(stopForegroundService: true);
+          }
           return;
         }
 
