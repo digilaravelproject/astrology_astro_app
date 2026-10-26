@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart' as sax;
 import 'package:astro_astrologer/core/theme/app_colors.dart';
-import 'package:astro_astrologer/core/constants/app_constants.dart';
+import 'package:astro_astrologer/core/constants/app_urls.dart';
 
 class LocationResult {
   final String displayName;
@@ -96,79 +96,38 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
       _isLoading = true;
     });
 
+    final List<LocationResult> results = [];
+
     try {
-      final apiKey = AppConstants.googleMapApiKey;
+      final backendUrl =
+          '${AppUrls.apiUrl}${AppUrls.locationSearch}?query=${Uri.encodeComponent(query)}';
+      final response = await _dio.get(backendUrl);
 
-      // Try Google Places Text Search API first for full location suggestions with lat/lng
-      final textSearchUrl =
-          'https://maps.googleapis.com/maps/api/place/textsearch/json?query=${Uri.encodeComponent(query)}&key=$apiKey';
-      final response = await _dio.get(textSearchUrl);
-
-      final List<LocationResult> results = [];
-
-      if (response.statusCode == 200 &&
-          response.data != null &&
-          response.data['results'] is List) {
-        final List resultsList = response.data['results'];
-
-        for (var item in resultsList) {
-          final String name = item['name'] ?? '';
-          final String formattedAddress = item['formatted_address'] ?? '';
-          final double? lat =
-              (item['geometry']?['location']?['lat'] as num?)?.toDouble();
-          final double? lng =
-              (item['geometry']?['location']?['lng'] as num?)?.toDouble();
-
-          if (lat != null && lng != null) {
-            String displayName =
-                formattedAddress.isNotEmpty ? formattedAddress : name;
-            results.add(
-              _refineLocationResult(
-                displayName,
-                formattedAddress != name ? formattedAddress : null,
-                lat,
-                lng,
-              ),
-            );
-          }
-        }
-      }
-
-      // Fallback to Geocoding API if Text Search API returns empty
-      if (results.isEmpty) {
-        final geocodeUrl =
-            'https://maps.googleapis.com/maps/api/geocode/json?address=${Uri.encodeComponent(query)}&key=$apiKey';
-        final geoResponse = await _dio.get(geocodeUrl);
-
-        if (geoResponse.statusCode == 200 &&
-            geoResponse.data != null &&
-            geoResponse.data['results'] is List) {
-          final List geoList = geoResponse.data['results'];
-          for (var item in geoList) {
-            final String name = item['formatted_address'] ?? '';
-            final double? lat =
-                (item['geometry']?['location']?['lat'] as num?)?.toDouble();
-            final double? lng =
-                (item['geometry']?['location']?['lng'] as num?)?.toDouble();
+      if (response.statusCode == 200 && response.data != null) {
+        final dynamic dataList = response.data['data'];
+        if (dataList is List && dataList.isNotEmpty) {
+          for (var item in dataList) {
+            final String name = item['display_name'] ?? item['address'] ?? '';
+            final String? address = item['address'];
+            final double? lat = (item['latitude'] as num?)?.toDouble();
+            final double? lng = (item['longitude'] as num?)?.toDouble();
 
             if (name.isNotEmpty && lat != null && lng != null) {
-              results.add(_refineLocationResult(name, null, lat, lng));
+              results.add(_refineLocationResult(
+                  name, address != name ? address : null, lat, lng));
             }
           }
         }
       }
+    } catch (e) {
+      debugPrint('Backend location search error: $e');
+    }
 
+    if (mounted) {
       setState(() {
         _searchResults = results;
+        _isLoading = false;
       });
-    } catch (e) {
-      print('Google location search error: $e');
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
     }
   }
 
@@ -267,30 +226,35 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
               ),
             ),
 
-          Padding(
-            padding: const EdgeInsets.all(30),
-            child: Text(
-              'No matching location found. Please try another search.'.tr,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppColors.textColorSecondary,
-                fontSize: 14,
+          if (!_isLoading &&
+              _searchResults.isEmpty &&
+              _searchController.text.trim().isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.all(30),
+              child: Text(
+                'No matching location found. Please try another search.'.tr,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: AppColors.textColorSecondary,
+                  fontSize: 14,
+                ),
               ),
             ),
-          ),
 
-          Padding(
-            padding: const EdgeInsets.all(30),
-            child: Text(
-              'Type city or place name to search location via Google Maps API.'
-                  .tr,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppColors.textColorSecondary,
-                fontSize: 14,
+          if (!_isLoading &&
+              _searchResults.isEmpty &&
+              _searchController.text.trim().isEmpty)
+            Padding(
+              padding: const EdgeInsets.all(30),
+              child: Text(
+                'Type city or place name to search location.'.tr,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: AppColors.textColorSecondary,
+                  fontSize: 14,
+                ),
               ),
             ),
-          ),
 
           // Results List
           Expanded(

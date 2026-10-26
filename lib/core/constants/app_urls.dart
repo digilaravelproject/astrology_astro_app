@@ -204,6 +204,11 @@ class AppUrls {
   static const String customerSupport = '/static-pages/customer_support';
 
   // ==========================================
+  // Location Search API
+  // ==========================================
+  static const String locationSearch = '/location/search';
+
+  // ==========================================
   // WebSockets Channel Names & Common Events
   // ==========================================
   static String privateUserChannel(int userId) => 'private-user.$userId';
