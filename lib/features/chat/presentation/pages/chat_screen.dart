@@ -24,6 +24,7 @@ import 'package:astro_astrologer/features/chat/presentation/bindings/chat_bindin
 import 'package:swipe_to/swipe_to.dart';
 import 'package:astro_astrologer/core/services/callkit_service.dart';
 import 'package:astro_astrologer/core/widgets/custom_image_widget.dart';
+import 'package:astro_astrologer/core/widgets/resilient_network_image.dart';
 
 class ChatScreen extends StatefulWidget {
   final String userName;
@@ -651,65 +652,67 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                 if (message.type == 'image')
                                   GestureDetector(
                                     onTap: () {
-                                      final imageUrl = message.image != null && message.image!.startsWith('http')
+                                      // Resolve best available URL for full-screen view
+                                      String? resolvedUrl;
+                                      if (message.image != null && message.image!.startsWith('http')) {
+                                        resolvedUrl = message.image;
+                                      } else if (message.attachmentUrl != null && message.attachmentUrl!.startsWith('http')) {
+                                        resolvedUrl = message.attachmentUrl;
+                                      } else if (message.attachmentUrl != null && message.attachmentUrl!.isNotEmpty) {
+                                        resolvedUrl = '${AppUrls.baseImageUrl}${message.attachmentUrl}';
+                                      }
+                                      final String? localPath = (message.image != null &&
+                                              !message.image!.startsWith('http') &&
+                                              File(message.image!).existsSync())
                                           ? message.image
-                                          : message.attachmentUrl != null && message.attachmentUrl!.startsWith('http')
-                                              ? message.attachmentUrl
-                                              : '${AppUrls.baseImageUrl}${message.attachmentUrl ?? ""}';
-                                      final imagePath = message.image != null && File(message.image!).existsSync() ? message.image : null;
-                                      Get.to(() => FullScreenImageViewer(imageUrl: imageUrl, imagePath: imagePath));
+                                          : null;
+                                      Get.to(() => FullScreenImageViewer(imageUrl: resolvedUrl, imagePath: localPath));
                                     },
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(12),
-                                      child:
-                                          message.image != null &&
-                                                  message.image!.startsWith(
-                                                    'http',
-                                                  )
-                                              ? CustomImageWidget(
-                                                imagePath: message.image!,
-                                                height: 150,
-                                                width: 200,
-                                                fit: BoxFit.cover,
-                                              )
-                                              : (message.image != null &&
-                                                      File(
-                                                        message.image!,
-                                                      ).existsSync()
-                                                  ? Image.file(
-                                                    File(message.image!),
-                                                    height: 150,
-                                                    width: 200,
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                  : CustomImageWidget(
-                                                    imagePath:
-                                                        message.attachmentUrl !=
-                                                                    null &&
-                                                                message
-                                                                    .attachmentUrl!
-                                                                    .startsWith(
-                                                                      'http',
-                                                                    )
-                                                            ? message
-                                                                .attachmentUrl!
-                                                            : '${AppUrls.baseImageUrl}${message.attachmentUrl ?? ""}',
-                                                    height: 150,
-                                                    width: 200,
-                                                    fit: BoxFit.cover,
-                                                    errorBuilder:
-                                                        (c, e, s) => Container(
-                                                          height: 150,
-                                                          width: 200,
-                                                          color: Colors.grey,
-                                                          child: const Icon(
-                                                            Icons.broken_image,
-                                                            color: Colors.white,
-                                                          ),
-                                                        ),
-                                                  )),
+                                      child: Builder(builder: (context) {
+                                        // 1. Local file (just sent, before server upload completes)
+                                        if (message.image != null &&
+                                            !message.image!.startsWith('http') &&
+                                            File(message.image!).existsSync()) {
+                                          return Image.file(
+                                            File(message.image!),
+                                            height: 150,
+                                            width: 200,
+                                            fit: BoxFit.cover,
+                                          );
+                                        }
+
+                                        // 2. Resolve network URL (image > attachmentUrl > baseUrl+attachmentUrl)
+                                        String? networkUrl;
+                                        if (message.image != null && message.image!.startsWith('http')) {
+                                          networkUrl = message.image;
+                                        } else if (message.attachmentUrl != null && message.attachmentUrl!.startsWith('http')) {
+                                          networkUrl = message.attachmentUrl;
+                                        } else if (message.attachmentUrl != null && message.attachmentUrl!.isNotEmpty) {
+                                          networkUrl = '${AppUrls.baseImageUrl}${message.attachmentUrl}';
+                                        }
+
+                                        if (networkUrl != null && networkUrl.isNotEmpty) {
+                                          return ResilientNetworkImage(
+                                            imageUrl: networkUrl,
+                                            height: 150,
+                                            width: 200,
+                                            fit: BoxFit.cover,
+                                          );
+                                        }
+
+                                        // 3. No URL available — placeholder
+                                        return Container(
+                                          height: 150,
+                                          width: 200,
+                                          color: Colors.grey.shade200,
+                                          child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                                        );
+                                      }),
                                     ),
                                   )
+
                                 else if (message.type == 'document')
                                   Container(
                                     padding: const EdgeInsets.all(8),

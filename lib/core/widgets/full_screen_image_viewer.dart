@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:astro_astrologer/core/widgets/resilient_network_image.dart';
 
 class FullScreenImageViewer extends StatelessWidget {
   final String? imageUrl;
@@ -45,18 +46,15 @@ class FullScreenImageViewer extends StatelessWidget {
         height: double.infinity,
       );
     } else if (imageUrl != null) {
-      return Image.network(
-        imageUrl!,
+      return ResilientNetworkImage(
+        imageUrl: imageUrl!,
         fit: BoxFit.contain,
         width: double.infinity,
         height: double.infinity,
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) return child;
-          return const Center(
-            child: CircularProgressIndicator(color: Colors.white),
-          );
-        },
-        errorBuilder: (context, error, stackTrace) => const Center(
+        placeholder: const Center(
+          child: CircularProgressIndicator(color: Colors.white),
+        ),
+        errorWidget: const Center(
           child: Icon(Icons.broken_image, color: Colors.white, size: 50),
         ),
       );
