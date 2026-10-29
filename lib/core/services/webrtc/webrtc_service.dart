@@ -49,11 +49,14 @@ class WebRTCService {
           'echoCancellation': true,
           'noiseSuppression': true,
           'autoGainControl': true,
-          'googEchoCancellation': true,
-          'googNoiseSuppression': true,
-          'googAutoGainControl': true,
-          'googHighpassFilter': true,
-          'googTypingNoiseDetection': true,
+          'mandatory': {
+            'googEchoCancellation': true, // Speaker ka echo khatam karega
+            'googAutoGainControl': true, // Awaz fatne nahi dega (clipping rokega)
+            'googNoiseSuppression': true, // Background shor/noise cut karega
+            'googHighpassFilter': true, // Low rumble/fan noise hatayega
+            'googTypingNoiseDetection': true,
+          },
+          'optional': [],
         },
         'video': false,
       };
@@ -63,9 +66,9 @@ class WebRTCService {
       // Configure audio session for two-way communication
       await initAudioSession();
 
-      // Force microphone unmute and route to earpiece by default (speaker OFF)
-      toggleMute(false);
-      toggleSpeaker(false); 
+      // Apply current mute and speaker routing (earpiece default if false)
+      toggleMute(currentMuteState);
+      toggleSpeaker(currentSpeakerState); 
     } catch (e) {
       Logger.e('WebRTCService: Error initializing local stream -> $e');
       rethrow;
@@ -91,6 +94,8 @@ class WebRTCService {
 
   Future<RTCSessionDescription> createOffer(int sessionId) async {
     try {
+      _isRemoteDescriptionSet = false;
+      _remoteCandidateQueue.clear();
       activeSessionId = sessionId;
       await initLocalStream();
       peerConnection = await createPeerConnection(_iceConfig, _constraints);
@@ -127,19 +132,34 @@ class WebRTCService {
         Logger.d('WebRTCService: Remote stream added via onAddStream.');
         remoteStream = stream;
         remoteStream!.getAudioTracks().forEach((track) => track.enabled = true);
+        toggleSpeaker(currentSpeakerState);
         if (onRemoteStreamAdded != null) {
           onRemoteStreamAdded!(stream);
         }
       };
 
-      peerConnection!.onTrack = (event) {
+      peerConnection!.onTrack = (event) async {
         Logger.d('WebRTCService: Remote track added via onTrack: ${event.track.kind}');
         if (event.track.kind == 'audio') {
           event.track.enabled = true;
         }
         if (event.streams.isNotEmpty) {
           remoteStream = event.streams[0];
+        } else if (remoteStream == null) {
+          try {
+            remoteStream = await createLocalMediaStream('remote_stream_${event.track.id}');
+          } catch (e) {
+            Logger.e('WebRTCService: Error creating fallback remote stream -> $e');
+          }
+        }
+        if (remoteStream != null) {
+          try {
+            if (!remoteStream!.getTracks().any((t) => t.id == event.track.id)) {
+              remoteStream!.addTrack(event.track);
+            }
+          } catch (_) {}
           remoteStream!.getAudioTracks().forEach((track) => track.enabled = true);
+          toggleSpeaker(currentSpeakerState);
           if (onRemoteStreamAdded != null) {
             onRemoteStreamAdded!(remoteStream!);
           }
@@ -154,9 +174,11 @@ class WebRTCService {
       RTCSessionDescription offer = await peerConnection!.createOffer(
         _constraints,
       );
-      await peerConnection!.setLocalDescription(offer);
-      Logger.d('WebRTCService: SDP Offer created.');
-      return offer;
+      final optimizedSdp = optimizeSdpForAudio(offer.sdp ?? '');
+      final modifiedOffer = RTCSessionDescription(optimizedSdp, offer.type);
+      await peerConnection!.setLocalDescription(modifiedOffer);
+      Logger.d('WebRTCService: SDP Offer created & optimized for Opus FEC.');
+      return modifiedOffer;
     } catch (e) {
       Logger.e('WebRTCService: Error creating offer -> $e');
       rethrow;
@@ -187,6 +209,57 @@ class WebRTCService {
         '\r\n';
   }
 
+  String fixAudioCodec(String sdp) {
+    if (sdp.isEmpty) return sdp;
+
+    // Avoid duplicate modifications if already injected
+    if (sdp.contains('usedtx=1') && sdp.contains('maxaveragebitrate=24000')) {
+      return sdp;
+    }
+
+    if (sdp.contains('maxaveragebitrate=24000')) {
+      return sdp.replaceAll(
+        'maxaveragebitrate=24000',
+        'usedtx=1; cbr=0; maxaveragebitrate=24000',
+      );
+    }
+
+    const opusParams = 'useinbandfec=1; usedtx=1; cbr=0; stereo=0; maxaveragebitrate=24000';
+
+    // Low network par packet loss recover karne ke liye Opus FEC + DTX enable karein
+    if (sdp.contains('useinbandfec=1')) {
+      sdp = sdp.replaceAll(
+        'useinbandfec=1',
+        opusParams,
+      );
+    } else if (sdp.contains('minptime=10')) {
+      sdp = sdp.replaceAll(
+        'minptime=10',
+        'minptime=10; $opusParams',
+      );
+    } else {
+      final opusMatch = RegExp(r'a=rtpmap:(\d+)\s+opus/48000', caseSensitive: false).firstMatch(sdp);
+      if (opusMatch != null) {
+        final pt = opusMatch.group(1);
+        final fmtpRegex = RegExp('a=fmtp:$pt([^\r\n]*)');
+        if (fmtpRegex.hasMatch(sdp)) {
+          sdp = sdp.replaceAllMapped(
+            fmtpRegex,
+            (match) => 'a=fmtp:$pt${match.group(1)}; $opusParams',
+          );
+        } else {
+          sdp = sdp.replaceFirst(
+            'a=rtpmap:$pt opus/48000/2',
+            'a=rtpmap:$pt opus/48000/2\r\na=fmtp:$pt minptime=10; $opusParams',
+          );
+        }
+      }
+    }
+    return sdp;
+  }
+
+  String optimizeSdpForAudio(String sdp) => fixAudioCodec(sdp);
+
   Future<void> setRemoteAnswer(String answerSdp) async {
     try {
       if (peerConnection == null) {
@@ -196,13 +269,14 @@ class WebRTCService {
         return;
       }
       final normalized = _normalizeSdp(answerSdp);
+      final optimizedAnswerSdp = optimizeSdpForAudio(normalized);
       RTCSessionDescription answer = RTCSessionDescription(
-        normalized,
+        optimizedAnswerSdp,
         'answer',
       );
       await peerConnection!.setRemoteDescription(answer);
       _isRemoteDescriptionSet = true;
-      Logger.d('WebRTCService: Remote Answer SDP set successfully.');
+      Logger.d('WebRTCService: Remote Answer SDP set successfully (FEC optimized).');
       _flushRemoteCandidates();
     } catch (e) {
       Logger.e('WebRTCService: Error setting remote answer -> $e');
@@ -215,6 +289,8 @@ class WebRTCService {
     String offerSdp,
   ) async {
     try {
+      _isRemoteDescriptionSet = false;
+      _remoteCandidateQueue.clear();
       activeSessionId = sessionId;
       await initLocalStream();
       peerConnection = await createPeerConnection(_iceConfig, _constraints);
@@ -251,19 +327,34 @@ class WebRTCService {
         Logger.d('WebRTCService: Remote stream added via onAddStream.');
         remoteStream = stream;
         remoteStream!.getAudioTracks().forEach((track) => track.enabled = true);
+        toggleSpeaker(currentSpeakerState);
         if (onRemoteStreamAdded != null) {
           onRemoteStreamAdded!(stream);
         }
       };
 
-      peerConnection!.onTrack = (event) {
+      peerConnection!.onTrack = (event) async {
         Logger.d('WebRTCService: Remote track added via onTrack: ${event.track.kind}');
         if (event.track.kind == 'audio') {
           event.track.enabled = true;
         }
         if (event.streams.isNotEmpty) {
           remoteStream = event.streams[0];
+        } else if (remoteStream == null) {
+          try {
+            remoteStream = await createLocalMediaStream('remote_stream_${event.track.id}');
+          } catch (e) {
+            Logger.e('WebRTCService: Error creating fallback remote stream -> $e');
+          }
+        }
+        if (remoteStream != null) {
+          try {
+            if (!remoteStream!.getTracks().any((t) => t.id == event.track.id)) {
+              remoteStream!.addTrack(event.track);
+            }
+          } catch (_) {}
           remoteStream!.getAudioTracks().forEach((track) => track.enabled = true);
+          toggleSpeaker(currentSpeakerState);
           if (onRemoteStreamAdded != null) {
             onRemoteStreamAdded!(remoteStream!);
           }
@@ -278,9 +369,10 @@ class WebRTCService {
       Logger.d('WebRTCService: offerSdp (raw) length: ${offerSdp.length}');
       Logger.d('WebRTCService: offerSdp value: $offerSdp');
       final normalized = _normalizeSdp(offerSdp);
+      final optimizedOfferSdp = fixAudioCodec(normalized);
       Logger.d('WebRTCService: normalized SDP length: ${normalized.length}');
       Logger.d('WebRTCService: normalized SDP value: $normalized');
-      RTCSessionDescription offer = RTCSessionDescription(normalized, 'offer');
+      RTCSessionDescription offer = RTCSessionDescription(optimizedOfferSdp, 'offer');
       await peerConnection!.setRemoteDescription(offer);
       _isRemoteDescriptionSet = true;
       _flushRemoteCandidates();
@@ -288,10 +380,12 @@ class WebRTCService {
       RTCSessionDescription answer = await peerConnection!.createAnswer(
         _constraints,
       );
-      await peerConnection!.setLocalDescription(answer);
+      final optimizedAnswerSdp = fixAudioCodec(answer.sdp ?? '');
+      final modifiedAnswer = RTCSessionDescription(optimizedAnswerSdp, answer.type);
+      await peerConnection!.setLocalDescription(modifiedAnswer);
 
-      Logger.d('WebRTCService: SDP Answer created & set as local.');
-      return answer;
+      Logger.d('WebRTCService: SDP Answer created & set as local (FEC optimized).');
+      return modifiedAnswer;
     } catch (e) {
       Logger.e('WebRTCService: Error accepting offer -> $e');
       rethrow;
@@ -300,6 +394,7 @@ class WebRTCService {
 
   Future<void> addRemoteCandidate(dynamic candidateData) async {
     try {
+      if (candidateData == null) return;
       Map<String, dynamic> candidateMap;
       if (candidateData is Map) {
         candidateMap = Map<String, dynamic>.from(candidateData);
@@ -311,24 +406,33 @@ class WebRTCService {
           candidateMap = {'candidate': candidateData.toString(), 'sdpMid': '0', 'sdpMLineIndex': 0};
         }
       }
+
+      final candidateStr = candidateMap['candidate']?.toString() ??
+          candidateMap['iceCandidate']?.toString() ??
+          '';
+
+      if (candidateStr.trim().isEmpty) {
+        Logger.d('WebRTCService: Candidate string is empty, skipping.');
+        return;
+      }
       
       RTCIceCandidate candidate = RTCIceCandidate(
-        candidateMap['candidate']?.toString() ??
-            candidateMap['iceCandidate']?.toString() ??
-            '',
+        candidateStr,
         candidateMap['sdpMid']?.toString() ?? '0',
         candidateMap['sdpMLineIndex'] is int
             ? candidateMap['sdpMLineIndex']
             : int.tryParse(candidateMap['sdpMLineIndex']?.toString() ?? '') ?? 0,
       );
 
+      // Make sure karein ki peerConnection.addCandidate(candidate) tabhi call ho
+      // jab setRemoteDescription complete ho chuka ho.
       if (peerConnection != null && _isRemoteDescriptionSet) {
         await peerConnection!.addCandidate(candidate);
         Logger.d('WebRTCService: Ice Candidate added successfully.');
       } else {
         _remoteCandidateQueue.add(candidate);
         Logger.d(
-          'WebRTCService: Queued remote ICE candidate. Total queued: ${_remoteCandidateQueue.length}',
+          'WebRTCService: Queued remote ICE candidate (setRemoteDescription not ready). Total queued: ${_remoteCandidateQueue.length}',
         );
       }
     } catch (e) {
@@ -352,7 +456,11 @@ class WebRTCService {
     }
   }
 
+  bool currentMuteState = false;
+  bool currentSpeakerState = false;
+
   void toggleMute(bool isMuted) {
+    currentMuteState = isMuted;
     if (localStream != null) {
       localStream!.getAudioTracks().forEach((track) {
         track.enabled = !isMuted;
@@ -360,8 +468,6 @@ class WebRTCService {
       Logger.d('WebRTCService: Microphones enabled = ${!isMuted}');
     }
   }
-
-  bool currentSpeakerState = false;
 
   Future<void> initAudioSession() async {
     try {
@@ -472,6 +578,8 @@ class WebRTCService {
       } catch (e) {
         Logger.e('WebRTCService: Error deactivating audio session -> $e');
       }
+      currentMuteState = false;
+      currentSpeakerState = false;
       toggleSpeaker(false);
       toggleMute(false);
       localStream?.getTracks().forEach((track) => track.stop());

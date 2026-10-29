@@ -113,10 +113,9 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
     }
 
     // Subscribe to dynamic websocket channel
-    try {
-      final ws = Get.find<WebSocketService>();
-      ws.subscribeToChannel('presence-live-session.${widget.session.id}');
+    _subscribeToLiveChannel();
 
+    try {
       _commentsSubscription = WebSocketService.liveCommentsEvent.stream.listen((
         event,
       ) {
@@ -244,6 +243,19 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initCamera();
     });
+  }
+
+  Future<void> _subscribeToLiveChannel() async {
+    try {
+      final ws = Get.find<WebSocketService>();
+      if (ws.getSocketId() == null) {
+        debugPrint('[LIVE] Waiting for WebSocket connection / socket_id before authorizing channel...');
+        await ws.waitForSocketId();
+      }
+      await ws.subscribeToChannel('presence-live-session.${widget.session.id}');
+    } catch (e) {
+      debugPrint('[LIVE] Error subscribing to websocket channel: $e');
+    }
   }
 
   void _scrollToBottom() {
@@ -542,13 +554,20 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
         }
       });
 
-      // 3. Create local video track
+      // 3. Create local video track with balanced capture parameters (540p 24fps) to prevent thermal throttling
       final videoTrack = await LocalVideoTrack.createCameraTrack(
         const CameraCaptureOptions(
           cameraPosition: CameraPosition.front,
+          params: VideoParametersPresets.h540_169,
+          maxFrameRate: 24.0,
         ),
       );
-      final videoPub = await room.localParticipant?.publishVideoTrack(videoTrack);
+      final videoPub = await room.localParticipant?.publishVideoTrack(
+        videoTrack,
+        publishOptions: const VideoPublishOptions(
+          simulcast: true,
+        ),
+      );
       _localVideoTrack = videoTrack;
       if (videoPub != null) {
         _reportMediaStatus(videoPub, 'on');
@@ -625,10 +644,28 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
   }
 
   void _disconnectLiveKit({bool updateState = true}) async {
-    _localVideoTrack?.stop();
+    final videoTrackToDispose = _localVideoTrack;
     _localVideoTrack = null;
-    _localAudioTrack?.stop();
+    final audioTrackToDispose = _localAudioTrack;
     _localAudioTrack = null;
+
+    if (videoTrackToDispose != null) {
+      try {
+        await videoTrackToDispose.stop();
+        await videoTrackToDispose.dispose();
+      } catch (e) {
+        debugPrint('[LIVE] Error disposing video track: $e');
+      }
+    }
+
+    if (audioTrackToDispose != null) {
+      try {
+        await audioTrackToDispose.stop();
+        await audioTrackToDispose.dispose();
+      } catch (e) {
+        debugPrint('[LIVE] Error disposing audio track: $e');
+      }
+    }
 
     final roomToDispose = _room;
     _room = null;

@@ -78,6 +78,7 @@ class CallWebRTCController extends GetxController {
         final acceptedMillis = DateTime.now().millisecondsSinceEpoch;
         _orchestrator.session.startCallTimer(startedAtMillis: acceptedMillis);
         _orchestrator.session.showOngoingNotification();
+        _orchestrator.webrtcService.toggleSpeaker(_orchestrator.isSpeakerOn.value);
 
         // Process missed ICE candidates from API response
         final bodyMap = response.body;
@@ -317,10 +318,12 @@ class CallWebRTCController extends GetxController {
               final offerSdp = session['offer']?.toString() ?? session['offer_sdp']?.toString() ?? session['consumer_sdp']?.toString();
               if (offerSdp != null && offerSdp.isNotEmpty) {
                 await _orchestrator.webrtcService.acceptOffer(_orchestrator.sessionId!, offerSdp);
+                _orchestrator.webrtcService.toggleSpeaker(_orchestrator.isSpeakerOn.value);
               } else {
                 try {
                   final newOffer = await _orchestrator.webrtcService.createOffer(_orchestrator.sessionId!);
                   await _apiClient.post(AppUrls.acceptCall(_orchestrator.sessionId!), data: {'answer': newOffer.sdp}, handleError: false, showErrorScreen: false);
+                  _orchestrator.webrtcService.toggleSpeaker(_orchestrator.isSpeakerOn.value);
                 } catch (e) {}
               }
             }

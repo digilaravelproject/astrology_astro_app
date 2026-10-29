@@ -97,6 +97,36 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
   final String _wsUrl = AppUrls.webSocketUrl;
 
   bool get isConnected => _isConnected;
+  String? get socketId => _socketId;
+  String? getSocketId() => _socketId;
+
+  Future<String?> waitForSocketId({Duration timeout = const Duration(seconds: 5)}) async {
+    if (_isConnected && _socketId != null && _socketId!.isNotEmpty) {
+      return _socketId;
+    }
+    final completer = Completer<String?>();
+    Timer? timeoutTimer;
+    Timer? pollTimer;
+
+    timeoutTimer = Timer(timeout, () {
+      pollTimer?.cancel();
+      if (!completer.isCompleted) {
+        completer.complete(_socketId);
+      }
+    });
+
+    pollTimer = Timer.periodic(const Duration(milliseconds: 100), (t) {
+      if (_isConnected && _socketId != null && _socketId!.isNotEmpty) {
+        t.cancel();
+        timeoutTimer?.cancel();
+        if (!completer.isCompleted) {
+          completer.complete(_socketId);
+        }
+      }
+    });
+
+    return completer.future;
+  }
 
   @override
   void onInit() {
@@ -263,9 +293,15 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
   Future<void> subscribeToChannel(String channelName) async {
     if (!_subscribedChannels.contains(channelName)) {
       _subscribedChannels.add(channelName);
-      if (_isConnected) {
-        _authenticateAndSubscribeToChannel(channelName);
-      }
+    }
+    if (!_isConnected || _socketId == null || _socketId!.isEmpty) {
+      Logger.d('Waiting for WebSocket connection & socket_id before subscribing to $channelName...');
+      await waitForSocketId(timeout: const Duration(seconds: 4));
+    }
+    if (_isConnected && _socketId != null && _socketId!.isNotEmpty) {
+      _authenticateAndSubscribeToChannel(channelName);
+    } else {
+      Logger.d('Cannot subscribe to channel $channelName, socket_id not available yet. Queued for later.');
     }
   }
 
@@ -284,10 +320,10 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
   }
 
   Future<void> _authenticateAndSubscribe() async {
-    if (_socketId == null || _userId == null) return;
+    if (_socketId == null || _socketId!.isEmpty) return;
 
     final Set<String> channelsToSubscribe = {
-      AppUrls.privateUserChannel(_userId!),
+      if (_userId != null) AppUrls.privateUserChannel(_userId!),
       'astrologers',
       ..._subscribedChannels,
     };
@@ -310,6 +346,11 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
           "data": {"channel": channelName},
         }),
       );
+      return;
+    }
+
+    if (_socketId == null || _socketId!.isEmpty) {
+      Logger.e('|❌ WEBSOCKET AUTH FAILED: socket_id is null/empty for $channelName');
       return;
     }
 

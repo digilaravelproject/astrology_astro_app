@@ -250,21 +250,23 @@ class _CallScreenState extends State<CallScreen> {
                         letterSpacing: 0.5,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      status == CallStatus.ringing
-                          ? 'Incoming Audio Call'
-                          : 'Connecting P2P...',
-                      style: TextStyle(
-                        color:
-                            status == CallStatus.ringing
-                                ? AppColors.primaryColor
-                                : Colors.white.withValues(alpha: 0.7),
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 1.2,
+                    if (status != CallStatus.ongoing) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        status == CallStatus.ringing
+                            ? 'Incoming Audio Call'
+                            : 'Connecting...',
+                        style: TextStyle(
+                          color:
+                              status == CallStatus.ringing
+                                  ? AppColors.primaryColor
+                                  : Colors.white.withValues(alpha: 0.7),
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1.2,
+                        ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
 
