@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:get/get.dart' hide navigator;
-import 'package:livekit_client/livekit_client.dart';
 import 'package:astro_astrologer/core/constants/app_constants.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
@@ -48,13 +47,14 @@ class WebRTCService {
         'audio': {
           'echoCancellation': true,
           'noiseSuppression': true,
-          'autoGainControl': true,
+          'autoGainControl': false, // Hardware HAL mic gain is already active (+14dB on Android). Software AGC causes severe distortion/clipping ("awaz fatna")
           'mandatory': {
-            'googEchoCancellation': true, // Speaker ka echo khatam karega
-            'googAutoGainControl': true, // Awaz fatne nahi dega (clipping rokega)
-            'googNoiseSuppression': true, // Background shor/noise cut karega
-            'googHighpassFilter': true, // Low rumble/fan noise hatayega
-            'googTypingNoiseDetection': true,
+            'googEchoCancellation': true, // Speaker echo cancellation
+            'googAutoGainControl': false, // Disable software gain amplification to prevent digital clipping
+            'googAutoGainControl2': false,
+            'googNoiseSuppression': true, // Background noise suppression
+            'googHighpassFilter': true, // Removes low frequency rumble
+            'googTypingNoiseDetection': false,
           },
           'optional': [],
         },
@@ -212,47 +212,28 @@ class WebRTCService {
   String fixAudioCodec(String sdp) {
     if (sdp.isEmpty) return sdp;
 
-    // Avoid duplicate modifications if already injected
-    if (sdp.contains('usedtx=1') && sdp.contains('maxaveragebitrate=24000')) {
+    // Check if already optimized with current params
+    if (sdp.contains('maxaveragebitrate=48000') && sdp.contains('usedtx=0')) {
       return sdp;
     }
 
-    if (sdp.contains('maxaveragebitrate=24000')) {
-      return sdp.replaceAll(
-        'maxaveragebitrate=24000',
-        'usedtx=1; cbr=0; maxaveragebitrate=24000',
-      );
-    }
+    const opusParams = 'useinbandfec=1; usedtx=0; stereo=0; ptime=20; minptime=20; maxaveragebitrate=48000; maxplaybackrate=48000; sprop-maxcapturerate=48000';
 
-    const opusParams = 'useinbandfec=1; usedtx=1; cbr=0; stereo=0; maxaveragebitrate=24000';
-
-    // Low network par packet loss recover karne ke liye Opus FEC + DTX enable karein
-    if (sdp.contains('useinbandfec=1')) {
-      sdp = sdp.replaceAll(
-        'useinbandfec=1',
-        opusParams,
-      );
-    } else if (sdp.contains('minptime=10')) {
-      sdp = sdp.replaceAll(
-        'minptime=10',
-        'minptime=10; $opusParams',
-      );
-    } else {
-      final opusMatch = RegExp(r'a=rtpmap:(\d+)\s+opus/48000', caseSensitive: false).firstMatch(sdp);
-      if (opusMatch != null) {
-        final pt = opusMatch.group(1);
-        final fmtpRegex = RegExp('a=fmtp:$pt([^\r\n]*)');
-        if (fmtpRegex.hasMatch(sdp)) {
-          sdp = sdp.replaceAllMapped(
-            fmtpRegex,
-            (match) => 'a=fmtp:$pt${match.group(1)}; $opusParams',
-          );
-        } else {
-          sdp = sdp.replaceFirst(
-            'a=rtpmap:$pt opus/48000/2',
-            'a=rtpmap:$pt opus/48000/2\r\na=fmtp:$pt minptime=10; $opusParams',
-          );
-        }
+    // Find the Opus payload type number (e.g. 111)
+    final opusMatch = RegExp(r'a=rtpmap:(\d+)\s+opus/48000', caseSensitive: false).firstMatch(sdp);
+    if (opusMatch != null) {
+      final pt = opusMatch.group(1);
+      final fmtpRegex = RegExp('a=fmtp:$pt([^\r\n]*)');
+      if (fmtpRegex.hasMatch(sdp)) {
+        sdp = sdp.replaceAllMapped(
+          fmtpRegex,
+          (match) => 'a=fmtp:$pt $opusParams',
+        );
+      } else {
+        sdp = sdp.replaceFirst(
+          RegExp('a=rtpmap:$pt\\s+opus/48000/2', caseSensitive: false),
+          'a=rtpmap:$pt opus/48000/2\r\na=fmtp:$pt $opusParams',
+        );
       }
     }
     return sdp;
@@ -458,6 +439,7 @@ class WebRTCService {
 
   bool currentMuteState = false;
   bool currentSpeakerState = false;
+  bool _speakerConfigured = false;
 
   void toggleMute(bool isMuted) {
     currentMuteState = isMuted;
@@ -470,26 +452,15 @@ class WebRTCService {
   }
 
   Future<void> initAudioSession() async {
-    try {
-      // ignore: experimental_member_use
-      await AudioManager.instance.setAudioSessionOptions(
-        // ignore: experimental_member_use
-        const AudioSessionOptions.communication(),
-      );
-      Logger.d('WebRTCService: LiveKit AudioManager configured for communication.');
-    } catch (e) {
-      Logger.e('WebRTCService: Error configuring audio session -> $e');
-    }
+    // flutter_webrtc natively configures MODE_IN_COMMUNICATION on getUserMedia.
   }
 
-  void toggleSpeaker(bool isSpeakerOn) {
-    currentSpeakerState = isSpeakerOn;
-    try {
-      AudioManager.instance.setSpeakerOutputPreferred(isSpeakerOn, force: isSpeakerOn);
-      Logger.d('WebRTCService: AudioManager.setSpeakerOutputPreferred($isSpeakerOn, force: $isSpeakerOn) called');
-    } catch (e) {
-      Logger.e('WebRTCService: AudioManager.setSpeakerOutputPreferred error -> $e');
+  void toggleSpeaker(bool isSpeakerOn, {bool force = false}) {
+    if (!force && _speakerConfigured && currentSpeakerState == isSpeakerOn) {
+      return;
     }
+    currentSpeakerState = isSpeakerOn;
+    _speakerConfigured = true;
 
     try {
       Helper.setSpeakerphoneOn(isSpeakerOn);
@@ -499,11 +470,15 @@ class WebRTCService {
     }
 
     if (localStream != null) {
-      localStream!.getAudioTracks().forEach((track) {
-        // ignore: deprecated_member_use
-        track.enableSpeakerphone(isSpeakerOn);
-      });
-      Logger.d('WebRTCService: Track Speakerphone enabled = $isSpeakerOn');
+      try {
+        localStream!.getAudioTracks().forEach((track) {
+          // ignore: deprecated_member_use
+          track.enableSpeakerphone(isSpeakerOn);
+        });
+        Logger.d('WebRTCService: Track Speakerphone enabled = $isSpeakerOn');
+      } catch (e) {
+        Logger.e('WebRTCService: Track enableSpeakerphone error -> $e');
+      }
     }
   }
 
@@ -571,16 +546,12 @@ class WebRTCService {
   void dispose() {
     try {
       _stopPingTimer();
-      try {
-        // ignore: experimental_member_use
-        AudioManager.instance.deactivateAudioSession();
-        Logger.d('WebRTCService: AudioManager session deactivated');
-      } catch (e) {
-        Logger.e('WebRTCService: Error deactivating audio session -> $e');
-      }
       currentMuteState = false;
       currentSpeakerState = false;
-      toggleSpeaker(false);
+      _speakerConfigured = false;
+      try {
+        Helper.setSpeakerphoneOn(false);
+      } catch (_) {}
       toggleMute(false);
       localStream?.getTracks().forEach((track) => track.stop());
       localStream?.dispose();

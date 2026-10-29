@@ -67,11 +67,13 @@ class CallForegroundTaskHandler extends TaskHandler {
         _elapsedCounter++;
       }
 
-      final String timeString = _formatDuration(_elapsedCounter);
-      FlutterForegroundTask.updateService(
-        notificationTitle: _title,
-        notificationText: 'Ongoing session • $timeString',
-      );
+      if (_elapsedCounter % 10 == 0 || _elapsedCounter <= 1) {
+        final String timeString = _formatDuration(_elapsedCounter);
+        FlutterForegroundTask.updateService(
+          notificationTitle: _title,
+          notificationText: 'Ongoing session • $timeString',
+        );
+      }
       FlutterForegroundTask.sendDataToMain({
         'action': 'timer_update',
         'elapsedSeconds': _elapsedCounter,

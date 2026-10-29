@@ -88,7 +88,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                try {
                  final audioTrack = await LocalAudioTrack.create(
                     const AudioCaptureOptions(
-                      autoGainControl: true,
+                      autoGainControl: false,
                       echoCancellation: true,
                       noiseSuppression: true,
                     ),
@@ -97,7 +97,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                     audioTrack,
                     publishOptions: const AudioPublishOptions(
                       encoding: AudioEncoding.presetSpeech,
-                      dtx: true,
+                      dtx: false,
                     ),
                   );
                   _localAudioTrack = audioTrack;
@@ -577,7 +577,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
       if (micStatus.isGranted) {
         final audioTrack = await LocalAudioTrack.create(
           const AudioCaptureOptions(
-            autoGainControl: true,
+            autoGainControl: false,
             echoCancellation: true,
             noiseSuppression: true, // Turn on for better quality without much CPU overhead
           ),
@@ -586,7 +586,7 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
           audioTrack,
           publishOptions: const AudioPublishOptions(
             encoding: AudioEncoding.presetSpeech, // Optimize for speech instead of MusicHighQuality
-            dtx: true,
+            dtx: false,
           ),
         );
         _localAudioTrack = audioTrack;

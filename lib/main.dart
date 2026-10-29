@@ -116,7 +116,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         extra: <String, dynamic>{'payload': payloadStr, 'sessionId': parsedSessionId},
         headers: <String, dynamic>{'apiKey': 'Abc@123!', 'platform': 'flutter'},
         android: const AndroidParams(
-          isCustomNotification: false,
+          isCustomNotification: true,
           isShowLogo: false,
           isShowFullLockedScreen: true,
           ringtonePath: 'system_ringtone_default',

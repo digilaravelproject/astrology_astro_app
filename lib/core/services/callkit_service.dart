@@ -467,14 +467,14 @@ class CallkitService {
       extra: <String, dynamic>{'payload': payloadStr, 'sessionId': sessionId},
       headers: <String, dynamic>{'apiKey': 'Abc@123!', 'platform': 'flutter'},
       android: const AndroidParams(
-        isCustomNotification: false,
+        isCustomNotification: true,
         isShowLogo: false,
         isShowFullLockedScreen: true,
 
         ringtonePath: 'system_ringtone_default',
         backgroundColor: '#0A0A0A',
         backgroundUrl: 'assets/images/background.png',
-        actionColor: '#FF6B00',
+        actionColor: '#4CAF50',
         textColor: '#FFFFFF',
         textAccept: 'Accept',
         textDecline: 'Decline',
