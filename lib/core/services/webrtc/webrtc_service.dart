@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:get/get.dart' hide navigator;
 import 'package:astro_astrologer/core/constants/app_constants.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
+import 'package:astro_astrologer/core/services/webrtc/native_audio_router.dart';
 import 'package:astro_astrologer/core/utils/logger.dart';
 
 class WebRTCService {
@@ -452,7 +454,9 @@ class WebRTCService {
   }
 
   Future<void> initAudioSession() async {
-    // flutter_webrtc natively configures MODE_IN_COMMUNICATION on getUserMedia.
+    if (Platform.isAndroid) {
+      await NativeAudioRouter.setSpeakerphoneOn(currentSpeakerState);
+    }
   }
 
   void toggleSpeaker(bool isSpeakerOn, {bool force = false}) {
@@ -479,6 +483,19 @@ class WebRTCService {
       } catch (e) {
         Logger.e('WebRTCService: Track enableSpeakerphone error -> $e');
       }
+    }
+
+    if (remoteStream != null) {
+      try {
+        remoteStream!.getAudioTracks().forEach((track) {
+          // ignore: deprecated_member_use
+          track.enableSpeakerphone(isSpeakerOn);
+        });
+      } catch (_) {}
+    }
+
+    if (Platform.isAndroid) {
+      NativeAudioRouter.setSpeakerphoneOn(isSpeakerOn);
     }
   }
 
@@ -552,6 +569,9 @@ class WebRTCService {
       try {
         Helper.setSpeakerphoneOn(false);
       } catch (_) {}
+      if (Platform.isAndroid) {
+        NativeAudioRouter.resetAudioRoute();
+      }
       toggleMute(false);
       localStream?.getTracks().forEach((track) => track.stop());
       localStream?.dispose();
