@@ -8,6 +8,7 @@ import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.net.wifi.WifiManager
 import android.os.Build
+import android.os.Bundle
 import android.os.PowerManager
 import android.util.Log
 import io.flutter.embedding.android.FlutterActivity
@@ -21,6 +22,12 @@ class MainActivity : FlutterActivity() {
     private var audioFocusRequest: AudioFocusRequest? = null
     private var wakeLock: PowerManager.WakeLock? = null
     private var wifiLock: WifiManager.WifiLock? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // Bind hardware volume keys directly to voice call stream for OnePlus/Oppo/Vivo/Realme
+        volumeControlStream = AudioManager.STREAM_VOICE_CALL
+    }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)

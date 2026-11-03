@@ -7,6 +7,7 @@ import 'package:astro_astrologer/core/constants/app_constants.dart';
 import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/services/webrtc/native_audio_router.dart';
+import 'package:astro_astrologer/core/services/foreground_task_service.dart';
 import 'package:astro_astrologer/core/utils/logger.dart';
 
 class WebRTCService {
@@ -49,11 +50,11 @@ class WebRTCService {
         'audio': {
           'echoCancellation': true,
           'noiseSuppression': true,
-          'autoGainControl': true,
+          'autoGainControl': false, // Hardware DSP handles mic gain; software AGC disabled to prevent OEM collisions
           'mandatory': {
             'googEchoCancellation': true, // Speaker acoustic echo cancellation
-            'googAutoGainControl': false, // Disable legacy aggressive software AGC to avoid clipping/distortion
-            'googAutoGainControl2': true, // Modern WebRTC AGC2 with true peak limiter (prevents distortion while boosting quiet speech)
+            'googAutoGainControl': false, // Disable software AGC
+            'googAutoGainControl2': false, // Disable AGC2 to prevent clipping & metallic comb-filtering on Xiaomi/Redmi
             'googNoiseSuppression': true, // Background noise suppression
             'googHighpassFilter': true, // Removes low frequency rumble
             'googTypingNoiseDetection': false,
@@ -492,39 +493,29 @@ class WebRTCService {
     currentSpeakerState = isSpeakerOn;
     _speakerConfigured = true;
 
-    try {
-      Helper.setSpeakerphoneOn(isSpeakerOn);
-      Logger.d('WebRTCService: Helper.setSpeakerphoneOn($isSpeakerOn) called');
-    } catch (e) {
-      Logger.e('WebRTCService: Helper.setSpeakerphoneOn error -> $e');
-    }
-
-    if (localStream != null) {
+    if (Platform.isAndroid) {
+      // Android: Single clean routing path via NativeAudioRouter (uses AudioManager.setCommunicationDevice on Android 12+)
+      // Avoids clashing with WebRTC's internal AudioManager calls that deadlock on Samsung One UI
+      NativeAudioRouter.setSpeakerphoneOn(isSpeakerOn);
+    } else {
+      // iOS: Route through WebRTC Helper to configure AVAudioSession output port
       try {
-        localStream!.getAudioTracks().forEach((track) {
-          // ignore: deprecated_member_use
-          track.enableSpeakerphone(isSpeakerOn);
-        });
-        Logger.d('WebRTCService: Track Speakerphone enabled = $isSpeakerOn');
+        Helper.setSpeakerphoneOn(isSpeakerOn);
+        Logger.d('WebRTCService: Helper.setSpeakerphoneOn($isSpeakerOn) called on iOS');
       } catch (e) {
-        Logger.e('WebRTCService: Track enableSpeakerphone error -> $e');
+        Logger.e('WebRTCService: Helper.setSpeakerphoneOn error -> $e');
       }
     }
 
+    // Ensure remote track volume remains at 100%
     if (remoteStream != null) {
       try {
         remoteStream!.getAudioTracks().forEach((track) {
-          // ignore: deprecated_member_use
-          track.enableSpeakerphone(isSpeakerOn);
           try {
             Helper.setVolume(1.0, track);
           } catch (_) {}
         });
       } catch (_) {}
-    }
-
-    if (Platform.isAndroid) {
-      NativeAudioRouter.setSpeakerphoneOn(isSpeakerOn);
     }
   }
 
@@ -595,26 +586,40 @@ class WebRTCService {
       currentMuteState = false;
       currentSpeakerState = false;
       _speakerConfigured = false;
-      try {
-        Helper.setSpeakerphoneOn(false);
-      } catch (_) {}
-      if (Platform.isAndroid) {
-        NativeAudioRouter.resetAudioRoute();
-      }
-      toggleMute(false);
+
+      // 1. Stop and dispose all local and remote audio tracks FIRST
       localStream?.getTracks().forEach((track) => track.stop());
       localStream?.dispose();
       localStream = null;
+
+      remoteStream?.getTracks().forEach((track) => track.stop());
       remoteStream?.dispose();
       remoteStream = null;
+
+      // 2. Close and dispose peer connection
       peerConnection?.close();
       peerConnection?.dispose();
       peerConnection = null;
+
+      // 3. Stop foreground task service
+      try {
+        ForegroundTaskService.stopService();
+      } catch (_) {}
+
+      // 4. Reset audio route LAST so C++ WebRTC destructor cannot re-assert MODE_IN_COMMUNICATION
+      if (Platform.isAndroid) {
+        NativeAudioRouter.resetAudioRoute();
+      } else {
+        try {
+          Helper.setSpeakerphoneOn(false);
+        } catch (_) {}
+      }
+
       _isRemoteDescriptionSet = false;
       _remoteCandidateQueue.clear();
       _queuedIceCandidates.clear();
       _activeSessionId = null;
-      Logger.d('WebRTCService: Disposed peer connection & streams.');
+      Logger.d('WebRTCService: Disposed peer connection & streams and reset audio route to normal.');
     } catch (e) {
       Logger.e('WebRTCService: Error disposing WebRTC resources -> $e');
     }
