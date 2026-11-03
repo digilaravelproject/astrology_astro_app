@@ -53,6 +53,13 @@ class SplashController extends GetxController {
         Get.find<WebSocketService>().connect();
         FCMNotificationService.registerDeviceToken(null);
 
+        // Wait briefly for navigator mounting if onInit fired before frame
+        int retries = 0;
+        while (Get.context == null && retries < 20) {
+          await Future.delayed(const Duration(milliseconds: 25));
+          retries++;
+        }
+
         if (intent.type == ColdStartType.call) {
           _dispatchColdStartCall(intent);
         } else if (intent.type == ColdStartType.chat) {
@@ -151,6 +158,9 @@ class SplashController extends GetxController {
     ctrl.isCallScreenVisible = true;
     if (intent.name != null && intent.name!.isNotEmpty) {
       ctrl.consumerName = intent.name;
+    }
+    if (intent.avatar != null && intent.avatar!.isNotEmpty) {
+      ctrl.consumerImage = intent.avatar;
     }
     if (intent.offerSdp != null && intent.offerSdp!.isNotEmpty) {
       ctrl.incomingOfferSdp = intent.offerSdp;

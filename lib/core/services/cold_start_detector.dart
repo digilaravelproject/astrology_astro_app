@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
+import 'package:flutter_callkit_incoming/entities/call_kit_params.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:astro_astrologer/core/services/callkit_service.dart';
@@ -50,50 +51,69 @@ class ColdStartDetector {
         if (activeCalls is List && activeCalls.isNotEmpty) {
           debugPrint('[ColdStartDetector] CallKit active calls detected: $activeCalls');
           for (final rawCall in activeCalls) {
-            if (rawCall is Map) {
-              final Map<dynamic, dynamic> callMap = rawCall;
-              final String? rawId = callMap['id']?.toString();
-              final int? sId = int.tryParse(rawId ?? '');
-              final String? name = callMap['nameCaller']?.toString();
-              final String? avatar = callMap['avatar']?.toString();
-              final String? handle = callMap['handle']?.toString();
-              final dynamic extra = callMap['extra'];
+            Map<dynamic, dynamic>? callMap;
+            bool isAccepted = false;
 
-              String payload = '';
-              String offerSdp = '';
-              if (extra is Map) {
-                payload = extra['payload']?.toString() ?? '';
-                offerSdp = extra['offer']?.toString() ?? '';
+            if (rawCall is CallKitParams) {
+              callMap = rawCall.toJson();
+              isAccepted = rawCall.isAccepted;
+            } else if (rawCall is Map) {
+              callMap = rawCall;
+              isAccepted = callMap['isAccepted'] == true ||
+                  callMap['isAccepted']?.toString().toLowerCase() == 'true';
+            } else {
+              try {
+                callMap = (rawCall as dynamic).toJson();
+                isAccepted = (rawCall as dynamic).isAccepted == true;
+              } catch (_) {}
+            }
+
+            if (callMap == null) continue;
+
+            final String? rawId = callMap['id']?.toString();
+            final int? sId = int.tryParse(rawId ?? '');
+            final String? name = callMap['nameCaller']?.toString();
+            final String? avatar = callMap['avatar']?.toString();
+            final String? handle = callMap['handle']?.toString();
+            final dynamic extra = callMap['extra'];
+
+            String payload = '';
+            String offerSdp = '';
+            if (extra is Map) {
+              payload = extra['payload']?.toString() ?? '';
+              offerSdp = extra['offer']?.toString() ?? '';
+            }
+
+            final bool isChat = payload.startsWith('chat_') ||
+                handle == 'Chat Request' ||
+                (name != null && name.contains('Chat Req'));
+
+            final cleanName = name != null
+                ? name
+                    .replaceAll('Chat Req: ', '')
+                    .replaceAll('Call Req: ', '')
+                    .trim()
+                : 'User';
+
+            if (sId != null && sId > 0) {
+              final intent = ColdStartIntent(
+                type: isChat ? ColdStartType.chat : ColdStartType.call,
+                sessionId: sId,
+                name: cleanName,
+                avatar: avatar,
+                offerSdp: offerSdp,
+                rawData: extra is Map ? Map<String, dynamic>.from(extra) : null,
+              );
+              currentIntent = intent;
+              if (isChat) {
+                CallkitService.isHandlingAcceptedChat = true;
+                CallkitService.lastAcceptedSessionId = sId.toString();
+              } else {
+                CallkitService.isHandlingAcceptedCall = true;
+                CallkitService.lastAcceptedSessionId = sId.toString();
               }
-
-              final bool isChat = payload.startsWith('chat_') ||
-                  handle == 'Chat Request' ||
-                  (name != null && name.contains('Chat Req'));
-
-              final cleanName = name != null
-                  ? name.replaceAll('Chat Req: ', '').replaceAll('Call Req: ', '').trim()
-                  : 'User';
-
-              if (sId != null && sId > 0) {
-                final intent = ColdStartIntent(
-                  type: isChat ? ColdStartType.chat : ColdStartType.call,
-                  sessionId: sId,
-                  name: cleanName,
-                  avatar: avatar,
-                  offerSdp: offerSdp,
-                  rawData: extra is Map ? Map<String, dynamic>.from(extra) : null,
-                );
-                currentIntent = intent;
-                if (isChat) {
-                  CallkitService.isHandlingAcceptedChat = true;
-                  CallkitService.lastAcceptedSessionId = sId.toString();
-                } else {
-                  CallkitService.isHandlingAcceptedCall = true;
-                  CallkitService.lastAcceptedSessionId = sId.toString();
-                }
-                debugPrint('[ColdStartDetector] Found CallKit intent: $intent');
-                return intent;
-              }
+              debugPrint('[ColdStartDetector] Found CallKit intent: $intent (isAccepted=$isAccepted)');
+              return intent;
             }
           }
         }
