@@ -333,6 +333,7 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
   }
 
   void cleanUp() {
+    CallkitService.resetAcceptedFlags();
     if (status.value == CallStatus.idle && sessionId == null) return;
     stopRingtone();
     CallkitService.endAllCalls();

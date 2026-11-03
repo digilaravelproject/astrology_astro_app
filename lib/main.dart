@@ -104,6 +104,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       
       final String userAvatarRaw = data['user_avatar']?.toString() ?? data['caller_image']?.toString() ?? '';
       final String userAvatar = userAvatarRaw.isNotEmpty ? userAvatarRaw : 'assets/images/app_logo.png';
+      final String offerSdp = data['offer']?.toString() ?? data['offer_sdp']?.toString() ?? '';
 
       CallKitParams callKitParams = CallKitParams(
         id: parsedSessionId.toString(),
@@ -113,7 +114,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         handle: notifTitle,
         type: 0,
         duration: 30000,
-        extra: <String, dynamic>{'payload': payloadStr, 'sessionId': parsedSessionId},
+        extra: <String, dynamic>{'payload': payloadStr, 'sessionId': parsedSessionId, 'offer': offerSdp},
         headers: <String, dynamic>{'apiKey': 'Abc@123!', 'platform': 'flutter'},
         android: const AndroidParams(
           isCustomNotification: true,

@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:astro_astrologer/core/services/storage/shared_prefs.dart';
 import 'package:astro_astrologer/core/constants/app_constants.dart';
 import 'package:astro_astrologer/routes/route_helper.dart';
+import 'package:astro_astrologer/routes/app_routes.dart';
+import 'package:astro_astrologer/core/services/callkit_service.dart';
 import 'package:astro_astrologer/features/splash/data/datasources/splash_service.dart';
 import 'package:astro_astrologer/core/services/websocket/websocket_service.dart';
 import 'package:astro_astrologer/core/services/fcm_notification_service.dart';
@@ -32,8 +34,10 @@ class SplashController extends GetxController {
       // Initialize splash service
       final isReady = await _splashService.initialize();
 
-      // Wait for 2 seconds to show splash screen
-      await Future.delayed(const Duration(seconds: 2));
+      // Only wait 2 seconds if NOT handling an accepted call or chat via CallKit!
+      if (!CallkitService.isHandlingAcceptedCall && !CallkitService.isHandlingAcceptedChat) {
+        await Future.delayed(const Duration(seconds: 2));
+      }
 
       bool cameraGranted = await Permission.camera.isGranted;
       bool micGranted = await Permission.microphone.isGranted;
@@ -54,6 +58,39 @@ class SplashController extends GetxController {
             Get.find<WebSocketService>().connect();
             FCMNotificationService.registerDeviceToken(null);
             
+            // Fast-track: If a call was accepted from CallKit while app was killed/background,
+            // navigate DIRECTLY to CallScreen without lingering on splash or showing dashboard first!
+            if (CallkitService.isHandlingAcceptedCall) {
+              print('[SPLASH] Fast-tracking directly to CallScreen for accepted CallKit call');
+              if (Get.currentRoute != AppRoutes.callScreen) {
+                Get.offAllNamed(RouteHelper.getDashboardRoute());
+                Get.toNamed(AppRoutes.callScreen);
+              }
+              return;
+            }
+
+            // Fast-track: If a chat was accepted from CallKit while app was killed/background,
+            // navigate DIRECTLY to ChatScreen!
+            if (CallkitService.isHandlingAcceptedChat) {
+              print('[SPLASH] Fast-tracking directly to ChatScreen for accepted CallKit chat');
+              final int? sId = CallkitService.pendingAcceptedSessionId;
+              final String callerName = CallkitService.pendingAcceptedCallerName ?? 'User';
+              if (sId != null && sId > 0 && Get.currentRoute != '/ChatScreen') {
+                Get.offAllNamed(RouteHelper.getDashboardRoute());
+                Get.to(
+                  () => ChatScreen(
+                    sessionId: sId,
+                    initialStatus: 'ongoing',
+                    userName: callerName,
+                    userImage: '',
+                    startedAtString: DateTime.now().toUtc().toIso8601String(),
+                  ),
+                  binding: ChatBinding(),
+                );
+              }
+              return;
+            }
+
             // Navigate to dashboard — DashboardController.onReady() will handle
             // any ongoing chat session via server API (more reliable than SharedPrefs)
             Get.offAllNamed(RouteHelper.getDashboardRoute());

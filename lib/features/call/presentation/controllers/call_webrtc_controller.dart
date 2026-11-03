@@ -11,6 +11,7 @@ import 'package:astro_astrologer/core/enums/session_status_enums.dart';
 import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
 import 'call_controller.dart';
 import 'package:astro_astrologer/routes/app_routes.dart';
+import 'package:astro_astrologer/routes/route_helper.dart';
 import 'package:astro_astrologer/core/services/websocket/websocket_service.dart';
 
 class CallWebRTCController extends GetxController {
@@ -50,18 +51,19 @@ class CallWebRTCController extends GetxController {
       // so Android allows microphone access even if the app is in the background.
       await _orchestrator.session.showOngoingNotification();
 
-      // IMPORTANT: Give LiveRoomScreen time to stop the LiveKit mic hardware.
-      // If getUserMedia is called while LiveKit is still stopping, the OS mic gets locked or silent.
-      await Future.delayed(const Duration(milliseconds: 1500));
+      // Give LiveRoomScreen time to stop the LiveKit mic hardware ONLY if live call.
+      // Normal incoming calls connect immediately without any delay.
+      if (_orchestrator.session.isLiveCall) {
+        await Future.delayed(const Duration(milliseconds: 800));
+      }
 
       final answerDescription = await _orchestrator.webrtcService.acceptOffer(_orchestrator.sessionId!, sdpToUse);
       
-      final ws = Get.isRegistered<WebSocketService>() ? Get.find<WebSocketService>() : null;
-      if (ws != null && !ws.isConnected) {
-        int wsRetries = 0;
-        while (!ws.isConnected && wsRetries < 40) {
-          await Future.delayed(const Duration(milliseconds: 100));
-          wsRetries++;
+      // Connect WebSocket in background without blocking acceptCall HTTP request
+      if (Get.isRegistered<WebSocketService>()) {
+        final ws = Get.find<WebSocketService>();
+        if (!ws.isConnected) {
+          ws.connect();
         }
       }
 
@@ -183,17 +185,27 @@ class CallWebRTCController extends GetxController {
         _orchestrator.status.value = CallStatus.completed;
         
         final wasVisible = _orchestrator.isCallScreenVisible;
+        CallkitService.resetAcceptedFlags();
         _orchestrator.session.cleanUp();
         if (wasVisible || Get.currentRoute == '/CallScreen' || Get.currentRoute == '/call-screen' || Get.currentRoute == AppRoutes.callScreen) {
           if (Get.isDialogOpen ?? false) Get.back();
-          Get.back();
+          if (Get.previousRoute.isNotEmpty && Get.previousRoute != '/' && Get.previousRoute != AppRoutes.splash) {
+            Get.back();
+          } else {
+            Get.offAllNamed(RouteHelper.getDashboardRoute());
+          }
         }
       } else {
         final wasVisible = _orchestrator.isCallScreenVisible;
+        CallkitService.resetAcceptedFlags();
         _orchestrator.session.cleanUp();
         if (wasVisible || Get.currentRoute == '/CallScreen' || Get.currentRoute == '/call-screen' || Get.currentRoute == AppRoutes.callScreen) {
           if (Get.isDialogOpen ?? false) Get.back();
-          Get.back();
+          if (Get.previousRoute.isNotEmpty && Get.previousRoute != '/' && Get.previousRoute != AppRoutes.splash) {
+            Get.back();
+          } else {
+            Get.offAllNamed(RouteHelper.getDashboardRoute());
+          }
         }
       }
     } catch (e) {

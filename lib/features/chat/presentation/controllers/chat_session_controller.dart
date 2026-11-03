@@ -21,6 +21,7 @@ import 'package:astro_astrologer/core/constants/app_constants.dart';
 import 'package:astro_astrologer/features/auth/data/models/user_model.dart';
 import 'chat_controller.dart';
 import 'package:astro_astrologer/routes/app_routes.dart';
+import 'package:astro_astrologer/routes/route_helper.dart';
 import 'package:astro_astrologer/core/services/storage/token_manger.dart';
 
 class ChatSessionController extends GetxController with WidgetsBindingObserver {
@@ -312,13 +313,18 @@ class ChatSessionController extends GetxController with WidgetsBindingObserver {
       timer?.cancel();
       _globalTimerSub?.cancel();
       FloatingChatBubble.dismiss(stopForegroundService: true);
+      CallkitService.resetAcceptedFlags();
       CallkitService.endAllCalls();
       WebSocketService.sessionStatusUpdates[endedSessionId] = 'ended';
       ForegroundTaskService.stopService();
       // Navigate back to dashboard after a small delay so UI updates first
       Future.delayed(const Duration(milliseconds: 300), () {
         if (Get.isRegistered<ChatController>()) {
-          Get.back();
+          if (Get.previousRoute.isNotEmpty && Get.previousRoute != '/' && Get.previousRoute != AppRoutes.splash) {
+            Get.back();
+          } else {
+            Get.offAllNamed(RouteHelper.getDashboardRoute());
+          }
         }
       });
     }

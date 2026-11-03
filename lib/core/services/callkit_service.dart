@@ -24,6 +24,62 @@ import 'package:astro_astrologer/routes/app_routes.dart';
 
 class CallkitService {
   static String? lastAcceptedSessionId;
+  static bool isHandlingAcceptedCall = false;
+  static bool isHandlingAcceptedChat = false;
+  static int? pendingAcceptedSessionId;
+  static String? pendingAcceptedCallerName;
+  static String? pendingAcceptedCallerAvatar;
+
+  static void resetAcceptedFlags() {
+    isHandlingAcceptedCall = false;
+    isHandlingAcceptedChat = false;
+    pendingAcceptedSessionId = null;
+    pendingAcceptedCallerName = null;
+    pendingAcceptedCallerAvatar = null;
+  }
+
+  static void _navigateDirectlyToCallScreen(CallController ctrl) async {
+    int retries = 0;
+    while (Get.context == null && retries < 40) {
+      await Future.delayed(const Duration(milliseconds: 50));
+      retries++;
+    }
+    if (Get.context != null && !ctrl.isCallScreenVisible) {
+      debugPrint('CallKit: Navigating directly to CallScreen (currentRoute=${Get.currentRoute})');
+      ctrl.isCallScreenVisible = true;
+      if (Get.currentRoute == AppRoutes.splash || Get.currentRoute == '' || Get.currentRoute == '/') {
+        // App started from killed state: put Dashboard at root and push CallScreen
+        Get.offAllNamed(RouteHelper.getDashboardRoute());
+        Get.toNamed(AppRoutes.callScreen);
+      } else if (Get.currentRoute != AppRoutes.callScreen) {
+        Get.toNamed(AppRoutes.callScreen);
+      }
+    }
+  }
+
+  static void _navigateDirectlyToChatScreen(int sId, String userName, String startedAtStr) async {
+    int retries = 0;
+    while (Get.context == null && retries < 40) {
+      await Future.delayed(const Duration(milliseconds: 50));
+      retries++;
+    }
+    if (Get.context != null) {
+      debugPrint('CallKit: Navigating directly to ChatScreen (currentRoute=${Get.currentRoute})');
+      final chatScreen = ChatScreen(
+        sessionId: sId,
+        initialStatus: 'ongoing',
+        userName: userName,
+        userImage: '',
+        startedAtString: startedAtStr,
+      );
+      if (Get.currentRoute == AppRoutes.splash || Get.currentRoute == '' || Get.currentRoute == '/') {
+        Get.offAllNamed(RouteHelper.getDashboardRoute());
+        Get.to(() => chatScreen, binding: ChatBinding());
+      } else {
+        Get.to(() => chatScreen, binding: ChatBinding());
+      }
+    }
+  }
 
   static void init() {
     FlutterCallkitIncoming.onEvent.listen((CallEvent? event) async {
@@ -49,14 +105,11 @@ class CallkitService {
             debugPrint('CallKit: Reconstructed payload -> $payload');
           }
 
-          // Store clean caller name for floating bubble
-          if (callerName != null) {
-            FloatingChatBubble.name =
-                callerName
-                    .replaceAll('Chat Req: ', '')
-                    .replaceAll('Call Req: ', '')
-                    .trim();
-          }
+          // Store clean caller name
+          final cleanName = callerName != null
+              ? callerName.replaceAll('Chat Req: ', '').replaceAll('Call Req: ', '').trim()
+              : 'User';
+          FloatingChatBubble.name = cleanName;
 
           if (payload == null) {
             debugPrint('CallKit: ERROR - Payload is still null after reconstruction attempt!');
@@ -64,17 +117,14 @@ class CallkitService {
           }
           debugPrint('CallKit: Processing payload: $payload');
           
-          // Force app to launch into foreground when accept is tapped
+          // Force app to launch into foreground immediately
           ForegroundTaskService.launchApp();
-          await Future.delayed(const Duration(seconds: 1));
 
           if (payload.startsWith('call_')) {
             // ── Incoming CALL accepted ──
-            int retries = 0;
-            while (!Get.isRegistered<CallController>() && retries < 40) {
-              await Future.delayed(const Duration(milliseconds: 100));
-              retries++;
-            }
+            isHandlingAcceptedCall = true;
+            isHandlingAcceptedChat = false;
+
             if (!Get.isRegistered<CallController>()) {
               debugPrint('CallKit: Forcing InitialBindings for CallController...');
               InitialBindings().dependencies();
@@ -89,229 +139,101 @@ class CallkitService {
             final sId = int.tryParse(sIdStr);
             if (sId != null) {
               ctrl.sessionId = sId;
+              pendingAcceptedSessionId = sId;
               lastAcceptedSessionId = sId.toString();
             }
-            if (callerName != null) {
-              ctrl.consumerName = callerName
-                  .replaceAll('Chat Req: ', '')
-                  .replaceAll('Call Req: ', '')
-                  .trim();
+            ctrl.consumerName = cleanName;
+            pendingAcceptedCallerName = cleanName;
+
+            final String? offerFromExtra = event.callKitParams.extra?['offer'] as String?;
+            if (offerFromExtra != null && offerFromExtra.isNotEmpty && (ctrl.incomingOfferSdp == null || ctrl.incomingOfferSdp!.isEmpty)) {
+              ctrl.incomingOfferSdp = offerFromExtra;
             }
 
-            final offerSdp = ctrl.incomingOfferSdp ?? '';
+            // Direct instant navigation to CallScreen!
+            _navigateDirectlyToCallScreen(ctrl);
 
-            debugPrint('CallKit: Executing call accept logic...');
-            bool success = false;
-            String finalOfferSdp = offerSdp;
-
-            // On iOS, CallKit grants background microphone access automatically.
-            // On Android, we must accept instantly so we catch the CallkitIncomingActivity while it's still in the foreground,
-            // before it finishes and drops our app to the background.
-            debugPrint('CallKit: Proceeding to accept call instantly to secure mic permission.');
-
-            try {
-              // If offerSdp is empty (likely due to cold boot), try to fetch it from the backend API
-              if (finalOfferSdp.isEmpty) {
-                debugPrint('CallKit: incomingOfferSdp is empty. Attempting to fetch from current session...');
-                final fetchedSdp = await ctrl.fetchOfferSdpFromCurrentSession();
-                if (fetchedSdp != null && fetchedSdp.isNotEmpty) {
-                  finalOfferSdp = fetchedSdp;
-                  debugPrint('CallKit: Successfully fetched offerSdp from API.');
+            // Execute accept call logic in background without blocking navigation
+            Future(() async {
+              String finalOfferSdp = ctrl.incomingOfferSdp ?? '';
+              try {
+                if (finalOfferSdp.isEmpty) {
+                  debugPrint('CallKit: incomingOfferSdp is empty. Fetching from current session...');
+                  final fetchedSdp = await ctrl.fetchOfferSdpFromCurrentSession();
+                  if (fetchedSdp != null && fetchedSdp.isNotEmpty) {
+                    finalOfferSdp = fetchedSdp;
+                  }
                 }
-              }
 
-              if (finalOfferSdp.isNotEmpty) {
-                debugPrint('CallKit: Calling ctrl.acceptCall(offerSdp)...');
-                success = await ctrl.acceptCall(finalOfferSdp);
-              } else {
-                debugPrint('CallKit: Calling ctrl.acceptCallDirect()...');
-                success = await ctrl.acceptCallDirect();
-              }
-            } catch (e) {
-              debugPrint('CallKit: Exception during acceptCall: $e');
-            }
+                bool success = false;
+                if (finalOfferSdp.isNotEmpty) {
+                  debugPrint('CallKit: Calling ctrl.acceptCall(offerSdp)...');
+                  success = await ctrl.acceptCall(finalOfferSdp);
+                } else {
+                  debugPrint('CallKit: Calling ctrl.acceptCallDirect()...');
+                  success = await ctrl.acceptCallDirect();
+                }
+                debugPrint('CallKit: Accept result success = $success');
 
-            debugPrint('CallKit: Accept result success = $success');
-
-            if (success) {
-              // End CallKit telecom session so "Hang Up" notification disappears
-              // and Android Telecom releases its audio routing lock.
-              // The actual call continues over our WebRTC implementation.
-              Future.delayed(const Duration(milliseconds: 500), () {
                 if (sessionId != null) {
                   FlutterCallkitIncoming.endCall(sessionId);
-                  debugPrint('CallKit: Ended CallKit Telecom session $sessionId to release audio routing lock.');
                 }
-              });
-              
-              // Wait until splash screen is gone and navigator is ready
-              int waitRetries = 0;
-              while (Get.context == null && waitRetries < 150) {
-                await Future.delayed(const Duration(milliseconds: 100));
-                waitRetries++;
-              }
-              
-              // Wait until SplashController completes its navigation to Dashboard
-              while ((Get.currentRoute == '' || Get.currentRoute == '/' || Get.currentRoute == AppRoutes.splash) && waitRetries < 150) {
-                await Future.delayed(const Duration(milliseconds: 100));
-                waitRetries++;
-              }
-              await Future.delayed(const Duration(milliseconds: 300)); // Allow animation to settle
-
-              if (Get.context == null) {
-                debugPrint('CallKit: Navigation failed, UI not ready.');
-              } else {
-                if (!ctrl.isCallScreenVisible) {
-                  debugPrint('CallKit: Navigating to CallScreen.');
-                  Get.toNamed(AppRoutes.callScreen);
-                }
-                if (ctrl.status.value == CallStatus.ongoing) {
+                if (success && ctrl.status.value == CallStatus.ongoing) {
                   ctrl.session.showOngoingNotification();
                 }
+              } catch (e) {
+                debugPrint('CallKit: Exception during acceptCall: $e');
               }
-            } else {
-              debugPrint('CallKit: Failed to accept call. Not navigating to CallScreen.');
-            }
+            });
           } else if (payload.startsWith('chat_')) {
             // ── Incoming CHAT accepted ──
             debugPrint('CallKit: Entered chat_ block');
+            isHandlingAcceptedChat = true;
+            isHandlingAcceptedCall = false;
+
             final sIdStr = payload.replaceFirst('chat_', '');
-            debugPrint('CallKit: Parsed sIdStr: $sIdStr');
             final sId = int.tryParse(sIdStr);
             if (sId == null) {
-               debugPrint('CallKit: ERROR - Failed to parse sId from $sIdStr');
-               break;
+              debugPrint('CallKit: ERROR - Failed to parse sId from $sIdStr');
+              break;
             }
-            debugPrint('CallKit: Valid sId: $sId');
+            pendingAcceptedSessionId = sId;
+            pendingAcceptedCallerName = cleanName;
+            lastAcceptedSessionId = sId.toString();
 
             // Stop ringtone immediately
             SoundVibrationService().stopRingtone();
-
-            // End CallKit telecom session so it doesn't linger
-            Future.delayed(const Duration(milliseconds: 500), () {
-              debugPrint('CallKit: Ending CallKit session for $sessionId');
-              if (sessionId != null) {
-                FlutterCallkitIncoming.endCall(sessionId);
-              }
-            });
-
-            // 1. Call POST /chat/{id}/accept API — required to change status from initiated → ongoing
-            bool accepted = false;
-            String? backendStartedAtStr;
-            // Record accept time as canonical start — passed to ChatScreen and ForegroundTask
-            final fallbackAcceptedAt = DateTime.now();
-            try {
-              int retries = 0;
-              debugPrint('CallKit: Waiting for ApiClient...');
-              while (!Get.isRegistered<ApiClient>() && retries < 10) {
-                await Future.delayed(const Duration(milliseconds: 100));
-                retries++;
-              }
-              debugPrint('CallKit: ApiClient registered? ${Get.isRegistered<ApiClient>()} (retries: $retries)');
-              
-              if (!Get.isRegistered<ApiClient>()) {
-                debugPrint('CallKit: Forcing InitialBindings registration for cold boot...');
-                InitialBindings().dependencies();
-              }
-
-              if (Get.isRegistered<ApiClient>()) {
-                debugPrint('CallKit: Calling accept API for session $sId...');
-                final resp = await Get.find<ApiClient>().post(
-                  AppUrls.acceptChatSession(sId),
-                  handleError: false,
-                  showErrorScreen: false,
-                );
-                accepted = resp.isSuccess;
-                debugPrint(
-                  'CallKit: Chat accept API for session $sId → isSuccess=$accepted, resp message=${resp.message}',
-                );
-
-                if (accepted) {
-                  final body = resp.body;
-                  if (body != null) {
-                    final sessionData = body is Map ? (body['session'] ?? body['data']?['session'] ?? body['data']) : null;
-                    if (sessionData != null && sessionData is Map) {
-                      backendStartedAtStr = sessionData['started_at']?.toString() ?? sessionData['accepted_at']?.toString();
-                    }
-                  }
-
-                  // We will start the foreground notification later once UI is mounted.
-                } else {
-                  // Fallback for cold boot: the background isolate might have already accepted the chat.
-                  // Try to fetch the active session to get the true backend started_at.
-                  debugPrint('CallKit: accept API returned false. Trying to fetch current session for started_at...');
-                  try {
-                    final currentResp = await Get.find<ApiClient>().get(AppUrls.getCurrentSession);
-                    if (currentResp.isSuccess && currentResp.body != null) {
-                      final body = currentResp.body;
-                      final sessionData = body is Map ? (body['session'] ?? body['data']?['session'] ?? body['data']) : null;
-                      if (sessionData != null && sessionData is Map && sessionData['id'] == sId) {
-                        backendStartedAtStr = sessionData['started_at']?.toString() ?? sessionData['accepted_at']?.toString();
-                        debugPrint('CallKit: Recovered started_at from getCurrentSession: $backendStartedAtStr');
-                      }
-                    }
-                  } catch (e) {
-                    debugPrint('CallKit: Error fetching current session: $e');
-                  }
-                }
-              }
-            } catch (e) {
-              debugPrint('CallKit: Error calling acceptChatSession API: $e');
+            if (sessionId != null) {
+              FlutterCallkitIncoming.endCall(sessionId);
             }
 
-            // Set last accepted session to avoid duplicate notifications
-            lastAcceptedSessionId = sId.toString();
+            final fallbackAcceptedAt = DateTime.now();
+            final String finalStartedAtStr = fallbackAcceptedAt.toUtc().toIso8601String();
 
-            // 2. Navigate to ChatScreen — pass acceptedAt so all 3 timers start from same moment
-            final String finalStartedAtStr = backendStartedAtStr ?? fallbackAcceptedAt.toUtc().toIso8601String();
-            Future.microtask(() async {
-              debugPrint('CallKit: Navigation task for ChatScreen started');
-              // Wait until splash screen is gone and navigator is ready
-              int waitRetries = 0;
-              while (Get.context == null && waitRetries < 150) {
-                await Future.delayed(const Duration(milliseconds: 100));
-                waitRetries++;
-              }
-              
-              // Wait until SplashController completes its navigation to Dashboard
-              while ((Get.currentRoute == '' || Get.currentRoute == '/' || Get.currentRoute == AppRoutes.splash) && waitRetries < 150) {
-                await Future.delayed(const Duration(milliseconds: 100));
-                waitRetries++;
-              }
-              // Allow time for the Get.offAllNamed animation to complete
-              await Future.delayed(const Duration(milliseconds: 300));
-              
-              if (Get.context == null) {
-                debugPrint('CallKit: Navigation failed, UI not ready after 15 seconds.');
-                return;
-              }
-              
-              // Clear pending navigation since we are handling it now
-              final prefs = await SharedPreferences.getInstance();
-              await prefs.remove('pending_chat_navigation');
-              await prefs.remove('pending_chat_name');
-              await prefs.remove('pending_chat_started_at');
-              
-              debugPrint('CallKit: Current route before navigating to ChatScreen: ${Get.currentRoute}');
+            // Direct instant navigation to ChatScreen!
+            _navigateDirectlyToChatScreen(sId, cleanName, finalStartedAtStr);
 
-              if (accepted || backendStartedAtStr != null) {
+            // Execute accept API and foreground notification in background
+            Future(() async {
+              try {
+                if (!Get.isRegistered<ApiClient>()) {
+                  InitialBindings().dependencies();
+                }
+                if (Get.isRegistered<ApiClient>()) {
+                  await Get.find<ApiClient>().post(
+                    AppUrls.acceptChatSession(sId),
+                    handleError: false,
+                    showErrorScreen: false,
+                  );
+                }
                 ForegroundTaskService.startActiveSessionNotification(
                   title: 'Active Chat',
                   type: 'Chat',
                   startedAt: fallbackAcceptedAt,
                 );
+              } catch (e) {
+                debugPrint('CallKit: Error calling acceptChatSession API: $e');
               }
-
-              Get.to(
-                () => ChatScreen(
-                  sessionId: sId,
-                  initialStatus: 'ongoing',
-                  userName: FloatingChatBubble.name ?? 'User',
-                  userImage: '',
-                  startedAtString: finalStartedAtStr,
-                ),
-                binding: ChatBinding(),
-              );
             });
           }
           break;
@@ -321,6 +243,7 @@ class CallkitService {
         // ──────────────────────────────────────────────────────────────
         case CallEventActionCallDecline():
           debugPrint('CallKit: DECLINED');
+          resetAcceptedFlags();
           String? payload = event.callKitParams.extra?['payload'] as String?;
           final callerName = event.callKitParams.nameCaller;
           final sessionId = event.callKitParams.id;
@@ -423,10 +346,12 @@ class CallkitService {
 
         case CallEventActionCallEnded():
           debugPrint('CallKit: Call Ended');
+          resetAcceptedFlags();
           break;
 
         case CallEventActionCallTimeout():
           debugPrint('CallKit: Call Timeout');
+          resetAcceptedFlags();
           if (Get.isRegistered<CallController>()) {
             Get.find<CallController>().cleanUp();
           }
