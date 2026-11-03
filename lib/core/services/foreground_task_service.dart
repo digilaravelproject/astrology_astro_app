@@ -203,7 +203,7 @@ class ForegroundTaskService {
       try {
         if (await FlutterForegroundTask.isRunningService) {
           final currentType = await FlutterForegroundTask.getData<String>(key: 'sessionType');
-          if (type == 'Call' && currentType != 'Call') {
+          if (type == 'Call' && currentType != null && currentType != 'Call') {
             await FlutterForegroundTask.stopService();
             await FlutterForegroundTask.startService(
               serviceTypes: serviceTypes,

@@ -107,8 +107,6 @@ class FloatingCallBubble {
           type: 'Call',
           startedAt: startedAtDate,
         );
-      } else {
-        await ForegroundTaskService.stopService();
       }
 
       if (await FlutterOverlayWindow.isActive()) {

@@ -312,16 +312,15 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> showOngoingNotification() async {
-    if (sessionId != null) {
-      try {
-        await ForegroundTaskService.startActiveSessionNotification(
-          title: 'Active Call'.tr,
-          type: 'Call',
-          startedAt: callStartedAt ?? DateTime.now(),
-        );
-      } catch (e) {
-        debugPrint('Failed to show ongoing notification: $e');
-      }
+    try {
+      final name = consumerName ?? 'User';
+      await ForegroundTaskService.startActiveSessionNotification(
+        title: 'Active Call with $name',
+        type: 'Call',
+        startedAt: callStartedAt ?? DateTime.now(),
+      );
+    } catch (e) {
+      debugPrint('Failed to show ongoing notification: $e');
     }
   }
 
