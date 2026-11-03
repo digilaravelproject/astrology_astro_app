@@ -33,6 +33,7 @@ class CallController extends GetxController {
   set consumerId(int? val) => session.consumerId = val;
 
   String? get incomingOfferSdp => session.incomingOfferSdp;
+  set incomingOfferSdp(String? val) => session.incomingOfferSdp = val;
   bool get isPackageCall => session.isPackageCall;
   bool get isChatAlsoActive => session.isChatAlsoActive;
   int? get subSessionId => session.subSessionId;
