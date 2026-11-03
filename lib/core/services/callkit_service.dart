@@ -47,7 +47,10 @@ class CallkitService {
     }
     if (Get.context != null && !ctrl.isCallScreenVisible) {
       debugPrint('CallKit: Navigating directly to CallScreen (currentRoute=${Get.currentRoute})');
+      ctrl.isAcceptedLocally = true;
       ctrl.isCallScreenVisible = true;
+      ctrl.status.value = CallStatus.ongoing;
+      ctrl.session.startCallTimer();
       if (Get.currentRoute == AppRoutes.splash || Get.currentRoute == '' || Get.currentRoute == '/') {
         // App started from killed state: directly replace Splash with CallScreen (no Dashboard flash)
         Get.offAllNamed(AppRoutes.callScreen);
@@ -139,6 +142,10 @@ class CallkitService {
             final sId = int.tryParse(sIdStr);
             if (sId != null) {
               ctrl.sessionId = sId;
+              ctrl.isAcceptedLocally = true;
+              ctrl.isCallScreenVisible = true;
+              ctrl.status.value = CallStatus.ongoing;
+              ctrl.session.startCallTimer();
               pendingAcceptedSessionId = sId;
               lastAcceptedSessionId = sId.toString();
             }

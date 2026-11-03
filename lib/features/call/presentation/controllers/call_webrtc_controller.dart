@@ -25,6 +25,10 @@ class CallWebRTCController extends GetxController {
   Future<bool> acceptCall(String offerSdp) async {
     if (_orchestrator.sessionId == null) return false;
     if (isAccepting) return false;
+    if (_orchestrator.status.value == CallStatus.ongoing && _orchestrator.webrtcService.peerConnection != null) {
+      debugPrint('[CallWebRTCController] Call is already ongoing and WebRTC active. Skipping redundant acceptCall.');
+      return true;
+    }
     isAccepting = true;
     try {
       _orchestrator.session.isSummaryShown = false;
@@ -32,7 +36,9 @@ class CallWebRTCController extends GetxController {
       _orchestrator.session.ringingTimer?.cancel();
       _orchestrator.isAcceptedLocally = true;
       _orchestrator.status.value = CallStatus.ongoing;
-      _orchestrator.durationSeconds.value = 0;
+      if (_orchestrator.durationSeconds.value == 0) {
+        _orchestrator.session.startCallTimer();
+      }
 
       String sdpToUse = (offerSdp.isNotEmpty) ? offerSdp : (_orchestrator.session.incomingOfferSdp ?? '');
 
@@ -98,6 +104,18 @@ class CallWebRTCController extends GetxController {
 
         return true;
       } else {
+        final msg = response.message?.toLowerCase() ?? '';
+        if (msg.contains('already accepted') ||
+            msg.contains('ongoing') ||
+            msg.contains('in_progress') ||
+            (msg.contains('no longer valid') && _orchestrator.status.value == CallStatus.ongoing)) {
+          debugPrint('[CallWebRTCController] Server reports call accepted/active ($msg). Preserving session.');
+          _orchestrator.status.value = CallStatus.ongoing;
+          if (_orchestrator.durationSeconds.value == 0) {
+            _orchestrator.session.startCallTimer();
+          }
+          return true;
+        }
         _orchestrator.session.cleanUp();
         CustomSnackBar.showError('Failed to accept call: ${response.message}');
         return false;
@@ -118,6 +136,10 @@ class CallWebRTCController extends GetxController {
     }
     if (sdp.isNotEmpty) {
       return await acceptCall(sdp);
+    }
+    if (_orchestrator.status.value == CallStatus.ongoing && _orchestrator.webrtcService.peerConnection != null) {
+      debugPrint('[CallWebRTCController] acceptCallDirect: WebRTC already active.');
+      return true;
     }
     Logger.e('acceptCallDirect failed: No offer SDP available.');
     _orchestrator.session.cleanUp();
@@ -300,8 +322,12 @@ class CallWebRTCController extends GetxController {
             _orchestrator.session.consumerImage = consumerData['profile_photo']?.toString();
           }
           
-          if (_orchestrator.isAcceptedLocally && (sessionStatus == 'initiated' || sessionStatus == 'ringing')) {
-            debugPrint('[CallWebRTCController] Call already accepted locally. Keeping status=${_orchestrator.status.value}');
+          if (_orchestrator.isAcceptedLocally && (sessionStatus == 'initiated' || sessionStatus == 'ringing' || sessionStatus == 'ongoing')) {
+            debugPrint('[CallWebRTCController] Call already accepted locally. Enforcing status=ongoing');
+            _orchestrator.status.value = CallStatus.ongoing;
+            if (_orchestrator.durationSeconds.value == 0) {
+              _orchestrator.session.startCallTimer();
+            }
           } else {
             _orchestrator.status.value = CallStatus.values.firstWhere(
               (e) => e.name == (sessionStatus == 'initiated' ? 'ringing' : sessionStatus),

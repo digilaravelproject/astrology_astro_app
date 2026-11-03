@@ -182,6 +182,8 @@ class SplashController extends GetxController {
     ctrl.sessionId = intent.sessionId;
     ctrl.isAcceptedLocally = true;
     ctrl.isCallScreenVisible = true;
+    ctrl.status.value = CallStatus.ongoing;
+    ctrl.session.startCallTimer();
     if (intent.name != null && intent.name!.isNotEmpty) {
       ctrl.consumerName = intent.name;
     }
@@ -195,30 +197,36 @@ class SplashController extends GetxController {
     // Direct instant transition to CallScreen (replacing Splash directly)
     Get.offAllNamed(AppRoutes.callScreen);
 
-    // Run accept API in background without blocking screen transition
-    Future(() async {
-      try {
-        String finalOfferSdp = ctrl.incomingOfferSdp ?? '';
-        if (finalOfferSdp.isEmpty) {
-          final fetchedSdp = await ctrl.fetchOfferSdpFromCurrentSession();
-          if (fetchedSdp != null && fetchedSdp.isNotEmpty) {
-            finalOfferSdp = fetchedSdp;
+    // Only run accept API if CallkitService is NOT already handling the accept!
+    if (!CallkitService.isHandlingAcceptedCall && CallkitService.lastAcceptedSessionId != intent.sessionId.toString()) {
+      CallkitService.isHandlingAcceptedCall = true;
+      CallkitService.lastAcceptedSessionId = intent.sessionId.toString();
+      Future(() async {
+        try {
+          String finalOfferSdp = ctrl.incomingOfferSdp ?? '';
+          if (finalOfferSdp.isEmpty) {
+            final fetchedSdp = await ctrl.fetchOfferSdpFromCurrentSession();
+            if (fetchedSdp != null && fetchedSdp.isNotEmpty) {
+              finalOfferSdp = fetchedSdp;
+            }
           }
+          bool success = false;
+          if (finalOfferSdp.isNotEmpty) {
+            success = await ctrl.acceptCall(finalOfferSdp);
+          } else {
+            success = await ctrl.acceptCallDirect();
+          }
+          FlutterCallkitIncoming.endCall(intent.sessionId.toString());
+          if (success && ctrl.status.value == CallStatus.ongoing) {
+            ctrl.session.showOngoingNotification();
+          }
+        } catch (e) {
+          print('[SPLASH] Cold start call accept error: $e');
         }
-        bool success = false;
-        if (finalOfferSdp.isNotEmpty) {
-          success = await ctrl.acceptCall(finalOfferSdp);
-        } else {
-          success = await ctrl.acceptCallDirect();
-        }
-        FlutterCallkitIncoming.endCall(intent.sessionId.toString());
-        if (success && ctrl.status.value == CallStatus.ongoing) {
-          ctrl.session.showOngoingNotification();
-        }
-      } catch (e) {
-        print('[SPLASH] Cold start call accept error: $e');
-      }
-    });
+      });
+    } else {
+      print('[SPLASH] CallKit is already handling accept for session ${intent.sessionId}. Skipping redundant accept call.');
+    }
   }
 
   void _dispatchColdStartChat(ColdStartIntent intent) {
