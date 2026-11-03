@@ -39,6 +39,14 @@ class MainActivity : FlutterActivity() {
                     val res = setSpeakerphone(audioManager, enable)
                     result.success(res)
                 }
+                "setCallVolume" -> {
+                    val ratio = call.argument<Double>("ratio") ?: 1.0
+                    val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL)
+                    val target = (maxVolume * ratio).toInt().coerceIn(1, maxVolume)
+                    audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, target, 0)
+                    Log.d("AudioRouter", "setCallVolume ratio=$ratio -> $target/$maxVolume")
+                    result.success(true)
+                }
                 "resetAudioRoute" -> {
                     resetAudio(audioManager)
                     result.success(true)
@@ -90,6 +98,27 @@ class MainActivity : FlutterActivity() {
             @Suppress("DEPRECATION")
             audioManager.isSpeakerphoneOn = enable
             Log.d("AudioRouter", "audioManager.isSpeakerphoneOn = $enable, routed = $routed")
+
+            // Ensure optimal voice call stream volume for loudspeaker & earpiece
+            try {
+                val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL)
+                if (enable) {
+                    // Speakerphone: boost call volume to max for clear, loud output
+                    audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, maxVolume, 0)
+                    Log.d("AudioRouter", "Boosted STREAM_VOICE_CALL volume to max ($maxVolume)")
+                } else {
+                    // Earpiece: ensure call volume is at least 85% of max for clear voice
+                    val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL)
+                    val minEarpieceVolume = (maxVolume * 0.85).toInt().coerceAtLeast(1)
+                    if (currentVolume < minEarpieceVolume) {
+                        audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, minEarpieceVolume, 0)
+                        Log.d("AudioRouter", "Set STREAM_VOICE_CALL volume to $minEarpieceVolume (was $currentVolume)")
+                    }
+                }
+            } catch (volEx: Exception) {
+                Log.w("AudioRouter", "Could not adjust STREAM_VOICE_CALL volume: ${volEx.message}")
+            }
+
             true
         } catch (e: Exception) {
             Log.e("AudioRouter", "Error setting speakerphone: ${e.message}", e)

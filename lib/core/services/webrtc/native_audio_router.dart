@@ -40,5 +40,17 @@ class NativeAudioRouter {
       return false;
     }
   }
+
+  /// Sets the voice call stream volume ratio (0.0 to 1.0).
+  static Future<bool> setCallVolume(double ratio) async {
+    if (!Platform.isAndroid) return false;
+    try {
+      final res = await _channel.invokeMethod<bool>('setCallVolume', {'ratio': ratio.clamp(0.1, 1.0)});
+      return res ?? false;
+    } catch (e) {
+      debugPrint('[NativeAudioRouter] Error calling setCallVolume: $e');
+      return false;
+    }
+  }
 }
 
