@@ -413,7 +413,7 @@ class LocalNotificationService {
         if (sId != null && sId > 0) {
           final userName = data['user_name']?.toString() ?? 'User';
           final userImage = data['user_avatar']?.toString() ?? '';
-          Future.delayed(const Duration(milliseconds: 4500), () {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
             Get.to(() => AssistanceChatRoomScreen(
               sessionId: sId,
               userName: userName,
@@ -428,8 +428,7 @@ class LocalNotificationService {
       final rawPayloadStr = payload.replaceFirst('assistance_chat_', '');
       final int? sId = int.tryParse(rawPayloadStr);
       if (sId != null && sId > 0) {
-        // Delaying to ensure route is ready in case of background
-        Future.delayed(const Duration(milliseconds: 4500), () {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
           Get.to(() => AssistanceChatRoomScreen(
             sessionId: sId,
             userName: 'User',

@@ -20,6 +20,9 @@ class CallController extends GetxController {
   bool get isCallScreenVisible => session.isCallScreenVisible;
   set isCallScreenVisible(bool val) => session.isCallScreenVisible = val;
 
+  bool get isAcceptedLocally => session.isAcceptedLocally;
+  set isAcceptedLocally(bool val) => session.isAcceptedLocally = val;
+
   int? get sessionId => session.sessionId;
   set sessionId(int? val) => session.sessionId = val;
   

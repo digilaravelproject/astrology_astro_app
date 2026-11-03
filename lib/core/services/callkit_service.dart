@@ -29,6 +29,7 @@ class CallkitService {
   static int? pendingAcceptedSessionId;
   static String? pendingAcceptedCallerName;
   static String? pendingAcceptedCallerAvatar;
+  static final Map<String, int> _recentCallkitSessions = {};
 
   static void resetAcceptedFlags() {
     isHandlingAcceptedCall = false;
@@ -373,6 +374,16 @@ class CallkitService {
       debugPrint('CallKit: Ignoring incoming call for already accepted session $sessionId');
       return;
     }
+    final int now = DateTime.now().millisecondsSinceEpoch;
+    _recentCallkitSessions.removeWhere((_, time) => now - time > 30000);
+    if (_recentCallkitSessions.containsKey(sessionId)) {
+      final int lastTime = _recentCallkitSessions[sessionId]!;
+      if (now - lastTime < 15000) {
+        debugPrint('CallKit: Dropping duplicate incoming notification for session $sessionId within 15s');
+        return;
+      }
+    }
+    _recentCallkitSessions[sessionId] = now;
     final String notifTitle = type == 'call' ? 'Incoming Call' : 'Chat Request';
     final String nameCallerParam = callerName;
     final String payloadStr = '${type}_$sessionId';

@@ -58,36 +58,15 @@ class SplashController extends GetxController {
             Get.find<WebSocketService>().connect();
             FCMNotificationService.registerDeviceToken(null);
             
-            // Fast-track: If a call was accepted from CallKit while app was killed/background,
-            // navigate DIRECTLY to CallScreen without lingering on splash or showing dashboard first!
-            if (CallkitService.isHandlingAcceptedCall) {
-              print('[SPLASH] Fast-tracking directly to CallScreen for accepted CallKit call');
-              if (Get.currentRoute != AppRoutes.callScreen) {
-                Get.offAllNamed(RouteHelper.getDashboardRoute());
-                Get.toNamed(AppRoutes.callScreen);
-              }
-              return;
-            }
+            // Check if a call or chat screen is already opened or being handled from CallKit/notification
+            final String currentRoute = Get.currentRoute.toLowerCase();
+            final bool isCallOrChatActive = currentRoute.contains('call') ||
+                currentRoute.contains('chat') ||
+                CallkitService.isHandlingAcceptedCall ||
+                CallkitService.isHandlingAcceptedChat;
 
-            // Fast-track: If a chat was accepted from CallKit while app was killed/background,
-            // navigate DIRECTLY to ChatScreen!
-            if (CallkitService.isHandlingAcceptedChat) {
-              print('[SPLASH] Fast-tracking directly to ChatScreen for accepted CallKit chat');
-              final int? sId = CallkitService.pendingAcceptedSessionId;
-              final String callerName = CallkitService.pendingAcceptedCallerName ?? 'User';
-              if (sId != null && sId > 0 && Get.currentRoute != '/ChatScreen') {
-                Get.offAllNamed(RouteHelper.getDashboardRoute());
-                Get.to(
-                  () => ChatScreen(
-                    sessionId: sId,
-                    initialStatus: 'ongoing',
-                    userName: callerName,
-                    userImage: '',
-                    startedAtString: DateTime.now().toUtc().toIso8601String(),
-                  ),
-                  binding: ChatBinding(),
-                );
-              }
+            if (isCallOrChatActive) {
+              print('[SPLASH] Active call/chat detected ($currentRoute). Preserving navigation stack — skipping stack reset.');
               return;
             }
 

@@ -30,6 +30,7 @@ class CallWebRTCController extends GetxController {
       _orchestrator.session.isSummaryShown = false;
       _orchestrator.session.stopRingtone();
       _orchestrator.session.ringingTimer?.cancel();
+      _orchestrator.isAcceptedLocally = true;
       _orchestrator.status.value = CallStatus.ongoing;
       _orchestrator.durationSeconds.value = 0;
 
@@ -299,12 +300,16 @@ class CallWebRTCController extends GetxController {
             _orchestrator.session.consumerImage = consumerData['profile_photo']?.toString();
           }
           
-          _orchestrator.status.value = CallStatus.values.firstWhere(
-            (e) => e.name == (sessionStatus == 'initiated' ? 'ringing' : sessionStatus),
-            orElse: () => CallStatus.ongoing,
-          );
+          if (_orchestrator.isAcceptedLocally && (sessionStatus == 'initiated' || sessionStatus == 'ringing')) {
+            debugPrint('[CallWebRTCController] Call already accepted locally. Keeping status=${_orchestrator.status.value}');
+          } else {
+            _orchestrator.status.value = CallStatus.values.firstWhere(
+              (e) => e.name == (sessionStatus == 'initiated' ? 'ringing' : sessionStatus),
+              orElse: () => CallStatus.ongoing,
+            );
+          }
 
-          if (sessionStatus == 'initiated') {
+          if (sessionStatus == 'initiated' && !_orchestrator.isAcceptedLocally) {
             final offerSdp = session['offer']?.toString() ?? session['offer_sdp']?.toString() ?? session['consumer_sdp']?.toString();
             _orchestrator.session.incomingOfferSdp = offerSdp ?? '';
             
@@ -312,7 +317,7 @@ class CallWebRTCController extends GetxController {
               await Future.delayed(const Duration(seconds: 2));
               return checkCurrentActiveCallSession(retries: retries + 1);
             }
-          } else if (sessionStatus == 'ongoing') {
+          } else if (sessionStatus == 'ongoing' || _orchestrator.isAcceptedLocally) {
             final startedAtStr = session['started_at']?.toString();
             if (startedAtStr != null) {
               final startedAt = DateTime.tryParse(startedAtStr)?.toLocal();

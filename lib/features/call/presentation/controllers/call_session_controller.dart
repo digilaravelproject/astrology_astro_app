@@ -25,6 +25,7 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
   bool isMuted = false;
   bool isSpeakerOn = false;
   bool isCallScreenVisible = false;
+  bool isAcceptedLocally = false;
   bool isPackageCall = false;
   bool isLiveCall = false;
   int? subSessionId;
@@ -353,6 +354,7 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
     _orchestrator.isMuted.value = false;
     _orchestrator.isSpeakerOn.value = false;
     sessionId = null;
+    isAcceptedLocally = false;
     consumerId = null;
     consumerName = null;
     consumerImage = null;
