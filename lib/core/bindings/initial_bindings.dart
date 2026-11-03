@@ -51,6 +51,19 @@ import 'package:astro_astrologer/features/schedule/data/repositories/schedule_re
 import 'package:astro_astrologer/features/schedule/domain/usecases/set_sleep_hours_usecase.dart';
 import 'package:astro_astrologer/features/schedule/domain/usecases/get_sleep_hours_usecase.dart';
 import 'package:astro_astrologer/features/schedule/presentation/controllers/schedule_controller.dart';
+import 'package:astro_astrologer/features/wallet/data/repositories/wallet_repository_impl.dart';
+import 'package:astro_astrologer/features/wallet/domain/usecases/get_wallet_summary_usecase.dart';
+import 'package:astro_astrologer/features/wallet/domain/usecases/get_wallet_earnings_usecase.dart';
+import 'package:astro_astrologer/features/wallet/domain/usecases/get_wallet_withdrawals_usecase.dart';
+import 'package:astro_astrologer/features/wallet/domain/usecases/request_withdrawal_usecase.dart';
+import 'package:astro_astrologer/features/wallet/presentation/controllers/wallet_controller.dart';
+import 'package:astro_astrologer/features/offers/data/repositories/offer_repository.dart';
+import 'package:astro_astrologer/features/offers/domain/usecases/get_offers_usecase.dart';
+import 'package:astro_astrologer/features/offers/domain/usecases/toggle_offer_usecase.dart';
+import 'package:astro_astrologer/features/offers/domain/usecases/get_offer_history_usecase.dart';
+import 'package:astro_astrologer/features/offers/presentation/controllers/offer_controller.dart';
+import 'package:astro_astrologer/features/profile/data/repositories/performance_repository.dart';
+import 'package:astro_astrologer/features/profile/presentation/controllers/performance_controller.dart';
 
 import '../../features/profile/presentation/controllers/skill_controller.dart';
 
@@ -327,5 +340,41 @@ class InitialBindings extends Bindings {
     // Live dependencies
     LiveBinding().dependencies();
     Get.find<LiveController>();
+
+    // Wallet dependencies (permanent across whole app lifecycle)
+    if (!Get.isRegistered<WalletController>()) {
+      final walletRepo = WalletRepositoryImpl(apiClient: Get.find<ApiClient>());
+      Get.put(
+        WalletController(
+          GetWalletSummaryUseCase(walletRepo),
+          GetWalletEarningsUseCase(walletRepo),
+          GetWalletWithdrawalsUseCase(walletRepo),
+          RequestWithdrawalUseCase(walletRepo),
+        ),
+        permanent: true,
+      );
+    }
+
+    // Offer dependencies (permanent)
+    if (!Get.isRegistered<OfferController>()) {
+      final offerRepo = OfferRepositoryImpl(apiClient: Get.find<ApiClient>());
+      Get.put(
+        OfferController(
+          getOffersUseCase: GetOffersUseCase(offerRepo),
+          toggleOfferUseCase: ToggleOfferUseCase(offerRepo),
+          getOfferHistoryUseCase: GetOfferHistoryUseCase(offerRepo),
+        ),
+        permanent: true,
+      );
+    }
+
+    // Performance dependencies (permanent)
+    if (!Get.isRegistered<PerformanceController>()) {
+      final perfRepo = PerformanceRepository(apiClient: Get.find<ApiClient>());
+      Get.put(
+        PerformanceController(repository: perfRepo),
+        permanent: true,
+      );
+    }
   }
 }

@@ -88,6 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
           GetWalletWithdrawalsUseCase(repository),
           RequestWithdrawalUseCase(repository),
         ),
+        permanent: true,
       );
     }
     _walletController = Get.find<WalletController>();
@@ -105,16 +106,18 @@ class _HomeScreenState extends State<HomeScreen> {
             OfferRepositoryImpl(apiClient: Get.find<ApiClient>()),
           ),
         ),
+        permanent: true,
       );
     }
     _offerController = Get.find<OfferController>();
 
     if (!Get.isRegistered<PerformanceController>()) {
       if (!Get.isRegistered<PerformanceRepository>()) {
-        Get.put(PerformanceRepository(apiClient: Get.find<ApiClient>()));
+        Get.put(PerformanceRepository(apiClient: Get.find<ApiClient>()), permanent: true);
       }
       Get.put(
         PerformanceController(repository: Get.find<PerformanceRepository>()),
+        permanent: true,
       );
     }
     _performanceController = Get.find<PerformanceController>();
@@ -669,7 +672,9 @@ class _HomeScreenState extends State<HomeScreen> {
   // }
 
   Widget _buildSleepTimeCard() {
-    final scheduleController = Get.find<ScheduleController>();
+    final scheduleController = Get.isRegistered<ScheduleController>()
+        ? Get.find<ScheduleController>()
+        : null;
 
     return GestureDetector(
       onTap: () {
@@ -875,8 +880,10 @@ Widget _buildEarningsCard() {
       children: [
         Obx(() {
           final month = DateFormat('MMMM').format(DateTime.now()).toUpperCase();
-          final walletController = Get.find<WalletController>();
-          final earning = walletController.summary.value?.monthlyEarning ?? 0.0;
+          final walletController = Get.isRegistered<WalletController>()
+              ? Get.find<WalletController>()
+              : null;
+          final earning = walletController?.summary.value?.monthlyEarning ?? 0.0;
           return AppText(
             '$month Earning - ₹${earning.toStringAsFixed(2)}',
             fontSize: 13,
@@ -939,8 +946,10 @@ Widget _buildGreeting(AuthController authController) {
 
 Widget _buildTodayProgressCard() {
   return Obx(() {
-    final data =
-        Get.find<PerformanceController>().performanceData.value?.todayProgress;
+    final performanceController = Get.isRegistered<PerformanceController>()
+        ? Get.find<PerformanceController>()
+        : null;
+    final data = performanceController?.performanceData.value?.todayProgress;
 
     final targetHours = data?.targetHours ?? 8.0;
     final completedMinutes = data?.completedMinutes ?? 0;

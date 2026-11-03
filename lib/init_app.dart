@@ -41,6 +41,12 @@ Future<void> initApp() async {
     }
   };
 
+  // Prevent grey error box on screen during widget build exceptions
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    debugPrint('[ErrorWidget] Caught UI build error: ${details.exception}');
+    return const SizedBox.shrink();
+  };
+
   // Initialize Firestore settings
   FirebaseFirestore.instance.settings = const Settings(
     persistenceEnabled: true,
