@@ -719,7 +719,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 4),
                   Obx(() {
-                    final sleepHours = scheduleController.sleepHours.value;
+                    final sleepHours = scheduleController?.sleepHours.value;
                     if (sleepHours != null) {
                       return AppText(
                         '${"Sleep Time:".tr} ${_formatDisplayTime(sleepHours.sleepStartTime)} - ${_formatDisplayTime(sleepHours.sleepEndTime)}',
