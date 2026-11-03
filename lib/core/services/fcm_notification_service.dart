@@ -210,13 +210,20 @@ class FCMNotificationService {
             type == 'CALL_FAILED' ||
             type == 'CALL_DISMISSED') {
           LocalNotificationService.markSessionCancelled(parsedSessionId.toString());
+          if (parsedSessionId > 0) {
+            SharedPrefs.setBool('session_ended_$parsedSessionId', true);
+          }
           CallkitService.endCall(parsedSessionId.toString());
+          CallkitService.endAllCalls();
           LocalNotificationService.cancelOngoingLiveNotification(parsedSessionId);
           LocalNotificationService.cancelOngoingCallNotification(parsedSessionId);
           FloatingChatBubble.dismiss(stopForegroundService: true);
           FloatingCallBubble.dismiss(stopForegroundService: true);
           try { ForegroundTaskService.stopService(); } catch (_) {}
-          if (parsedSessionId > 0) return;
+          if (Get.isRegistered<CallController>()) {
+            Get.find<CallController>().session.handleCallEnded(message.data);
+          }
+          return;
         } else if (type == 'PACKAGE_EXHAUSTED' || type == 'package') {
           if (parsedSessionId > 0) {
             FloatingChatBubble.dismiss(stopForegroundService: true);

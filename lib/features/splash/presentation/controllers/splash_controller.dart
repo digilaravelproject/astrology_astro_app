@@ -46,39 +46,47 @@ class SplashController extends GetxController {
       final userData = SharedPrefs.getString(AppConstants.userData);
 
       if (isLoggedIn && userData != null && userData.isNotEmpty && intent != null && intent.type != ColdStartType.none) {
-        print('[SPLASH] Cold-start communication intent detected: ${intent.type} (sessionId=${intent.sessionId}). Executing ZERO-LAG fast path.');
-        ColdStartDetector.currentIntent = null; // consume
+        final bool isEnded = intent.sessionId > 0 && (SharedPrefs.getBool('session_ended_${intent.sessionId}') ?? false);
+        if (isEnded) {
+          print('[SPLASH] Stale ended session intent detected: ${intent.sessionId}. Purging CallKit and skipping fast path.');
+          FlutterCallkitIncoming.endCall(intent.sessionId.toString());
+          FlutterCallkitIncoming.endAllCalls();
+          ColdStartDetector.currentIntent = null;
+        } else {
+          print('[SPLASH] Cold-start communication intent detected: ${intent.type} (sessionId=${intent.sessionId}). Executing ZERO-LAG fast path.');
+          ColdStartDetector.currentIntent = null; // consume
 
-        // Connect WebSocket in background so signalling/messages are received
-        try {
-          if (Get.isRegistered<WebSocketService>()) {
-            Get.find<WebSocketService>().connect();
-          } else {
-            Get.put(WebSocketService()).connect();
+          // Connect WebSocket in background so signalling/messages are received
+          try {
+            if (Get.isRegistered<WebSocketService>()) {
+              Get.find<WebSocketService>().connect();
+            } else {
+              Get.put(WebSocketService()).connect();
+            }
+          } catch (e) {
+            print('[SPLASH] WebSocket fast path connect error: $e');
           }
-        } catch (e) {
-          print('[SPLASH] WebSocket fast path connect error: $e');
-        }
 
-        try {
-          FCMNotificationService.registerDeviceToken(null);
-        } catch (_) {}
+          try {
+            FCMNotificationService.registerDeviceToken(null);
+          } catch (_) {}
 
-        // Wait briefly for navigator mounting if onInit fired before frame
-        int retries = 0;
-        while (Get.context == null && retries < 20) {
-          await Future.delayed(const Duration(milliseconds: 25));
-          retries++;
-        }
+          // Wait briefly for navigator mounting if onInit fired before frame
+          int retries = 0;
+          while (Get.context == null && retries < 20) {
+            await Future.delayed(const Duration(milliseconds: 25));
+            retries++;
+          }
 
-        if (intent.type == ColdStartType.call) {
-          _dispatchColdStartCall(intent);
-        } else if (intent.type == ColdStartType.chat) {
-          _dispatchColdStartChat(intent);
-        } else if (intent.type == ColdStartType.assistanceChat) {
-          _dispatchColdStartAssistance(intent);
+          if (intent.type == ColdStartType.call) {
+            _dispatchColdStartCall(intent);
+          } else if (intent.type == ColdStartType.chat) {
+            _dispatchColdStartChat(intent);
+          } else if (intent.type == ColdStartType.assistanceChat) {
+            _dispatchColdStartAssistance(intent);
+          }
+          return;
         }
-        return;
       }
 
       // Initialize splash service
@@ -196,6 +204,10 @@ class SplashController extends GetxController {
 
     // Direct instant transition to CallScreen (replacing Splash directly)
     Get.offAllNamed(AppRoutes.callScreen);
+
+    // Purge CallKit native record so it doesn't linger in activeCalls
+    FlutterCallkitIncoming.endCall(intent.sessionId.toString());
+    FlutterCallkitIncoming.endAllCalls();
 
     // Only run accept API if CallkitService is NOT already handling the accept!
     if (!CallkitService.isHandlingAcceptedCall && CallkitService.lastAcceptedSessionId != intent.sessionId.toString()) {

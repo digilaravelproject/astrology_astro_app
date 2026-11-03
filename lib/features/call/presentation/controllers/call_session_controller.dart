@@ -13,8 +13,10 @@ import 'package:astro_astrologer/core/services/storage/token_manger.dart';
 import 'package:astro_astrologer/features/call/presentation/widgets/floating_call_bubble.dart';
 import 'package:astro_astrologer/features/call/presentation/pages/call_screen.dart';
 import 'package:astro_astrologer/core/services/local_notification_service.dart';
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'call_controller.dart';
 import 'package:astro_astrologer/routes/app_routes.dart';
+import 'package:astro_astrologer/routes/route_helper.dart';
 import 'package:astro_astrologer/core/services/storage/shared_prefs.dart';
 
 class CallSessionController extends GetxController with WidgetsBindingObserver {
@@ -240,10 +242,20 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
 
   void handleCallDismissed(String reason) {
     status.value = CallStatus.values.firstWhere((e) => e.name == reason, orElse: () => CallStatus.cancelled);
-    if (isCallScreenVisible || (Get.isDialogOpen ?? false)) {
-      Get.back();
+    final sid = sessionId;
+    if (sid != null && sid > 0) {
+      SharedPrefs.setBool('session_ended_$sid', true);
     }
+    final wasVisible = isCallScreenVisible;
     cleanUp();
+    if (wasVisible || (Get.isDialogOpen ?? false) || Get.currentRoute == '/CallScreen' || Get.currentRoute == '/call-screen' || Get.currentRoute == AppRoutes.callScreen) {
+      if (Get.isDialogOpen ?? false) Get.back();
+      if (Get.previousRoute.isNotEmpty && Get.previousRoute != '/' && Get.previousRoute != AppRoutes.splash) {
+        Get.back();
+      } else {
+        Get.offAllNamed(RouteHelper.getDashboardRoute());
+      }
+    }
   }
 
   void handleCallEnded(Map<String, dynamic> data) {
@@ -256,7 +268,9 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
     if (session != null) {
       sId = int.tryParse(session['id']?.toString() ?? '') ?? sId;
     }
-    final sIdBeforeCleanup = sessionId ?? sId;
+    if (sId > 0) {
+      SharedPrefs.setBool('session_ended_$sId', true);
+    }
     final wasVisible = isCallScreenVisible;
     cleanUp();
 
@@ -264,7 +278,11 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
       if (Get.isDialogOpen ?? false) {
         Get.back();
       }
-      Get.back(); // Pop the call screen
+      if (Get.previousRoute.isNotEmpty && Get.previousRoute != '/' && Get.previousRoute != AppRoutes.splash) {
+        Get.back();
+      } else {
+        Get.offAllNamed(RouteHelper.getDashboardRoute());
+      }
     }
   }
 
@@ -335,19 +353,22 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
 
   void cleanUp() {
     CallkitService.resetAcceptedFlags();
-    if (status.value == CallStatus.idle && sessionId == null) return;
+    final sid = sessionId;
+    if (sid != null && sid > 0) {
+      SharedPrefs.setBool('session_ended_$sid', true);
+      LocalNotificationService.cancelOngoingCallNotification(sid);
+      SharedPrefs.remove('active_call_started_at_$sid');
+    }
     stopRingtone();
+    FlutterCallkitIncoming.endAllCalls();
     CallkitService.endAllCalls();
     callTimer?.cancel();
     _globalTimerSub?.cancel();
     callTimer = null;
     ringingTimer?.cancel();
     ringingTimer = null;
+    durationSeconds.value = 0;
     ForegroundTaskService.stopService();
-    if (sessionId != null) {
-      LocalNotificationService.cancelOngoingCallNotification(sessionId!);
-      SharedPrefs.remove('active_call_started_at_$sessionId');
-    }
     FloatingCallBubble.dismiss();
     _orchestrator.webrtcService.dispose();
     status.value = CallStatus.idle;

@@ -5,6 +5,7 @@ import 'package:flutter_callkit_incoming/entities/call_kit_params.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:astro_astrologer/core/services/callkit_service.dart';
+import 'package:astro_astrologer/core/services/storage/shared_prefs.dart';
 
 enum ColdStartType {
   none,
@@ -96,6 +97,19 @@ class ColdStartDetector {
                 : 'User';
 
             if (sId != null && sId > 0) {
+              final bool isEnded = SharedPrefs.getBool('session_ended_$sId') ?? false;
+              if (isEnded) {
+                debugPrint('[ColdStartDetector] Ignoring stale ended CallKit session $sId');
+                await FlutterCallkitIncoming.endCall(sId.toString());
+                await FlutterCallkitIncoming.endAllCalls();
+                continue;
+              }
+
+              if (!isAccepted) {
+                debugPrint('[ColdStartDetector] Skipping non-accepted CallKit call (sId=$sId)');
+                continue;
+              }
+
               final intent = ColdStartIntent(
                 type: isChat ? ColdStartType.chat : ColdStartType.call,
                 sessionId: sId,

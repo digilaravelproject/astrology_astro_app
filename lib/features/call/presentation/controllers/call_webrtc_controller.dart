@@ -194,11 +194,23 @@ class CallWebRTCController extends GetxController {
 
 
   Future<void> endCall() async {
-    if (_orchestrator.sessionId == null) return;
+    final sId = _orchestrator.sessionId;
+    if (sId == null || sId == 0) {
+      if (_orchestrator.isCallScreenVisible || Get.currentRoute == '/CallScreen' || Get.currentRoute == '/call-screen' || Get.currentRoute == AppRoutes.callScreen) {
+        if (Get.isDialogOpen ?? false) Get.back();
+        if (Get.previousRoute.isNotEmpty && Get.previousRoute != '/' && Get.previousRoute != AppRoutes.splash) {
+          Get.back();
+        } else {
+          Get.offAllNamed(RouteHelper.getDashboardRoute());
+        }
+      }
+      return;
+    }
     isEndingCall = true;
+    SharedPrefs.setBool('session_ended_$sId', true);
     try {
       final response = await _apiClient.post(
-        AppUrls.endCallSession(_orchestrator.sessionId!),
+        AppUrls.endCallSession(sId),
         handleError: true,
         showErrorScreen: false,
       );
@@ -206,34 +218,21 @@ class CallWebRTCController extends GetxController {
         if (_orchestrator.session.isSummaryShown) return;
         _orchestrator.session.isSummaryShown = true;
         _orchestrator.status.value = CallStatus.completed;
-        
-        final wasVisible = _orchestrator.isCallScreenVisible;
-        CallkitService.resetAcceptedFlags();
-        _orchestrator.session.cleanUp();
-        if (wasVisible || Get.currentRoute == '/CallScreen' || Get.currentRoute == '/call-screen' || Get.currentRoute == AppRoutes.callScreen) {
-          if (Get.isDialogOpen ?? false) Get.back();
-          if (Get.previousRoute.isNotEmpty && Get.previousRoute != '/' && Get.previousRoute != AppRoutes.splash) {
-            Get.back();
-          } else {
-            Get.offAllNamed(RouteHelper.getDashboardRoute());
-          }
-        }
-      } else {
-        final wasVisible = _orchestrator.isCallScreenVisible;
-        CallkitService.resetAcceptedFlags();
-        _orchestrator.session.cleanUp();
-        if (wasVisible || Get.currentRoute == '/CallScreen' || Get.currentRoute == '/call-screen' || Get.currentRoute == AppRoutes.callScreen) {
-          if (Get.isDialogOpen ?? false) Get.back();
-          if (Get.previousRoute.isNotEmpty && Get.previousRoute != '/' && Get.previousRoute != AppRoutes.splash) {
-            Get.back();
-          } else {
-            Get.offAllNamed(RouteHelper.getDashboardRoute());
-          }
-        }
       }
     } catch (e) {
-      _orchestrator.session.cleanUp();
+      Logger.e('CallController: Error ending call -> $e');
     } finally {
+      final wasVisible = _orchestrator.isCallScreenVisible;
+      CallkitService.resetAcceptedFlags();
+      _orchestrator.session.cleanUp();
+      if (wasVisible || Get.currentRoute == '/CallScreen' || Get.currentRoute == '/call-screen' || Get.currentRoute == AppRoutes.callScreen) {
+        if (Get.isDialogOpen ?? false) Get.back();
+        if (Get.previousRoute.isNotEmpty && Get.previousRoute != '/' && Get.previousRoute != AppRoutes.splash) {
+          Get.back();
+        } else {
+          Get.offAllNamed(RouteHelper.getDashboardRoute());
+        }
+      }
       isEndingCall = false;
     }
   }
@@ -310,6 +309,25 @@ class CallWebRTCController extends GetxController {
         if (session != null) {
           final sessionStatus = session['status']?.toString().toLowerCase() ?? 'idle';
 
+          // If session is completed or cancelled, clean up immediately
+          if (sessionStatus == 'completed' || sessionStatus == 'cancelled' || sessionStatus == 'rejected' || sessionStatus == 'ended') {
+            final sid = int.tryParse(session['id']?.toString() ?? '') ?? _orchestrator.sessionId;
+            if (sid != null && sid > 0) {
+              SharedPrefs.setBool('session_ended_$sid', true);
+            }
+            final wasVisible = _orchestrator.isCallScreenVisible;
+            _orchestrator.session.cleanUp();
+            if (wasVisible || Get.currentRoute == '/CallScreen' || Get.currentRoute == '/call-screen' || Get.currentRoute == AppRoutes.callScreen) {
+              if (Get.isDialogOpen ?? false) Get.back();
+              if (Get.previousRoute.isNotEmpty && Get.previousRoute != '/' && Get.previousRoute != AppRoutes.splash) {
+                Get.back();
+              } else {
+                Get.offAllNamed(RouteHelper.getDashboardRoute());
+              }
+            }
+            return;
+          }
+
           if (_orchestrator.status.value == CallStatus.completed || _orchestrator.status.value == CallStatus.cancelled || _orchestrator.status.value == CallStatus.rejected) return;
 
           _orchestrator.session.isSummaryShown = false;
@@ -322,7 +340,7 @@ class CallWebRTCController extends GetxController {
             _orchestrator.session.consumerImage = consumerData['profile_photo']?.toString();
           }
           
-          if (_orchestrator.isAcceptedLocally && (sessionStatus == 'initiated' || sessionStatus == 'ringing' || sessionStatus == 'ongoing')) {
+          if (_orchestrator.isAcceptedLocally && (sessionStatus == 'initiated' || sessionStatus == 'ringing')) {
             debugPrint('[CallWebRTCController] Call already accepted locally. Enforcing status=ongoing');
             _orchestrator.status.value = CallStatus.ongoing;
             if (_orchestrator.durationSeconds.value == 0) {
@@ -343,7 +361,7 @@ class CallWebRTCController extends GetxController {
               await Future.delayed(const Duration(seconds: 2));
               return checkCurrentActiveCallSession(retries: retries + 1);
             }
-          } else if (sessionStatus == 'ongoing' || _orchestrator.isAcceptedLocally) {
+          } else if (sessionStatus == 'ongoing') {
             final startedAtStr = session['started_at']?.toString();
             if (startedAtStr != null) {
               final startedAt = DateTime.tryParse(startedAtStr)?.toLocal();
@@ -406,8 +424,30 @@ class CallWebRTCController extends GetxController {
               }(),
             );
           } else {
-            if (_orchestrator.isCallScreenVisible || Get.isDialogOpen == true) Get.back();
+            final wasVisible = _orchestrator.isCallScreenVisible;
             _orchestrator.session.cleanUp();
+            if (wasVisible || Get.currentRoute == '/CallScreen' || Get.currentRoute == '/call-screen' || Get.currentRoute == AppRoutes.callScreen) {
+              if (Get.isDialogOpen ?? false) Get.back();
+              if (Get.previousRoute.isNotEmpty && Get.previousRoute != '/' && Get.previousRoute != AppRoutes.splash) {
+                Get.back();
+              } else {
+                Get.offAllNamed(RouteHelper.getDashboardRoute());
+              }
+            }
+          }
+        } else {
+          // No active session on server
+          if (_orchestrator.status.value == CallStatus.ongoing || _orchestrator.status.value == CallStatus.ringing || _orchestrator.isCallScreenVisible) {
+            final wasVisible = _orchestrator.isCallScreenVisible;
+            _orchestrator.session.cleanUp();
+            if (wasVisible || Get.currentRoute == '/CallScreen' || Get.currentRoute == '/call-screen' || Get.currentRoute == AppRoutes.callScreen) {
+              if (Get.isDialogOpen ?? false) Get.back();
+              if (Get.previousRoute.isNotEmpty && Get.previousRoute != '/' && Get.previousRoute != AppRoutes.splash) {
+                Get.back();
+              } else {
+                Get.offAllNamed(RouteHelper.getDashboardRoute());
+              }
+            }
           }
         }
       }

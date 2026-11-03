@@ -14,6 +14,7 @@ import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 
 import 'package:astro_astrologer/features/call/presentation/widgets/floating_call_bubble.dart';
 import 'package:astro_astrologer/core/widgets/network_ping_indicator.dart';
+import 'package:astro_astrologer/routes/route_helper.dart';
 
 class CallScreen extends StatefulWidget {
   const CallScreen({super.key});
@@ -59,8 +60,34 @@ class _CallScreenState extends State<CallScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Obx(() {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        if (controller.status.value == CallStatus.ongoing) {
+          if (controller.sessionId != null && controller.consumerName != null) {
+            controller.minimizeToBubble(
+              context,
+              controller.consumerName!,
+              controller.consumerImage ?? "",
+              shouldPop: false,
+            );
+          }
+          if (Navigator.of(context).canPop()) {
+            Get.back();
+          } else {
+            Get.offAllNamed(RouteHelper.getDashboardRoute());
+          }
+        } else {
+          if (Navigator.of(context).canPop()) {
+            Get.back();
+          } else {
+            Get.offAllNamed(RouteHelper.getDashboardRoute());
+          }
+        }
+      },
+      child: Scaffold(
+        body: Obx(() {
         final status = controller.status.value;
         final minutes = (controller.durationSeconds.value ~/ 60)
             .toString()
@@ -444,8 +471,9 @@ class _CallScreenState extends State<CallScreen> {
           ],
         );
       }),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildPulseCircle({required int delay}) {
     return TweenAnimationBuilder(
