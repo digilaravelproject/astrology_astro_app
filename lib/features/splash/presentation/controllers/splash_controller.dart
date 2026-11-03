@@ -50,8 +50,19 @@ class SplashController extends GetxController {
         ColdStartDetector.currentIntent = null; // consume
 
         // Connect WebSocket in background so signalling/messages are received
-        Get.find<WebSocketService>().connect();
-        FCMNotificationService.registerDeviceToken(null);
+        try {
+          if (Get.isRegistered<WebSocketService>()) {
+            Get.find<WebSocketService>().connect();
+          } else {
+            Get.put(WebSocketService()).connect();
+          }
+        } catch (e) {
+          print('[SPLASH] WebSocket fast path connect error: $e');
+        }
+
+        try {
+          FCMNotificationService.registerDeviceToken(null);
+        } catch (_) {}
 
         // Wait briefly for navigator mounting if onInit fired before frame
         int retries = 0;
@@ -89,8 +100,18 @@ class SplashController extends GetxController {
           );
 
           if (isLoggedIn && userData != null && userData.isNotEmpty) {
-            Get.find<WebSocketService>().connect();
-            FCMNotificationService.registerDeviceToken(null);
+            try {
+              if (Get.isRegistered<WebSocketService>()) {
+                Get.find<WebSocketService>().connect();
+              } else {
+                Get.put(WebSocketService()).connect();
+              }
+            } catch (e) {
+              print('[SPLASH] WebSocketService init error: $e');
+            }
+            try {
+              FCMNotificationService.registerDeviceToken(null);
+            } catch (_) {}
             
             // Check if a call or chat screen is already opened or being handled from CallKit/notification
             final String currentRoute = Get.currentRoute.toLowerCase();
@@ -141,8 +162,13 @@ class SplashController extends GetxController {
       }
     } catch (e) {
       print('[SPLASH] Error during initialization: $e');
-      // Handle errors
-      Get.offAllNamed(RouteHelper.getLoginRoute());
+      final isLoggedIn = SharedPrefs.getBool(AppConstants.isLoggedIn) ?? false;
+      final userData = SharedPrefs.getString(AppConstants.userData);
+      if (isLoggedIn && userData != null && userData.isNotEmpty) {
+        Get.offAllNamed(RouteHelper.getDashboardRoute());
+      } else {
+        Get.offAllNamed(RouteHelper.getLoginRoute());
+      }
     } finally {
       isLoading.value = false;
     }
