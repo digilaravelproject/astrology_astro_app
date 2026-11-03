@@ -145,6 +145,7 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
       callerName: name,
       avatar: userAvatar,
       type: 'call',
+      offerSdp: offerSdp,
     );
   }
 

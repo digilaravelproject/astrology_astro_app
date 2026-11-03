@@ -42,11 +42,11 @@ class CallkitService {
   static void _navigateDirectlyToCallScreen(CallController ctrl) async {
     int retries = 0;
     while (Get.context == null && retries < 40) {
-      await Future.delayed(const Duration(milliseconds: 50));
+      await Future.delayed(const Duration(milliseconds: 25));
       retries++;
     }
-    if (Get.context != null && !ctrl.isCallScreenVisible) {
-      debugPrint('CallKit: Navigating directly to CallScreen (currentRoute=${Get.currentRoute})');
+    if (Get.context != null && Get.currentRoute != AppRoutes.callScreen) {
+      debugPrint('CallKit: Navigating INSTANTLY to CallScreen (currentRoute=${Get.currentRoute})');
       ctrl.isAcceptedLocally = true;
       ctrl.isCallScreenVisible = true;
       ctrl.status.value = CallStatus.ongoing;
@@ -54,7 +54,7 @@ class CallkitService {
       if (Get.currentRoute == AppRoutes.splash || Get.currentRoute == '' || Get.currentRoute == '/') {
         // App started from killed state: directly replace Splash with CallScreen (no Dashboard flash)
         Get.offAllNamed(AppRoutes.callScreen);
-      } else if (Get.currentRoute != AppRoutes.callScreen) {
+      } else {
         Get.toNamed(AppRoutes.callScreen);
       }
     }
@@ -353,11 +353,19 @@ class CallkitService {
 
         case CallEventActionCallEnded():
           debugPrint('CallKit: Call Ended');
+          if (isHandlingAcceptedCall || (Get.isRegistered<CallController>() && Get.find<CallController>().status.value == CallStatus.ongoing)) {
+            debugPrint('CallKit: Call is currently ongoing in app. Ignoring CallKit CallEnded event.');
+            break;
+          }
           resetAcceptedFlags();
           break;
 
         case CallEventActionCallTimeout():
           debugPrint('CallKit: Call Timeout');
+          if (isHandlingAcceptedCall || (Get.isRegistered<CallController>() && Get.find<CallController>().status.value == CallStatus.ongoing)) {
+            debugPrint('CallKit: Call is currently ongoing in app. Ignoring CallKit CallTimeout event.');
+            break;
+          }
           resetAcceptedFlags();
           if (Get.isRegistered<CallController>()) {
             Get.find<CallController>().cleanUp();
@@ -375,6 +383,7 @@ class CallkitService {
     required String callerName,
     required String avatar,
     required String type, // 'call' or 'chat'
+    String? offerSdp,
   }) async {
     if (lastAcceptedSessionId == sessionId) {
       debugPrint('CallKit: Ignoring incoming call for already accepted session $sessionId');
@@ -406,7 +415,11 @@ class CallkitService {
       handle: notifTitle,
       type: 0,
       duration: 30000,
-      extra: <String, dynamic>{'payload': payloadStr, 'sessionId': sessionId},
+      extra: <String, dynamic>{
+        'payload': payloadStr,
+        'sessionId': sessionId,
+        if (offerSdp != null && offerSdp.isNotEmpty) 'offer': offerSdp,
+      },
       headers: <String, dynamic>{'apiKey': 'Abc@123!', 'platform': 'flutter'},
       android: const AndroidParams(
         isCustomNotification: true,

@@ -196,16 +196,33 @@ class MainActivity : FlutterActivity() {
                         routed = audioManager.setCommunicationDevice(preferred)
                         Log.d("AudioRouter", "setCommunicationDevice(${preferred.type}) -> $routed")
                     } else {
-                        audioManager.clearCommunicationDevice()
-                        Log.d("AudioRouter", "clearCommunicationDevice() called")
-                        routed = true
+                        val fallbackSpeaker = audioManager.availableCommunicationDevices.firstOrNull {
+                            it.type == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER
+                        }
+                        if (fallbackSpeaker != null) {
+                            routed = audioManager.setCommunicationDevice(fallbackSpeaker)
+                            Log.d("AudioRouter", "No earpiece found on device (tablet), defaulting to BUILTIN_SPEAKER -> $routed")
+                        } else {
+                            audioManager.clearCommunicationDevice()
+                            Log.d("AudioRouter", "clearCommunicationDevice() called")
+                            routed = true
+                        }
                     }
                 }
             }
 
+            val hasEarpieceOrHeadset = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                audioManager.availableCommunicationDevices.any {
+                    it.type == AudioDeviceInfo.TYPE_BUILTIN_EARPIECE ||
+                    it.type == AudioDeviceInfo.TYPE_WIRED_HEADSET ||
+                    it.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO
+                }
+            } else true
+
+            val actualSpeaker = enable || !hasEarpieceOrHeadset
             @Suppress("DEPRECATION")
-            audioManager.isSpeakerphoneOn = enable
-            Log.d("AudioRouter", "audioManager.isSpeakerphoneOn = $enable, routed = $routed")
+            audioManager.isSpeakerphoneOn = actualSpeaker
+            Log.d("AudioRouter", "audioManager.isSpeakerphoneOn = $actualSpeaker (requested=$enable), routed = $routed")
 
             // Ensure optimal voice call stream volume for loudspeaker & earpiece
             try {

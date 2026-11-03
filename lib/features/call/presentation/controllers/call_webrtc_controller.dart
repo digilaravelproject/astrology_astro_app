@@ -341,7 +341,9 @@ class CallWebRTCController extends GetxController {
             _orchestrator.session.consumerImage = consumerData['profile_photo']?.toString();
           }
           
-          if (_orchestrator.isAcceptedLocally && (sessionStatus == 'initiated' || sessionStatus == 'ringing')) {
+          final bool isLocallyActive = _orchestrator.isAcceptedLocally || _orchestrator.status.value == CallStatus.ongoing;
+
+          if (isLocallyActive && (sessionStatus == 'initiated' || sessionStatus == 'ringing')) {
             debugPrint('[CallWebRTCController] Call already accepted locally. Enforcing status=ongoing');
             _orchestrator.status.value = CallStatus.ongoing;
             if (_orchestrator.durationSeconds.value == 0) {
@@ -354,7 +356,7 @@ class CallWebRTCController extends GetxController {
             );
           }
 
-          if (sessionStatus == 'initiated' && !_orchestrator.isAcceptedLocally) {
+          if (sessionStatus == 'initiated' && !isLocallyActive) {
             final offerSdp = session['offer']?.toString() ?? session['offer_sdp']?.toString() ?? session['consumer_sdp']?.toString();
             _orchestrator.session.incomingOfferSdp = offerSdp ?? '';
             
@@ -362,7 +364,7 @@ class CallWebRTCController extends GetxController {
               await Future.delayed(const Duration(seconds: 2));
               return checkCurrentActiveCallSession(retries: retries + 1);
             }
-          } else if (sessionStatus == 'ongoing') {
+          } else if (sessionStatus == 'ongoing' || isLocallyActive) {
             final startedAtStr = session['started_at']?.toString();
             if (startedAtStr != null) {
               final startedAt = DateTime.tryParse(startedAtStr)?.toLocal();
@@ -376,7 +378,7 @@ class CallWebRTCController extends GetxController {
               _orchestrator.session.startCallTimer();
             }
             
-            if (_orchestrator.webrtcService.peerConnection == null) {
+            if (_orchestrator.webrtcService.peerConnection == null && !isAccepting) {
               final offerSdp = session['offer']?.toString() ?? session['offer_sdp']?.toString() ?? session['consumer_sdp']?.toString();
               if (offerSdp != null && offerSdp.isNotEmpty) {
                 await _orchestrator.webrtcService.acceptOffer(_orchestrator.sessionId!, offerSdp);
@@ -425,20 +427,23 @@ class CallWebRTCController extends GetxController {
               }(),
             );
           } else {
-            final wasVisible = _orchestrator.isCallScreenVisible;
-            _orchestrator.session.cleanUp();
-            if (wasVisible || Get.currentRoute == '/CallScreen' || Get.currentRoute == '/call-screen' || Get.currentRoute == AppRoutes.callScreen) {
-              if (Get.isDialogOpen ?? false) Get.back();
-              if (Get.previousRoute.isNotEmpty && Get.previousRoute != '/' && Get.previousRoute != AppRoutes.splash) {
-                Get.back();
-              } else {
-                Get.offAllNamed(RouteHelper.getDashboardRoute());
+            if (!isLocallyActive) {
+              final wasVisible = _orchestrator.isCallScreenVisible;
+              _orchestrator.session.cleanUp();
+              if (wasVisible || Get.currentRoute == '/CallScreen' || Get.currentRoute == '/call-screen' || Get.currentRoute == AppRoutes.callScreen) {
+                if (Get.isDialogOpen ?? false) Get.back();
+                if (Get.previousRoute.isNotEmpty && Get.previousRoute != '/' && Get.previousRoute != AppRoutes.splash) {
+                  Get.back();
+                } else {
+                  Get.offAllNamed(RouteHelper.getDashboardRoute());
+                }
               }
             }
           }
         } else {
           // No active session on server
-          if (_orchestrator.status.value == CallStatus.ongoing || _orchestrator.status.value == CallStatus.ringing || _orchestrator.isCallScreenVisible) {
+          final bool isLocallyActive = _orchestrator.isAcceptedLocally || _orchestrator.status.value == CallStatus.ongoing;
+          if (!isLocallyActive && (_orchestrator.status.value == CallStatus.ongoing || _orchestrator.status.value == CallStatus.ringing || _orchestrator.isCallScreenVisible)) {
             final wasVisible = _orchestrator.isCallScreenVisible;
             _orchestrator.session.cleanUp();
             if (wasVisible || Get.currentRoute == '/CallScreen' || Get.currentRoute == '/call-screen' || Get.currentRoute == AppRoutes.callScreen) {

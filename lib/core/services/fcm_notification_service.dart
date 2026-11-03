@@ -259,11 +259,13 @@ class FCMNotificationService {
           final String userName = message.data['user_name']?.toString() ?? message.data['caller_name']?.toString() ?? 'User';
           final String userAvatarRaw = message.data['user_avatar']?.toString() ?? message.data['caller_image']?.toString() ?? '';
           final String userAvatar = userAvatarRaw.isNotEmpty ? userAvatarRaw : 'assets/images/app_logo.png';
+          final String? offerSdp = message.data['offer']?.toString() ?? message.data['offer_sdp']?.toString();
           CallkitService.showCallkitNotification(
             sessionId: parsedSessionId.toString(),
             callerName: userName,
             avatar: userAvatar,
             type: channelType, // 'call' or 'chat'
+            offerSdp: offerSdp,
           );
         } else {
           // Show the foreground notification (with dynamic params) for other types (wallet, etc)
