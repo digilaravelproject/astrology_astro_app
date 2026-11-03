@@ -49,9 +49,8 @@ class CallkitService {
       debugPrint('CallKit: Navigating directly to CallScreen (currentRoute=${Get.currentRoute})');
       ctrl.isCallScreenVisible = true;
       if (Get.currentRoute == AppRoutes.splash || Get.currentRoute == '' || Get.currentRoute == '/') {
-        // App started from killed state: put Dashboard at root and push CallScreen
-        Get.offAllNamed(RouteHelper.getDashboardRoute());
-        Get.toNamed(AppRoutes.callScreen);
+        // App started from killed state: directly replace Splash with CallScreen (no Dashboard flash)
+        Get.offAllNamed(AppRoutes.callScreen);
       } else if (Get.currentRoute != AppRoutes.callScreen) {
         Get.toNamed(AppRoutes.callScreen);
       }
@@ -74,8 +73,8 @@ class CallkitService {
         startedAtString: startedAtStr,
       );
       if (Get.currentRoute == AppRoutes.splash || Get.currentRoute == '' || Get.currentRoute == '/') {
-        Get.offAllNamed(RouteHelper.getDashboardRoute());
-        Get.to(() => chatScreen, binding: ChatBinding());
+        // App started from killed state: directly replace Splash with ChatScreen (no Dashboard flash)
+        Get.offAll(() => chatScreen, binding: ChatBinding());
       } else {
         Get.to(() => chatScreen, binding: ChatBinding());
       }

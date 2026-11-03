@@ -16,6 +16,7 @@ import 'firebase_options.dart';
 
 import 'core/services/fcm_notification_service.dart';
 import 'core/services/callkit_service.dart';
+import 'core/services/cold_start_detector.dart';
 
 Future<void> initApp() async {
   // Set environment configuration
@@ -91,4 +92,7 @@ Future<void> initApp() async {
 
   // Initialize Callkit listeners
   CallkitService.init();
+
+  // Detect any cold-start communication intent (CallKit, Local Notification, FCM)
+  await ColdStartDetector.detect();
 }

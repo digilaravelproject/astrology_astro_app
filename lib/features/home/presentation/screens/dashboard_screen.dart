@@ -50,6 +50,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   void _consumePendingNotification() async {
     debugPrint('[DashboardScreen] _consumePendingNotification started');
+    final String currentRoute = Get.currentRoute.toLowerCase();
+    if (currentRoute.contains('call') || currentRoute.contains('chat')) {
+      debugPrint('[DashboardScreen] Communication screen already visible ($currentRoute), skipping _consumePendingNotification');
+      return;
+    }
     try {
       // 1. Check local notification launch details (for cold start from killed state)
       try {

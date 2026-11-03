@@ -113,7 +113,7 @@ class ChatSessionController extends GetxController with WidgetsBindingObserver {
           FloatingChatBubble.dismiss(stopForegroundService: true);
           if (Get.isRegistered<AuthController>()) Get.find<AuthController>().checkLoginStatus();
           Future.delayed(const Duration(milliseconds: 400), () {
-            if (Get.currentRoute.isNotEmpty && Get.isRegistered<ChatController>()) Get.back();
+            if (Get.currentRoute.isNotEmpty && Get.isRegistered<ChatController>()) _popOrGoToDashboard();
           });
         }
         return;
@@ -143,6 +143,14 @@ class ChatSessionController extends GetxController with WidgetsBindingObserver {
     } catch (_) {}
   }
 
+  void _popOrGoToDashboard() {
+    if (Get.previousRoute.isNotEmpty && Get.previousRoute != '/' && Get.previousRoute != AppRoutes.splash) {
+      Get.back();
+    } else {
+      Get.offAllNamed(RouteHelper.getDashboardRoute());
+    }
+  }
+
   void setupSessionListeners() {
     _endSub?.cancel();
     _endSub = WebSocketService.chatEndedSessionId.listen((endedSessionId) {
@@ -152,7 +160,7 @@ class ChatSessionController extends GetxController with WidgetsBindingObserver {
         timer?.cancel();
         if (Get.isRegistered<AuthController>()) Get.find<AuthController>().checkLoginStatus();
         Future.delayed(const Duration(milliseconds: 400), () {
-          if (Get.currentRoute.isNotEmpty && Get.isRegistered<ChatController>()) Get.back();
+          if (Get.currentRoute.isNotEmpty && Get.isRegistered<ChatController>()) _popOrGoToDashboard();
         });
       }
     });
@@ -163,7 +171,7 @@ class ChatSessionController extends GetxController with WidgetsBindingObserver {
         status.value = ChatStatus.completed;
         stopRingtone();
         timer?.cancel();
-        Get.back();
+        _popOrGoToDashboard();
       }
     });
 
@@ -294,7 +302,7 @@ class ChatSessionController extends GetxController with WidgetsBindingObserver {
     FloatingChatBubble.dismiss();
     WebSocketService.activeSessionId = null;
     CallkitService.endAllCalls();
-    if (Get.isRegistered<ChatController>()) Get.back();
+    if (Get.isRegistered<ChatController>()) _popOrGoToDashboard();
     try {
       await Get.find<ApiClient>().post(AppUrls.rejectChatSession(_orchestrator.sessionId!));
     } catch (_) {}

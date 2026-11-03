@@ -1,5 +1,4 @@
 import 'package:permission_handler/permission_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'package:get/get.dart';
 import 'package:astro_astrologer/core/services/storage/shared_prefs.dart';
@@ -10,6 +9,16 @@ import 'package:astro_astrologer/core/services/callkit_service.dart';
 import 'package:astro_astrologer/features/splash/data/datasources/splash_service.dart';
 import 'package:astro_astrologer/core/services/websocket/websocket_service.dart';
 import 'package:astro_astrologer/core/services/fcm_notification_service.dart';
+import 'package:astro_astrologer/core/services/cold_start_detector.dart';
+import 'package:astro_astrologer/core/bindings/initial_bindings.dart';
+import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
+import 'package:astro_astrologer/core/enums/session_status_enums.dart';
+import 'package:astro_astrologer/core/services/sound_vibration_service.dart';
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
+import 'package:astro_astrologer/core/constants/app_urls.dart';
+import 'package:astro_astrologer/core/services/network/api_client.dart';
+import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
+import 'package:astro_astrologer/core/services/foreground_task_service.dart';
 import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
 import 'package:astro_astrologer/features/chat/presentation/bindings/chat_binding.dart';
 import 'package:astro_astrologer/features/chat/presentation/pages/assistance_chat_room_screen.dart';
@@ -31,6 +40,29 @@ class SplashController extends GetxController {
     try {
       isLoading.value = true;
 
+      // ── FAST PATH: Cold-Start Communication (Call/Chat) ──────────────────
+      final intent = ColdStartDetector.currentIntent;
+      final isLoggedIn = SharedPrefs.getBool(AppConstants.isLoggedIn) ?? false;
+      final userData = SharedPrefs.getString(AppConstants.userData);
+
+      if (isLoggedIn && userData != null && userData.isNotEmpty && intent != null && intent.type != ColdStartType.none) {
+        print('[SPLASH] Cold-start communication intent detected: ${intent.type} (sessionId=${intent.sessionId}). Executing ZERO-LAG fast path.');
+        ColdStartDetector.currentIntent = null; // consume
+
+        // Connect WebSocket in background so signalling/messages are received
+        Get.find<WebSocketService>().connect();
+        FCMNotificationService.registerDeviceToken(null);
+
+        if (intent.type == ColdStartType.call) {
+          _dispatchColdStartCall(intent);
+        } else if (intent.type == ColdStartType.chat) {
+          _dispatchColdStartChat(intent);
+        } else if (intent.type == ColdStartType.assistanceChat) {
+          _dispatchColdStartAssistance(intent);
+        }
+        return;
+      }
+
       // Initialize splash service
       final isReady = await _splashService.initialize();
 
@@ -45,11 +77,6 @@ class SplashController extends GetxController {
 
       if (cameraGranted && micGranted && notifGranted) {
         if (isReady) {
-          // Check if user is logged in and has user data
-          final isLoggedIn =
-              SharedPrefs.getBool(AppConstants.isLoggedIn) ?? false;
-          final userData = SharedPrefs.getString(AppConstants.userData);
-
           print(
             '[SPLASH] isLoggedIn: $isLoggedIn, hasUserData: ${userData != null && userData.isNotEmpty}',
           );
@@ -112,5 +139,100 @@ class SplashController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  void _dispatchColdStartCall(ColdStartIntent intent) {
+    if (!Get.isRegistered<CallController>()) {
+      InitialBindings().dependencies();
+    }
+    final ctrl = Get.find<CallController>();
+    ctrl.sessionId = intent.sessionId;
+    ctrl.isAcceptedLocally = true;
+    ctrl.isCallScreenVisible = true;
+    if (intent.name != null && intent.name!.isNotEmpty) {
+      ctrl.consumerName = intent.name;
+    }
+    if (intent.offerSdp != null && intent.offerSdp!.isNotEmpty) {
+      ctrl.incomingOfferSdp = intent.offerSdp;
+    }
+
+    // Direct instant transition to CallScreen (replacing Splash directly)
+    Get.offAllNamed(AppRoutes.callScreen);
+
+    // Run accept API in background without blocking screen transition
+    Future(() async {
+      try {
+        String finalOfferSdp = ctrl.incomingOfferSdp ?? '';
+        if (finalOfferSdp.isEmpty) {
+          final fetchedSdp = await ctrl.fetchOfferSdpFromCurrentSession();
+          if (fetchedSdp != null && fetchedSdp.isNotEmpty) {
+            finalOfferSdp = fetchedSdp;
+          }
+        }
+        bool success = false;
+        if (finalOfferSdp.isNotEmpty) {
+          success = await ctrl.acceptCall(finalOfferSdp);
+        } else {
+          success = await ctrl.acceptCallDirect();
+        }
+        FlutterCallkitIncoming.endCall(intent.sessionId.toString());
+        if (success && ctrl.status.value == CallStatus.ongoing) {
+          ctrl.session.showOngoingNotification();
+        }
+      } catch (e) {
+        print('[SPLASH] Cold start call accept error: $e');
+      }
+    });
+  }
+
+  void _dispatchColdStartChat(ColdStartIntent intent) {
+    final cleanName = intent.name?.isNotEmpty == true ? intent.name! : 'User';
+    FloatingChatBubble.name = cleanName;
+    SoundVibrationService().stopRingtone();
+    FlutterCallkitIncoming.endCall(intent.sessionId.toString());
+
+    final fallbackAcceptedAt = DateTime.now();
+    final String startedAtStr = fallbackAcceptedAt.toUtc().toIso8601String();
+
+    final chatScreen = ChatScreen(
+      sessionId: intent.sessionId,
+      initialStatus: 'ongoing',
+      userName: cleanName,
+      userImage: intent.avatar ?? '',
+      startedAtString: startedAtStr,
+    );
+
+    // Direct transition to ChatScreen (replacing Splash directly)
+    Get.offAll(() => chatScreen, binding: ChatBinding());
+
+    // Run accept API in background
+    Future(() async {
+      try {
+        if (Get.isRegistered<ApiClient>()) {
+          await Get.find<ApiClient>().post(
+            AppUrls.acceptChatSession(intent.sessionId),
+            handleError: false,
+            showErrorScreen: false,
+          );
+        }
+        ForegroundTaskService.startActiveSessionNotification(
+          title: 'Active Chat',
+          type: 'Chat',
+          startedAt: fallbackAcceptedAt,
+        );
+      } catch (e) {
+        print('[SPLASH] Cold start chat accept error: $e');
+      }
+    });
+  }
+
+  void _dispatchColdStartAssistance(ColdStartIntent intent) {
+    final userName = intent.name?.isNotEmpty == true ? intent.name! : 'User';
+    final userImage = intent.avatar ?? '';
+    Get.offAll(() => AssistanceChatRoomScreen(
+      sessionId: intent.sessionId,
+      userName: userName,
+      userImage: userImage,
+    ));
   }
 }
