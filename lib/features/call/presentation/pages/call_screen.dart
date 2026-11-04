@@ -346,8 +346,11 @@ class _CallScreenState extends State<CallScreen> {
                           children: [
                             GestureDetector(
                               onTap: () async {
-                                String sdp = controller.incomingOfferSdp ?? '';
-                                if (sdp.isEmpty &&
+                                String sdp = (controller.incomingOfferSdp != null &&
+                                        controller.incomingOfferSdp!.contains('v='))
+                                    ? controller.incomingOfferSdp!
+                                    : '';
+                                if ((sdp.isEmpty || !sdp.contains('v=')) &&
                                     controller.sessionId != null) {
                                   sdp =
                                       await controller

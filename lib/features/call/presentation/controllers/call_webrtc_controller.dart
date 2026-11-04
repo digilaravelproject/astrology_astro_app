@@ -41,13 +41,17 @@ class CallWebRTCController extends GetxController {
         _orchestrator.session.startCallTimer();
       }
 
-      String sdpToUse = (offerSdp.isNotEmpty) ? offerSdp : (_orchestrator.session.incomingOfferSdp ?? '');
+      String sdpToUse = (offerSdp.isNotEmpty && offerSdp.contains('v='))
+          ? offerSdp
+          : ((_orchestrator.session.incomingOfferSdp != null && _orchestrator.session.incomingOfferSdp!.contains('v='))
+              ? _orchestrator.session.incomingOfferSdp!
+              : '');
 
-      if (sdpToUse.isEmpty) {
+      if (sdpToUse.isEmpty || !sdpToUse.contains('v=')) {
         sdpToUse = await fetchOfferSdpFromCurrentSession() ?? '';
       }
 
-      if (sdpToUse.isEmpty) {
+      if (sdpToUse.isEmpty || !sdpToUse.contains('v=')) {
         Logger.e('acceptCall failed: No offer SDP found locally or via current-session API.');
         _orchestrator.session.cleanUp();
         isAccepting = false;

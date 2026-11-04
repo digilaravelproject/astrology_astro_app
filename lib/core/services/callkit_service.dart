@@ -215,12 +215,14 @@ class CallkitService {
 
             // Execute accept call logic in background without blocking navigation
             Future(() async {
-              String finalOfferSdp = ctrl.incomingOfferSdp ?? '';
+              String finalOfferSdp = (ctrl.incomingOfferSdp != null && ctrl.incomingOfferSdp!.contains('v='))
+                  ? ctrl.incomingOfferSdp!
+                  : '';
               try {
-                if (finalOfferSdp.isEmpty) {
-                  debugPrint('CallKit: incomingOfferSdp is empty. Fetching from current session...');
+                if (finalOfferSdp.isEmpty || !finalOfferSdp.contains('v=')) {
+                  debugPrint('CallKit: incomingOfferSdp is empty or invalid. Fetching from current session...');
                   final fetchedSdp = await ctrl.fetchOfferSdpFromCurrentSession();
-                  if (fetchedSdp != null && fetchedSdp.isNotEmpty) {
+                  if (fetchedSdp != null && fetchedSdp.contains('v=')) {
                     finalOfferSdp = fetchedSdp;
                   }
                 }
