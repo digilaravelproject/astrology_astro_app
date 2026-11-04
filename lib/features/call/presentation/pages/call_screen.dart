@@ -8,12 +8,7 @@ import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/theme/app_colors.dart';
 import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 import 'package:astro_astrologer/core/services/websocket/websocket_service.dart';
-import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
-import 'package:astro_astrologer/core/services/network/api_client.dart';
-import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
-
 import 'package:astro_astrologer/features/call/presentation/widgets/floating_call_bubble.dart';
-import 'package:astro_astrologer/core/widgets/network_ping_indicator.dart';
 import 'package:astro_astrologer/routes/route_helper.dart';
 
 class CallScreen extends StatefulWidget {
@@ -441,15 +436,6 @@ class _CallScreenState extends State<CallScreen> {
                           onPressed: () => controller.toggleMute(),
                         ),
 
-                        // Switch to Chat (visible during ongoing call)
-                        if (controller.isPackageCall)
-                          _buildControlButton(
-                            icon: Icons.message,
-                            label: 'Chat'.tr,
-                            isActive: false,
-                            onPressed: () => _showSwitchToChatDialog(context),
-                          ),
-
                         _buildEndCallButton(onPressed: () => _onEndTapped()),
 
                         // Speaker button
@@ -783,109 +769,5 @@ class _CallScreenState extends State<CallScreen> {
         ),
       ),
     );
-  }
-
-  void _showSwitchToChatDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder:
-          (ctx) => AlertDialog(
-            backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            title: Row(
-              children: [
-                Icon(
-                  Icons.chat_bubble_rounded,
-                  color: AppColors.primaryColor,
-                  size: 22,
-                ),
-                SizedBox(width: 10),
-                Text('Switch to Chat'.tr,
-                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            content: Text(
-              'End the current call and start a chat session with ${controller.consumerName ?? "User"}?',
-              style: const TextStyle(fontSize: 14, color: Colors.black87),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(),
-                child: Text('Cancel'.tr,
-                  style: TextStyle(color: Colors.grey),
-                ),
-              ),
-              ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                  _switchToChat();
-                },
-                icon: const Icon(Icons.chat_bubble_rounded, size: 16),
-                label: Text('Switch'.tr),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryColor,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            ],
-          ),
-    );
-  }
-
-  Future<void> _switchToChat() async {
-    final subSessionId = controller.subSessionId ?? 0;
-    final consumerName = controller.consumerName ?? 'User';
-    final consumerImage = controller.consumerImage ?? '';
-
-    // Show loader
-    Get.dialog(
-      const Center(
-        child: CircularProgressIndicator(color: AppColors.primaryColor),
-      ),
-      barrierDismissible: false,
-    );
-
-    try {
-      final apiClient = Get.find<ApiClient>();
-      Map<String, dynamic> spawnData = {};
-
-      if (subSessionId > 0 && controller.isPackageCall) {
-        final response = await apiClient.post(
-          AppUrls.packageSpawnChannel,
-          data: {'sub_session_id': subSessionId, 'channel_type': 'chat'},
-        );
-        if (response.isSuccess) {
-          spawnData = response.body is Map ? response.body['data'] ?? {} : {};
-        }
-        controller.cleanUp();
-      }
-
-      if (Get.isDialogOpen ?? false) Get.back(); // Dismiss loader
-
-      if (Navigator.of(context).canPop()) {
-        Navigator.of(context).pop();
-      }
-
-      final activeChatSessionId =
-          int.tryParse(spawnData['chat_session_id']?.toString() ?? '') ?? 0;
-
-      Get.to(
-        () => ChatScreen(
-          userName: consumerName,
-          userImage: consumerImage,
-          sessionId: activeChatSessionId,
-          initialStatus: spawnData['chat_status']?.toString() ?? 'ongoing',
-        ),
-      );
-    } catch (e) {
-      if (Get.isDialogOpen ?? false) Get.back();
-      CustomSnackBar.showError("Failed to switch: $e");
-    }
   }
 }
