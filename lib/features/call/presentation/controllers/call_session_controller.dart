@@ -359,10 +359,9 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
       SharedPrefs.setBool('session_ended_$sid', true);
       LocalNotificationService.cancelOngoingCallNotification(sid);
       SharedPrefs.remove('active_call_started_at_$sid');
+      CallkitService.endCall(sid.toString());
     }
     stopRingtone();
-    FlutterCallkitIncoming.endAllCalls();
-    CallkitService.endAllCalls();
     callTimer?.cancel();
     _globalTimerSub?.cancel();
     callTimer = null;

@@ -336,6 +336,13 @@ class CallkitService {
             debugPrint('CallKit: Reconstructed payload in DECLINE -> $payload');
           }
 
+          if (_isEndingAllCalls ||
+              (sessionId != null && _programmaticallyEndedCalls.contains(sessionId)) ||
+              (payload != null && _programmaticallyEndedCalls.contains(payload))) {
+            debugPrint('CallKit: Ignoring DECLINE because call was ended programmatically ($sessionId / $payload)');
+            break;
+          }
+
           if (payload == null) {
             debugPrint('CallKit: DECLINE ERROR - Payload is null');
             break;
@@ -511,11 +518,27 @@ class CallkitService {
     await FlutterCallkitIncoming.showCallkitIncoming(params);
   }
 
+  static final Set<String> _programmaticallyEndedCalls = {};
+  static bool _isEndingAllCalls = false;
+
   static Future<void> endCall(String sessionId) async {
+    _programmaticallyEndedCalls.add(sessionId);
+    _programmaticallyEndedCalls.add('call_$sessionId');
+    _programmaticallyEndedCalls.add('chat_$sessionId');
     await FlutterCallkitIncoming.endCall(sessionId);
+    Future.delayed(const Duration(milliseconds: 2500), () {
+      _programmaticallyEndedCalls.remove(sessionId);
+      _programmaticallyEndedCalls.remove('call_$sessionId');
+      _programmaticallyEndedCalls.remove('chat_$sessionId');
+    });
   }
 
   static Future<void> endAllCalls() async {
+    _isEndingAllCalls = true;
     await FlutterCallkitIncoming.endAllCalls();
+    Future.delayed(const Duration(milliseconds: 2500), () {
+      _isEndingAllCalls = false;
+      _programmaticallyEndedCalls.clear();
+    });
   }
 }
