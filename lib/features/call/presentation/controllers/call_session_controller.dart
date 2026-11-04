@@ -320,13 +320,24 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
       }
     }
     
-    final startedAt = DateTime.fromMillisecondsSinceEpoch(effectiveStartedAtMillis);
+    DateTime startedAt = DateTime.fromMillisecondsSinceEpoch(effectiveStartedAtMillis);
+    if (startedAt.isAfter(DateTime.now())) {
+      startedAt = DateTime.now().subtract(Duration(seconds: durationSeconds.value));
+    }
     callStartedAt = startedAt;
+    final initialDiff = DateTime.now().difference(startedAt).inSeconds;
+    if (initialDiff > durationSeconds.value) {
+      durationSeconds.value = initialDiff;
+    }
     
     callTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (ForegroundTaskService.globalElapsedSeconds.value == 0) {
         final diff = DateTime.now().difference(startedAt).inSeconds;
-        durationSeconds.value = diff >= 0 ? diff : 0;
+        if (diff > durationSeconds.value) {
+          durationSeconds.value = diff;
+        } else {
+          durationSeconds.value++;
+        }
       }
     });
   }

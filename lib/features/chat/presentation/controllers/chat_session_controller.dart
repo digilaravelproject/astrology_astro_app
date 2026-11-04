@@ -187,7 +187,9 @@ class ChatSessionController extends GetxController with WidgetsBindingObserver {
             stopRingtone();
             final startedAtStr = WebSocketService.sessionStartTimes[sid];
             final serverStartTime = parseSmartDate(startedAtStr);
-            final effectiveStart = serverStartTime ?? DateTime.now();
+            final effectiveStart = (serverStartTime != null && !serverStartTime.isAfter(DateTime.now()))
+                ? serverStartTime
+                : DateTime.now();
             startedAt = effectiveStart.toUtc().toIso8601String();
             WebSocketService.sessionStartTimes[sid] = startedAt!;
             final diff = DateTime.now().difference(effectiveStart).inSeconds;
@@ -221,9 +223,18 @@ class ChatSessionController extends GetxController with WidgetsBindingObserver {
 
     final savedStartedAt = sid != null ? SharedPrefs.getString('active_session_started_at_$sid') : null;
     final startedAtStr = startedAtString ?? startedAt ?? savedStartedAt ?? (sid != null ? WebSocketService.sessionStartTimes[sid] : null);
-    final dt = parseSmartDate(startedAtStr);
+    DateTime? dt = parseSmartDate(startedAtStr);
+
+    if (dt != null && dt.isAfter(DateTime.now())) {
+      // Server clock is ahead of device clock. Calibrate against device clock.
+      dt = DateTime.now().subtract(Duration(seconds: elapsedSeconds.value));
+    }
 
     if (dt != null) {
+      final initialDiff = DateTime.now().difference(dt).inSeconds;
+      if (initialDiff > elapsedSeconds.value) {
+        elapsedSeconds.value = initialDiff;
+      }
       timer = Timer.periodic(const Duration(seconds: 1), (t) {
         final st = status.value.name.toLowerCase();
         if (st == 'ended' || st == 'completed' || st == 'cancelled' || st == 'rejected') {
@@ -232,8 +243,12 @@ class ChatSessionController extends GetxController with WidgetsBindingObserver {
         }
         if (st == 'ongoing' || st == 'accepted') {
           if (ForegroundTaskService.globalElapsedSeconds.value == 0) {
-            final nowDiff = DateTime.now().difference(dt).inSeconds;
-            elapsedSeconds.value = nowDiff > 0 ? nowDiff : 0;
+            final nowDiff = DateTime.now().difference(dt!).inSeconds;
+            if (nowDiff > elapsedSeconds.value) {
+              elapsedSeconds.value = nowDiff;
+            } else {
+              elapsedSeconds.value++;
+            }
           }
           if (FloatingChatBubble.isActive && FloatingChatBubble.sessionId == sid) {
             FloatingChatBubble.updateStatus(status.value.name);
@@ -241,6 +256,7 @@ class ChatSessionController extends GetxController with WidgetsBindingObserver {
         }
       });
     } else {
+      final DateTime localStart = DateTime.now().subtract(Duration(seconds: elapsedSeconds.value));
       timer = Timer.periodic(const Duration(seconds: 1), (t) {
         final st = status.value.name.toLowerCase();
         if (st == 'ended' || st == 'completed' || st == 'cancelled' || st == 'rejected') {
@@ -249,7 +265,12 @@ class ChatSessionController extends GetxController with WidgetsBindingObserver {
         }
         if (st == 'ongoing' || st == 'accepted') {
           if (ForegroundTaskService.globalElapsedSeconds.value == 0) {
-            elapsedSeconds.value++;
+            final nowDiff = DateTime.now().difference(localStart).inSeconds;
+            if (nowDiff > elapsedSeconds.value) {
+              elapsedSeconds.value = nowDiff;
+            } else {
+              elapsedSeconds.value++;
+            }
             if (sid != null && (elapsedSeconds.value % 5 == 0)) {
               final genStart = DateTime.now().toUtc().subtract(Duration(seconds: elapsedSeconds.value)).toIso8601String();
               startedAt = genStart;
