@@ -301,7 +301,9 @@ class ChatSessionController extends GetxController with WidgetsBindingObserver {
     }
     FloatingChatBubble.dismiss();
     WebSocketService.activeSessionId = null;
-    CallkitService.endAllCalls();
+    if (_orchestrator.sessionId != null) {
+      CallkitService.endCall(_orchestrator.sessionId!.toString());
+    }
     if (Get.isRegistered<ChatController>()) _popOrGoToDashboard();
     try {
       await Get.find<ApiClient>().post(AppUrls.rejectChatSession(_orchestrator.sessionId!));
@@ -322,7 +324,7 @@ class ChatSessionController extends GetxController with WidgetsBindingObserver {
       _globalTimerSub?.cancel();
       FloatingChatBubble.dismiss(stopForegroundService: true);
       CallkitService.resetAcceptedFlags();
-      CallkitService.endAllCalls();
+      CallkitService.endCall(endedSessionId.toString());
       WebSocketService.sessionStatusUpdates[endedSessionId] = 'ended';
       ForegroundTaskService.stopService();
       // Navigate back to dashboard after a small delay so UI updates first
@@ -342,14 +344,14 @@ class ChatSessionController extends GetxController with WidgetsBindingObserver {
     stopRingtone();
     try {
       await _acceptChatSessionUseCase.execute(incomingSessionId);
-      CallkitService.endAllCalls();
+      CallkitService.endCall(incomingSessionId.toString());
     } catch (_) {}
   }
 
   Future<void> rejectChat(int incomingSessionId) async {
     try {
       FloatingChatBubble.dismiss(stopForegroundService: true);
-      CallkitService.endAllCalls();
+      CallkitService.endCall(incomingSessionId.toString());
       await Get.find<ApiClient>().post(AppUrls.rejectChatSession(incomingSessionId));
     } catch (_) {}
   }

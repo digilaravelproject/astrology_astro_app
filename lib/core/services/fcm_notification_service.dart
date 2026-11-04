@@ -215,7 +215,6 @@ class FCMNotificationService {
             SharedPrefs.setBool('session_ended_$parsedSessionId', true);
           }
           CallkitService.endCall(parsedSessionId.toString());
-          CallkitService.endAllCalls();
           LocalNotificationService.cancelOngoingLiveNotification(parsedSessionId);
           LocalNotificationService.cancelOngoingCallNotification(parsedSessionId);
           FloatingChatBubble.dismiss(stopForegroundService: true);
