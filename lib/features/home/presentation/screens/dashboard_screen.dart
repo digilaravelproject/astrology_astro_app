@@ -3,19 +3,15 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:astro_astrologer/core/theme/app_colors.dart';
 import 'home_screen.dart';
 import 'package:astro_astrologer/features/profile/presentation/screens/profile_screen.dart';
 import 'package:astro_astrologer/features/home/presentation/controllers/dashboard_controller.dart';
 import 'package:astro_astrologer/core/widgets/custom_bottom_nav_bar.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import 'package:astro_astrologer/features/live/presentation/pages/live_schedule_screen.dart';
 import 'package:astro_astrologer/features/live/presentation/controllers/live_controller.dart';
-import 'package:astro_astrologer/core/widgets/app_text.dart';
 import 'package:astro_astrologer/features/notification/notice_screen.dart';
 import 'package:astro_astrologer/features/orders/presentation/pages/orders_screen.dart';
-import 'package:astro_astrologer/routes/app_routes.dart';
 
 import 'package:permission_handler/permission_handler.dart';
 import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
@@ -222,35 +218,96 @@ class _DashboardScreenState extends State<DashboardScreen> {
           context: context,
           builder:
               (context) => AlertDialog(
+                backgroundColor: Colors.white,
+                surfaceTintColor: Colors.transparent,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
-                title: AppText('Exit App'.tr,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
+                titlePadding: const EdgeInsets.fromLTRB(24, 24, 24, 12),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+                actionsPadding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+                title: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryColor.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.exit_to_app_rounded,
+                        color: AppColors.primaryColor,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Exit App'.tr,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1A1A2E),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                content: AppText('Are you sure you want to exit?'.tr,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey,
+                content: Text(
+                  'Are you sure you want to exit?'.tr,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey.shade700,
+                    height: 1.4,
+                  ),
                 ),
                 actions: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(false),
-                    child: AppText('Cancel'.tr,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(true),
-                    child: AppText('Exit'.tr,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.primaryColor,
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.of(context).pop(false),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            side: BorderSide(color: Colors.grey.shade300),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: Text(
+                            'Cancel'.tr,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey.shade700,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () => Navigator.of(context).pop(true),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            backgroundColor: AppColors.primaryColor,
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: Text(
+                            'Exit'.tr,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
