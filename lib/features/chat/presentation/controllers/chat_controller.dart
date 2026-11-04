@@ -117,4 +117,5 @@ class ChatController extends GetxController {
   Future<void> acceptChat(int incomingSessionId) => session.acceptChat(incomingSessionId);
   Future<void> rejectChat(int incomingSessionId) => session.rejectChat(incomingSessionId);
   void minimizeToBubble(BuildContext ctx, String name, String image, {bool shouldPop = true}) => session.minimizeToBubble(ctx, name, image, shouldPop: shouldPop);
+  void cleanUp() => session.cleanUp();
 }

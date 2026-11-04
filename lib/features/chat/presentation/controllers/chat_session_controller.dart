@@ -406,6 +406,25 @@ class ChatSessionController extends GetxController with WidgetsBindingObserver {
     if (shouldPop) Get.back();
   }
 
+  void cleanUp() {
+    stopRingtone();
+    timer?.cancel();
+    timer = null;
+    _endSub?.cancel();
+    _statusSub?.cancel();
+    _dismissSub?.cancel();
+    FloatingChatBubble.dismiss(stopForegroundService: true);
+    ForegroundTaskService.stopService();
+    if (WebSocketService.activeSessionId == _orchestrator.sessionId) {
+      WebSocketService.activeSessionId = null;
+    }
+    status.value = ChatStatus.idle;
+    _orchestrator.sessionId = null;
+    _orchestrator.subSessionId = null;
+    isPackageChat = false;
+    isCallAlsoActive = false;
+  }
+
   @override
   void onClose() {
     WidgetsBinding.instance.removeObserver(this);

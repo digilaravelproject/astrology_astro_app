@@ -8,6 +8,7 @@ import 'package:flutter_callkit_incoming/entities/entities.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:get/get.dart';
 import 'package:astro_astrologer/features/chat/presentation/widgets/floating_chat_bubble.dart';
+import 'package:astro_astrologer/features/call/presentation/widgets/floating_call_bubble.dart';
 import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 import 'package:astro_astrologer/features/call/presentation/pages/call_screen.dart';
 import 'package:astro_astrologer/features/chat/presentation/controllers/chat_controller.dart';
@@ -47,11 +48,30 @@ class CallkitService {
     }
     if (Get.context != null && Get.currentRoute != AppRoutes.callScreen) {
       debugPrint('CallKit: Navigating INSTANTLY to CallScreen (currentRoute=${Get.currentRoute})');
+
+      // MUTEX: Auto-terminate any active Chat before entering CallScreen
+      if (Get.isRegistered<ChatController>()) {
+        try {
+          final chatCtrl = Get.find<ChatController>();
+          if (chatCtrl.sessionId != null || chatCtrl.status.value == ChatStatus.ongoing) {
+            debugPrint('CallKit Mutex: Active chat detected while accepting call. Terminating chat...');
+            chatCtrl.cleanUp();
+            FloatingChatBubble.dismiss(stopForegroundService: true);
+          }
+        } catch (e) {
+          debugPrint('CallKit Mutex: Error cleaning up chat: $e');
+        }
+      }
+
       ctrl.isAcceptedLocally = true;
       ctrl.isCallScreenVisible = true;
       ctrl.status.value = CallStatus.ongoing;
       ctrl.session.startCallTimer();
-      if (Get.currentRoute == AppRoutes.splash || Get.currentRoute == '' || Get.currentRoute == '/') {
+
+      final current = Get.currentRoute.toLowerCase();
+      if (current.contains('chat')) {
+        Get.offNamed(AppRoutes.callScreen);
+      } else if (Get.currentRoute == AppRoutes.splash || Get.currentRoute == '' || Get.currentRoute == '/') {
         // App started from killed state: directly replace Splash with CallScreen (no Dashboard flash)
         Get.offAllNamed(AppRoutes.callScreen);
       } else {
@@ -68,6 +88,23 @@ class CallkitService {
     }
     if (Get.context != null) {
       debugPrint('CallKit: Navigating directly to ChatScreen (currentRoute=${Get.currentRoute})');
+
+      // MUTEX: Auto-terminate any active Call before entering ChatScreen
+      if (Get.isRegistered<CallController>()) {
+        try {
+          final callCtrl = Get.find<CallController>();
+          if (callCtrl.sessionId != null ||
+              callCtrl.status.value == CallStatus.ongoing ||
+              callCtrl.status.value == CallStatus.ringing) {
+            debugPrint('CallKit Mutex: Active call detected while accepting chat. Terminating call...');
+            callCtrl.cleanUp();
+            FloatingCallBubble.dismiss(stopForegroundService: true);
+          }
+        } catch (e) {
+          debugPrint('CallKit Mutex: Error cleaning up call: $e');
+        }
+      }
+
       final chatScreen = ChatScreen(
         sessionId: sId,
         initialStatus: 'ongoing',
@@ -75,7 +112,11 @@ class CallkitService {
         userImage: '',
         startedAtString: startedAtStr,
       );
-      if (Get.currentRoute == AppRoutes.splash || Get.currentRoute == '' || Get.currentRoute == '/') {
+
+      final current = Get.currentRoute.toLowerCase();
+      if (current.contains('call')) {
+        Get.off(() => chatScreen, binding: ChatBinding());
+      } else if (Get.currentRoute == AppRoutes.splash || Get.currentRoute == '' || Get.currentRoute == '/') {
         // App started from killed state: directly replace Splash with ChatScreen (no Dashboard flash)
         Get.offAll(() => chatScreen, binding: ChatBinding());
       } else {
@@ -127,6 +168,18 @@ class CallkitService {
             // ── Incoming CALL accepted ──
             isHandlingAcceptedCall = true;
             isHandlingAcceptedChat = false;
+
+            // MUTEX: Auto-terminate any active Chat before accepting Call
+            if (Get.isRegistered<ChatController>()) {
+              try {
+                final chatCtrl = Get.find<ChatController>();
+                if (chatCtrl.sessionId != null || chatCtrl.status.value == ChatStatus.ongoing) {
+                  debugPrint('CallKit Accept: Active chat detected. Cleaning up...');
+                  chatCtrl.cleanUp();
+                  FloatingChatBubble.dismiss(stopForegroundService: true);
+                }
+              } catch (_) {}
+            }
 
             if (!Get.isRegistered<CallController>()) {
               debugPrint('CallKit: Forcing InitialBindings for CallController...');
@@ -197,6 +250,20 @@ class CallkitService {
             debugPrint('CallKit: Entered chat_ block');
             isHandlingAcceptedChat = true;
             isHandlingAcceptedCall = false;
+
+            // MUTEX: Auto-terminate any active Call before accepting Chat
+            if (Get.isRegistered<CallController>()) {
+              try {
+                final callCtrl = Get.find<CallController>();
+                if (callCtrl.sessionId != null ||
+                    callCtrl.status.value == CallStatus.ongoing ||
+                    callCtrl.status.value == CallStatus.ringing) {
+                  debugPrint('CallKit Accept: Active call detected. Cleaning up...');
+                  callCtrl.cleanUp();
+                  FloatingCallBubble.dismiss(stopForegroundService: true);
+                }
+              } catch (_) {}
+            }
 
             final sIdStr = payload.replaceFirst('chat_', '');
             final sId = int.tryParse(sIdStr);

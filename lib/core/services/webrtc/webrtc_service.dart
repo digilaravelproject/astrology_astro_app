@@ -128,6 +128,10 @@ class WebRTCService {
         if (state == RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
           _startPingTimer();
           toggleSpeaker(currentSpeakerState);
+        } else if (state == RTCPeerConnectionState.RTCPeerConnectionStateDisconnected ||
+                   state == RTCPeerConnectionState.RTCPeerConnectionStateFailed ||
+                   state == RTCPeerConnectionState.RTCPeerConnectionStateClosed) {
+          _stopPingTimer();
         }
       };
 
@@ -317,6 +321,10 @@ class WebRTCService {
         if (state == RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
           _startPingTimer();
           toggleSpeaker(currentSpeakerState);
+        } else if (state == RTCPeerConnectionState.RTCPeerConnectionStateDisconnected ||
+                   state == RTCPeerConnectionState.RTCPeerConnectionStateFailed ||
+                   state == RTCPeerConnectionState.RTCPeerConnectionStateClosed) {
+          _stopPingTimer();
         }
       };
 
