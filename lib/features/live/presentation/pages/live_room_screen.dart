@@ -593,12 +593,13 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
       // Auto-retry up to _maxCameraRetries times with backoff
       if (_cameraInitRetryCount < _maxCameraRetries) {
         _cameraInitRetryCount++;
-        final delay = Duration(milliseconds: 1500 * _cameraInitRetryCount);
+        final delay = Duration(milliseconds: 1200 * _cameraInitRetryCount);
         debugPrint('[LIVE] Retrying camera init (attempt $_cameraInitRetryCount) after ${delay.inMilliseconds}ms');
         await Future.delayed(delay);
         if (mounted) {
           _isConnectingLiveKit = false; // Allow re-entry
           _initCamera();
+          return;
         }
       } else {
         // All retries exhausted — show user-visible error
@@ -608,7 +609,10 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
         }
       }
     } finally {
-      _isConnectingLiveKit = false;
+      if (_cameraInitRetryCount >= _maxCameraRetries || _isLiveKitConnected) {
+        _isConnectingLiveKit = false;
+        if (mounted) setState(() {});
+      }
     }
   }
 
@@ -856,6 +860,8 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
     _userLeftSubscription?.cancel();
     _viewerCountSubscription?.cancel();
     _scrollController.dispose();
+    _controller.isRoomOpen = false;
+    _controller.currentActiveSession.value = null;
     _controller.stopBroadcast(widget.session.id);
     _controller.stopLiveBubbleAndNotification(widget.session.id);
     _disconnectLiveKit(updateState: false);
@@ -1119,6 +1125,9 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
                               TextButton(
                                 onPressed: () async {
                                   Get.back();
+                                  _controller.isRoomOpen = false;
+                                  _controller.currentActiveSession.value = null;
+                                  _controller.stopLiveBubbleAndNotification(widget.session.id);
                                   await _controller.stopBroadcast(
                                     widget.session.id,
                                   );

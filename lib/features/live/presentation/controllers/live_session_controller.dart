@@ -78,6 +78,7 @@ class LiveSessionController extends GetxController {
             isRoomOpen = true;
             Get.toNamed(AppRoutes.liveRoomScreen, arguments: session)?.then((_) {
               isRoomOpen = false;
+              currentActiveSession.value = null;
             });
           }
         } else {
@@ -85,7 +86,14 @@ class LiveSessionController extends GetxController {
             stopLiveBubbleAndNotification(currentActiveSession.value!.id);
           }
           currentActiveSession.value = null;
+          isRoomOpen = false;
         }
+      } else {
+        if (currentActiveSession.value != null) {
+          stopLiveBubbleAndNotification(currentActiveSession.value!.id);
+        }
+        currentActiveSession.value = null;
+        isRoomOpen = false;
       }
     } catch (e) {
       print('[LIVE] Exception in checkCurrentActiveSession: $e');

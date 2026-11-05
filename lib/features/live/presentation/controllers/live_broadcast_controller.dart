@@ -121,19 +121,50 @@ class LiveBroadcastController extends GetxController {
           Get.back();
         }
 
-        await _sessionCtrl.getSessions();
-        await _sessionCtrl.checkCurrentActiveSession(autoNavigate: false);
-
-        if (isInstant && _sessionCtrl.currentActiveSession.value != null) {
-          if (!_sessionCtrl.isRoomOpen) {
-            _sessionCtrl.isRoomOpen = true;
-            Get.toNamed(
-              AppRoutes.liveRoomScreen,
-              arguments: _sessionCtrl.currentActiveSession.value!,
-            )?.then((_) {
-              _sessionCtrl.isRoomOpen = false;
-            });
+        // 1. Parse the created session directly from result.body
+        LiveSessionModel? sessionToOpen;
+        if (result.body is Map) {
+          final bodyMap = result.body as Map<String, dynamic>;
+          final sessionMap = bodyMap.containsKey('id') && bodyMap['id'] != null
+              ? bodyMap
+              : (bodyMap['data'] is Map<String, dynamic>
+                  ? bodyMap['data'] as Map<String, dynamic>
+                  : (bodyMap['session'] is Map<String, dynamic>
+                      ? bodyMap['session'] as Map<String, dynamic>
+                      : null));
+          if (sessionMap != null) {
+            try {
+              sessionToOpen = LiveSessionModel.fromJson(sessionMap);
+            } catch (e) {
+              print('[LIVE] Error parsing session from createSession: $e');
+            }
           }
+        }
+
+        if (sessionToOpen != null) {
+          _sessionCtrl.currentActiveSession.value = sessionToOpen;
+        }
+
+        // Refresh session list in background
+        _sessionCtrl.getSessions();
+
+        // Fallback to checkCurrentActiveSession only if body didn't have session
+        if (sessionToOpen == null) {
+          await _sessionCtrl.checkCurrentActiveSession(autoNavigate: false);
+          sessionToOpen = _sessionCtrl.currentActiveSession.value;
+        }
+
+        if (isInstant && sessionToOpen != null) {
+          _sessionCtrl.isRoomOpen = true;
+          // Ensure bottom sheet dismissal animation completes
+          await Future.delayed(const Duration(milliseconds: 150));
+          Get.toNamed(
+            AppRoutes.liveRoomScreen,
+            arguments: sessionToOpen,
+          )?.then((_) {
+            _sessionCtrl.isRoomOpen = false;
+            _sessionCtrl.currentActiveSession.value = null;
+          });
         }
       } else {
         ApiChecker.handleResponse(result);
@@ -175,21 +206,48 @@ class LiveBroadcastController extends GetxController {
       final result = await _startSessionUseCase.call(id);
       if (result.isSuccess) {
         ApiChecker.handleResponse(result, showSuccess: true);
-        await _sessionCtrl.getSessions();
-        await _sessionCtrl.checkCurrentActiveSession(autoNavigate: false);
-        if (_sessionCtrl.currentActiveSession.value != null) {
-          _sessionCtrl.showLiveBubbleAndNotification(
-            _sessionCtrl.currentActiveSession.value!,
-          );
-          if (!_sessionCtrl.isRoomOpen) {
-            _sessionCtrl.isRoomOpen = true;
-            Get.toNamed(
-              AppRoutes.liveRoomScreen,
-              arguments: _sessionCtrl.currentActiveSession.value!,
-            )?.then((_) {
-              _sessionCtrl.isRoomOpen = false;
-            });
+
+        LiveSessionModel? sessionToOpen;
+        if (result.body is Map) {
+          final bodyMap = result.body as Map<String, dynamic>;
+          final sessionMap = bodyMap.containsKey('id') && bodyMap['id'] != null
+              ? bodyMap
+              : (bodyMap['data'] is Map<String, dynamic>
+                  ? bodyMap['data'] as Map<String, dynamic>
+                  : (bodyMap['session'] is Map<String, dynamic>
+                      ? bodyMap['session'] as Map<String, dynamic>
+                      : null));
+          if (sessionMap != null) {
+            try {
+              sessionToOpen = LiveSessionModel.fromJson(sessionMap);
+            } catch (e) {
+              print('[LIVE] Error parsing session from start response: $e');
+            }
           }
+        }
+
+        sessionToOpen ??= _sessionCtrl.upcomingSessions.firstWhereOrNull((s) => s.id == id);
+
+        if (sessionToOpen != null) {
+          _sessionCtrl.currentActiveSession.value = sessionToOpen;
+        }
+
+        _sessionCtrl.getSessions();
+        if (sessionToOpen == null) {
+          await _sessionCtrl.checkCurrentActiveSession(autoNavigate: false);
+          sessionToOpen = _sessionCtrl.currentActiveSession.value;
+        }
+
+        if (sessionToOpen != null) {
+          _sessionCtrl.showLiveBubbleAndNotification(sessionToOpen);
+          _sessionCtrl.isRoomOpen = true;
+          Get.toNamed(
+            AppRoutes.liveRoomScreen,
+            arguments: sessionToOpen,
+          )?.then((_) {
+            _sessionCtrl.isRoomOpen = false;
+            _sessionCtrl.currentActiveSession.value = null;
+          });
         }
       } else {
         ApiChecker.handleResponse(result);
@@ -205,12 +263,16 @@ class LiveBroadcastController extends GetxController {
   Future<void> stopSession(int id) async {
     try {
       _sessionCtrl.isLoading.value = true;
+      // Preemptively reset local state
+      _sessionCtrl.isRoomOpen = false;
+      _sessionCtrl.currentActiveSession.value = null;
+      _sessionCtrl.stopLiveBubbleAndNotification(id);
+
       final result = await _stopSessionUseCase.call(id);
       if (result.isSuccess) {
         ApiChecker.handleResponse(result, showSuccess: true);
         await _sessionCtrl.getSessions();
-        await _sessionCtrl.checkCurrentActiveSession();
-        _sessionCtrl.stopLiveBubbleAndNotification(id);
+        await _sessionCtrl.checkCurrentActiveSession(autoNavigate: false);
       } else {
         ApiChecker.handleResponse(result);
       }
@@ -219,6 +281,9 @@ class LiveBroadcastController extends GetxController {
       CustomSnackBar.showError('Something went wrong: $e');
     } finally {
       _sessionCtrl.isLoading.value = false;
+      _sessionCtrl.isRoomOpen = false;
+      _sessionCtrl.currentActiveSession.value = null;
+      _sessionCtrl.stopLiveBubbleAndNotification(id);
     }
   }
 
