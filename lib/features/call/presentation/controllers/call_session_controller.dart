@@ -395,6 +395,7 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
     subSessionId = null;
     isChatAlsoActive = false;
     activeChatSessionId = null;
+    isLiveCall = false;
     if (isCallScreenVisible) isCallScreenVisible = false;
     callStartedAt = null;
   }

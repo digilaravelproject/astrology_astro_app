@@ -67,46 +67,15 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
       _callStatusWorker = ever(Get.find<CallController>().status, (status) async {
         if (mounted) {
           if (status == CallStatus.ongoing) {
-            // Just stop the LiveKit mic to free hardware for the Call!
-            if (_room?.localParticipant != null) {
-              try {
-                for (var pub in _room!.localParticipant!.audioTrackPublications) {
-                  await pub.mute();
-                }
-              } catch (_) {}
-            }
-            if (_localAudioTrack != null) {
-              await _localAudioTrack?.stop();
-              await _localAudioTrack?.dispose();
-              _localAudioTrack = null;
-              await _reportMediaStatus(null, 'off');
+            // Stop and unpublish LiveKit mic to free hardware for the 1-on-1 Call!
+            await _cleanupAudioPublications();
+            await _reportMediaStatus(null, 'off');
+            if (mounted) {
               setState(() { _isMuted = true; });
             }
           } else if (status != CallStatus.ongoing && status != CallStatus.ringing && status != CallStatus.waiting) {
-            // Call ended! Restart LiveKit mic!
-            if (_localAudioTrack == null) {
-               try {
-                 final audioTrack = await LocalAudioTrack.create(
-                    const AudioCaptureOptions(
-                      autoGainControl: false,
-                      echoCancellation: true,
-                      noiseSuppression: true,
-                    ),
-                  );
-                  final audioPub = await _room?.localParticipant?.publishAudioTrack(
-                    audioTrack,
-                    publishOptions: const AudioPublishOptions(
-                      encoding: AudioEncoding.presetSpeech,
-                      dtx: false,
-                    ),
-                  );
-                  _localAudioTrack = audioTrack;
-                  setState(() { _isMuted = false; });
-                  if (audioPub != null) _reportMediaStatus(audioPub, 'on');
-               } catch (e) {
-                 debugPrint('[LIVE] Failed to restart mic after call: $e');
-               }
-            }
+            // Call ended! Safely restart LiveKit mic after audio hardware settles!
+            await _restartLiveMic();
           }
         }
       });
@@ -685,11 +654,6 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
     }
   }
 
-  Future<void> _reportTrackStatus(TrackPublication? publication) async {
-    if (publication == null) return;
-    await _reportMediaStatus(publication, publication.muted ? 'off' : 'on');
-  }
-
   Future<void> _reportMediaStatus(
     TrackPublication? publication,
     String explicitStatus,
@@ -736,28 +700,83 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
     }
   }
 
-  Future<void> _setMicState(bool mute) async {
-    if (_isTogglingMic) return;
-    _isTogglingMic = true;
-    try {
-      final publication =
-          _room?.localParticipant?.audioTrackPublications.isNotEmpty == true
-              ? _room!.localParticipant!.audioTrackPublications.first
-              : null;
-      if (publication != null) {
-        if (publication.muted == mute) return;
-        setState(() {
-          _isMuted = mute;
-        });
-        if (mute) {
-          await publication.mute();
-        } else {
-          await publication.unmute();
+  Future<void> _cleanupAudioPublications() async {
+    if (_room?.localParticipant != null) {
+      final pubs = List<TrackPublication>.from(_room!.localParticipant!.audioTrackPublications);
+      for (var pub in pubs) {
+        try {
+          await _room!.localParticipant!.removePublishedTrack(pub.sid);
+        } catch (e) {
+          debugPrint('[LIVE] Error removing audio publication: $e');
         }
-        await _reportMediaStatus(publication, mute ? 'off' : 'on');
       }
-    } finally {
-      _isTogglingMic = false;
+    }
+    if (_localAudioTrack != null) {
+      try {
+        await _localAudioTrack?.stop();
+        await _localAudioTrack?.dispose();
+      } catch (e) {
+        debugPrint('[LIVE] Error disposing local audio track: $e');
+      }
+      _localAudioTrack = null;
+    }
+  }
+
+  Future<bool> _restartLiveMic() async {
+    if (!mounted || _room == null) return false;
+    try {
+      debugPrint('[LIVE] Restarting LiveKit microphone...');
+      // 1. Wait a moment for any active WebRTC call hardware to fully release
+      await Future.delayed(const Duration(milliseconds: 600));
+      if (!mounted || _room == null) return false;
+
+      // 2. Clean up any existing / dead audio publications safely
+      await _cleanupAudioPublications();
+      if (!mounted || _room == null) return false;
+
+      // 3. Ensure mic permission
+      var micStatus = await Permission.microphone.status;
+      if (!micStatus.isGranted) {
+        final res = await Permission.microphone.request();
+        if (!res.isGranted) {
+          debugPrint('[LIVE] Mic permission denied');
+          if (mounted) CustomSnackBar.showError('Microphone permission required');
+          return false;
+        }
+      }
+
+      // 4. Create fresh LocalAudioTrack
+      final audioTrack = await LocalAudioTrack.create(
+        const AudioCaptureOptions(
+          autoGainControl: false,
+          echoCancellation: true,
+          noiseSuppression: true,
+        ),
+      );
+
+      // 5. Publish to room
+      final audioPub = await _room?.localParticipant?.publishAudioTrack(
+        audioTrack,
+        publishOptions: const AudioPublishOptions(
+          encoding: AudioEncoding.presetSpeech,
+          dtx: false,
+        ),
+      );
+
+      _localAudioTrack = audioTrack;
+      if (mounted) {
+        setState(() {
+          _isMuted = false;
+        });
+      }
+      if (audioPub != null) {
+        await _reportMediaStatus(audioPub, 'on');
+      }
+      debugPrint('[LIVE] LiveKit microphone restarted successfully!');
+      return true;
+    } catch (e) {
+      debugPrint('[LIVE] Failed to restart live mic: $e');
+      return false;
     }
   }
 
@@ -772,22 +791,56 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
     if (_isTogglingMic) return;
     _isTogglingMic = true;
     try {
-      final publication =
-          _room?.localParticipant?.audioTrackPublications.isNotEmpty == true
-              ? _room!.localParticipant!.audioTrackPublications.first
-              : null;
-      if (publication != null) {
-        final newMuted = !publication.muted;
-        setState(() {
-          _isMuted = newMuted;
-        });
-        if (newMuted) {
-          await publication.mute();
-        } else {
-          await publication.unmute();
+      if (_isMuted) {
+        // User wants to UNMUTE (turn mic on)
+        final publication =
+            _room?.localParticipant?.audioTrackPublications.isNotEmpty == true
+                ? _room!.localParticipant!.audioTrackPublications.first
+                : null;
+        if (publication != null && _localAudioTrack != null && !(_localAudioTrack?.isDisposed ?? true)) {
+          try {
+            await publication.unmute();
+            if (mounted) {
+              setState(() {
+                _isMuted = false;
+              });
+            }
+            await _reportMediaStatus(publication, 'on');
+            return;
+          } catch (e) {
+            debugPrint('[LIVE] Error unmuting existing track: $e, will recreate');
+          }
         }
-        await _reportMediaStatus(publication, newMuted ? 'off' : 'on');
+        // If track is missing, disposed, or unmute failed, re-create cleanly!
+        final success = await _restartLiveMic();
+        if (!success && mounted) {
+          CustomSnackBar.showError('Failed to turn on microphone. Please try again.');
+        }
+      } else {
+        // User wants to MUTE (turn mic off)
+        if (mounted) {
+          setState(() {
+            _isMuted = true;
+          });
+        }
+        final publication =
+            _room?.localParticipant?.audioTrackPublications.isNotEmpty == true
+                ? _room!.localParticipant!.audioTrackPublications.first
+                : null;
+        if (publication != null) {
+          try {
+            await publication.mute();
+            await _reportMediaStatus(publication, 'off');
+          } catch (e) {
+            debugPrint('[LIVE] Error muting publication: $e');
+          }
+        }
+        try {
+          await _localAudioTrack?.mute();
+        } catch (_) {}
       }
+    } catch (e) {
+      debugPrint('[LIVE] Exception in _toggleMic: $e');
     } finally {
       _isTogglingMic = false;
     }
