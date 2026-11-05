@@ -5,6 +5,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:astro_astrologer/core/utils/custom_snackbar.dart';
 import 'package:astro_astrologer/core/services/network/api_checker.dart';
 import 'package:astro_astrologer/features/live/domain/usecases/live_usecases.dart';
+import 'package:astro_astrologer/features/live/data/models/live_session_model.dart';
 import 'package:astro_astrologer/routes/app_routes.dart';
 import 'package:astro_astrologer/features/live/presentation/controllers/live_session_controller.dart';
 
