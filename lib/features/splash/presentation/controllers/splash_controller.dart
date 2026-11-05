@@ -22,6 +22,7 @@ import 'package:astro_astrologer/core/services/foreground_task_service.dart';
 import 'package:astro_astrologer/features/chat/presentation/pages/chat_screen.dart';
 import 'package:astro_astrologer/features/chat/presentation/bindings/chat_binding.dart';
 import 'package:astro_astrologer/features/chat/presentation/pages/assistance_chat_room_screen.dart';
+import 'package:astro_astrologer/features/home/presentation/controllers/dashboard_controller.dart';
 
 class SplashController extends GetxController {
   final SplashService _splashService;
@@ -203,6 +204,7 @@ class SplashController extends GetxController {
     }
 
     // Direct instant transition to CallScreen (replacing Splash directly)
+    DashboardController.markColdBootChecked();
     Get.offAllNamed(AppRoutes.callScreen);
 
     // Purge CallKit native record so it doesn't linger in activeCalls
@@ -259,6 +261,7 @@ class SplashController extends GetxController {
     );
 
     // Direct transition to ChatScreen (replacing Splash directly)
+    DashboardController.markColdBootChecked();
     Get.offAll(() => chatScreen, binding: ChatBinding());
 
     // Run accept API in background

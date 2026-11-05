@@ -13,7 +13,7 @@ class AssetsRes {
   static const String APP_ICON = 'assets/images/app_icon.png';
   static const String APP_IMAGE = 'assets/images/app_image.png';
   static const String APP_LOGO = 'assets/images/app_logo.png';
-  static const String BACKGROUND = 'assets/images/background.jpg';
+  static const String BACKGROUND_JPG = 'assets/images/background.jpg';
   static const String BACKGROUND = 'assets/images/background.png';
   static const String CHATT_BACKGROUND = 'assets/images/chatt_background.png';
 }

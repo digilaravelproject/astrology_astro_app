@@ -20,6 +20,7 @@ import 'package:astro_astrologer/core/services/network/api_client.dart';
 import 'package:astro_astrologer/core/bindings/initial_bindings.dart';
 import 'package:astro_astrologer/core/services/sound_vibration_service.dart';
 import 'package:astro_astrologer/features/splash/presentation/controllers/splash_controller.dart';
+import 'package:astro_astrologer/features/home/presentation/controllers/dashboard_controller.dart';
 import 'package:astro_astrologer/routes/route_helper.dart';
 import 'package:astro_astrologer/routes/app_routes.dart';
 
@@ -68,6 +69,7 @@ class CallkitService {
       ctrl.status.value = CallStatus.ongoing;
       ctrl.session.startCallTimer();
 
+      DashboardController.markColdBootChecked();
       final current = Get.currentRoute.toLowerCase();
       if (current.contains('chat')) {
         Get.offNamed(AppRoutes.callScreen);
@@ -113,6 +115,7 @@ class CallkitService {
         startedAtString: startedAtStr,
       );
 
+      DashboardController.markColdBootChecked();
       final current = Get.currentRoute.toLowerCase();
       if (current.contains('call')) {
         Get.off(() => chatScreen, binding: ChatBinding());

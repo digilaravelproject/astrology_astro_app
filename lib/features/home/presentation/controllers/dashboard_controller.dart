@@ -21,6 +21,7 @@ class DashboardController extends GetxController with WidgetsBindingObserver {
 
   // Ensures we only auto-navigate to ChatScreen once on cold boot
   static bool _coldBootChecked = false;
+  static void markColdBootChecked() => _coldBootChecked = true;
 
   void changeIndex(int index) {
     debugPrint('DashboardController: changeIndex to $index');
@@ -163,7 +164,6 @@ class DashboardController extends GetxController with WidgetsBindingObserver {
 
           if (sessionId != null &&
               (status == 'ongoing' ||
-                  status == 'initiated' ||
                   status == 'accepted')) {
             final sessionType =
                 session['session_type']?.toString().toLowerCase() ??
@@ -186,7 +186,7 @@ class DashboardController extends GetxController with WidgetsBindingObserver {
                       userName: name,
                       userImage: imageUrl,
                       sessionId: sessionId,
-                      initialStatus: 'ongoing',
+                      initialStatus: status,
                       startedAtString: startedAt?.toString(),
                     ),
                     binding: ChatBinding(),

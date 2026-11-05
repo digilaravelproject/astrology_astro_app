@@ -82,7 +82,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // If the session is still in 'initiated' state, show IncomingChatDialog
       // instead of the ChatScreen so astrologer can Accept/Reject.
-      if (_controller.status.value.name == 'initiated') {
+      if (widget.initialStatus == 'initiated' || _controller.status.value.name == 'initiated') {
         Get.back(); // Close this ChatScreen
         Future.delayed(const Duration(milliseconds: 100), () {
           if (Get.isBottomSheetOpen == true) return;
@@ -100,6 +100,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         });
         return;
       }
+
+      // Dismiss any lingering CallKit notification for this chat session
+      CallkitService.endCall(widget.sessionId.toString());
 
       _controller.initSession(
         sessionId: widget.sessionId,

@@ -8,6 +8,7 @@ import 'package:astro_astrologer/core/constants/app_urls.dart';
 import 'package:astro_astrologer/core/theme/app_colors.dart';
 import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 import 'package:astro_astrologer/core/services/websocket/websocket_service.dart';
+import 'package:astro_astrologer/core/services/callkit_service.dart';
 import 'package:astro_astrologer/features/call/presentation/widgets/floating_call_bubble.dart';
 import 'package:astro_astrologer/routes/route_helper.dart';
 
@@ -29,6 +30,9 @@ class _CallScreenState extends State<CallScreen> {
     // Use postFrameCallback to avoid setState-during-build error
     WidgetsBinding.instance.addPostFrameCallback((_) {
       FloatingCallBubble.dismiss(stopForegroundService: false);
+      if (controller.sessionId != null) {
+        CallkitService.endCall(controller.sessionId.toString());
+      }
     });
   }
 
