@@ -55,6 +55,7 @@ void showGoLiveBottomSheet(BuildContext context) {
                           isCreating
                               ? null
                               : () {
+                                Navigator.pop(context);
                                 liveController.createSession(
                                   title: "Instant Live Session".tr,
                                   description: "Broadcasting Live",

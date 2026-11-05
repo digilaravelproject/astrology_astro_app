@@ -204,9 +204,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
             color: Colors.black87,
           ),
           const SizedBox(height: 8),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 40),
-            child: AppText('You don\'.trt have any notifications yet. When you get one, it will appear here.',
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            child: AppText(
+              "You don't have any notifications yet. When you get one, it will appear here.".tr,
               fontSize: 14,
               color: Colors.black54,
               textAlign: TextAlign.center,

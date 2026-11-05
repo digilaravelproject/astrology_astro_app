@@ -384,6 +384,7 @@ class _LiveScheduleScreenState extends State<LiveScheduleScreen>
                                   return;
                                 }
 
+                                Navigator.pop(context);
                                 if (session != null) {
                                   _controller.updateSession(
                                     id: session.id,

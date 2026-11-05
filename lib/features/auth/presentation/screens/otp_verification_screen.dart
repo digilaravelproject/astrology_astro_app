@@ -231,7 +231,8 @@ class OtpVerificationScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        AppText('Didn\'.trt receive code? ',
+        AppText(
+          "Didn't receive code? ".tr,
           color: AppColors.textColorSecondary,
           fontSize: 14,
         ),
@@ -239,7 +240,8 @@ class OtpVerificationScreen extends StatelessWidget {
           onTap: () {
             authController.resendOtp();
           },
-          child: AppText('Resend'.tr,
+          child: AppText(
+            'Resend'.tr,
             color: AppColors.deepPink,
             fontWeight: FontWeight.bold,
             fontSize: 14,

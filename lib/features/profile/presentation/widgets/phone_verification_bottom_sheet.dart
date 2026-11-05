@@ -83,7 +83,8 @@ class _PhoneVerificationBottomSheetState
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              AppText('Didn\'.trt receive the code? ',
+              AppText(
+                "Didn't receive the code? ".tr,
                 fontSize: 14,
                 color: Colors.grey.shade600,
               ),
