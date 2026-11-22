@@ -57,9 +57,11 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         'unknown_session';
     final int parsedSessionId = int.tryParse(rawSessionId) ?? 0;
 
+    final String? action = data['action']?.toString();
     final String? reason = data['reason']?.toString().toLowerCase();
-    
-    if (title.contains('Chat Ended') ||
+
+    if (action == 'DISMISS_CALL' ||
+        title.contains('Chat Ended') ||
         title.contains('Cancelled') ||
         reason == 'cancelled' ||
         reason == 'rejected' ||
@@ -72,7 +74,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         type?.toLowerCase() == 'chat_cancelled' ||
         type?.toLowerCase() == 'call_cancelled' ||
         type?.toLowerCase() == 'chat_rejected' ||
-        type?.toLowerCase() == 'call_rejected') {
+        type?.toLowerCase() == 'call_rejected' ||
+        type?.toLowerCase() == 'call_dismissed') {
       LocalNotificationService.markSessionCancelled(parsedSessionId.toString());
       CallkitService.endCall(parsedSessionId.toString());
       LocalNotificationService.cancelOngoingLiveNotification(parsedSessionId);
@@ -84,8 +87,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     } else if (title.contains('Call Ended') ||
         type?.toLowerCase() == 'call_ended' ||
         type?.toLowerCase() == 'session_completed' ||
-        type?.toLowerCase() == 'call_failed' ||
-        type?.toLowerCase() == 'call_dismissed') {
+        type?.toLowerCase() == 'call_failed') {
       LocalNotificationService.markSessionCancelled(parsedSessionId.toString());
       CallkitService.endCall(parsedSessionId.toString());
       LocalNotificationService.cancelOngoingLiveNotification(parsedSessionId);
@@ -94,6 +96,23 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       ForegroundTaskService.stopService();
       return;
     } else if (type?.toUpperCase() == 'CHAT_REQUEST' || type?.toUpperCase() == 'CALL_REQUEST' || type?.toLowerCase() == 'call' || type?.toLowerCase() == 'audio_call' || type?.toLowerCase() == 'video_call' || type?.toLowerCase() == 'chat') {
+      // 1. Freshness check: reject stale incoming call pushes (>35s or past expires_at)
+      final int nowSeconds = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+      final int? sentAt = int.tryParse(data['sent_at']?.toString() ?? '');
+      final int? expiresAt = int.tryParse(data['expires_at']?.toString() ?? '');
+      if (expiresAt != null && nowSeconds > expiresAt) {
+        debugPrint('[BackgroundFCM] Rejecting stale call: expired at $expiresAt (now=$nowSeconds)');
+        return;
+      }
+      if (sentAt != null && (nowSeconds - sentAt) > 35) {
+        debugPrint('[BackgroundFCM] Rejecting stale call: sent ${nowSeconds - sentAt}s ago');
+        return;
+      }
+      if (LocalNotificationService.isSessionCancelled(parsedSessionId.toString())) {
+        debugPrint('[BackgroundFCM] Session $parsedSessionId already marked cancelled. Skipping CallKit.');
+        return;
+      }
+
       final String channelType = data['channel_type']?.toString() ?? ((type?.toLowerCase() == 'call' || type?.toLowerCase() == 'audio_call' || type?.toLowerCase() == 'video_call') ? 'call' : 'chat');
       final String userName = data['user_name']?.toString() ?? data['caller_name']?.toString() ?? 'User';
       

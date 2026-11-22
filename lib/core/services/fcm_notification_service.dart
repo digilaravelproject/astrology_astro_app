@@ -179,10 +179,12 @@ class FCMNotificationService {
         else if (importanceRaw == 'none')
           importance = Importance.none;
 
+        final String? action = message.data['action']?.toString();
         final String? reason = message.data['reason']?.toString().toLowerCase();
         
         // 1. Check for Cancellations / Ended events FIRST
-        if (title.contains('Chat Ended') ||
+        if (action == 'DISMISS_CALL' ||
+            title.contains('Chat Ended') ||
             title.contains('Cancelled') ||
             reason == 'cancelled' ||
             reason == 'rejected' ||
@@ -192,6 +194,8 @@ class FCMNotificationService {
             type == 'chat_summary' ||
             type == 'CHAT_MISSED' ||
             type == 'CHAT_DISMISSED' ||
+            type == 'CALL_DISMISSED' ||
+            type?.toLowerCase() == 'call_dismissed' ||
             type?.toLowerCase() == 'chat_cancelled' ||
             type?.toLowerCase() == 'call_cancelled' ||
             type?.toLowerCase() == 'chat_rejected' ||
@@ -203,13 +207,15 @@ class FCMNotificationService {
           FloatingChatBubble.dismiss(stopForegroundService: true);
           FloatingCallBubble.dismiss(stopForegroundService: true);
           try { ForegroundTaskService.stopService(); } catch (_) {}
+          if (Get.isRegistered<CallController>()) {
+            Get.find<CallController>().session.handleCallDismissed(reason ?? 'cancelled');
+          }
           return;
         } else if (title.contains('Call Ended') ||
             type == 'call_ended' ||
             type == 'CALL_ENDED' ||
             type == 'session_completed' ||
-            type == 'CALL_FAILED' ||
-            type == 'CALL_DISMISSED') {
+            type == 'CALL_FAILED') {
           LocalNotificationService.markSessionCancelled(parsedSessionId.toString());
           if (parsedSessionId > 0) {
             SharedPrefs.setBool('session_ended_$parsedSessionId', true);
@@ -234,6 +240,23 @@ class FCMNotificationService {
 
         // 2. Process Incoming Requests
         if (type == 'CHAT_REQUEST' || type == 'CALL_REQUEST' || type == 'call' || type == 'audio_call' || type == 'video_call' || type == 'chat') {
+          // Freshness check: reject stale incoming call pushes (>35s or past expires_at)
+          final int nowSeconds = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+          final int? sentAt = int.tryParse(message.data['sent_at']?.toString() ?? '');
+          final int? expiresAt = int.tryParse(message.data['expires_at']?.toString() ?? '');
+          if (expiresAt != null && nowSeconds > expiresAt) {
+            debugPrint('[FCM] Discarding stale call push for session $parsedSessionId: expired at $expiresAt (now=$nowSeconds)');
+            return;
+          }
+          if (sentAt != null && (nowSeconds - sentAt) > 35) {
+            debugPrint('[FCM] Discarding stale call push for session $parsedSessionId: sent ${nowSeconds - sentAt}s ago');
+            return;
+          }
+          if (LocalNotificationService.isSessionCancelled(parsedSessionId.toString())) {
+            debugPrint('[FCM] Session $parsedSessionId already marked cancelled. Skipping CallKit.');
+            return;
+          }
+
           final String channelType = message.data['channel_type']?.toString() ?? ((type == 'call' || type == 'audio_call' || type == 'video_call') ? 'call' : 'chat');
           
           // Check if session is already active to prevent duplicate CallKit screens during an ongoing chat/call

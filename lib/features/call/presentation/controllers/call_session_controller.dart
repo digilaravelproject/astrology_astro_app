@@ -64,7 +64,12 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
         final session = data['session'];
         final callerData = data['callerData'];
         if (session != null && callerData != null) {
-          sessionId = int.tryParse(session['id']?.toString() ?? '') ?? 0;
+          final int incomingSessionId = int.tryParse(session['id']?.toString() ?? '') ?? 0;
+          if (incomingSessionId > 0 && LocalNotificationService.isSessionCancelled(incomingSessionId.toString())) {
+            debugPrint('[CallSessionController] Incoming call $incomingSessionId already cancelled. Skipping.');
+            return;
+          }
+          sessionId = incomingSessionId;
           consumerId = int.tryParse(callerData['id']?.toString() ?? '') ?? 0;
           consumerName = callerData['name']?.toString() ?? 'User';
           consumerImage = callerData['profile_photo']?.toString();
@@ -84,7 +89,11 @@ class CallSessionController extends GetxController with WidgetsBindingObserver {
         final session = data['session'];
         if (session != null) {
           final incomingId = int.tryParse(session['id']?.toString() ?? '');
-          if (incomingId == sessionId) {
+          if (incomingId != null && incomingId > 0) {
+            LocalNotificationService.markSessionCancelled(incomingId.toString());
+            CallkitService.endCall(incomingId.toString());
+          }
+          if (incomingId == sessionId || sessionId == 0 || sessionId == null) {
             final reason = data['reason']?.toString() ?? 'dismissed';
             handleCallDismissed(reason);
           }
