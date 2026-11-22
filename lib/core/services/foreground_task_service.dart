@@ -163,12 +163,12 @@ class ForegroundTaskService {
   /// Start a unified, persistent, and silent notification with a live timer
   static Future<void> startActiveSessionNotification({
     required String title,
-    required String type, // 'Chat' or 'Call'
+    required String type, // 'Chat', 'Call', or 'Live'
     DateTime? startedAt,
   }) async {
-    // Only WebRTC audio calls require an OS-level ForegroundService for microphone/audio routing.
+    // Only WebRTC audio calls and LiveKit broadcasting sessions require an OS-level ForegroundService for microphone/audio routing.
     // Chat sessions must NOT start a ForegroundService because Android 14+ restricts background FGS and crashes.
-    if (type != 'Call') {
+    if (type != 'Call' && type != 'Live') {
       return;
     }
 
@@ -190,7 +190,7 @@ class ForegroundTaskService {
       await FlutterForegroundTask.saveData(key: 'sessionType', value: type);
       await FlutterForegroundTask.saveData(key: 'title', value: title);
 
-      final List<ForegroundServiceTypes> serviceTypes = type == 'Call'
+      final List<ForegroundServiceTypes> serviceTypes = (type == 'Call' || type == 'Live')
           ? [
               ForegroundServiceTypes.microphone,
               ForegroundServiceTypes.phoneCall,
@@ -203,7 +203,7 @@ class ForegroundTaskService {
       try {
         if (await FlutterForegroundTask.isRunningService) {
           final currentType = await FlutterForegroundTask.getData<String>(key: 'sessionType');
-          if (type == 'Call' && currentType != null && currentType != 'Call') {
+          if ((type == 'Call' || type == 'Live') && currentType != null && currentType != type) {
             await FlutterForegroundTask.stopService();
             await FlutterForegroundTask.startService(
               serviceTypes: serviceTypes,

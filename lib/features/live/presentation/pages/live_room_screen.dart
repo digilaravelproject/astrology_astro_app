@@ -18,6 +18,8 @@ import 'package:astro_astrologer/core/constants/app_constants.dart';
 import 'package:astro_astrologer/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:astro_astrologer/features/call/presentation/controllers/call_controller.dart';
 import 'package:astro_astrologer/core/enums/session_status_enums.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:astro_astrologer/core/services/foreground_task_service.dart';
 
 class LiveRoomScreen extends StatefulWidget {
   final LiveSessionModel session;
@@ -57,6 +59,13 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
   @override
   void initState() {
     super.initState();
+    try {
+      WakelockPlus.enable();
+      ForegroundTaskService.startActiveSessionNotification(
+        title: 'Astrologer Live Broadcasting',
+        type: 'Live',
+      );
+    } catch (_) {}
     _controller = Get.find<LiveController>();
     _controller.showLiveBubbleAndNotification(widget.session);
     _viewerCount = widget.session.viewerCount;
@@ -871,6 +880,10 @@ class _LiveRoomScreenState extends State<LiveRoomScreen> {
     } catch (e) {
       debugPrint('[LIVE] WebSocket unsubscribe error: $e');
     }
+    try {
+      WakelockPlus.disable();
+      ForegroundTaskService.stopService();
+    } catch (_) {}
     super.dispose();
   }
 

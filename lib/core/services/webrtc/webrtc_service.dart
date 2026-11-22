@@ -66,6 +66,17 @@ class WebRTCService {
       localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
       Logger.d('WebRTCService: Local audio stream initialized successfully.');
 
+      localStream!.getAudioTracks().forEach((track) {
+        track.onMute = () {
+          Logger.w('WebRTCService: Local audio track MUTED by system/OS! Auto-recovering...');
+          if (!currentMuteState) {
+            track.enabled = true;
+            initAudioSession();
+            toggleSpeaker(currentSpeakerState, force: true);
+          }
+        };
+      });
+
       // Configure audio session for two-way communication
       await initAudioSession();
 
@@ -80,6 +91,9 @@ class WebRTCService {
 
   int? _activeSessionId;
   final List<RTCIceCandidate> _queuedIceCandidates = [];
+  Timer? _iceRecoveryTimer;
+  bool _isRestartingIce = false;
+  DateTime? _lastIceRestartTime;
 
   int? get activeSessionId => _activeSessionId;
   set activeSessionId(int? id) {
@@ -111,11 +125,17 @@ class WebRTCService {
       peerConnection!.onIceConnectionState = (state) {
         Logger.d('WebRTCService: ICE Connection state changed -> $state');
         if (state == RTCIceConnectionState.RTCIceConnectionStateConnected) {
+          _iceRecoveryTimer?.cancel();
+          _iceRecoveryTimer = null;
           _startPingTimer();
           toggleSpeaker(currentSpeakerState, force: true);
         } else if (state == RTCIceConnectionState.RTCIceConnectionStateDisconnected || 
-                   state == RTCIceConnectionState.RTCIceConnectionStateFailed ||
-                   state == RTCIceConnectionState.RTCIceConnectionStateClosed) {
+                   state == RTCIceConnectionState.RTCIceConnectionStateFailed) {
+          _stopPingTimer();
+          _scheduleIceRestart();
+        } else if (state == RTCIceConnectionState.RTCIceConnectionStateClosed) {
+          _iceRecoveryTimer?.cancel();
+          _iceRecoveryTimer = null;
           _stopPingTimer();
         }
         if (onConnectionStateChanged != null) {
@@ -126,12 +146,13 @@ class WebRTCService {
       peerConnection!.onConnectionState = (state) {
         Logger.d('WebRTCService: Peer connection state changed -> $state');
         if (state == RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
+          _iceRecoveryTimer?.cancel();
+          _iceRecoveryTimer = null;
           _startPingTimer();
           toggleSpeaker(currentSpeakerState, force: true);
         } else if (state == RTCPeerConnectionState.RTCPeerConnectionStateDisconnected ||
-                   state == RTCPeerConnectionState.RTCPeerConnectionStateFailed ||
-                   state == RTCPeerConnectionState.RTCPeerConnectionStateClosed) {
-          _stopPingTimer();
+                   state == RTCPeerConnectionState.RTCPeerConnectionStateFailed) {
+          _scheduleIceRestart();
         }
       };
 
@@ -143,6 +164,15 @@ class WebRTCService {
           try {
             Helper.setVolume(1.0, track);
           } catch (_) {}
+          track.onMute = () {
+            Logger.w('WebRTCService: Remote audio track MUTED by OS! Auto-recovering...');
+            track.enabled = true;
+            try {
+              Helper.setVolume(1.0, track);
+            } catch (_) {}
+            initAudioSession();
+            toggleSpeaker(currentSpeakerState, force: true);
+          };
         });
         toggleSpeaker(currentSpeakerState, force: true);
         if (onRemoteStreamAdded != null) {
@@ -178,6 +208,15 @@ class WebRTCService {
             try {
               Helper.setVolume(1.0, track);
             } catch (_) {}
+            track.onMute = () {
+              Logger.w('WebRTCService: Remote audio track MUTED by OS! Auto-recovering...');
+              track.enabled = true;
+              try {
+                Helper.setVolume(1.0, track);
+              } catch (_) {}
+              initAudioSession();
+              toggleSpeaker(currentSpeakerState, force: true);
+            };
           });
           toggleSpeaker(currentSpeakerState, force: true);
           if (onRemoteStreamAdded != null) {
@@ -304,11 +343,17 @@ class WebRTCService {
       peerConnection!.onIceConnectionState = (state) {
         Logger.d('WebRTCService: ICE Connection state changed -> $state');
         if (state == RTCIceConnectionState.RTCIceConnectionStateConnected) {
+          _iceRecoveryTimer?.cancel();
+          _iceRecoveryTimer = null;
           _startPingTimer();
           toggleSpeaker(currentSpeakerState, force: true);
         } else if (state == RTCIceConnectionState.RTCIceConnectionStateDisconnected || 
-                   state == RTCIceConnectionState.RTCIceConnectionStateFailed ||
-                   state == RTCIceConnectionState.RTCIceConnectionStateClosed) {
+                   state == RTCIceConnectionState.RTCIceConnectionStateFailed) {
+          _stopPingTimer();
+          _scheduleIceRestart();
+        } else if (state == RTCIceConnectionState.RTCIceConnectionStateClosed) {
+          _iceRecoveryTimer?.cancel();
+          _iceRecoveryTimer = null;
           _stopPingTimer();
         }
         if (onConnectionStateChanged != null) {
@@ -319,12 +364,13 @@ class WebRTCService {
       peerConnection!.onConnectionState = (state) {
         Logger.d('WebRTCService: Peer connection state changed -> $state');
         if (state == RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
+          _iceRecoveryTimer?.cancel();
+          _iceRecoveryTimer = null;
           _startPingTimer();
           toggleSpeaker(currentSpeakerState, force: true);
         } else if (state == RTCPeerConnectionState.RTCPeerConnectionStateDisconnected ||
-                   state == RTCPeerConnectionState.RTCPeerConnectionStateFailed ||
-                   state == RTCPeerConnectionState.RTCPeerConnectionStateClosed) {
-          _stopPingTimer();
+                   state == RTCPeerConnectionState.RTCPeerConnectionStateFailed) {
+          _scheduleIceRestart();
         }
       };
 
@@ -336,6 +382,15 @@ class WebRTCService {
           try {
             Helper.setVolume(1.0, track);
           } catch (_) {}
+          track.onMute = () {
+            Logger.w('WebRTCService: Remote audio track MUTED by OS! Auto-recovering...');
+            track.enabled = true;
+            try {
+              Helper.setVolume(1.0, track);
+            } catch (_) {}
+            initAudioSession();
+            toggleSpeaker(currentSpeakerState, force: true);
+          };
         });
         toggleSpeaker(currentSpeakerState, force: true);
         if (onRemoteStreamAdded != null) {
@@ -371,6 +426,15 @@ class WebRTCService {
             try {
               Helper.setVolume(1.0, track);
             } catch (_) {}
+            track.onMute = () {
+              Logger.w('WebRTCService: Remote audio track MUTED by OS! Auto-recovering...');
+              track.enabled = true;
+              try {
+                Helper.setVolume(1.0, track);
+              } catch (_) {}
+              initAudioSession();
+              toggleSpeaker(currentSpeakerState, force: true);
+            };
           });
           toggleSpeaker(currentSpeakerState, force: true);
           if (onRemoteStreamAdded != null) {
@@ -530,6 +594,104 @@ class WebRTCService {
     }
   }
 
+  void _scheduleIceRestart() {
+    final pc = peerConnection;
+    final sessionId = _activeSessionId;
+    if (pc == null || sessionId == null || sessionId <= 0) return;
+    if (_isRestartingIce) return;
+    if (_lastIceRestartTime != null && DateTime.now().difference(_lastIceRestartTime!).inSeconds < 5) {
+      Logger.d('WebRTCService: Skipping ICE restart schedule, recently triggered within 5s.');
+      return;
+    }
+
+    _iceRecoveryTimer?.cancel();
+    Logger.w('WebRTCService: Connection interrupted/disconnected. Waiting 1800ms for transient network recovery...');
+    _iceRecoveryTimer = Timer(const Duration(milliseconds: 1800), () async {
+      final currentPc = peerConnection;
+      if (currentPc == null) return;
+      if (currentPc.iceConnectionState == RTCIceConnectionState.RTCIceConnectionStateConnected ||
+          currentPc.connectionState == RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
+        Logger.d('WebRTCService: Connection recovered on its own before ICE restart was needed.');
+        return;
+      }
+      Logger.w('WebRTCService: Network still disconnected after 1800ms. Executing automatic restartIce()...');
+      await restartIce();
+    });
+  }
+
+  Future<void> restartIce() async {
+    final pc = peerConnection;
+    final sessionId = _activeSessionId;
+    if (pc == null || sessionId == null || sessionId <= 0) return;
+    if (_isRestartingIce) return;
+
+    _isRestartingIce = true;
+    _lastIceRestartTime = DateTime.now();
+
+    try {
+      Logger.d('WebRTCService: Triggering peerConnection.restartIce()...');
+      await pc.restartIce();
+
+      if (localStream != null) {
+        localStream!.getAudioTracks().forEach((track) {
+          track.enabled = !currentMuteState;
+        });
+      }
+      await initAudioSession();
+      toggleSpeaker(currentSpeakerState, force: true);
+
+      final RTCSessionDescription offer = await pc.createOffer({
+        'iceRestart': true,
+        ..._constraints,
+      });
+      final optimizedSdp = optimizeSdpForAudio(offer.sdp ?? '');
+      final modifiedOffer = RTCSessionDescription(optimizedSdp, offer.type);
+      await pc.setLocalDescription(modifiedOffer);
+
+      Logger.d('WebRTCService: Dispatching renegotiation offer to backend for session $sessionId...');
+      final apiClient = Get.find<ApiClient>();
+      await apiClient.post(
+        AppUrls.updateSdp(sessionId),
+        data: {
+          'sdp': modifiedOffer.sdp,
+          'type': 'offer',
+        },
+        handleError: false,
+        showErrorScreen: false,
+      );
+      Logger.d('WebRTCService: Renegotiation offer dispatched successfully.');
+    } catch (e) {
+      Logger.e('WebRTCService: Error executing restartIce -> $e');
+    } finally {
+      Future.delayed(const Duration(seconds: 4), () {
+        _isRestartingIce = false;
+      });
+    }
+  }
+
+  Future<RTCSessionDescription?> handleIncomingOfferAndCreateAnswer(int sessionId, String offerSdp) async {
+    final pc = peerConnection;
+    if (pc == null) return null;
+    try {
+      final normalized = _normalizeSdp(offerSdp);
+      final optimizedOfferSdp = fixAudioCodec(normalized);
+      final offer = RTCSessionDescription(optimizedOfferSdp, 'offer');
+      await pc.setRemoteDescription(offer);
+
+      final RTCSessionDescription answer = await pc.createAnswer(_constraints);
+      final optimizedAnswerSdp = optimizeSdpForAudio(answer.sdp ?? '');
+      final modifiedAnswer = RTCSessionDescription(optimizedAnswerSdp, answer.type);
+      await pc.setLocalDescription(modifiedAnswer);
+
+      // Re-apply audio session and route
+      await initAudioSession();
+      toggleSpeaker(currentSpeakerState, force: true);
+      return modifiedAnswer;
+    } catch (e) {
+      Logger.e('WebRTCService: Error handling incoming renegotiation offer -> $e');
+      return null;
+    }
+  }
 
   void _startPingTimer() {
     _stopPingTimer();
@@ -594,6 +756,10 @@ class WebRTCService {
   void dispose() {
     try {
       _stopPingTimer();
+      _iceRecoveryTimer?.cancel();
+      _iceRecoveryTimer = null;
+      _isRestartingIce = false;
+      _lastIceRestartTime = null;
       currentMuteState = false;
       currentSpeakerState = false;
       _speakerConfigured = false;

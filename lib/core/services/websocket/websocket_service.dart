@@ -1,5 +1,6 @@
 import 'package:flutter_callkit_incoming/entities/entities.dart';
 import 'package:astro_astrologer/core/services/callkit_service.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 import 'package:astro_astrologer/core/services/local_notification_service.dart';
 import 'dart:async';
@@ -44,6 +45,8 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
   DateTime? _lastPingSentAt;
   Timer? _heartbeatTimer;
   Timer? _pongTimeoutTimer;
+  StreamSubscription? _connectivitySubscription;
+  String? _lastConnectivityStr;
   static const Duration _heartbeatInterval = Duration(seconds: 25);
   static const Duration _pongTimeout = Duration(seconds: 10);
 
@@ -132,13 +135,39 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
   void onInit() {
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
+    _setupConnectivityListener();
   }
 
   @override
   void onClose() {
     WidgetsBinding.instance.removeObserver(this);
+    _connectivitySubscription?.cancel();
     disconnect();
     super.onClose();
+  }
+
+  void _setupConnectivityListener() {
+    _connectivitySubscription?.cancel();
+    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((results) {
+      final hasConnection = results.any((r) => r != ConnectivityResult.none);
+      final isLoggedIn = SharedPrefs.getBool(AppConstants.isLoggedIn) ?? false;
+      if (!isLoggedIn) return;
+
+      final currentResStr = results.map((r) => r.name).join(',');
+      final isInterfaceChanged = _lastConnectivityStr != null && _lastConnectivityStr != currentResStr;
+      _lastConnectivityStr = currentResStr;
+
+      if (hasConnection) {
+        if (!_isConnected && !_isConnecting) {
+          Logger.d('|🌐 Connectivity restored! Triggering immediate WebSocket reconnect.');
+          _reconnectAttempts = 0;
+          connect();
+        } else if (_isConnected && isInterfaceChanged) {
+          Logger.d('|🌐 Network interface changed ($currentResStr) while connected. Refreshing socket connection...');
+          _forceDisconnectAndReconnect();
+        }
+      }
+    });
   }
 
   @override
@@ -415,18 +444,24 @@ class WebSocketService extends GetxService with WidgetsBindingObserver {
     });
   }
 
+  void _forceDisconnectAndReconnect() {
+    _isConnecting = false;
+    _isConnected = false;
+    _socketId = null;
+    _stopHeartbeat();
+    try {
+      _channel?.sink.close();
+    } catch (_) {}
+    _channel = null;
+    _reconnect();
+  }
+
   void _sendHeartbeat() {
     try {
       _pongTimeoutTimer?.cancel();
       _pongTimeoutTimer = Timer(_pongTimeout, () {
         Logger.w('|⚠️ WebSocket pong timeout! Socket is unresponsive. Forcing reconnect...');
-        _isConnecting = false;
-        _isConnected = false;
-        _socketId = null;
-        _stopHeartbeat();
-        _channel?.sink.close();
-        _channel = null;
-        _reconnect();
+        _forceDisconnectAndReconnect();
       });
       _lastPingSentAt = DateTime.now();
       _send(jsonEncode({"event": AppUrls.pusherPing, "data": {}}));
