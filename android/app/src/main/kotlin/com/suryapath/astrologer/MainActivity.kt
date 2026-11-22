@@ -185,7 +185,8 @@ class MainActivity : FlutterActivity() {
                         Log.w("AudioRouter", "No TYPE_BUILTIN_SPEAKER in availableCommunicationDevices")
                     }
                 } else {
-                    val preferred = audioManager.availableCommunicationDevices.firstOrNull {
+                    // When speaker is OFF, prioritize Bluetooth or wired headset if connected; otherwise strictly route to earpiece
+                    val preferred = devices.firstOrNull {
                         it.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO ||
                         it.type == AudioDeviceInfo.TYPE_BLE_HEADSET ||
                         it.type == AudioDeviceInfo.TYPE_WIRED_HEADSET ||
@@ -196,47 +197,34 @@ class MainActivity : FlutterActivity() {
                         routed = audioManager.setCommunicationDevice(preferred)
                         Log.d("AudioRouter", "setCommunicationDevice(${preferred.type}) -> $routed")
                     } else {
-                        val fallbackSpeaker = audioManager.availableCommunicationDevices.firstOrNull {
-                            it.type == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER
-                        }
-                        if (fallbackSpeaker != null) {
-                            routed = audioManager.setCommunicationDevice(fallbackSpeaker)
-                            Log.d("AudioRouter", "No earpiece found on device (tablet), defaulting to BUILTIN_SPEAKER -> $routed")
-                        } else {
-                            audioManager.clearCommunicationDevice()
-                            Log.d("AudioRouter", "clearCommunicationDevice() called")
-                            routed = true
-                        }
+                        // Standard Android fallback: clear communication device so audio routes to the default platform earpiece
+                        audioManager.clearCommunicationDevice()
+                        Log.d("AudioRouter", "No explicit earpiece device enumerated; clearCommunicationDevice() called for platform default earpiece")
+                        routed = true
                     }
                 }
+            } else {
+                // Android 11 & below (API < 31): Use legacy isSpeakerphoneOn
+                @Suppress("DEPRECATION")
+                audioManager.isSpeakerphoneOn = enable
+                routed = true
+                Log.d("AudioRouter", "Legacy audioManager.isSpeakerphoneOn = $enable")
             }
 
-            val hasEarpieceOrHeadset = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                audioManager.availableCommunicationDevices.any {
-                    it.type == AudioDeviceInfo.TYPE_BUILTIN_EARPIECE ||
-                    it.type == AudioDeviceInfo.TYPE_WIRED_HEADSET ||
-                    it.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO
-                }
-            } else true
+            // CRITICAL: On Android 12+ (API 31+), NEVER call audioManager.isSpeakerphoneOn
+            // Overwriting setCommunicationDevice with isSpeakerphoneOn creates a race condition in the
+            // audio HAL on Realme, Oppo, Samsung, Xiaomi, and Infinix, cancelling the chosen communication route.
 
-            val actualSpeaker = enable || !hasEarpieceOrHeadset
-            @Suppress("DEPRECATION")
-            audioManager.isSpeakerphoneOn = actualSpeaker
-            Log.d("AudioRouter", "audioManager.isSpeakerphoneOn = $actualSpeaker (requested=$enable), routed = $routed")
-
-            // Ensure optimal voice call stream volume for loudspeaker & earpiece
+            // Ensure optimal voice call stream volume for loudspeaker & earpiece so volume levels clearly differ
             try {
                 val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL)
                 if (enable) {
                     audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, maxVolume, 0)
-                    Log.d("AudioRouter", "Boosted STREAM_VOICE_CALL volume to max ($maxVolume)")
+                    Log.d("AudioRouter", "Set STREAM_VOICE_CALL volume to max ($maxVolume) for loudspeaker")
                 } else {
-                    val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL)
-                    val minEarpieceVolume = (maxVolume * 0.85).toInt().coerceAtLeast(1)
-                    if (currentVolume < minEarpieceVolume) {
-                        audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, minEarpieceVolume, 0)
-                        Log.d("AudioRouter", "Set STREAM_VOICE_CALL volume to $minEarpieceVolume (was $currentVolume)")
-                    }
+                    val targetEarpieceVolume = (maxVolume * 0.85).toInt().coerceAtLeast(1)
+                    audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, targetEarpieceVolume, 0)
+                    Log.d("AudioRouter", "Set STREAM_VOICE_CALL volume to $targetEarpieceVolume for earpiece")
                 }
             } catch (volEx: Exception) {
                 Log.w("AudioRouter", "Could not adjust STREAM_VOICE_CALL volume: ${volEx.message}")
@@ -268,8 +256,14 @@ class MainActivity : FlutterActivity() {
         return try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 val comm = audioManager.communicationDevice
-                (comm != null && comm.type == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER) || audioManager.isSpeakerphoneOn
+                if (comm != null) {
+                    comm.type == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER
+                } else {
+                    @Suppress("DEPRECATION")
+                    audioManager.isSpeakerphoneOn
+                }
             } else {
+                @Suppress("DEPRECATION")
                 audioManager.isSpeakerphoneOn
             }
         } catch (e: Exception) {

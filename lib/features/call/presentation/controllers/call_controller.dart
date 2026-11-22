@@ -55,7 +55,7 @@ class CallController extends GetxController {
 
   void toggleSpeaker() {
     isSpeakerOn.value = !isSpeakerOn.value;
-    webrtcService.toggleSpeaker(isSpeakerOn.value);
+    webrtcService.toggleSpeaker(isSpeakerOn.value, force: true);
   }
 
   // Delegate Methods
